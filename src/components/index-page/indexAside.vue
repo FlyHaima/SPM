@@ -341,11 +341,11 @@ export default {
         }
       }
       .title{
-        height: 50px;
-        line-height: 50px;
-        padding-left: 68px;
+        height: 70px;
+        line-height: 70px;
+        padding-left: 90px;
         color: #fff;
-        font-size: 18px;
+        font-size: 24px;
         width: 100%;
         position: relative;
         cursor: pointer;
@@ -359,8 +359,9 @@ export default {
           left: 30px;
         }
         &:hover{
-          background: #065375;
-          border-left: 4px solid #6eef7a;
+          background: #1d588d;
+          border-top: 1px solid #144f84;
+          line-height: 69px;
         }
         &::after{
           content: '';
@@ -375,8 +376,9 @@ export default {
           transform: rotate(90deg);
         }
         &.active{
-          background: #065375;
-          border-left: 4px solid #6eef7a;
+          background: #1d588d;
+          border-top: 1px solid #144f84;
+          line-height: 69px;
           &::after{
             transform: rotate(0);
           }
