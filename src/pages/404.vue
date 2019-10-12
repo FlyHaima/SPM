@@ -1,14 +1,15 @@
-<!-- 首页 -->
 <template>
-  <div class="home-page"></div>
+  <div class="notfound-page">
+    <h1>404</h1>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'homePage'
+  name: 'notfoundPage'
 }
 </script>
 
 <style scoped lang="scss">
-
+.notfound-page{}
 </style>
