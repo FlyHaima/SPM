@@ -175,7 +175,7 @@ export default {
           li{
             width: 180px;
             height: 42px;
-            line-height: 42px;
+            line-height: 41px;
             text-align: center;
             border-bottom: 1px solid #8eacc6;
             &:hover{
@@ -188,6 +188,7 @@ export default {
               height: 16px;
               line-height: 16px;
               font-size: 16px;
+              margin-top: -3px;
             }
           }
         }

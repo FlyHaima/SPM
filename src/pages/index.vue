@@ -6,7 +6,7 @@
         <index-header :headerMsgNum="messageCount"></index-header>
       </el-header>
       <el-container>
-        <el-aside width="250px">
+        <el-aside width="320px">
           <index-aside
             @changeBreadcrumb='changeBreadcrumb'
           ></index-aside>
