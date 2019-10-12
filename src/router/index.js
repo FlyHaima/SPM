@@ -1,15 +1,82 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+
+// 登录页
+const loginPage = require('@/pages/login')
+const LoginPage = resolve => require.ensure([], () => resolve(loginPage), 'pagelist')
+// 404
+const notFound = require('@/pages/404')
+const NotFound = resolve => require.ensure([], () => resolve(notFound), 'pagelist')
+// 功能主页
+const indexPage = require('@/pages/index')
+const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'pagelist')
 
 Vue.use(Router)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+const routes = [
+  {
+    path: '/',
+    redirect: '/login'
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginPage,
+    meta: {
+      allowBack: false
     }
-  ]
+  },
+  {
+    path: '/index',
+    name: 'IndexPage',
+    component: IndexPage,
+    meta: {
+      keepAlive: true
+    },
+    children: [
+    ]
+  },
+  {
+    path: '/*',
+    name: '404',
+    component: NotFound
+  }
+]
+
+var router = new Router({
+  routes,
+  mode: 'history' // history模式
 })
+
+// 全局钩子
+// 注册全局前置router守卫
+router.beforeEach((to, from, next) => {
+  // console.log(to)
+  if (to.fullPath === '/home') {
+    sessionStorage.setItem('token', '') // 监听home login路由，删除token
+    next()
+  } else {
+    next()
+  }
+
+  if (to.fullPath === '/404') {
+    // console.log('page not found')
+    // console.log(from)
+    // console.log(to)
+    sessionStorage.setItem('lastPageUrl', from.fullPath)
+    next()
+  }
+})
+
+// 注册全局解析守卫
+router.beforeResolve((to, form, next) => {
+  // console.log('beforeResolve')
+  next()
+})
+
+// 注册后置守卫
+router.afterEach((to, from) => {
+  // console.log('afterEach')
+})
+
+export default router
