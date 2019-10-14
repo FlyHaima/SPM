@@ -81,8 +81,20 @@ export default {
           active: false,
           list: [
             {
-              fname: '安全基础管理',
-              name: 'child01',
+              fname: '风险辨识评估',
+              name: '风险辨识',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险辨识评估',
+              name: '风险划分',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险辨识评估',
+              name: '风险评估',
               url: '/',
               active: false
             }
@@ -93,8 +105,38 @@ export default {
           active: false,
           list: [
             {
-              fname: '安全基础管理',
-              name: 'child01',
+              fname: '风险分级管控',
+              name: '风险点清单',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '风险点分级管控台账',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '重大安全风险',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '风险四色图',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '作业风险比较图',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '风险分级管控表',
               url: '/',
               active: false
             }
@@ -102,28 +144,77 @@ export default {
         },
         {
           name: '隐患排查治理',
-          url: '/remoteQuery',
-          active: false
-        },
-        {
-          name: '应急指挥调度',
           active: false,
           list: [
             {
-              fname: '安全基础管理',
-              name: 'child01',
+              fname: '隐患排查治理',
+              name: '排查清单',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '排查计划',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '排查周期',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '隐患排查',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '隐患治理',
               url: '/',
               active: false
             }
           ]
         },
         {
+          name: '应急指挥调度',
+          active: false,
+          url: '/'
+        },
+        {
           name: '配置维护管理',
           active: false,
           list: [
             {
-              fname: '安全基础管理',
-              name: 'child01',
+              fname: '配置维护管理',
+              name: '用户管理',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '角色管理',
+              url: '/',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '数据管理',
+              url: '/',
+              active: false
+            },
+            // 组织结构管理 这个部分暂时不写，需求未定
+            // {
+            //   fname: '配置维护管理',
+            //   name: '组织结构管理',
+            //   url: '/',
+            //   active: false
+            // },
+            {
+              fname: '配置维护管理',
+              name: '日志',
               url: '/',
               active: false
             }
@@ -446,6 +537,21 @@ export default {
               &.icon13{
                 background: url('../../assets/img/aside-icon00-3.png') no-repeat;
                 background-size: 16px 17px;
+                background-position: center center;
+              }
+              &.icon20{
+                background: url('../../assets/img/aside-icon01-0.png') no-repeat;
+                background-size: 20px 18px;
+                background-position: center center;
+              }
+              &.icon21{
+                background: url('../../assets/img/aside-icon01-1.png') no-repeat;
+                background-size: 22px 19px;
+                background-position: center center;
+              }
+              &.icon22{
+                background: url('../../assets/img/aside-icon01-2.png') no-repeat;
+                background-size: 19px 19px;
                 background-position: center center;
               }
             }
