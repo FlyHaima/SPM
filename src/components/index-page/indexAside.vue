@@ -13,6 +13,7 @@
                    :to="child.url"
                    :class="child.active ? 'active' : ''">
                   {{child.name}}
+                  <span class="icon-box"><i class="icon" :class="'icon'+indexA+index"></i></span>
                 </a>
               </li>
             </ul>
@@ -280,8 +281,8 @@ export default {
       &.menu0{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-01.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon00.png') no-repeat;
+            background-size: 23px 23px;
             background-position: center center;
           }
         }
@@ -289,8 +290,8 @@ export default {
       &.menu1{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-02.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon01.png') no-repeat;
+            background-size: 24px 24px;
             background-position: center center;
           }
         }
@@ -298,8 +299,8 @@ export default {
       &.menu2{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-03.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon02.png') no-repeat;
+            background-size: 22px 22px;
             background-position: center center;
           }
         }
@@ -307,8 +308,8 @@ export default {
       &.menu3{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-04.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon03.png') no-repeat;
+            background-size: 23px 21px;
             background-position: center center;
           }
         }
@@ -316,8 +317,8 @@ export default {
       &.menu4{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-05.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon04.png') no-repeat;
+            background-size: 25px 25px;
             background-position: center center;
           }
         }
@@ -325,8 +326,8 @@ export default {
       &.menu5{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-06.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon05.png') no-repeat;
+            background-size: 26px 24px;
             background-position: center center;
           }
         }
@@ -334,8 +335,8 @@ export default {
       &.menu6{
         .title{
           i{
-            /*background: url('../../assets/img/aside-icon-07.png') no-repeat;*/
-            background-size: contain;
+            background: url('../../assets/img/aside-icon06.png') no-repeat;
+            background-size: 24px 23px;
             background-position: center center;
           }
         }
@@ -352,11 +353,11 @@ export default {
         i{
           display: inline-block;
           vertical-align: middle;
-          height: 18px;
-          width: 20px;
+          height: 28px;
+          width: 28px;
           position: absolute;
-          top: 16px;
-          left: 30px;
+          top: 21px;
+          left: 47px;
         }
         &:hover{
           background: #1d588d;
@@ -369,7 +370,6 @@ export default {
           position: absolute;
           width: 10px;
           height: 10px;
-          /*background: url('../../assets/img/index-side-coner-icon.png') no-repeat;*/
           background-position: top left;
           top: 20px;
           right: 25px;
@@ -390,39 +390,80 @@ export default {
         }
       }
       .menu-items{
+        border-top: 1px solid #114d77;
         background: #1779a4;
-        margin-top: 1px;
-        background: #1779a4;
-        padding: 8px 0 8px 30px;
         li{
-          line-height: 30px;
-          padding-left: 42px;
+          line-height: 50px;
           color: #fff;
+          background: #1d588d;
+          cursor: pointer;
+          &:hover{
+            background: #104676;
+            a{
+              color: #fff;
+            }
+          }
           a{
-            font-size: 14px;
+            display: block;
+            font-size: 18px;
             position: relative;
-            color: #fff;
-            &::before{
-              content: '';
-              display: block;
+            padding-left: 126px;
+            width: 100%;
+            height: 100%;
+            color: #8ac8ff;
+            .icon-box{
               position: absolute;
-              width: 0;
-              height: 0;
-              border: 5px solid transparent;
-              border-left-color: #fff;
-              top: 5px;
-              left: -15px;
+              top: 12.5px;
+              left: 87px;
+              width: 24px;
+              height: 24px;
+              vertical-align: middle;
+              overflow: hidden;
+            }
+            .icon{
+              position: absolute;
+              filter: drop-shadow(24px 0 #8ac8ff);
+              top: 0;
+              left: -24px;
+              width: 24px;
+              height: 24px;
+              vertical-align: middle;
+              &.icon10{
+                background: url('../../assets/img/aside-icon00-0.png') no-repeat;
+                background-size: 20px 18px;
+                background-position: center center;
+              }
+              &.icon11{
+                background: url('../../assets/img/aside-icon00-1.png') no-repeat;
+                background-size: 22px 19px;
+                background-position: center center;
+              }
+              &.icon12{
+                background: url('../../assets/img/aside-icon00-2.png') no-repeat;
+                background-size: 19px 19px;
+                background-position: center center;
+              }
+              &.icon13{
+                background: url('../../assets/img/aside-icon00-3.png') no-repeat;
+                background-size: 16px 17px;
+                background-position: center center;
+              }
             }
             &.active{
-              color: #6eef7a;
-              &::before{
-                border-left-color: #6eef7a;
+              color: #fff;
+              background: #104676;
+              .icon{
+                filter: drop-shadow(24px 0 #8ac8ff);
+                overflow: hidden;
+                left: 0;
               }
             }
             &:hover{
-              color: #6eef7a;
-              &::before{
-                border-left-color: #6eef7a;
+              color: #fff;
+              .icon{
+                filter: drop-shadow(24px 0 #8ac8ff);
+                overflow: hidden;
+                left: 0;
               }
             }
           }
