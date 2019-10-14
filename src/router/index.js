@@ -34,6 +34,17 @@ const routes = [
       keepAlive: true
     },
     children: [
+      {
+        path: 'dashboard',
+        title: '首页',
+        name: 'HomeDashboard',
+        meta: {
+          access: true
+        },
+        parent: 'IndexPage',
+        component: () =>
+          import(`@/pages/home/dashboard.vue`)
+      }
     ]
   },
   {

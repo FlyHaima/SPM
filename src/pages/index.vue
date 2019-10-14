@@ -21,7 +21,7 @@
 <!--              </template>-->
 <!--            </el-breadcrumb>-->
 <!--          </div>-->
-<!--          <router-view @refresh="refreshBaseInfo()"></router-view>-->
+         <router-view @refresh="refreshBaseInfo()"></router-view>
         </el-main>
       </el-container>
     </el-container>
