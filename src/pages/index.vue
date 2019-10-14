@@ -7,21 +7,10 @@
       </el-header>
       <el-container>
         <el-aside width="320px">
-          <index-aside
-            @changeBreadcrumb='changeBreadcrumb'
-          ></index-aside>
+          <index-aside @changeBreadcrumb='changeBreadcrumb'></index-aside>
         </el-aside>
         <el-main>
-<!--          <div class="breadcrumb-nav" :class="isMap? 'dark' : ''">-->
-<!--            <div class="b-nav-head">当前位置：</div>-->
-<!--            <el-breadcrumb separator-class="el-icon-arrow-right">-->
-<!--              <el-breadcrumb-item><span style="cursor: pointer;" @click="toIndex">首页</span></el-breadcrumb-item>-->
-<!--              <template v-if="breadcrumb.length > 0">-->
-<!--                <el-breadcrumb-item v-for="(item, index) in breadcrumb" :key="index">{{item}}</el-breadcrumb-item>-->
-<!--              </template>-->
-<!--            </el-breadcrumb>-->
-<!--          </div>-->
-<!--          <router-view @refresh="refreshBaseInfo()"></router-view>-->
+          <router-view @refresh="refreshBaseInfo()"></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -41,7 +30,9 @@ export default {
     }
   },
   methods: {
-    changeBreadcrumb () {}
+    changeBreadcrumb () {},
+    refreshBaseInfo () { // router change, do something
+    }
   },
   watch: {
     '$route' (to, from) {
