@@ -33,6 +33,7 @@ const routes = [
     meta: {
       keepAlive: true
     },
+    redirect: '/index/dashboard',
     children: [
       {
         path: 'dashboard',
