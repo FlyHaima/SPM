@@ -10,6 +10,9 @@ const NotFound = resolve => require.ensure([], () => resolve(notFound), 'pagelis
 // 功能主页
 const indexPage = require('@/pages/index')
 const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'pagelist')
+// 安全基础管理--组织机构
+const organization = require('@/components/safety-management/organization')
+const Organization = resolve => require.ensure([], () => resolve(organization), 'pagelist')
 
 Vue.use(Router)
 
@@ -45,6 +48,11 @@ const routes = [
         parent: 'IndexPage',
         component: () =>
           import(`@/pages/home/dashboard.vue`)
+      },
+      {
+        path: '/organization',
+        name: 'Organization',
+        component: Organization
       }
     ]
   },
