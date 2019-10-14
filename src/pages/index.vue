@@ -7,7 +7,9 @@
       </el-header>
       <el-container>
         <el-aside width="320px">
-          <index-aside @changeBreadcrumb='changeBreadcrumb'></index-aside>
+          <index-aside
+            @changeBreadcrumb='changeBreadcrumb'
+          ></index-aside>
         </el-aside>
         <el-main>
           <router-view @refresh="refreshBaseInfo()"></router-view>
