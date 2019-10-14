@@ -121,6 +121,45 @@
                 </div>
               </div>
               <div class="info-content">
+                <el-row :gutter="10">
+                  <el-col :span="5" class="pie-box">
+                    <pie-c></pie-c>
+                  </el-col>
+                  <el-col :span="5" class="pie-box">
+                    <pie-c></pie-c>
+                  </el-col>
+                  <el-col :span="5" class="pie-box">
+                    <pie-c></pie-c>
+                  </el-col>
+                  <el-col :span="5" class="pie-box">
+                    <pie-c></pie-c>
+                  </el-col>
+                  <el-col :span="4" class="pie-box">
+                    <pie-c></pie-c>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="home-showcase">
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <div class="info-panel">
+              <div class="info-header">
+                <div class="info-title">
+                  <span class="info-title-txt">现有风险等级情况</span>
+                </div>
+              </div>
+              <div class="info-content">
+                <el-row :gutter="24">
+                  <el-col :span="24">
+                    <div class="pie-box">
+                      <statistic-e></statistic-e>
+                    </div>
+                  </el-col>
+                </el-row>
 
               </div>
             </div>
@@ -138,7 +177,19 @@
 </template>
 
 <script>
+import pieC from '@/components/e-charts/pieC'
+import statisticE from '@/components/e-charts/statisticE'
 export default {
+  name: 'home',
+  data () {
+    return {
+
+    }
+  },
+  components: {
+    pieC,
+    statisticE
+  }
 
 }
 </script>
@@ -336,5 +387,12 @@ export default {
       border-color: #ff1616 transparent transparent #ff1616;
     }
   }
-
+  .pie-box{
+    border-right: 2px solid #e9e9e9;
+    margin-top: 56px;
+    margin-bottom: 40px;
+    &:last-child{
+      border-right: 0;
+    }
+  }
 </style>

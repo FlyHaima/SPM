@@ -47,7 +47,7 @@ const routes = [
         },
         parent: 'IndexPage',
         component: () =>
-          import(`@/pages/home/dashboard.vue`)
+          import(`@/components/home/dashboard.vue`)
       },
       {
         path: '/organization',
