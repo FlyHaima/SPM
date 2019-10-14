@@ -44,7 +44,7 @@ export default {
         {
           name: '首页',
           active: true,
-          url: '/home'
+          url: '/index/dashboard'
         },
         {
           name: '安全基础管理',
@@ -53,7 +53,7 @@ export default {
             {
               fname: '安全基础管理',
               name: '组织机构',
-              url: '/',
+              url: '/organization',
               active: false
             },
             {
@@ -349,7 +349,7 @@ export default {
       setLocalStorage('menuList', JSON.stringify(this.menuList))
       let nArr = name.split('-')
       this.$emit('changeBreadcrumb', nArr)
-      // this.$router.push(url)
+      this.$router.push(url)
     }
   },
   watch: {
