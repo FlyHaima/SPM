@@ -14,7 +14,7 @@
                 <p class="basic-info-txt-item">企业用户-哈尔滨-道外区</p>
               </div>
             </el-col>
-            <el-col :span="9">
+            <el-col :span="12">
               <ul class="user-list">
                 <li class="user-list-item">
                   <span class="user-label">角色名：</span>
@@ -22,15 +22,15 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">企业名：</span>
-                  <span class="user-value">管理员</span>
+                  <span class="user-value">黑龙江省阿斯顿矿业开采有限公司</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">用户名：</span>
-                  <span class="user-value">管理员</span>
+                  <span class="user-value">neuh1546545314</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">企业资格认证：</span>
-                  <span class="user-value">管理员</span>
+                  <span class="user-value">已认证</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">权限等级：</span>
@@ -38,11 +38,11 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">登录ID：</span>
-                  <span class="user-value">管理员</span>
+                  <span class="user-value">164568975211</span>
                 </li>
               </ul>
             </el-col>
-            <el-col :span="9">
+            <el-col :span="8">
               <ul class="user-list-time">
                 <li class="user-list-time-item">
                   <span class="user-label">上次登录时间：</span>
@@ -58,26 +58,21 @@
         </div>
       </div>
       <div class="user-account-box">
-        <div class="">
-            <div class="user-account-left">
-              <span class="user-account-label">您当前账号安全程度</span>
-              <span class="user-account-value">
-                <el-row>
-                  <el-col :span="6">
-                    <el-progress
-                      :class="computedClass"
-                      :stroke-width="16"
-                      :percentage="80"
-                      :format="format"
-                      :color="customColors">
-                    </el-progress>
-                  </el-col>
-                </el-row>
-              </span>
-            </div>
+        <div class="user-account-header">
+          <div class="account-header-left">
+            <span class="account-header-label">您当前账号安全程度</span>
+            <span class="account-header-value">
+              <el-progress
+                :class="computedClass"
+                :stroke-width="16"
+                :percentage="60"
+                :format="format"
+                :color="customColors">
+              </el-progress>
+            </span>
           </div>
+        </div>
         <div class="user-account-list">
-
           <div class="user-account-list-item">
             <div class="user-account-left">
               <span class="user-account-label">登录密码</span>
@@ -85,16 +80,47 @@
                 安全性高的密码可以使账号更安全，建议您定期更换密码，设置一个包含字母，符号或数字中至少两项且长度超过6位的密码。
               </span>
             </div>
-            <div class="user-account-right">
-              <div>
-                <i>icon</i>
-                <span>已设置</span>
+            <div class="user-account-operation">
+              <div class="user-account-operation-item">
+                <i class="operation-icon-finish"></i>
+                <span class="operation-txt">已设置</span>
               </div>
-              <div>
-                <span>修改</span>
+              <div class="user-account-operation-item">
+                <span class="operation-txt operation-txt-link">修改</span>
               </div>
             </div>
           </div>
+          <div class="user-account-list-item">
+            <div class="user-account-left">
+              <span class="user-account-label">手机绑定</span>
+              <span class="user-account-value">
+                您已绑定了手机151****6064【您的手机为安全手机，可以找回密码】
+              </span>
+            </div>
+            <div class="user-account-operation">
+              <div class="user-account-operation-item">
+                <i class="operation-icon-finish"></i>
+                <span class="operation-txt">已设置</span>
+              </div>
+              <div class="user-account-operation-item">
+                <span class="operation-txt operation-txt-link">修改</span>
+              </div>
+            </div>
+          </div>
+          <div class="user-account-list-item">
+            <div class="user-account-left">
+              <span class="user-account-label">注销账号</span>
+              <span class="user-account-value">
+                如果您不在使用此账号，可以将其注销，账号成功注销后，其下所有服务、数据及隐私信息将会被删除并将无法恢复。
+              </span>
+            </div>
+            <div class="user-account-operation">
+              <div class="user-account-operation-item">
+                <span class="operation-txt operation-txt-link">注销账号</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
       <el-row :gutter="24">
@@ -115,9 +141,9 @@ export default {
       customColors: [
         {color: '#f56c6c', percentage: 20},
         {color: '#e6a23c', percentage: 40},
-        {color: '#5cb87a', percentage: 60},
-        {color: '#1989fa', percentage: 80},
-        {color: '#6f7ad3', percentage: 100}
+        {color: '#d13a38', percentage: 60},
+        {color: '#d13a38', percentage: 80},
+        {color: 'orange', percentage: 100}
       ]
     }
   },
@@ -144,6 +170,18 @@ export default {
   .basic-header{
     font-size: 20px;
     color: #313131;
+    position: relative;
+    &::after{
+      content: "";
+      display: inline-block;
+      width: 92%;
+      height: 1px;
+      border-top: 1px solid #646464;
+      position: absolute;
+      right: 0;
+      top: 50%;
+
+    }
   }
   .el-avatar--circle{
     border: 2px solid #227dce;
@@ -186,12 +224,27 @@ export default {
   .user-list-time-item{
     color: #666666;
     font-size: 14px;
-    line-height: 30px;
+    line-height: 14px;
+    margin-bottom: 16px;
   }
   .user-account-box{
     padding: 0 30px;
     font-size: 16px;
     color: #414141;
+  }
+  .user-account-header{
+    padding: 38px 0;
+  }
+  .account-header-left{
+
+  }
+  .account-header-label{
+    display: inline-block;
+  }
+  .account-header-value{
+    display: inline-block;
+    width: 300px;
+    margin-left: 30px;
   }
   .user-account-list{
 
@@ -203,7 +256,7 @@ export default {
     display: flex;
     justify-content: space-between;
     padding: 38px 0;
-    border-bottom: 1px dashed #414141;
+    border-top: 1px dashed #414141;
   }
   .user-account-label{
 
@@ -211,12 +264,56 @@ export default {
   .user-account-value{
     margin-left: 60px;
   }
-  .user-account-right{
+  .user-account-operation{
     display: flex;
+  }
+  .user-account-operation-item{
+    &:last-child{
+      .operation-txt{
+        border-right: 0;
+      }
+    }
+  }
+  .operation-icon-finish{
+    display: inline-block;
+    position: relative;
+    margin-left:-24px;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #2aaa91;
+    border-radius: 18px;
+    color: #2aaa91;
+    vertical-align: top;
+    &::before{
+      content: "";
+      display: inline-block;
+      position: absolute;
+      margin-left: 3px;
+      margin-top: 4px;
+      width: 10px;
+      height: 4px;
+      border-bottom: solid 1px currentColor;
+      border-left: solid 1px currentColor;
+      -webkit-transform: rotate(-45deg);
+              transform: rotate(-45deg);
+    }
+
+  }
+  .operation-txt{
+    display: inline-block;
+    color: #2aaa91;
+    vertical-align: top;
+    line-height: 18px;
+    border-right: 1px solid #d7d7d7;
+    white-space: nowrap;
+    padding: 0 12px;
+  }
+  .operation-txt-link{
+    color: #409eff;
   }
   .user-progress{
     >>> .el-progress-bar{
-      width: 80%;
+      width: 78%;
     }
     >>> .el-progress__text{
       color: #f19729 !important;
@@ -224,6 +321,7 @@ export default {
     >>> .el-progress-bar__outer{
       border-radius: 2px;
       background: #d1d1d1;
+      margin-right: 30px;
     }
     >>> .el-progress-bar__inner{
       border-radius: 2px;
