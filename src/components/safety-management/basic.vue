@@ -30,11 +30,11 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">企业资格认证：</span>
-                  <span class="user-value">已认证</span>
+                  <span class="user-value color-primary">已认证</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">权限等级：</span>
-                  <span class="user-value">管理员</span>
+                  <span class="user-value color-primary">管理员</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">登录ID：</span>
@@ -86,7 +86,11 @@
                 <span class="operation-txt">已设置</span>
               </div>
               <div class="user-account-operation-item">
-                <span class="operation-txt operation-txt-link">修改</span>
+                <a
+                  href="javascript:;"
+                  class="operation-txt operation-txt-link"
+                  @click="handleEditPassword"
+                >修改</a>
               </div>
             </div>
           </div>
@@ -103,7 +107,11 @@
                 <span class="operation-txt">已设置</span>
               </div>
               <div class="user-account-operation-item">
-                <span class="operation-txt operation-txt-link">修改</span>
+                <a
+                  href="javascript:;"
+                  class="operation-txt operation-txt-link"
+                  @click="handleEditTel"
+                >修改</a>
               </div>
             </div>
           </div>
@@ -120,9 +128,51 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
+      <el-dialog title="修改密码" :visible.sync="dialogFormPasswordVisible">
+        <div class="form-tips">
+          修改密码提升密码强度，可以保障账号的安全性
+        </div>
+        <el-row>
+          <el-col :offset="6" :span="12">
+            <el-form
+              :model="passwordForm"
+              ref="passwordForm"
+              :rules= "rules"
+              size="mini"
+              label-width="100px"
+            >
+              <el-form-item label="旧密码：" prop="passwordOld">
+                <el-input
+                  type="password"
+                  v-model="passwordForm.passwordOld"
+                  autocomplete="off"
+                  placeholder="请输入旧密码"></el-input>
+              </el-form-item>
+              <el-form-item label="新密码：" prop="passwordNew">
+                <el-input
+                  type="password"
+                  v-model="passwordForm.passwordNew"
+                  autocomplete="off"
+                  placeholder="请输入新密码"></el-input>
+              </el-form-item>
+              <el-form-item label="确认密码：" prop="passwordConfirm">
+                <el-input
+                  type="password"
+                  v-model="passwordForm.passwordConfirm"
+                  autocomplete="off"
+                  placeholder="请再次输入新密码"></el-input>
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitPasswordForm()">保 存</el-button>
+          <el-button @click="dialogFormPasswordVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
       <el-row :gutter="24">
         <el-col :span="24">
 
@@ -137,6 +187,35 @@
 export default {
   name: 'basic',
   data () {
+    var validatePassOld = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入旧密码'))
+      } else {
+        if (this.passwordForm.passwordOld !== '') {
+          this.$refs.passwordForm.validateField('passwordOld')
+        }
+        callback()
+      }
+    }
+    var validatePassNew = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入新密码'))
+      } else {
+        if (this.passwordForm.passwordNew !== '') {
+          this.$refs.passwordForm.validateField('passwordNew')
+        }
+        callback()
+      }
+    }
+    var validatePassConfirm = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.passwordForm.passwordNew) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       customColors: [
         {color: '#f56c6c', percentage: 20},
@@ -144,13 +223,49 @@ export default {
         {color: '#d13a38', percentage: 60},
         {color: '#d13a38', percentage: 80},
         {color: 'orange', percentage: 100}
-      ]
+      ], // 进度条自定义颜色
+      dialogFormPasswordVisible: false, // 修改密码弹框显示开关
+      dialogFormTelVisible: false, // 修改绑定手机号弹框显示开关
+      passwordForm: {
+        passwordOld: '', // 旧密码
+        passwordNew: '', // 新密码
+        passwordConfirm: '' // 确认新密码
+      }, // 修改密码form
+      rules: {
+        passwordOld: [
+          { validator: validatePassOld, trigger: 'blur' }
+        ],
+        passwordNew: [
+          { validator: validatePassNew, trigger: 'blur' }
+        ],
+        passwordConfirm: [
+          { validator: validatePassConfirm, trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
-
+    submitPasswordForm () {
+      this.$refs.passwordForm.validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          this.dialogFormPasswordVisible = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
     format (percentage) {
       return percentage === 60 ? `安全级别：中` : `${percentage}%`
+    },
+    // 修改登录密码
+    handleEditPassword () {
+      this.dialogFormPasswordVisible = true
+    },
+    // 修改绑定手机
+    handleEditTel () {
+      this.dialogFormTelVisible = true
     }
   },
   computed: {
@@ -163,6 +278,9 @@ export default {
 <style lang="scss" scoped>
   $colorBorder: #e9e9e9;
   $colorPrimary: #409eff;
+  .color-primary{
+    color: $colorPrimary;
+  }
   .basic-box{
     padding: 50px 40px 40px 30px;
     border-bottom: 4px solid $colorBorder;
@@ -311,20 +429,35 @@ export default {
   .operation-txt-link{
     color: #409eff;
   }
-  .user-progress{
-    >>> .el-progress-bar{
+  .form-tips{
+    margin-bottom: 40px;
+  }
+  // 修改组件样式
+  .user-progress >>> {
+    .el-progress-bar{
       width: 78%;
     }
-    >>> .el-progress__text{
+    .el-progress__text{
       color: #f19729 !important;
     }
-    >>> .el-progress-bar__outer{
+    .el-progress-bar__outer{
       border-radius: 2px;
       background: #d1d1d1;
       margin-right: 30px;
     }
-    >>> .el-progress-bar__inner{
+    .el-progress-bar__inner{
       border-radius: 2px;
+    }
+  }
+  .el-dialog__wrapper >>> {
+    .el-dialog__header{
+      background: $colorPrimary;
+    }
+    .el-dialog__title{
+      color: #ffffff;
+    }
+    .el-dialog__headerbtn .el-dialog__close{
+      color: #ffffff;
     }
   }
 </style>
