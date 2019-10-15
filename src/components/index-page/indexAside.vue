@@ -44,7 +44,7 @@ export default {
         {
           name: '首页',
           active: true,
-          url: '/index/dashboard'
+          url: '/dashboard'
         },
         {
           name: '安全基础管理',
@@ -71,7 +71,7 @@ export default {
             {
               fname: '安全基础管理',
               name: '基础资料',
-              url: '/',
+              url: '/basic',
               active: false
             }
           ]

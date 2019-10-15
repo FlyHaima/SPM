@@ -43,9 +43,10 @@ const routes = [
     meta: {
       keepAlive: true
     },
+    redirect: '/dashboard',
     children: [
       {
-        path: 'dashboard',
+        path: '/dashboard',
         title: '首页',
         name: 'HomeDashboard',
         meta: {
@@ -53,13 +54,19 @@ const routes = [
         },
         parent: 'IndexPage',
         component: () =>
-          import(`@/pages/home/dashboard.vue`)
+          import(`@/components/home/dashboard.vue`)
       },
       {
         path: '/organization',
         name: 'Organization',
         title: '组织机构',
         component: Organization
+      },
+      {
+        path: '/basic',
+        name: 'basic',
+        component: () =>
+          import(`@/components/safety-management/basic.vue`)
       }
     ]
   },
