@@ -1,4 +1,8 @@
 <!-- 树形结构图（右） -->
+<!-- 说明：
+  -- 1、level：用于规定最多可添加到第几层级,如果在最后一级添加节点，会变成添加兄弟节点；
+  -- 2、showEditor：是否显示层级编辑按钮区域（关联权限）
+ -->
 <template>
   <div class="tree-diagram">
     <div class="tree-title">
@@ -26,37 +30,11 @@
           <span>{{ node.label }}</span>
           <span class="right-btns">
             <i class="el-icon-plus" @click="() => append(data)"></i>
-            <i class="el-icon-edit"></i>
+            <i class="el-icon-edit" @click="edit(node)"></i>
             <i class="el-icon-delete"  @click="() => remove(node, data)"></i>
           </span>
         </span>
       </el-tree>
-      <!--
-      <el-tree
-        :data="data"
-        show-checkbox
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false">
-        <span class="custom-tree-node" slot-scope="{ node, data }">
-          <span>{{ node.label }}</span>
-          <span>
-            <el-button
-              type="text"
-              size="mini"
-              @click="() => append(data)">
-              Append
-            </el-button>
-            <el-button
-              type="text"
-              size="mini"
-              @click="() => remove(node, data)">
-              Delete
-            </el-button>
-          </span>
-        </span>
-      </el-tree>
-      -->
     </div>
   </div>
 </template>
@@ -95,7 +73,8 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'label'
-      }
+      },
+      level: 3
     }
   },
   methods: {
@@ -103,15 +82,18 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    handleNodeClick (data) {
-      // 点击切换节点
-      // console.log(data)
+    handleNodeClick (data) { // 点击节点
+      // this.$emit('open-loading')
     },
     remove (node, data) {
       const parent = node.parent
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === data.id)
       children.splice(index, 1)
+    },
+    edit (node) {
+      console.log(node)
+      node.data.label = 'new'
     },
     append (data) {
       const newChild = { label: 'testtest', children: [] }
