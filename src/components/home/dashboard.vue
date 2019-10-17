@@ -51,7 +51,7 @@
                   <span class="info-title-txt">我的消息</span>
                 </div>
                 <div class="info-link">
-                  <span class="info-link-txt">更多</span>
+                  <a href="/messages" class="info-link-txt">更多</a>
                 </div>
               </div>
               <div class="info-content">
@@ -324,6 +324,7 @@ export default {
   }
   .info-link-txt{
     line-height: 16px;
+    color: #333333;
   }
 
   .list-info{

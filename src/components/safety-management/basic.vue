@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="view-box">
     <div class="view-box-content">
       <div class="basic-box">
@@ -124,7 +124,7 @@
             </div>
             <div class="user-account-operation">
               <div class="user-account-operation-item">
-                <span class="operation-txt operation-txt-link">注销账号</span>
+                <a href="javascript:;" class="operation-txt operation-txt-link">注销账号</a>
               </div>
             </div>
           </div>
@@ -134,43 +134,90 @@
         <div class="form-tips">
           修改密码提升密码强度，可以保障账号的安全性
         </div>
-        <el-row>
-          <el-col :offset="6" :span="12">
-            <el-form
-              :model="passwordForm"
-              ref="passwordForm"
-              :rules= "rules"
-              size="mini"
-              label-width="100px"
-            >
-              <el-form-item label="旧密码：" prop="passwordOld">
-                <el-input
-                  type="password"
-                  v-model="passwordForm.passwordOld"
-                  autocomplete="off"
-                  placeholder="请输入旧密码"></el-input>
-              </el-form-item>
-              <el-form-item label="新密码：" prop="passwordNew">
-                <el-input
-                  type="password"
-                  v-model="passwordForm.passwordNew"
-                  autocomplete="off"
-                  placeholder="请输入新密码"></el-input>
-              </el-form-item>
-              <el-form-item label="确认密码：" prop="passwordConfirm">
-                <el-input
-                  type="password"
-                  v-model="passwordForm.passwordConfirm"
-                  autocomplete="off"
-                  placeholder="请再次输入新密码"></el-input>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
-
+        <div class="form-modal">
+          <el-form
+            :model="passwordForm"
+            ref="passwordForm"
+            :rules="rulesPassword"
+            size="mini"
+            label-width="100px"
+          >
+            <el-form-item label="旧密码：" prop="passwordOld">
+              <el-input
+                type="password"
+                v-model="passwordForm.passwordOld"
+                autocomplete="off"
+                placeholder="请输入旧密码"
+                show-password
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="新密码：" prop="passwordNew">
+              <el-input
+                type="password"
+                v-model="passwordForm.passwordNew"
+                autocomplete="off"
+                placeholder="请输入新密码"
+                show-password
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码：" prop="passwordConfirm">
+              <el-input
+                type="password"
+                v-model="passwordForm.passwordConfirm"
+                autocomplete="off"
+                placeholder="请再次输入新密码"
+                show-password
+                clearable></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitPasswordForm()">保 存</el-button>
           <el-button @click="dialogFormPasswordVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog title="修改绑定手机" :visible.sync="dialogFormTelVisible">
+        <div class="form-modal">
+          <el-form
+            :model="telForm"
+            ref="telForm"
+            :rules="rulesTel"
+            size="mini"
+            label-width="110px"
+            class="demo-dynamic"
+          >
+            <el-form-item label="原手机号码：" prop="telOld">
+              <el-input
+                type="text"
+                v-model="telForm.telOld"
+                autocomplete="off"
+                placeholder="请输入原手机号码"
+                :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="修改绑定手机：" prop="telNew">
+              <el-input
+                type="number"
+                v-model="telForm.telNew"
+                autocomplete="off"
+                placeholder="请输入修改绑定手机"
+                clearable></el-input>
+              <el-button
+                type="primary">发送</el-button>
+            </el-form-item>
+            <el-form-item label="验证码：" prop="captcha">
+              <el-input
+                type="number"
+                v-model="telForm.captcha"
+                autocomplete="off"
+                placeholder="请输入验证码"
+                clearable
+                class="input-captcha"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitTelForm()">保 存</el-button>
+          <el-button @click="dialogFormTelVisible = false">取 消</el-button>
         </div>
       </el-dialog>
       <el-row :gutter="24">
@@ -191,9 +238,6 @@ export default {
       if (value === '') {
         callback(new Error('请输入旧密码'))
       } else {
-        if (this.passwordForm.passwordOld !== '') {
-          this.$refs.passwordForm.validateField('passwordOld')
-        }
         callback()
       }
     }
@@ -201,8 +245,8 @@ export default {
       if (value === '') {
         callback(new Error('请输入新密码'))
       } else {
-        if (this.passwordForm.passwordNew !== '') {
-          this.$refs.passwordForm.validateField('passwordNew')
+        if (this.passwordForm.passwordConfirm !== '') {
+          this.$refs.passwordForm.validateField('passwordConfirm')
         }
         callback()
       }
@@ -212,6 +256,20 @@ export default {
         callback(new Error('请再次输入密码'))
       } else if (value !== this.passwordForm.passwordNew) {
         callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+    var validateTelNew = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入修改绑定手机'))
+      } else {
+        callback()
+      }
+    }
+    var validateCaptcha = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入验证码'))
       } else {
         callback()
       }
@@ -231,7 +289,12 @@ export default {
         passwordNew: '', // 新密码
         passwordConfirm: '' // 确认新密码
       }, // 修改密码form
-      rules: {
+      telForm: {
+        telOld: '', // 原手机号码
+        telNew: '', // 新手机号码
+        captcha: '' // 验证码
+      }, // 修改绑定手机
+      rulesPassword: {
         passwordOld: [
           { validator: validatePassOld, trigger: 'blur' }
         ],
@@ -241,15 +304,36 @@ export default {
         passwordConfirm: [
           { validator: validatePassConfirm, trigger: 'blur' }
         ]
+      },
+      rulesTel: {
+        telNew: [
+          { validator: validateTelNew, trigger: 'blur' }
+        ],
+        captcha: [
+          { validator: validateCaptcha, trigger: 'blur' }
+        ]
       }
     }
   },
   methods: {
+    // 提交修改密码事件
     submitPasswordForm () {
       this.$refs.passwordForm.validate((valid) => {
         if (valid) {
           alert('submit!')
           this.dialogFormPasswordVisible = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 提交修改绑定手机事件
+    submitTelForm () {
+      this.$refs.telForm.validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          this.dialogFormTelVisible = false
         } else {
           console.log('error submit!!')
           return false
@@ -458,6 +542,18 @@ export default {
     }
     .el-dialog__headerbtn .el-dialog__close{
       color: #ffffff;
+    }
+  }
+  .form-modal >>>{
+    .el-form{
+      width: 420px;
+      margin: 0 auto;
+    }
+    .el-input{
+      width: 240px;
+    }
+    .input-captcha{
+      width: 140px;
     }
   }
 </style>
