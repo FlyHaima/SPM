@@ -29,9 +29,9 @@
         <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
           <span>{{ node.label }}</span>
           <span class="right-btns">
-            <i class="el-icon-plus" @click="() => append(data)"></i>
-            <i class="el-icon-edit" @click="edit(node)"></i>
-            <i class="el-icon-delete"  @click="() => remove(node, data)"></i>
+            <i class="el-icon-plus" title="添加节点" @click="() => append(node, data)"></i>
+            <i class="el-icon-edit" title="修改节点" @click="edit(node)"></i>
+            <i class="el-icon-delete" title="删除节点"  @click="() => remove(node, data)"></i>
           </span>
         </span>
       </el-tree>
@@ -82,7 +82,7 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    handleNodeClick (data) { // 点击节点
+    handleNodeClick (data) { // 点击节点，切换右侧结构视图
       // this.$emit('open-loading')
     },
     remove (node, data) {
@@ -95,13 +95,17 @@ export default {
       console.log(node)
       node.data.label = 'new'
     },
-    append (data) {
-      const newChild = { label: 'testtest', children: [] }
-      if (!data.children) {
-        this.$set(data, 'children', [])
+    append (node, data) {
+      if (node.level < this.level) {
+        const newChild = { label: 'testtest', children: [] }
+        if (!data.children) {
+          this.$set(data, 'children', [])
+        }
+        console.log(data)
+        data.children.push(newChild)
+      } else {
+        console.log('level big')
       }
-      console.log(data)
-      data.children.push(newChild)
     }
   },
   watch: {
