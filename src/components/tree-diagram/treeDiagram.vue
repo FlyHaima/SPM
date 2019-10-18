@@ -15,6 +15,10 @@
           v-model="filterText">
         </el-input>
       </div>
+      <div class="slide-btns">
+        <el-button type="text">展开</el-button>
+        <el-button type="text">收起</el-button>
+      </div>
     </div>
     <div class="tree-box">
       <el-tree
@@ -100,7 +104,7 @@ export default {
         console.log(data)
         data.children.push(newChild)
       } else if (this.addBro && node.level === this.level) {
-        const newBro = { label: 'testtest', children: [] }
+        // const newBro = { label: 'testtest', children: [] }
       } else {
         this.$message({
           message: '最多可添加到第' + this.level + '级',
@@ -222,6 +226,11 @@ export default {
         }
       }
     }
+    .slide-btns{
+      position: absolute;
+      top: 0;
+      right: 12px;
+    }
   }
   .tree-box{
     padding: 6px 4px;
@@ -235,6 +244,7 @@ export default {
       .right-btns{
         position: absolute;
         right: 8px;
+        color: #5cb6ff;
       }
     }
     .el-tree-node__content{
