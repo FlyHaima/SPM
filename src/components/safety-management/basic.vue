@@ -234,6 +234,7 @@
 export default {
   name: 'basic',
   data () {
+    // 校验旧密码
     var validatePassOld = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入旧密码'))
@@ -241,6 +242,7 @@ export default {
         callback()
       }
     }
+    // 校验新密码
     var validatePassNew = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入新密码'))
@@ -251,6 +253,7 @@ export default {
         callback()
       }
     }
+    // 再次确认密码的校验
     var validatePassConfirm = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
@@ -260,6 +263,7 @@ export default {
         callback()
       }
     }
+    // 校验修改的绑定手机号码
     var validateTelNew = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入修改绑定手机'))
@@ -267,6 +271,7 @@ export default {
         callback()
       }
     }
+    // 校验验证码
     var validateCaptcha = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入验证码'))
@@ -304,7 +309,7 @@ export default {
         passwordConfirm: [
           { validator: validatePassConfirm, trigger: 'blur' }
         ]
-      },
+      }, // 修改密码的校验规则
       rulesTel: {
         telNew: [
           { validator: validateTelNew, trigger: 'blur' }
@@ -312,7 +317,7 @@ export default {
         captcha: [
           { validator: validateCaptcha, trigger: 'blur' }
         ]
-      }
+      } // 修改绑定手机的校验规则
     }
   },
   methods: {

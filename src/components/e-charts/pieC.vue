@@ -1,6 +1,8 @@
 <template>
   <div class="chart-circle-box">
-    <div :id="echarts" ref="echarts" style="height: 200px"></div>
+    <div :id="echarts"
+      ref="echarts"
+      style="height: 200px"></div>
   </div>
 </template>
 
@@ -9,13 +11,29 @@ export default {
   name: 'pieC',
   data () {
     return {
+      titleText: '' // 图表标题文字
     }
   },
-  props: ['chartList', 'allNum'],
+  props: {
+    returnData: {
+      type: Array,
+      default: null
+    },
+    title: {
+      type: String,
+      default: ''
+    },
+    colorList: {
+      type: Array,
+      default: null
+    }
+  },
+  created () {
+    this.titleText = this.title
+  },
   mounted () {
-    const vm = this
-    vm.$nextTick(() => {
-      vm.setEchart()
+    this.$nextTick(() => {
+      this.setEchart()
     })
   },
   methods: {
@@ -27,7 +45,7 @@ export default {
       // 绘制图表
       let option = {
         title: {
-          text: '全员参与率',
+          text: this.titleText,
           x: 'left',
           textStyle: {
             fontWeight: 400,
@@ -42,9 +60,11 @@ export default {
         legend: {
           width: 170,
           bottom: 10,
-          data: ['已参与', '未参与', '已上报', '未上报', '符合'],
           itemWidth: 10,
           itemHeight: 10
+        },
+        dataset: {
+          source: this.returnData
         },
         series: [
           {
@@ -72,29 +92,29 @@ export default {
                 show: false
               }
             },
-            data: [
-              {value: 0.15, name: '已参与', itemStyle: {color: '#57d9bb'}},
-              {value: 0.65, name: '未参与', itemStyle: {color: '#4c97d9'}},
-              {value: 0.75, name: '已上报', itemStyle: {color: '#ef7ead'}},
-              {value: 0.25, name: '未上报', itemStyle: {color: '#f69b27'}},
-              {value: 0.15, name: '符合', itemStyle: {color: '#4c97d9'}}
-            ]
+            // 重新映射数据
+            encode: {
+              itemName: 'name',
+              value: 'value'
+            }
           }
-        ]
+        ],
+        color: this.colorList
       }
       myChart.resize()
       myChart.setOption(option)
     }
   },
   computed: {
+    // 计算随机数id
     echarts () {
       return 'echarts' + Math.random() * 100000
     }
   },
   watch: {
-    chartList () { // 添加数据监听，父组件传值重绘图表
-      this.setEchart()
-    }
+    // chartList () { // 添加数据监听，父组件传值重绘图表
+    //   this.setEchart()
+    // }
   }
 }
 </script>

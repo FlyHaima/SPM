@@ -32,19 +32,32 @@ export default {
   name: 'columnChart',
   data () {
     return {
-      chartValue: [10, 20, 50, 80],
-      chartxAxis: ['煤气', '炉前', '炉前', '冷却']
+      // chartValue: [10, 20, 50, 80, 10, 20, 50, 80],
+      // chartxAxis: ['煤气', '炉前', '炉前', '冷却', '煤气', '炉前', '炉前', '冷却'],
+      // colorList: [
+      //   ['#fff223', '#0568eb', '#0568eb'],
+      //   ['#f4a028', '#fff223', '#fff223'],
+      //   ['#d13a38', '#f4a028', '#f4a028'],
+      //   ['#f4a028', '#d13a38', '#d13a38'],
+      //   ['#fff223', '#0568eb', '#0568eb'],
+      //   ['#f4a028', '#fff223', '#fff223'],
+      //   ['#d13a38', '#f4a028', '#f4a028'],
+      //   ['#f4a028', '#d13a38', '#d13a38']
+      // ] // d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
     }
   },
-  props: [
-    'returnData'
-  ],
+  props: {
+    chartOptions: {
+      type: Object,
+      default: null
+    }
+  },
   mounted () {
     // this.reduceData()
     this.setEchart()
   },
   created () {
-
+    console.log(this.chartOptions)
   },
   methods: {
     // reduceData () {
@@ -59,7 +72,7 @@ export default {
       // 基于准备好的dom，初始化echarts实例
       let chartDom = document.getElementById('columnA')
       let myChart = this.$echarts.init(chartDom)
-
+      let chartColorList = this.chartOptions.colorList
       // 绘制图表
       let option = {
         color: ['#0568eb'],
@@ -117,23 +130,16 @@ export default {
             data: this.chartValue,
             itemStyle: {
               color: function (params) {
-                // d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
-                let colorList = [
-                  ['#fff223', '#0568eb', '#0568eb'],
-                  ['#f4a028', '#fff223', '#fff223'],
-                  ['#d13a38', '#f4a028', '#f4a028'],
-                  ['#f4a028', '#d13a38', '#d13a38']
-                ]
                 let index = params.dataIndex
-                if (params.dataIndex >= colorList.length) {
-                  index = params.dataIndex = colorList.length
+                if (params.dataIndex >= chartColorList.length) {
+                  index = params.dataIndex = chartColorList.length
                 }
                 return new echarts.graphic.LinearGradient(
-                  0, 0, 0, 1,
+                  1, 0, 0, 1,
                   [
-                    {offset: 0, color: colorList[index][0]},
-                    {offset: 0.5, color: colorList[index][1]},
-                    {offset: 1, color: colorList[index][2]}
+                    {offset: 0, color: chartColorList[index][0]},
+                    {offset: 0.5, color: chartColorList[index][1]},
+                    {offset: 1, color: chartColorList[index][2]}
                   ]
                 )
               }

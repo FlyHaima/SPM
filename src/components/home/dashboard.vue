@@ -51,7 +51,10 @@
                   <span class="info-title-txt">我的消息</span>
                 </div>
                 <div class="info-link">
-                  <a href="/messages" class="info-link-txt">更多</a>
+                  <a
+                    href="javascript:;"
+                    @click=" goMorePage() "
+                    class="info-link-txt">更多</a>
                 </div>
               </div>
               <div class="info-content">
@@ -112,7 +115,7 @@
         </el-row>
       </div>
       <div class="home-showcase">
-        <el-row :gutter="24">
+        <el-row>
           <el-col :span="24">
             <div class="info-panel">
               <div class="info-header">
@@ -121,21 +124,17 @@
                 </div>
               </div>
               <div class="info-content">
-                <el-row :gutter="10">
-                  <el-col :span="5" class="pie-box">
-                    <pie-c></pie-c>
-                  </el-col>
-                  <el-col :span="5" class="pie-box">
-                    <pie-c></pie-c>
-                  </el-col>
-                  <el-col :span="5" class="pie-box">
-                    <pie-c></pie-c>
-                  </el-col>
-                  <el-col :span="5" class="pie-box">
-                    <pie-c></pie-c>
-                  </el-col>
-                  <el-col :span="4" class="pie-box">
-                    <pie-c></pie-c>
+                <el-row type="flex" justify="space-around">
+                  <el-col
+                    v-for = "item in pieOptions"
+                    :key = "item.id"
+                    :span = "4"
+                    class = "pie-box">
+                    <pie-c
+                      :return-data = "item.pieData"
+                      :title = "item.title"
+                      :color-list = "item.colorList"
+                       ></pie-c>
                   </el-col>
                 </el-row>
               </div>
@@ -156,7 +155,7 @@
                 <el-row :gutter="24">
                   <el-col :span="24">
                     <div class="pie-box">
-                      <statistic-e></statistic-e>
+                      <statistic-e :chart-options="chartOptions"></statistic-e>
                     </div>
                   </el-col>
                 </el-row>
@@ -177,12 +176,187 @@ export default {
   name: 'home',
   data () {
     return {
-
+      pieOptions: [
+        {
+          title: '全员参与率',
+          pieData: [
+            {
+              'value': 41.1,
+              'name': '已参与'
+            },
+            {
+              'value': 86.5,
+              'name': '未参与'
+            },
+            {
+              'value': 24.1,
+              'name': '已上报'
+            },
+            {
+              'value': 55.2,
+              'name': '未上报'
+            },
+            {
+              'value': 55.2,
+              'name': '符合'
+            }
+          ],
+          colorList: [
+            '#57d9bb',
+            '#4c97d9',
+            '#ef7ead',
+            '#f69b27',
+            '#4c97d9'
+          ]
+        },
+        {
+          title: '隐患发生率',
+          pieData: [
+            {
+              'value': 41.1,
+              'name': '已参与'
+            },
+            {
+              'value': 86.5,
+              'name': '未参与'
+            }
+          ],
+          colorList: [
+            '#57d9bb',
+            '#4c97d9'
+          ]
+        },
+        {
+          title: '隐患符合率',
+          pieData: [
+            {
+              'value': 41.1,
+              'name': '已参与'
+            },
+            {
+              'value': 86.5,
+              'name': '未参与'
+            },
+            {
+              'value': 24.1,
+              'name': '已上报'
+            },
+            {
+              'value': 55.2,
+              'name': '未上报'
+            }
+          ],
+          colorList: [
+            '#57d9bb',
+            '#4c97d9',
+            '#ef7ead',
+            '#f69b27'
+          ]
+        },
+        {
+          title: '隐患符合率',
+          pieData: [
+            {
+              'value': 24.1,
+              'name': '已上报'
+            },
+            {
+              'value': 55.2,
+              'name': '未上报'
+            },
+            {
+              'value': 55.2,
+              'name': '符合'
+            }
+          ],
+          colorList: [
+            '#ef7ead',
+            '#f69b27',
+            '#4c97d9'
+          ]
+        },
+        {
+          title: '隐患符合率',
+          pieData: [
+            {
+              'value': 41.1,
+              'name': '已参与'
+            },
+            {
+              'value': 86.5,
+              'name': '未参与'
+            },
+            {
+              'value': 24.1,
+              'name': '已上报'
+            },
+            {
+              'value': 55.2,
+              'name': '未上报'
+            },
+            {
+              'value': 55.2,
+              'name': '符合'
+            }
+          ],
+          colorList: [
+            '#57d9bb',
+            '#4c97d9',
+            '#ef7ead',
+            '#f69b27',
+            '#4c97d9'
+          ]
+        }
+      ], // 图饼设置项
+      chartOptions: {
+        chartData: [
+          {
+            'value': 10,
+            'name': '煤气'
+          },
+          {
+            'value': 20,
+            'name': '炉前'
+          },
+          {
+            'value': 40,
+            'name': '炉前2'
+          },
+          {
+            'value': 60,
+            'name': '炉前3'
+          },
+          {
+            'value': 80,
+            'name': '炉前4'
+          }
+        ],
+        // chartValue: [10, 20, 50, 80, 10, 20, 50, 80],
+        // chartxAxis: ['煤气', '炉前', '炉前', '冷却', '煤气', '炉前', '炉前', '冷却'],
+        colorList: [
+          ['#fff223', '#0568eb', '#0568eb'],
+          ['#f4a028', '#fff223', '#fff223'],
+          ['#d13a38', '#f4a028', '#f4a028'],
+          ['#f4a028', '#d13a38', '#d13a38'],
+          ['#fff223', '#0568eb', '#0568eb'],
+          ['#f4a028', '#fff223', '#fff223'],
+          ['#d13a38', '#f4a028', '#f4a028'],
+          ['#f4a028', '#d13a38', '#d13a38']
+        ] // d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
+      }
     }
   },
   components: {
     pieC,
     statisticE
+  },
+  methods: {
+    // 跳转所有信息页面的点击事件
+    goMorePage () {
+      this.$router.push({
+        name: 'messages'
+      })
+    }
   }
 
 }
@@ -302,7 +476,9 @@ export default {
     font-size: 15px;
     color: #888888;
   }
-
+  .info-content{
+    text-align: center;
+  }
   .info-panel{
     margin-top: 10px;
   }
@@ -368,7 +544,7 @@ export default {
     background: #ff1616;
     color: #ffffff;
     width: 30px;
-    padding: 2px 0;
+    padding: 1px 0;
     font-size: 12px;
     border-radius: 2px;
     text-align: center;
