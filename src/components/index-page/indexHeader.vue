@@ -2,16 +2,10 @@
   <div class="index-header">
     <div class="logo inline-block"></div>
     <ul class="header-menu inline-block">
-      <li class="task-menu">
+      <li>
         <div class="btn task-btn"><i></i>我的任务
           <span v-if="taskNum > 0" class="num-conner">{{taskNum > 99 ? '99+' : taskNum}}</span>
         </div>
-        <ul class="task-list">
-          <router-link tag="li" to="/"><el-badge is-dot :hidden='!showTaskA' class="item">待办工作</el-badge></router-link>
-          <router-link tag="li" to="/"><el-badge is-dot :hidden='!showTaskB' class="item">最近处理</el-badge></router-link>
-          <router-link tag="li" to="/"><el-badge is-dot :hidden='!showTaskC' class="item">未处理</el-badge></router-link>
-          <router-link tag="li" to="/"><el-badge is-dot :hidden='!showTaskD' class="item">我发起的</el-badge></router-link>
-        </ul>
       </li>
       <li>
         <div class="btn hard-disk"><i></i>本机硬盘</div>
@@ -22,7 +16,10 @@
         </div>
       </li>
       <li>
-        <div class="btn user-name-btn"><i></i>超级管理员</div>
+        <div class="btn skin-btn"><i></i>皮肤</div>
+      </li>
+      <li>
+        <div class="btn user-name-btn"><i></i>管理员</div>
       </li>
     </ul>
     <div class="quit-btn inline-block" @click="quit" title="退出登录">
@@ -73,21 +70,19 @@ export default {
     position: absolute;
     width: 31px;
     height: 32px;
-    top: 31px;
+    top: 20px;
     right: 52px;
     cursor: pointer;
     background: url('~@/assets/img/header-out-icon.png') no-repeat;
   }
   .header-menu{
     position: absolute;
-    top: 28px;
-    height: 33px;
-    line-height: 33px;
+    top: 14px;
     right: 146px;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    width: 632px;
+    width: 700px;
     &>li{
       position: relative;
       height: 39px;
@@ -153,48 +148,20 @@ export default {
             transform: scale(0.5);
           }
         }
+        &.skin-btn{
+          i{
+            background: url("~@/assets/img/header-icon05.png") no-repeat;
+            background-size: contain;
+            width: 31px;
+            height: 28px;
+          }
+        }
         &.user-name-btn{
           i{
             background: url("~@/assets/img/header-icon04.png") no-repeat;
             background-size: contain;
             width: 27px;
             height: 33px;
-          }
-        }
-      }
-      &.task-menu{
-        .task-list{
-          display: none;
-          position: absolute;
-          left: 3px;
-          top: 39px;
-          background: rgba(29, 88, 141, 0.92);
-          box-shadow: 0 0 6px rgba(0,0,0,0.5);
-          border-radius: 4px;
-          overflow: hidden;
-          li{
-            width: 180px;
-            height: 42px;
-            line-height: 41px;
-            text-align: center;
-            border-bottom: 1px solid #8eacc6;
-            &:hover{
-              color: #9ec7eb;
-            }
-            &:last-child{
-              border-bottom: none;
-            }
-            .item{
-              height: 16px;
-              line-height: 16px;
-              font-size: 16px;
-              margin-top: -3px;
-            }
-          }
-        }
-        &:hover{
-          .task-list{
-            display: block;
           }
         }
       }

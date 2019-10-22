@@ -2,11 +2,11 @@
 <template>
   <div class="index-page" ref="indexPage">
     <el-container class="index-out">
-      <el-header height="92px">
+      <el-header height="72px">
         <index-header :headerMsgNum="messageCount"></index-header>
       </el-header>
       <el-container class="main-container">
-        <el-aside width="320px">
+        <el-aside width="270px">
           <index-aside
             @changeBreadcrumb='changeBreadcrumb'
           ></index-aside>

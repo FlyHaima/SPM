@@ -364,7 +364,6 @@ export default {
   min-height: 100%;
   position: relative;
   background: #247ece;
-  border-top: 1px solid #144f84;
   .aside-menu{
     width: 100%;
     .aside-menu-item{
@@ -373,7 +372,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon00.png') no-repeat;
-            background-size: 23px 23px;
+            background-size: 17px 17px;
             background-position: center center;
           }
         }
@@ -382,7 +381,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon01.png') no-repeat;
-            background-size: 24px 24px;
+            background-size: 16px 16px;
             background-position: center center;
           }
         }
@@ -391,7 +390,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon02.png') no-repeat;
-            background-size: 22px 22px;
+            background-size: 17px 17px;
             background-position: center center;
           }
         }
@@ -400,7 +399,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon03.png') no-repeat;
-            background-size: 23px 21px;
+            background-size: 17px 15px;
             background-position: center center;
           }
         }
@@ -409,7 +408,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon04.png') no-repeat;
-            background-size: 25px 25px;
+            background-size: 18px 18px;
             background-position: center center;
           }
         }
@@ -418,7 +417,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon05.png') no-repeat;
-            background-size: 26px 24px;
+            background-size: 19px 19px;
             background-position: center center;
           }
         }
@@ -427,7 +426,7 @@ export default {
         .title{
           i{
             background: url('../../assets/img/aside-icon06.png') no-repeat;
-            background-size: 24px 23px;
+            background-size: 17px 17px;
             background-position: center center;
           }
         }
@@ -435,9 +434,10 @@ export default {
       .title{
         height: 70px;
         line-height: 70px;
-        padding-left: 90px;
+        padding-left: 60px;
         color: #fff;
-        font-size: 24px;
+        font-size: 18px;
+        font-family: "Source Han Sans CN","PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
         width: 100%;
         position: relative;
         cursor: pointer;
@@ -448,12 +448,15 @@ export default {
           width: 28px;
           position: absolute;
           top: 21px;
-          left: 47px;
+          left: 22px;
         }
         &:hover{
           background: #1d588d;
           border-top: 1px solid #144f84;
           line-height: 69px;
+          i{
+            top: 20px;
+          }
         }
         &::after{
           content: '';
@@ -470,6 +473,9 @@ export default {
           background: #1d588d;
           border-top: 1px solid #144f84;
           line-height: 69px;
+          i{
+            top: 20px;
+          }
           &::after{
             transform: rotate(0);
           }
@@ -496,16 +502,16 @@ export default {
           }
           a{
             display: block;
-            font-size: 18px;
+            font-size: 16px;
             position: relative;
-            padding-left: 126px;
+            padding-left: 96px;
             width: 100%;
             height: 100%;
             color: #8ac8ff;
             .icon-box{
               position: absolute;
               top: 12.5px;
-              left: 87px;
+              left: 57px;
               width: 24px;
               height: 24px;
               vertical-align: middle;
