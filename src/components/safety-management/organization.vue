@@ -1,15 +1,22 @@
 <template>
   <el-container style="width: 100%; height: 100%;" v-loading="pageLoading">
-    <el-header height="74px" style="padding: 0">
+    <el-header height="80px" style="padding: 0">
       <bread-crumb :breadList="breadcrumb">
       </bread-crumb>
     </el-header>
-    <el-main style="padding: 0 18px;">
-      <div class="tree-box">
-        <tree-diagram @open-loading="openLoading"
-                      @close-loading="closeLoading">
-        </tree-diagram>
-      </div>
+    <el-main style="padding: 0 15px;">
+      <el-container style="width: 100%; height: 100%;">
+        <el-aside width="408px">
+          <tree-diagram @open-loading="openLoading"
+                        @close-loading="closeLoading" >
+          </tree-diagram>
+        </el-aside>
+
+        <el-container style="width: 100%; height: 100%;">
+          <div class="container-box"></div>
+        </el-container>
+      </el-container>
+
     </el-main>
   </el-container>
 </template>
@@ -39,8 +46,9 @@ export default {
 </script>
 
 <style scoped>
-.tree-box{
-  width: 418px;
+.container-box{
   height: 100%;
+  width: 100%;
+  background: #fff;
 }
 </style>

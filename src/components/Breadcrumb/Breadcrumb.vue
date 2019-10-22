@@ -23,7 +23,7 @@ export default {
 .bread-crumb{
   height: 50px;
   line-height: 50px;
-  margin: 12px 18px;
+  margin: 15px;
   background: #fff;
   font-size: 16px;
   .el-breadcrumb{
