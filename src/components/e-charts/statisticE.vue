@@ -32,34 +32,44 @@ export default {
   name: 'columnChart',
   data () {
     return {
-      chartValue: [10, 20, 50, 80],
-      chartxAxis: ['煤气', '炉前', '炉前', '冷却']
+      chartValue: [], // y轴坐标值
+      chartxAxis: [], // x轴坐标值
+      colorList: [] // 图表色值 d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
     }
   },
-  props: [
-    'returnData'
-  ],
+  props: {
+    chartData: {
+      type: Array,
+      default: null
+    }
+  },
   mounted () {
-    // this.reduceData()
+    this.reduceData()
     this.setEchart()
   },
   created () {
-
   },
   methods: {
-    // reduceData () {
-    //   this.chartValue = []
-    //   this.chartxAxis = []
-    //   this.returnData.forEach(item => {
-    //     this.chartValue.push(JSON.parse(item).value * 1)
-    //     this.chartxAxis.push(JSON.parse(item).date)
-    //   })
-    // },
+    reduceData () {
+      this.chartData.forEach(item => {
+        if (item.value <= 25) {
+          this.colorList.push(['#d13a38', '#0568eb'])
+        } else if (item.value > 25 && item.value <= 50) {
+          this.colorList.push(['#f4a028', '#fff223', '#fff223', '#0568eb'])
+        } else if (item.value > 50 && item.value <= 75) {
+          this.colorList.push(['#d13a38', '#f4a028', '#f4a028', '#0568eb'])
+        } else if (item.value > 75 && item.value <= 100) {
+          this.colorList.push(['#d13a38', '#0568eb'])
+        }
+        this.chartValue.push(item.value)
+        this.chartxAxis.push(item.name)
+      })
+    },
     setEchart (opt) {
       // 基于准备好的dom，初始化echarts实例
       let chartDom = document.getElementById('columnA')
       let myChart = this.$echarts.init(chartDom)
-
+      let chartColorList = this.colorList
       // 绘制图表
       let option = {
         color: ['#0568eb'],
@@ -69,7 +79,7 @@ export default {
             type: 'line' // 默认为直线，可选为：'line' | 'shadow'
           },
           formatter: function (params) {
-            return params[0].axisValue + '<br>' + params[0].data
+            return params[0].axisValue + '<br>' + params[0].data + '%'
           }
         },
         grid: {
@@ -102,6 +112,9 @@ export default {
                 color: '#1f668e'
               }
             },
+            axisLabel: {
+              formatter: '{value} %'
+            },
             // 坐标轴内线的样式
             splitLine: {
               lineStyle: {
@@ -117,23 +130,17 @@ export default {
             data: this.chartValue,
             itemStyle: {
               color: function (params) {
-                // d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
-                let colorList = [
-                  ['#fff223', '#0568eb', '#0568eb'],
-                  ['#f4a028', '#fff223', '#fff223'],
-                  ['#d13a38', '#f4a028', '#f4a028'],
-                  ['#f4a028', '#d13a38', '#d13a38']
-                ]
                 let index = params.dataIndex
-                if (params.dataIndex >= colorList.length) {
-                  index = params.dataIndex = colorList.length
+                if (params.dataIndex >= chartColorList.length) {
+                  index = params.dataIndex = chartColorList.length
                 }
                 return new echarts.graphic.LinearGradient(
                   0, 0, 0, 1,
                   [
-                    {offset: 0, color: colorList[index][0]},
-                    {offset: 0.5, color: colorList[index][1]},
-                    {offset: 1, color: colorList[index][2]}
+                    {offset: 0, color: chartColorList[index][0]},
+                    {offset: 1, color: chartColorList[index][1]}
+                    // {offset: 0.6, color: chartColorList[index][2]},
+                    // {offset: 1, color: chartColorList[index][3]}
                   ]
                 )
               }
@@ -141,13 +148,12 @@ export default {
           }
         ]
       }
-
       myChart.setOption(option)
     }
   },
   watch: {
     returnData () { // 添加数据监听，父组件传值重绘图表
-      // this.reduceData()
+      this.reduceData()
       this.setEchart()
     }
   }
@@ -162,6 +168,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+  text-align: left;
   &.legend-list-vertical{
     left: auto;
     right: 0;
@@ -201,7 +208,6 @@ export default {
     }
   }
 }
-
 .legend-text{
   display: inline-block;
   font-size: 12px;

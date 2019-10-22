@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="view-box">
     <div class="view-box-content">
       <div class="basic-box">
@@ -61,15 +61,21 @@
         <div class="user-account-header">
           <div class="account-header-left">
             <span class="account-header-label">您当前账号安全程度</span>
-            <span class="account-header-value">
-              <el-progress
-                :class="computedClass"
-                :stroke-width="16"
-                :percentage="60"
-                :format="format"
-                :color="customColors">
-              </el-progress>
-            </span>
+            <div class="account-header-value">
+              <div class="password-progress">
+                <div class="password-progress-bar">
+                  <div
+                    class="password-progress-bar--fill"
+                    :data-score="passwordLevel"
+                  ></div>
+                </div>
+                <div class="password-level-text">
+                  <span class="password-level-label">安全级别：</span>
+                  <span class="password-level-value" :data-score="passwordLevel">{{passwordLevelText}}</span>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
         <div class="user-account-list">
@@ -124,7 +130,7 @@
             </div>
             <div class="user-account-operation">
               <div class="user-account-operation-item">
-                <span class="operation-txt operation-txt-link">注销账号</span>
+                <a href="javascript:;" class="operation-txt operation-txt-link">注销账号</a>
               </div>
             </div>
           </div>
@@ -134,43 +140,90 @@
         <div class="form-tips">
           修改密码提升密码强度，可以保障账号的安全性
         </div>
-        <el-row>
-          <el-col :offset="6" :span="12">
-            <el-form
-              :model="passwordForm"
-              ref="passwordForm"
-              :rules= "rules"
-              size="mini"
-              label-width="100px"
-            >
-              <el-form-item label="旧密码：" prop="passwordOld">
-                <el-input
-                  type="password"
-                  v-model="passwordForm.passwordOld"
-                  autocomplete="off"
-                  placeholder="请输入旧密码"></el-input>
-              </el-form-item>
-              <el-form-item label="新密码：" prop="passwordNew">
-                <el-input
-                  type="password"
-                  v-model="passwordForm.passwordNew"
-                  autocomplete="off"
-                  placeholder="请输入新密码"></el-input>
-              </el-form-item>
-              <el-form-item label="确认密码：" prop="passwordConfirm">
-                <el-input
-                  type="password"
-                  v-model="passwordForm.passwordConfirm"
-                  autocomplete="off"
-                  placeholder="请再次输入新密码"></el-input>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
-
+        <div class="form-modal">
+          <el-form
+            :model="passwordForm"
+            ref="passwordForm"
+            :rules="rulesPassword"
+            size="mini"
+            label-width="100px"
+          >
+            <el-form-item label="旧密码：" prop="passwordOld">
+              <el-input
+                type="password"
+                v-model="passwordForm.passwordOld"
+                autocomplete="off"
+                placeholder="请输入旧密码"
+                show-password
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="新密码：" prop="passwordNew">
+              <el-input
+                type="password"
+                v-model="passwordForm.passwordNew"
+                autocomplete="off"
+                placeholder="请输入新密码"
+                show-password
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码：" prop="passwordConfirm">
+              <el-input
+                type="password"
+                v-model="passwordForm.passwordConfirm"
+                autocomplete="off"
+                placeholder="请再次输入新密码"
+                show-password
+                clearable></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitPasswordForm()">保 存</el-button>
           <el-button @click="dialogFormPasswordVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog title="修改绑定手机" :visible.sync="dialogFormTelVisible">
+        <div class="form-modal">
+          <el-form
+            :model="telForm"
+            ref="telForm"
+            :rules="rulesTel"
+            size="mini"
+            label-width="110px"
+            class="demo-dynamic"
+          >
+            <el-form-item label="原手机号码：" prop="telOld">
+              <el-input
+                type="text"
+                v-model="telForm.telOld"
+                autocomplete="off"
+                placeholder="请输入原手机号码"
+                :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="修改绑定手机：" prop="telNew">
+              <el-input
+                type="number"
+                v-model="telForm.telNew"
+                autocomplete="off"
+                placeholder="请输入修改绑定手机"
+                clearable></el-input>
+              <el-button
+                type="primary">发送</el-button>
+            </el-form-item>
+            <el-form-item label="验证码：" prop="captcha">
+              <el-input
+                type="number"
+                v-model="telForm.captcha"
+                autocomplete="off"
+                placeholder="请输入验证码"
+                clearable
+                class="input-captcha"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitTelForm()">保 存</el-button>
+          <el-button @click="dialogFormTelVisible = false">取 消</el-button>
         </div>
       </el-dialog>
       <el-row :gutter="24">
@@ -187,26 +240,26 @@
 export default {
   name: 'basic',
   data () {
+    // 校验旧密码
     var validatePassOld = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入旧密码'))
       } else {
-        if (this.passwordForm.passwordOld !== '') {
-          this.$refs.passwordForm.validateField('passwordOld')
-        }
         callback()
       }
     }
+    // 校验新密码
     var validatePassNew = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入新密码'))
       } else {
-        if (this.passwordForm.passwordNew !== '') {
-          this.$refs.passwordForm.validateField('passwordNew')
+        if (this.passwordForm.passwordConfirm !== '') {
+          this.$refs.passwordForm.validateField('passwordConfirm')
         }
         callback()
       }
     }
+    // 再次确认密码的校验
     var validatePassConfirm = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
@@ -216,14 +269,24 @@ export default {
         callback()
       }
     }
+    // 校验修改的绑定手机号码
+    var validateTelNew = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入修改绑定手机'))
+      } else {
+        callback()
+      }
+    }
+    // 校验验证码
+    var validateCaptcha = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入验证码'))
+      } else {
+        callback()
+      }
+    }
     return {
-      customColors: [
-        {color: '#f56c6c', percentage: 20},
-        {color: '#e6a23c', percentage: 40},
-        {color: '#d13a38', percentage: 60},
-        {color: '#d13a38', percentage: 80},
-        {color: 'orange', percentage: 100}
-      ], // 进度条自定义颜色
+      passwordLevel: '', // 密码强度级别
       dialogFormPasswordVisible: false, // 修改密码弹框显示开关
       dialogFormTelVisible: false, // 修改绑定手机号弹框显示开关
       passwordForm: {
@@ -231,7 +294,12 @@ export default {
         passwordNew: '', // 新密码
         passwordConfirm: '' // 确认新密码
       }, // 修改密码form
-      rules: {
+      telForm: {
+        telOld: '', // 原手机号码
+        telNew: '', // 新手机号码
+        captcha: '' // 验证码
+      }, // 修改绑定手机
+      rulesPassword: {
         passwordOld: [
           { validator: validatePassOld, trigger: 'blur' }
         ],
@@ -241,10 +309,22 @@ export default {
         passwordConfirm: [
           { validator: validatePassConfirm, trigger: 'blur' }
         ]
-      }
+      }, // 修改密码的校验规则
+      rulesTel: {
+        telNew: [
+          { validator: validateTelNew, trigger: 'blur' }
+        ],
+        captcha: [
+          { validator: validateCaptcha, trigger: 'blur' }
+        ]
+      } // 修改绑定手机的校验规则
     }
   },
+  created () {
+    this.passwordLevel = '3'
+  },
   methods: {
+    // 提交修改密码事件
     submitPasswordForm () {
       this.$refs.passwordForm.validate((valid) => {
         if (valid) {
@@ -256,8 +336,17 @@ export default {
         }
       })
     },
-    format (percentage) {
-      return percentage === 60 ? `安全级别：中` : `${percentage}%`
+    // 提交修改绑定手机事件
+    submitTelForm () {
+      this.$refs.telForm.validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          this.dialogFormTelVisible = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     // 修改登录密码
     handleEditPassword () {
@@ -271,6 +360,15 @@ export default {
   computed: {
     computedClass () {
       return {'user-progress': true}
+    },
+    passwordLevelText () {
+      if (this.passwordLevel === '1') {
+        return '低'
+      } else if (this.passwordLevel === '2') {
+        return '中'
+      } else {
+        return '高'
+      }
     }
   }
 }
@@ -361,7 +459,6 @@ export default {
   }
   .account-header-value{
     display: inline-block;
-    width: 300px;
     margin-left: 30px;
   }
   .user-account-list{
@@ -433,22 +530,6 @@ export default {
     margin-bottom: 40px;
   }
   // 修改组件样式
-  .user-progress >>> {
-    .el-progress-bar{
-      width: 78%;
-    }
-    .el-progress__text{
-      color: #f19729 !important;
-    }
-    .el-progress-bar__outer{
-      border-radius: 2px;
-      background: #d1d1d1;
-      margin-right: 30px;
-    }
-    .el-progress-bar__inner{
-      border-radius: 2px;
-    }
-  }
   .el-dialog__wrapper >>> {
     .el-dialog__header{
       background: $colorPrimary;
@@ -460,4 +541,89 @@ export default {
       color: #ffffff;
     }
   }
+  .form-modal >>>{
+    .el-form{
+      width: 420px;
+      margin: 0 auto;
+    }
+    .el-input{
+      width: 240px;
+    }
+    .input-captcha{
+      width: 140px;
+    }
+  }
+  .password-progress{
+    display: flex;
+    align-items: center;
+  }
+  .password-progress-bar{
+    width: 160px;
+    position: relative;
+    height: 6px;
+    background: #dddddd;
+    border-radius: 2px;
+  }
+  .password-progress-bar::before,
+  .password-progress-bar::after{
+    content: '';
+    height: inherit;
+    background: transparent;
+    display: block;
+    border-color: #FFF;
+    border-style: solid;
+    border-width: 0 5px 0 5px;
+    position: absolute;
+    z-index: 10;
+  }
+  .password-progress-bar::before{
+    left: 30%;
+  }
+  .password-progress-bar::after{
+    right: 30%;
+  }
+
+  .password-progress-bar--fill{
+    background: transparent;
+    height: inherit;
+    position: absolute;
+    width: 0;
+    border-radius: inherit;
+    transition: width 0.5s ease-in-out, background 0.25s;
+  }
+  .password-progress-bar--fill[data-score='1'] {
+    background: #cf3e3a;
+    width: 33.33%;
+  }
+
+  .password-progress-bar--fill[data-score='2'] {
+    background: #ed852b;
+    width: 66.66%;
+  }
+
+  .password-progress-bar--fill[data-score='3'] {
+    background: #46f42b;
+    width: 99.99%;
+  }
+  .password-level-text{
+    margin-left: 40px;
+  }
+  .password-level-label{
+    display: inline-block;
+    vertical-align: top;
+  }
+  .password-level-value{
+    display: inline-block;
+    vertical-align: top;
+  }
+  .password-level-value[data-score='1']{
+    color: #cf3e3a;
+  }
+  .password-level-value[data-score='2']{
+    color: #ed852b;
+  }
+  .password-level-value[data-score='3']{
+    color: #46f42b;
+  }
+
 </style>
