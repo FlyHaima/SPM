@@ -5,7 +5,7 @@
       <el-header height="72px">
         <index-header :headerMsgNum="messageCount"></index-header>
       </el-header>
-      <el-container>
+      <el-container class="main-container">
         <el-aside width="270px">
           <index-aside
             @changeBreadcrumb='changeBreadcrumb'
@@ -61,5 +61,8 @@ export default {
   .el-header{
     width: 100%;
   }
+}
+.main-container{
+  height: calc(100vh - 110px);
 }
 </style>
