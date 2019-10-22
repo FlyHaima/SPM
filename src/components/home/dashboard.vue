@@ -155,7 +155,7 @@
                 <el-row :gutter="24">
                   <el-col :span="24">
                     <div class="pie-box">
-                      <statistic-e :chart-options="chartOptions"></statistic-e>
+                      <statistic-e :chart-data="chartData"></statistic-e>
                     </div>
                   </el-col>
                 </el-row>
@@ -308,42 +308,32 @@ export default {
           ]
         }
       ], // 图饼设置项
-      chartOptions: {
-        chartData: [
-          {
-            'value': 10,
-            'name': '煤气'
-          },
-          {
-            'value': 20,
-            'name': '炉前'
-          },
-          {
-            'value': 40,
-            'name': '炉前2'
-          },
-          {
-            'value': 60,
-            'name': '炉前3'
-          },
-          {
-            'value': 80,
-            'name': '炉前4'
-          }
-        ],
-        // chartValue: [10, 20, 50, 80, 10, 20, 50, 80],
-        // chartxAxis: ['煤气', '炉前', '炉前', '冷却', '煤气', '炉前', '炉前', '冷却'],
-        colorList: [
-          ['#fff223', '#0568eb', '#0568eb'],
-          ['#f4a028', '#fff223', '#fff223'],
-          ['#d13a38', '#f4a028', '#f4a028'],
-          ['#f4a028', '#d13a38', '#d13a38'],
-          ['#fff223', '#0568eb', '#0568eb'],
-          ['#f4a028', '#fff223', '#fff223'],
-          ['#d13a38', '#f4a028', '#f4a028'],
-          ['#f4a028', '#d13a38', '#d13a38']
-        ] // d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
-      }
+      chartData: [
+        {
+          'value': '25',
+          'name': '煤气'
+        },
+        {
+          'value': '50',
+          'name': '炉前'
+        },
+        {
+          'value': '75',
+          'name': '炉前2'
+        },
+        {
+          'value': '60',
+          'name': '炉前3'
+        },
+        {
+          'value': '80',
+          'name': '炉前4'
+        },
+        {
+          'value': '100',
+          'name': '炉前5'
+        }
+      ]
     }
   },
   components: {
@@ -404,6 +394,7 @@ export default {
     display: flex;
     align-items: center;
     padding: 0 2px;
+    cursor: pointer;
   }
   .entrance-btn-txt{
     font-size: 18px;
@@ -429,6 +420,7 @@ export default {
     text-align: center;
     margin-bottom: 62px;
     font-size: 0;
+    cursor: pointer;
     &:nth-child(1){
       .entrance-menu-icon{
         background-image: url('../../assets/img/home/icon-menu01.png');
@@ -506,7 +498,7 @@ export default {
   .list-info{
     padding-top: 20px;
     max-height: 224px;
-    overflow-y: scroll;
+    // overflow-y: scroll;
   }
   .list-info-item{
     display: flex;
@@ -514,6 +506,7 @@ export default {
     position: relative;
     font-size: 14px;
     padding: 5px 0px 5px 16px;
+    cursor: pointer;
     &::after{
       content: "";
       position: absolute;
@@ -539,8 +532,8 @@ export default {
   }
   .list-info-tag{
     position: absolute;
-    right: -28px;
-    top: -24px;
+    right: -24px;
+    top: -16px;
     background: #ff1616;
     color: #ffffff;
     width: 30px;
@@ -548,12 +541,13 @@ export default {
     font-size: 12px;
     border-radius: 2px;
     text-align: center;
+    transform: scale(0.9);
     &::after{
       display: inline-block;
       content: "";
       position: absolute;
       left: 6px;
-      bottom: -8px;
+      bottom: -6px;
       border: 4px solid;
       border-color: #ff1616 transparent transparent #ff1616;
     }
