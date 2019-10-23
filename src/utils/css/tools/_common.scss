@@ -1,0 +1,61 @@
+#app{
+  height: 100%;
+  position: relative;
+}
+// 全局样式,Vue编辑结束前不显示
+[v-cloak] {
+	display: none;
+}
+
+%ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+%ellipsis-mutil {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis {
+  @extend %ellipsis;
+}
+
+.ellipsis2,
+.ellipsis3 {
+  @extend %ellipsis-mutil;
+}
+
+.ellipsis2 {
+  -webkit-line-clamp: 2;
+}
+
+.ellipsis3 {
+  -webkit-line-clamp: 3;
+}
+
+.lf{
+  float: left;
+}
+.rt{
+  float: right;
+}
+.flex{
+  display: flex;
+}
+.inline-block{
+  display: inline-block;
+}
+.block{
+  display: block;
+}
+
+.container{
+  width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+

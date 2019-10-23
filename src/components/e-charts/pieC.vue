@@ -120,5 +120,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/common.scss';
 </style>

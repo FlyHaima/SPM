@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../utils/css/common.scss';
+@import '../utils/css/style.scss';
 
 .main-page-wrap{
   width: 100%;
