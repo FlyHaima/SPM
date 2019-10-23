@@ -6,7 +6,8 @@
     </el-header>
     <el-main class="inner-main-container">
       <el-tabs type="border-card" class="height-100">
-        <el-tab-pane label="组织机构">
+        <el-tab-pane>
+          <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram @open-loading="openLoading"
@@ -19,7 +20,13 @@
             </el-main>
           </el-container>
         </el-tab-pane>
-        <el-tab-pane label="领导小组">配置管理</el-tab-pane>
+
+        <el-tab-pane label="领导小组">配置管理
+          <span slot="label">组织机构</span>
+          <el-container class="inner-main-content">
+          </el-container>
+        </el-tab-pane>
+
         <el-tab-pane label="工作小组">角色管理</el-tab-pane>
       </el-tabs>
     </el-main>
@@ -51,46 +58,51 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/.inner-page-container{
+.inner-page-container{
+  height: 100%;
   .el-header{
     padding: 0;
   }
   .el-main{
     padding: 0;
   }
-  .inner-main-container{
-    .el-tabs--border-card{
-      border-color: #eeeeee;
+}
+/*  el-tab */
+/deep/.inner-main-container{
+  .el-tabs--border-card{
+    position: relative;
+    border-color: #eeeeee;
+  }
+  .el-tabs__nav{
+    height: 50px;
+  }
+  .el-tabs__item{
+    height: 51px;
+    line-height: 50px;
+    font-size: 16px;
+    color: #777;
+    &.is-active{
+      color: #409EFF;
+      border-top: 2px solid #409EFF;
     }
-    .el-tabs__nav{
-      height: 50px;
-    }
-    .el-tabs__item{
-      height: 51px;
-      line-height: 50px;
-      font-size: 16px;
-      color: #777;
-      &.is-active{
-        color: #409EFF;
-        border-top: 2px solid #409EFF;
-      }
-    }
-    .el-tabs--border-card>.el-tabs__content{
-      padding: 0;
-    }
-    .el-tabs__content{
-      height: calc(100vh - 215px);
-      .el-tab-pane{
+  }
+  .el-tabs__content{
+    height: 100%;
+    padding: 50px 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    .el-tab-pane{
+      height: 100%;
+      .inner-main-content{
+        background: #f2f2f2;
+        width: 100%;
         height: 100%;
-        .inner-main-content{
-          background: #f2f2f2;
-          width: 100%;
-          height: 100%;
-        }
       }
     }
   }
 }
+
 .container-box{
   height: 100%;
   width: 100%;

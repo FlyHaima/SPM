@@ -20,8 +20,8 @@
       </div>
       <div class="slide-btns">
         <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button>
-        <el-button type="text" @click="openAll" v-show="openState">展开</el-button>
-        <el-button type="text" @click="closeAll" v-show="!openState">收起</el-button>
+        <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
+        <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
       </div>
     </div>
     <div class="tree-box">
@@ -262,6 +262,7 @@ export default {
     padding: 56px 10px 6px 10px;
     overflow: auto;
     .custom-tree-node{
+      font-size: 16px;
       display: inline-block;
       width: 15em;
       overflow: hidden;
