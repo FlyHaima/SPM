@@ -51,48 +51,11 @@
 <script>
 export default {
   name: 'treeDiagram',
+  props: ['treeData', 'treeName'],
   data () {
     return {
       hasUpload: true,
-      treeName: '排查机构',
       filterText: '',
-      treeData: [
-        {
-          id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'AAA',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组'
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组'
-                }, {
-                  id: 1060122,
-                  label: '生产B组'
-                }
-              ]
-            }
-          ]
-        }
-      ],
       defaultProps: {
         children: 'children',
         label: 'label'
