@@ -1,7 +1,7 @@
 <!-- index页面 -->
 <template>
-  <div class="index-page" ref="indexPage">
-    <el-container class="index-out">
+  <div class="main-page-wrap" ref="indexPage">
+    <el-container class="main-page-container">
       <el-header height="72px">
         <index-header :headerMsgNum="messageCount"></index-header>
       </el-header>
@@ -11,7 +11,7 @@
             @changeBreadcrumb='changeBreadcrumb'
           ></index-aside>
         </el-aside>
-        <el-main>
+        <el-main class="main-content">
           <router-view @refresh="refreshBaseInfo()"></router-view>
         </el-main>
       </el-container>
@@ -50,19 +50,22 @@ export default {
 <style scoped lang="scss">
 @import '../utils/css/common.scss';
 
-.index-page{
+.main-page-wrap{
   width: 100%;
   height: 100%;
   min-width: 1880px;
-  .index-out{
-    width: 100%;
-    height: 100%;
-  }
   .el-header{
     width: 100%;
   }
 }
+.main-page-container{
+    width: 100%;
+    height: 100%;
+  }
 .main-container{
   height: calc(100vh - 110px);
+}
+.main-content{
+  padding: 15px 15px 0;
 }
 </style>

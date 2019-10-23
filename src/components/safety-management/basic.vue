@@ -379,6 +379,9 @@ export default {
   .color-primary{
     color: $colorPrimary;
   }
+  .view-box{
+    background: #ffffff;
+  }
   .basic-box{
     padding: 50px 40px 40px 30px;
     border-bottom: 4px solid $colorBorder;
