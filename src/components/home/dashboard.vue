@@ -354,6 +354,9 @@ export default {
 
 <style scoped lang="scss">
   $colorPrimary: #409eff;
+  .view-box{
+    background: #ffffff;
+  }
   .home-header{
     padding: 0 44px;
     line-height: 66px;

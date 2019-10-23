@@ -1,20 +1,20 @@
 <template>
-  <el-container style="width: 100%; height: 100%;" v-loading="pageLoading">
-    <el-header height="80px" style="padding: 0">
+  <el-container class="inner-page-container" v-loading="pageLoading">
+    <el-header class="inner-header">
       <bread-crumb :breadList="breadcrumb">
       </bread-crumb>
     </el-header>
-    <el-main style="padding: 0 15px;">
-      <el-container style="width: 100%; height: 100%;">
-        <el-aside width="408px">
+    <el-main class="inner-main-container">
+      <el-container class="inner-main-content">
+        <el-aside class="inner-aside" width="408px">
           <tree-diagram @open-loading="openLoading"
                         @close-loading="closeLoading" >
           </tree-diagram>
         </el-aside>
 
-        <el-container style="width: 100%; height: 100%;">
+        <el-main class="inner-content">
           <div class="container-box"></div>
-        </el-container>
+        </el-main>
       </el-container>
 
     </el-main>
@@ -47,8 +47,29 @@ export default {
 
 <style scoped>
 .container-box{
-  height: 100%;
+  height: 800px;
   width: 100%;
   background: #fff;
+}
+.inner-page-container{
+  width: 100%;
+  height: 100%;
+}
+.inner-header{
+  padding: 0;
+  height: auto !important;
+}
+.inner-main-container{
+  margin-top: 15px;
+  padding: 0;
+}
+.inner-main-content{
+  width: 100%;
+  height: 100%;
+}
+.inner-content{
+  width: 100%;
+  height: 100%;
+  padding: 0;
 }
 </style>
