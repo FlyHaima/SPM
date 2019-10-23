@@ -21,13 +21,17 @@
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane label="领导小组">配置管理
-          <span slot="label">组织机构</span>
+        <el-tab-pane>
+          <span slot="label">配置管理</span>
           <el-container class="inner-main-content">
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane label="工作小组">角色管理</el-tab-pane>
+        <el-tab-pane>
+          <span slot="label">角色管理</span>
+          <el-container class="inner-main-content">
+          </el-container>
+        </el-tab-pane>
       </el-tabs>
     </el-main>
   </el-container>
