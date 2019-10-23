@@ -89,7 +89,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'utils/css/common.scss';
+@import 'utils/css/style.scss';
 html,body,#app{
   height: 100%;
   width: 100%;
