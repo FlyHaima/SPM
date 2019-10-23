@@ -19,8 +19,8 @@
         </el-input>
       </div>
       <div class="slide-btns">
-        <el-button type="text" @click="openAll">展开</el-button>
-        <el-button type="text" @click="closeAll" style="margin-left: 0;">收起</el-button>
+        <el-button type="text" @click="openAll" v-show="openState">展开</el-button>
+        <el-button type="text" @click="closeAll" v-show="!openState">收起</el-button>
       </div>
     </div>
     <div class="tree-box">
@@ -95,17 +95,20 @@ export default {
         children: 'children',
         label: 'label'
       },
+      openState: false,
       level: 3,
       addBro: false
     }
   },
   methods: {
     openAll () {
+      this.openState = !this.openState
       for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
         this.$refs.tree.store._getAllNodes()[i].expanded = true
       }
     },
     closeAll () {
+      this.openState = !this.openState
       for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
         this.$refs.tree.store._getAllNodes()[i].expanded = false
       }
