@@ -374,13 +374,11 @@ export default {
     background-image: url('../../assets/img/home/icon-symbol01.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    vertical-align: top;
   }
   .home-header-txt{
     font-size: 16px;
     line-height: 13px;
     margin-left: 26px;
-    vertical-align: top;
     color: #404040;
   }
 
