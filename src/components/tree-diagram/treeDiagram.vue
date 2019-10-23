@@ -19,6 +19,7 @@
         </el-input>
       </div>
       <div class="slide-btns">
+        <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button>
         <el-button type="text" @click="openAll" v-show="openState">展开</el-button>
         <el-button type="text" @click="closeAll" v-show="!openState">收起</el-button>
       </div>
@@ -52,6 +53,7 @@ export default {
   name: 'treeDiagram',
   data () {
     return {
+      hasUpload: true,
       treeName: '排查机构',
       filterText: '',
       treeData: [
@@ -101,6 +103,10 @@ export default {
     }
   },
   methods: {
+    openUpload () {},
+    uploadExcel () {
+
+    },
     openAll () {
       this.openState = !this.openState
       for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {

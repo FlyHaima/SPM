@@ -5,18 +5,23 @@
       </bread-crumb>
     </el-header>
     <el-main class="inner-main-container">
-      <el-container class="inner-main-content">
-        <el-aside class="inner-aside" width="408px">
-          <tree-diagram @open-loading="openLoading"
-                        @close-loading="closeLoading" >
-          </tree-diagram>
-        </el-aside>
+      <el-tabs type="border-card" class="height-100">
+        <el-tab-pane label="组织机构">
+          <el-container class="inner-main-content">
+            <el-aside class="inner-aside" width="408px">
+              <tree-diagram @open-loading="openLoading"
+                            @close-loading="closeLoading" >
+              </tree-diagram>
+            </el-aside>
 
-        <el-main class="inner-content">
-          <div class="container-box"></div>
-        </el-main>
-      </el-container>
-
+            <el-main class="inner-content">
+              <div class="container-box"></div>
+            </el-main>
+          </el-container>
+        </el-tab-pane>
+        <el-tab-pane label="领导小组">配置管理</el-tab-pane>
+        <el-tab-pane label="工作小组">角色管理</el-tab-pane>
+      </el-tabs>
     </el-main>
   </el-container>
 </template>
@@ -45,23 +50,51 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/deep/.inner-page-container{
+  .el-header{
+    padding: 0;
+  }
+  .el-main{
+    padding: 0;
+  }
+  .inner-main-container{
+    .el-tabs--border-card{
+      border-color: #eeeeee;
+    }
+    .el-tabs__nav{
+      height: 50px;
+    }
+    .el-tabs__item{
+      height: 51px;
+      line-height: 50px;
+      font-size: 16px;
+      color: #777;
+      &.is-active{
+        color: #409EFF;
+        border-top: 2px solid #409EFF;
+      }
+    }
+    .el-tabs--border-card>.el-tabs__content{
+      padding: 0;
+    }
+    .el-tabs__content{
+      height: calc(100vh - 215px);
+      .el-tab-pane{
+        height: 100%;
+        .inner-main-content{
+          background: #f2f2f2;
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
 .container-box{
-  height: 800px;
+  height: 100%;
   width: 100%;
   background: #fff;
-}
-.inner-page-container{
-  width: 100%;
-  height: 100%;
-}
-.inner-header{
-  padding: 0;
-  height: auto !important;
-}
-.inner-main-container{
-  margin-top: 15px;
-  padding: 0;
 }
 .inner-main-content{
   width: 100%;
@@ -72,4 +105,5 @@ export default {
   height: 100%;
   padding: 0;
 }
+
 </style>
