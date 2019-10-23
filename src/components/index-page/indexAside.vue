@@ -359,11 +359,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '../../utils/css/style.scss';
 .index-aside{
   width: 100%;
   min-height: 100%;
   position: relative;
-  background: #247ece;
+  background: $bgAside;
   .aside-menu{
     width: 100%;
     .aside-menu-item{
@@ -435,7 +436,7 @@ export default {
         height: 70px;
         line-height: 70px;
         padding-left: 60px;
-        color: #fff;
+        color: $colorAside;
         font-size: 18px;
         font-family: "Source Han Sans CN","PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
         width: 100%;
@@ -451,8 +452,8 @@ export default {
           left: 22px;
         }
         &:hover{
-          background: #1d588d;
-          border-top: 1px solid #144f84;
+          background: $bgAsideMenuHover;
+          border-top: 1px solid $borderAsideMenu;
           line-height: 69px;
           i{
             top: 20px;
@@ -470,8 +471,8 @@ export default {
           transform: rotate(90deg);
         }
         &.active{
-          background: #1d588d;
-          border-top: 1px solid #144f84;
+          background: $bgAsideMenuHover;
+          border-top: 1px solid $borderAsideMenu;
           line-height: 69px;
           i{
             top: 20px;
@@ -487,15 +488,15 @@ export default {
         }
       }
       .menu-items{
-        border-top: 1px solid #114d77;
+        border-top: 1px solid $borderAsideSubMenu;
         background: #1779a4;
         li{
           line-height: 50px;
           color: #fff;
-          background: #1d588d;
+          background: $bgAsideSubMenu;
           cursor: pointer;
           &:hover{
-            background: #104676;
+            background: $bgAsideSubMenuHover;
             a{
               color: #fff;
             }
@@ -507,7 +508,7 @@ export default {
             padding-left: 96px;
             width: 100%;
             height: 100%;
-            color: #8ac8ff;
+            color: $colorAsideSubMenu;
             .icon-box{
               position: absolute;
               top: 12.5px;
@@ -519,7 +520,7 @@ export default {
             }
             .icon{
               position: absolute;
-              filter: drop-shadow(24px 0 #8ac8ff);
+              filter: drop-shadow(24px 0 $colorAsideSubMenu);
               top: 0;
               left: -24px;
               width: 24px;
@@ -563,9 +564,9 @@ export default {
             }
             &.active{
               color: #fff;
-              background: #104676;
+              background: $bgAsideSubMenuHover;
               .icon{
-                filter: drop-shadow(24px 0 #8ac8ff);
+                filter: drop-shadow(24px 0 $colorAsideSubMenu);
                 overflow: hidden;
                 left: 0;
               }
@@ -573,7 +574,7 @@ export default {
             &:hover{
               color: #fff;
               .icon{
-                filter: drop-shadow(24px 0 #8ac8ff);
+                filter: drop-shadow(24px 0 $colorAsideSubMenu);
                 overflow: hidden;
                 left: 0;
               }

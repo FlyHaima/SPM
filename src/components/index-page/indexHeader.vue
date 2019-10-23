@@ -50,11 +50,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '../../utils/css/style.scss';
+
 .index-header{
   width: 100%;
   height: 100%;
   position: relative;
-  background: #1a6fba;
+  background: $bgHeader;
   text-align: right;
   .logo{
     position: absolute;
