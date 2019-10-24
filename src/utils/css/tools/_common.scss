@@ -45,6 +45,15 @@
 .text-right{
   text-align: right;
 }
+.color-primary{
+  color: $colorPrimary;
+}
+.color-warning{
+  color: $colorOrange;
+}
+.color-danger{
+  color: $colorRed;
+}
 .lf{
   float: left;
 }

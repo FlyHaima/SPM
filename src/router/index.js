@@ -79,6 +79,13 @@ const routes = [
           import(`@/components/home/messagesDetails.vue`)
       },
       {
+        path: '/organigram',
+        name: 'organigram',
+        title: '组织机构图',
+        component: () =>
+          import(`@/components/organigram/organigram.vue`)
+      },
+      {
         path: '/organization',
         name: 'Organization',
         title: '组织机构',
