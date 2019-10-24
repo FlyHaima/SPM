@@ -51,10 +51,9 @@
 <script>
 export default {
   name: 'treeDiagram',
-  props: ['treeData', 'treeName'],
+  props: ['treeData', 'treeName', 'hasUpload'],
   data () {
     return {
-      hasUpload: true,
       filterText: '',
       defaultProps: {
         children: 'children',
@@ -209,6 +208,7 @@ export default {
       left: 126px;
       top: 0;
       width: 180px;
+      margin-top: -1px;
     }
     .slide-btns{
       position: absolute;
