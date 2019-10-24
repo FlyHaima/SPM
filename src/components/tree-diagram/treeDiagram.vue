@@ -20,8 +20,8 @@
       </div>
       <div class="slide-btns">
         <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button>
-        <el-button type="text" @click="openAll" v-show="openState">展开</el-button>
-        <el-button type="text" @click="closeAll" v-show="!openState">收起</el-button>
+        <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
+        <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
       </div>
     </div>
     <div class="tree-box">
@@ -51,48 +51,11 @@
 <script>
 export default {
   name: 'treeDiagram',
+  props: ['treeData', 'treeName'],
   data () {
     return {
       hasUpload: true,
-      treeName: '排查机构',
       filterText: '',
-      treeData: [
-        {
-          id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'AAA',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组'
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组'
-                }, {
-                  id: 1060122,
-                  label: '生产B组'
-                }
-              ]
-            }
-          ]
-        }
-      ],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -262,6 +225,7 @@ export default {
     padding: 56px 10px 6px 10px;
     overflow: auto;
     .custom-tree-node{
+      font-size: 16px;
       display: inline-block;
       width: 15em;
       overflow: hidden;
