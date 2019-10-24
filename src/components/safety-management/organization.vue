@@ -10,7 +10,7 @@
           <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
+              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true"
                             @open-loading="openLoading"
                             @close-loading="closeLoading" >
               </tree-diagram>
@@ -26,7 +26,7 @@
           <span slot="label">领导小组</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="leaderTree" :tree-name="'领导小组'"
+              <tree-diagram :tree-data="leaderTree" :tree-name="'领导小组'" :has-upload="false"
                             @open-loading="openLoading"
                             @close-loading="closeLoading" >
               </tree-diagram>
@@ -70,6 +70,14 @@
                     </template>
                   </el-table-column>
                 </el-table>
+
+                <div class="pages">
+                  <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="100">
+                  </el-pagination>
+                </div>
               </div>
             </el-main>
           </el-container>
@@ -79,14 +87,59 @@
           <span slot="label">工作小组</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="workTree" :tree-name="'工作小组'"
+              <tree-diagram :tree-data="workTree" :tree-name="'工作小组'" :has-upload="false"
                             @open-loading="openLoading"
                             @close-loading="closeLoading" >
               </tree-diagram>
             </el-aside>
 
             <el-main class="inner-content">
-              <div class="container-box"></div>
+              <div class="container-box">
+                <p class="btn-p">
+                  <a class="export-btn"><i class></i>导出</a>
+                  <a class="import-btn"><i></i>导入</a>
+                </p>
+                <el-table ref="leaderTable"
+                          border
+                          stripe
+                          :data="workerData"
+                          tooltip-effect="dark"
+                          style="width: 100%">
+                  <el-table-column
+                    label="姓名"
+                    width="160"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                  </el-table-column>
+                  <el-table-column
+                    label="联系方式"
+                    width="160"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.concatNum }}</template>
+                  </el-table-column>
+                  <el-table-column
+                    label="主要职责"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.duty }}</template>
+                  </el-table-column>
+                  <el-table-column
+                    label="操作"
+                    width="80px"
+                    align="center">
+                    <template slot-scope="scope">
+                      <el-button type="text" @click="editLeaderItem(scope.row.id)">编辑</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+                <div class="pages">
+                  <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="100">
+                  </el-pagination>
+                </div>
+              </div>
             </el-main>
           </el-container>
         </el-tab-pane>
@@ -254,6 +307,62 @@ export default {
           name: '王小虎',
           concatNum: '18899890977',
           duty: '主要职责内容，balabalbalbalbalbablablab'
+        }
+      ],
+      workerData: [
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
+        },
+        {
+          id: 1234123,
+          name: '王小虎',
+          concatNum: '18899890977',
+          duty: '主要职责内容，balabalbalbalbalbablablab'
         },
         {
           id: 1234123,
@@ -325,6 +434,7 @@ export default {
     }
   }
 }
+
 .inner-page-container{
   .inner-content{
     width: 100%;
@@ -368,6 +478,10 @@ export default {
       }
       .el-table{
         margin-top: 25px;
+      }
+      .pages{
+        margin-top: 28px;
+        text-align: right;
       }
     }
   }

@@ -1,0 +1,37 @@
+/* 全局重置 elementUI scss */
+
+// 重置 table
+.el-table {
+  td{padding: 0;}
+  th{
+    padding: 8px 0;
+    background: #f5f6fa;
+  }
+}
+
+// 重置 pagination
+.el-pagination{
+  button, span:not([class*=suffix]){
+    height: 32px;
+    line-height: 32px;
+  }
+  .el-pager{
+    &>li{
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+  &.is-background{
+    .btn-next,
+    .btn-prev,
+    .el-pager li{
+      border-radius: 0;
+      background: #fff;
+      border: 1px solid #eee;
+      min-width: 32px;
+    }
+    el-pager li:not(.disabled).active{
+      border: none;
+    }
+  }
+}
