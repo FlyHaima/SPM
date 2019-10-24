@@ -36,7 +36,15 @@
 .ellipsis3 {
   -webkit-line-clamp: 3;
 }
-
+.text-left{
+  text-align: left;
+}
+.text-center{
+  text-align: center;
+}
+.text-right{
+  text-align: right;
+}
 .lf{
   float: left;
 }

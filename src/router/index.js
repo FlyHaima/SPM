@@ -68,6 +68,17 @@ const routes = [
           import(`@/components/home/messages.vue`)
       },
       {
+        path: '/messagesDetails',
+        title: '消息详情页',
+        name: 'messagesDetails',
+        meta: {
+          access: true
+        },
+        parent: 'IndexPage',
+        component: () =>
+          import(`@/components/home/messagesDetails.vue`)
+      },
+      {
         path: '/organization',
         name: 'Organization',
         title: '组织机构',

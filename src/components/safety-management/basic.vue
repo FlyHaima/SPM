@@ -226,13 +226,7 @@
           <el-button @click="dialogFormTelVisible = false">取 消</el-button>
         </div>
       </el-dialog>
-      <el-row :gutter="24">
-        <el-col :span="24">
-
-        </el-col>
-      </el-row>
     </div>
-
   </div>
 </template>
 
