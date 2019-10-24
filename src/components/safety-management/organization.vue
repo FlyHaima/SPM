@@ -17,7 +17,9 @@
             </el-aside>
 
             <el-main class="inner-content">
-              <div class="container-box"></div>
+              <div class="container-box">
+                <organigram :organigram-data="organizationTree"></organigram>
+              </div>
             </el-main>
           </el-container>
         </el-tab-pane>
@@ -151,6 +153,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import Organigram from '../organigram/organigram'
 
 export default {
   name: 'organization',
@@ -384,7 +387,11 @@ export default {
       console.log(id)
     }
   },
-  components: {TreeDiagram, BreadCrumb}
+  components: {
+    TreeDiagram,
+    BreadCrumb,
+    Organigram
+  }
 }
 </script>
 

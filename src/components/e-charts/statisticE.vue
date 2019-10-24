@@ -152,7 +152,7 @@ export default {
     }
   },
   watch: {
-    returnData () { // 添加数据监听，父组件传值重绘图表
+    chartData () { // 添加数据监听，父组件传值重绘图表
       this.reduceData()
       this.setEchart()
     }

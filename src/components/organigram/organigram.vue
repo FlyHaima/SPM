@@ -8,12 +8,16 @@
       ref="mouseenterLayer">
       <div class="list-organization">
         <div class="list-organization-item">
-          <div class="list-organization-label">职位：</div>
+          <div class="list-organization-label">人员：</div>
           <div class="list-organization-value">{{detailData.name}}</div>
         </div>
         <div class="list-organization-item">
+          <div class="list-organization-label">电话：</div>
+          <div class="list-organization-value">{{detailData.phoe}}</div>
+        </div>
+        <div class="list-organization-item">
           <div class="list-organization-label">主要职责：</div>
-          <div class="list-organization-value">{{detailData.name}}</div>
+          <div class="list-organization-value">{{detailData.duty}}</div>
         </div>
       </div>
     </div>
@@ -68,16 +72,25 @@ export default {
       dailogVisibelEdit: false, // dailog显示开关
       detailData: {
         name: ''
-      } //组织结构数据
+      }, //组织结构数据
+      organigramDataObj: null
+    }
+  },
+  props: {
+    organigramData: {
+      type: Array,
+      default: null
     }
   },
   created () {
   },
   mounted () {
-    this.G6_init()
+    this.organigramDataObj = this.organigramData[0]
+    this.G6_init(this.organigramDataObj)
+
   },
   methods: {
-    G6_init () {
+    G6_init (val) {
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
         return [['M', x, y], ['a', r, r, 0, 1, 0, r * 2, 0], ['a', r, r, 0, 1, 0, -r * 2, 0], ['M', x + 2, y], ['L', x + 2 * r - 2, y]];
       }
@@ -93,7 +106,7 @@ export default {
               stroke: '#666666'
             }
           });
-          var content = cfg.name.replace(/(.{19})/g, '$1\n');
+          var content = cfg.label.replace(/(.{19})/g, '$1\n');
           var text = group.addShape('text', {
             attrs: {
               text: content,
@@ -102,7 +115,7 @@ export default {
               textAlign: 'left',
               textBaseline: 'middle',
               fill: '#666666',
-              fontSize: '20'
+              fontSize: '12'
             }
           });
           var bbox = text.getBBox();
@@ -132,7 +145,7 @@ export default {
 
       const graph = new G6.TreeGraph({
         container: 'mountNode',
-        width: 1000,
+        width: 800,
         height: 600,
         modes: {
           default: [{
@@ -182,116 +195,7 @@ export default {
           }
         }
       })
-
-      const data = {
-        "name":"Modeling Methods",
-        "children":[
-          {
-            "name":"Classification",
-            "children":[
-              {
-                "name":"Logistic regression",
-                "id":"Logistic regression"
-              },
-              {
-                "name":"Linear discriminant analysis",
-                "id":"Linear discriminant analysis"
-              },
-              {
-                "name":"Rules","id":"Rules"
-              },
-              {
-                "name":"Decision trees",
-                "id":"Decision trees"
-              },
-              {
-                "name":"Naive Bayes",
-                "id":"Naive Bayes"
-              },
-              {
-                "name":"K nearest neighbor",
-                "id":"K nearest neighbor"
-              },
-              {
-                "name":"Probabilistic neural network",
-                "id":"Probabilistic neural network"
-              },
-              {
-                "name":"Support vector machine",
-                "id":"Support vector machine"
-              }
-            ],
-            "id":"Classification"
-          },
-          {
-            "name":"Consensus",
-            "children":[
-              {
-                "name":"Models diversity",
-                "children":[
-                  {
-                    "name":"Different initializations",
-                    "id":"Different initializations"
-                  },
-                  {
-                    "name":"Different parameter choices",
-                    "id":"Different parameter choices"
-                  },
-                  {
-                    "name":"Different architectures",
-                    "id":"Different architectures"
-                  },
-                  {
-                    "name":"Different modeling methods",
-                    "id":"Different modeling methods"
-                  },
-                  {
-                    "name":"Different training sets",
-                    "id":"Different training sets"
-                  },
-                  {
-                    "name":"Different feature sets","id":"Different feature sets"
-                  }
-                ],
-                "id":"Models diversity"
-              },
-              {
-                "name":"Methods","children":[
-                  {
-                    "name":"Classifier selection",
-                    "id":"Classifier selection"
-                  },
-                  {"name":"Classifier fusion","id":"Classifier fusion"}
-                ],
-                "id":"Methods"
-              },
-              {
-                "name":"Common",
-                "children":[
-                  {"name":"Bagging","id":"Bagging"},
-                  {"name":"Boosting","id":"Boosting"},
-                  {"name":"AdaBoost","id":"AdaBoost"}
-                ],
-                "id":"Common"
-              }
-            ],
-            "id":"Consensus"
-          },
-          {
-            "name":"Regression",
-            "children":[
-              {"name":"Multiple linear regression","id":"Multiple linear regression"},
-              {"name":"Partial least squares","id":"Partial least squares"},
-              {"name":"Multi-layer feedforward neural network","id":"Multi-layer feedforward neural network"},
-              {"name":"General regression neural network","id":"General regression neural network"},
-              {"name":"Support vector regression","id":"Support vector regression"}
-            ],
-            "id":"Regression"
-          }
-        ],
-        "id":"Modeling Methods"
-      }
-      graph.data(data)
+      graph.data(val)
       graph.render()
       graph.fitView()
       graph.on('node:mouseenter', ev=>{
@@ -302,7 +206,7 @@ export default {
         this.mouseenterLayerSwitch = false
         this.dailogVisibelEdit = false
         this.detailData = ev.item.get('model')
-        console.log(this.detailData)
+        // console.log(this.detailData)
 
       })
       graph.on('node:contextmenu', ev=>{
@@ -313,6 +217,11 @@ export default {
         // console.log(this.detailData)
 
       })
+    }
+  },
+  watch: {
+    organigramData (val) {
+      this.G6_init(val)
     }
   }
 }
