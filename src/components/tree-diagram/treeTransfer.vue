@@ -22,8 +22,7 @@
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns" v-show="node.data.selected == false">
-              <span>{{data.selected}} & {{node.data.selected}}</span>
+            <span class="right-btns">
               <i class="el-icon-plus" title="添加" @click="append(node, data)"></i>
             </span>
           </span>
