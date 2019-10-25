@@ -182,10 +182,15 @@
         <el-button @click="dialogFormMessageVisible = false">取 消</el-button>
       </div>
     </el-dialog>
+  <el-dialog :title="'选择推送目标'" :visible="showTreeSelector" :width="'774px'">
+    <tree-transfer></tree-transfer>
+  </el-dialog>
 </div>
 </template>
 
 <script>
+import treeTransfer from '../tree-diagram/treeTransfer'
+
 export default {
   name: 'messages',
   data () {
@@ -193,6 +198,7 @@ export default {
       currentPage4: 4,
       fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       dialogFormMessageVisible: false,
+      showTreeSelector: true,
       messageForm: {
         title: '', // 标题
         text: '', // 文本内容
@@ -246,7 +252,8 @@ export default {
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 $ { file.name }？`)
     }
-  }
+  },
+  components: {treeTransfer}
 }
 </script>
 <style lang="scss" scoped>
