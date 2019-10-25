@@ -22,7 +22,8 @@
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns">
+            <span class="right-btns" v-show="node.data.selected == false">
+              <span>{{data.selected}} & {{node.data.selected}}</span>
               <i class="el-icon-plus" title="添加" @click="append(node, data)"></i>
             </span>
           </span>
@@ -34,7 +35,7 @@
       <ul>
         <li class="list-item" v-for="(item, index) in chooseList" :key="index">
           {{item.nameStr}}
-          <i class="el-icon-delete" title="删除" @click="remove(item.id)"></i>
+          <i class="el-icon-delete" title="删除" @click="remove(item.id, treeData)"></i>
         </li>
       </ul>
     </div>
@@ -55,98 +56,133 @@ export default {
       treeData: [
         {
           id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
+          label: '东三省黑龙江集团',
           children: [
             {
               id: 1003422,
-              label: '安管部',
+              label: '有限公司A',
               children: [
                 {
                   id: 1004521,
-                  label: '检查组',
+                  label: '质检厂',
                   data: {
                     name: 'AAA',
                     duty: 'clean job'
                   }
                 }, {
                   id: 1004522,
-                  label: '设备组'
+                  label: '设备厂'
                 }
               ]
             }, {
               id: 1000135,
-              label: '生产部',
+              label: '有限公司B',
               children: [
                 {
                   id: 1060121,
-                  label: '生产A组'
+                  label: '炼制厂'
                 }, {
                   id: 1060122,
-                  label: '生产B组'
-                },
-                {
-                  id: 1060123,
-                  label: '生产A组'
-                }, {
-                  id: 1060124,
-                  label: '生产B组'
-                },
-                {
-                  id: 1060125,
-                  label: '生产A组'
-                }, {
-                  id: 1060126,
-                  label: '生产B组'
-                },
-                {
-                  id: 1060127,
-                  label: '生产A组'
-                }, {
-                  id: 1060128,
-                  label: '生产B组'
+                  label: '电器厂',
+                  children: [
+                    {
+                      id: 1060123,
+                      label: '生产部',
+                      children: [
+                        {
+                          id: 1060125,
+                          label: '电气车间',
+                          children: [
+                            {
+                              id: 1060126,
+                              label: '班组A'
+                            }
+                          ]
+                        }
+                      ]
+                    }, {
+                      id: 1060124,
+                      label: '安监部'
+                    }
+                  ]
                 }, {
                   id: 1060129,
-                  label: '生产A组'
+                  label: '污水处理厂'
                 }, {
                   id: 1060130,
-                  label: '生产B组'
+                  label: '炼焦厂'
                 }
               ]
             }
           ]
+        },
+        {
+          id: 1200034,
+          label: 'B集团'
         }
       ],
-      chooseList: [
-        {nameStr: 'A_b_c的发射点地方啊手动阀阿斯顿发射点阿斯顿发的', id: 10001},
-        {nameStr: 'A_b_c', id: 20002}
-      ]
+      chooseList: []
+    }
+  },
+  created () {
+    this.screenGetData(this.treeData)
+  },
+  watch: {
+    filterText (val) {
+      this.$refs.tree.filter(val)
     }
   },
   methods: {
     filterNode (value, data) {
-      if (!value) return true
-      return data.label.indexOf(value) !== -1
+      if (data.selected === false) {
+        if (!value) return true
+        return data.label.indexOf(value) !== -1
+      } else {
+        return false
+      }
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
 
     },
-    append (node, data) {
-      console.log(node, data)
-      this.screenAppendData(data)
-      console.log(this.chooseList)
-    },
+    // 遍历list 并在selected 为false 时，改变 selected
     screenAppendData (fData) {
       let vm = this
-      let newItem = {nameStr: 'new', id: fData.id}
-      vm.chooseList.push(newItem)
-      if (fData.children) {
-        for (let i = 0; i < fData.children.length; i++) {
-          vm.screenAppendData(fData.children[i])
+      if (fData.selected === false) {
+        if (fData.children) {
+          for (let i = 0; i < fData.children.length; i++) {
+            vm.screenAppendData(fData.children[i])
+          }
+        } else {
+          vm.$set(fData, 'selected', true)
+          fData.selected = true
+          let newItem = {nameStr: fData.label, id: fData.id}
+          vm.chooseList.push(newItem)
         }
       }
     },
-    remove (id) {
-      console.log(id)
+    // 处理接收的tree数据，向每个节点添加 selected 属性，默认为false
+    screenGetData (sData) {
+      let vm = this
+      for (let i = 0; i < sData.length; i++) {
+        sData[i]['selected'] = false
+        if (sData[i].children) {
+          vm.screenGetData(sData[i].children)
+        }
+      }
+    },
+    append (node, data) {
+      this.screenAppendData(data)
+      this.$refs.tree.filter() // 操作后使用filter方法，筛选所有selected 不是 true 的
+    },
+    remove (id, rData) {
+      let vm = this
+      for (let i = 0; i < rData.length; i++) {
+        if (rData[i].id === id) {
+          rData[i].selected = false
+        } else if (rData[i].children) {
+          vm.screenGetData(rData[i].children)
+        }
+      }
     }
   }
 }
