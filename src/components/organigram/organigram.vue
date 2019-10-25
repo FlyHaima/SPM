@@ -9,15 +9,15 @@
       <div class="list-organization">
         <div class="list-organization-item">
           <div class="list-organization-label">人员：</div>
-          <div class="list-organization-value">{{detailData.name}}</div>
+          <div class="list-organization-value">{{detailValue.name}}</div>
         </div>
         <div class="list-organization-item">
           <div class="list-organization-label">电话：</div>
-          <div class="list-organization-value">{{detailData.phoe}}</div>
+          <div class="list-organization-value">{{detailValue.name}}</div>
         </div>
         <div class="list-organization-item">
           <div class="list-organization-label">主要职责：</div>
-          <div class="list-organization-value">{{detailData.duty}}</div>
+          <div class="list-organization-value">{{detailValue.duty}}</div>
         </div>
       </div>
     </div>
@@ -58,6 +58,7 @@
 /* eslint-disable */
 import G6 from '@antv/g6'
 // import '@antv/g6/build/plugin.tool.tooltip'
+import utils from '../../utils/js/common.js'
 
 export default {
   name: 'organigram',
@@ -70,10 +71,12 @@ export default {
       }, // 编辑form
       mouseenterLayerSwitch: false, // 数据预览层显示开关
       dailogVisibelEdit: false, // dailog显示开关
-      detailData: {
-        name: ''
-      }, //组织结构数据
-      organigramDataObj: null
+      detailData: [], //组织结构数据
+      detailValue: {
+        name: '',
+        duty: ''
+      },
+      organigramDataObj: []
     }
   },
   props: {
@@ -85,11 +88,25 @@ export default {
   created () {
   },
   mounted () {
-    this.organigramDataObj = this.organigramData[0]
-    this.G6_init(this.organigramDataObj)
+    this.$nextTick(() => {
+      let i = 0
+      this.organigramDataObj = this.organigramData
+      this.G6_init(this.organigramDataObj[0])
+      this.initData(this.organigramDataObj[0])
+      console.log(this.detailData)
 
+    })
   },
   methods: {
+    initData (fData) {
+      let vm = this
+      vm.detailData.push(fData.data)
+      if(fData.children) {
+        for (let i = 0; i < fData.children.length; i++) {
+          vm.initData(fData.children[i])
+        }
+      }
+    },
     G6_init (val) {
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
         return [['M', x, y], ['a', r, r, 0, 1, 0, r * 2, 0], ['a', r, r, 0, 1, 0, -r * 2, 0], ['M', x + 2, y], ['L', x + 2 * r - 2, y]];
@@ -199,29 +216,25 @@ export default {
       graph.render()
       graph.fitView()
       graph.on('node:mouseenter', ev=>{
-        // vm.$refs.mouseenterLayer
         this.mouseenterLayerSwitch = true
       })
       graph.on('node:mouseleave', ev=>{
         this.mouseenterLayerSwitch = false
         this.dailogVisibelEdit = false
-        this.detailData = ev.item.get('model')
-        // console.log(this.detailData)
+        this.detailValue = ev.item.get('model').data
+        // console.log(this.detailValue)
 
       })
       graph.on('node:contextmenu', ev=>{
         this.mouseenterLayerSwitch = false
         this.dailogVisibelEdit = true
-
-        // this.detailData = ev.item.get('model')
-        // console.log(this.detailData)
-
       })
     }
   },
   watch: {
     organigramData (val) {
       this.G6_init(val)
+      this.initData(val)
     }
   }
 }
@@ -244,7 +257,6 @@ export default {
     box-shadow: 0px 3px 8px 0px
       rgba(4, 0, 0, 0.35);
     border-radius: 10px;
-    opacity: 0.8;
     padding: 20px 10px;
   }
   .list-organization{

@@ -151,6 +151,7 @@
             :rules="rulesPassword"
             size="mini"
             label-width="100px"
+            status-icon
           >
             <el-form-item label="旧密码：" prop="passwordOld">
               <el-input
@@ -158,7 +159,6 @@
                 v-model="passwordForm.passwordOld"
                 autocomplete="off"
                 placeholder="请输入旧密码"
-                show-password
                 clearable></el-input>
             </el-form-item>
             <el-form-item label="新密码：" prop="passwordNew">
@@ -167,7 +167,6 @@
                 v-model="passwordForm.passwordNew"
                 autocomplete="off"
                 placeholder="请输入新密码"
-                show-password
                 clearable></el-input>
             </el-form-item>
             <el-form-item label="确认密码：" prop="passwordConfirm">
@@ -176,7 +175,6 @@
                 v-model="passwordForm.passwordConfirm"
                 autocomplete="off"
                 placeholder="请再次输入新密码"
-                show-password
                 clearable></el-input>
             </el-form-item>
           </el-form>
@@ -238,21 +236,27 @@
 export default {
   name: 'basic',
   data () {
+    let regexPwd = new RegExp('^[a-zA-Z0-9]{6,30}')
     // 校验旧密码
     var validatePassOld = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入旧密码'))
+        callback(new Error('请输入当前用户密码'))
       } else {
+        // let regex = new RegExp('^[a-zA-Z0-9]{6,30}')
+        if (!regexPwd.test(value)) {
+          callback(new Error('密码格式不正确，请输入字母或数字组成且不少于6位数字符的密码'))
+        }
         callback()
       }
     }
     // 校验新密码
     var validatePassNew = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入新密码'))
+        callback(new Error('请输入字母或数字组成且不少于6位数字符的密码'))
       } else {
-        if (this.passwordForm.passwordConfirm !== '') {
-          this.$refs.passwordForm.validateField('passwordConfirm')
+        // let regex = new RegExp('^[a-zA-Z0-9]{6,30}')
+        if (!regexPwd.test(value)) {
+          callback(new Error('密码格式不正确，请输入字母或数字组成且不少于6位数字符的密码'))
         }
         callback()
       }
@@ -262,7 +266,7 @@ export default {
       if (value === '') {
         callback(new Error('请再次输入密码'))
       } else if (value !== this.passwordForm.passwordNew) {
-        callback(new Error('两次输入密码不一致!'))
+        callback(new Error('输入内容与前密码不符!'))
       } else {
         callback()
       }

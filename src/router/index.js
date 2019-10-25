@@ -96,7 +96,64 @@ const routes = [
         name: 'basic',
         component: () =>
           import(`@/components/safety-management/basic.vue`)
+      },
+      {
+        path: '/riskList',
+        name: 'riskList',
+        title: '风险点清单',
+        component: () =>
+          import(`@/components/risk-control/riskList.vue`)
+      },
+      {
+        path: '/riskInfoCard',
+        name: 'riskInfoCard',
+        title: '岗位风险告知卡',
+        component: () =>
+          import(`@/components/risk-control/riskInfoCard.vue`)
+      },
+      {
+        path: '/riskBook',
+        name: 'riskBook',
+        title: '风险点分级管控台账',
+        component: () =>
+          import(`@/components/risk-control/riskBook.vue`)
+      },
+      {
+        path: '/safeRisk',
+        name: 'safeRisk',
+        title: '重大安全风险',
+        component: () =>
+          import(`@/components/risk-control/safeRisk.vue`)
+      },
+      {
+        path: '/riskBulletinBoard',
+        name: 'riskBulletinBoard',
+        title: '重大安全风险公告栏',
+        component: () =>
+          import(`@/components/risk-control/riskBulletinBoard.vue`)
+      },
+      {
+        path: '/riskColorImage',
+        name: 'riskColorImage',
+        title: '风险四色图',
+        component: () =>
+          import(`@/components/risk-control/riskColorImage.vue`)
+      },
+      {
+        path: '/riskCompareChart',
+        name: 'riskCompareChart',
+        title: '作业风险比较图',
+        component: () =>
+          import(`@/components/risk-control/riskCompareChart.vue`)
+      },
+      {
+        path: '/riskControlList',
+        name: 'riskControlList',
+        title: '风险分级管控表',
+        component: () =>
+          import(`@/components/risk-control/riskControlList.vue`)
       }
+
     ]
   },
   {

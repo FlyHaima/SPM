@@ -18,3 +18,16 @@ export function getLocalStorage (name) {
     return window.localStorage.getItem(name)
   }
 }
+
+// 递归循环数组
+export function arrayFunc (tdata, resData) {
+  console.log(tdata)
+  if (Array.isArray(tdata) && tdata.length > 0) {
+    tdata.forEach(function (v, i) {
+      console.log(v.children)
+      let arr = []
+      this.initData(v.children, arr)
+      resData[i].children = arr
+    })
+  }
+}

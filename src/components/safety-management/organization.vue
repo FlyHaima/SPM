@@ -165,33 +165,57 @@ export default {
         {
           id: 1000131,
           label: '《安全生产管理平台》东三省黑龙江分部总公司',
+          data: {
+            name: 'AAA',
+            duty: 'clean job'
+          },
           children: [
             {
               id: 1003422,
               label: '安管部',
+              data: {
+                name: 'BBB',
+                duty: 'clean job'
+              },
               children: [
                 {
                   id: 1004521,
                   label: '检查组',
                   data: {
-                    name: 'AAA',
+                    name: 'CCC',
                     duty: 'clean job'
                   }
                 }, {
                   id: 1004522,
-                  label: '设备组'
+                  label: '设备组',
+                  data: {
+                    name: 'ddd',
+                    duty: 'clean job'
+                  }
                 }
               ]
             }, {
               id: 1000135,
               label: '生产部',
+              data: {
+                name: 'eeee',
+                duty: 'clean job'
+              },
               children: [
                 {
                   id: 1060121,
-                  label: '生产A组'
+                  label: '生产A组',
+                  data: {
+                    name: 'BBfffB',
+                    duty: 'clean job'
+                  }
                 }, {
                   id: 1060122,
-                  label: '生产B组'
+                  label: '生产B组',
+                  data: {
+                    name: 'fff',
+                    duty: 'clean job'
+                  }
                 }
               ]
             }

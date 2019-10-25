@@ -59,3 +59,9 @@
 .el-dialog__headerbtn{
   top: 16px;
 }
+.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
+  margin-bottom: 30px;
+}
+.el-input__prefix, .el-input__suffix{
+  color: $colorGreen;
+}
