@@ -1,9 +1,9 @@
 <template>
-  <div>重大安全风险</div>
+  <div>风险四色图</div>
 </template>
 <script>
 export default {
-  name: 'safeRisk',
+  name: 'riskColorImage',
   data () {
     return {
     }
