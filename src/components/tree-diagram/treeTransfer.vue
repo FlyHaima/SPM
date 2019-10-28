@@ -22,8 +22,7 @@
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns" v-show="node.data.selected == false">
-              <span>{{data.selected}} & {{node.data.selected}}</span>
+            <span class="right-btns">
               <i class="el-icon-plus" title="添加" @click="append(node, data)"></i>
             </span>
           </span>
@@ -35,7 +34,7 @@
       <ul>
         <li class="list-item" v-for="(item, index) in chooseList" :key="index">
           {{item.nameStr}}
-          <i class="el-icon-delete" title="删除" @click="remove(item.id, treeData)"></i>
+          <i class="el-icon-delete" title="删除" @click="remove(item.id)"></i>
         </li>
       </ul>
     </div>
@@ -174,15 +173,26 @@ export default {
       this.screenAppendData(data)
       this.$refs.tree.filter() // 操作后使用filter方法，筛选所有selected 不是 true 的
     },
-    remove (id, rData) {
+    screenDelData (sData, id) {
       let vm = this
-      for (let i = 0; i < rData.length; i++) {
-        if (rData[i].id === id) {
-          rData[i].selected = false
-        } else if (rData[i].children) {
-          vm.screenGetData(rData[i].children)
+      for (let i = 0; i < sData.length; i++) {
+        if (sData[i]['id'] === id) {
+          sData[i]['selected'] = false
+          return
+        } else if (sData[i].children) {
+          vm.screenDelData(sData[i].children, id)
         }
       }
+    },
+    remove (id) {
+      let vm = this
+      vm.screenDelData(vm.treeData, id)
+      for (let i = 0; i < vm.chooseList.length; i++) {
+        if (vm.chooseList[i]['id'] === id) {
+          vm.chooseList.splice(i, 1)
+        }
+      }
+      this.$refs.tree.filter()
     }
   }
 }
@@ -247,6 +257,7 @@ export default {
           position: absolute;
           right: 4px;
           top: 11px;
+          cursor: pointer;
         }
       }
     }
