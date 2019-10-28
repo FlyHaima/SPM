@@ -20,6 +20,9 @@ const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'pagel
 // 安全基础管理--组织机构
 const organization = require('@/components/safety-management/organization')
 const Organization = resolve => require.ensure([], () => resolve(organization), 'pagelist')
+// 安全基础管理--全员培训
+const staffTraining = require('@/components/safety-management/staffTraining')
+const StaffTraining = resolve => require.ensure([], () => resolve(staffTraining), 'pagelist')
 
 Vue.use(Router)
 
@@ -83,6 +86,12 @@ const routes = [
         name: 'Organization',
         title: '组织机构',
         component: Organization
+      },
+      {
+        path: '/staffTraining',
+        name: 'StaffTraining',
+        title: '全员培训',
+        component: StaffTraining
       },
       {
         path: '/basic',

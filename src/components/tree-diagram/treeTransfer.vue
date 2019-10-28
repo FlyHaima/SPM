@@ -44,6 +44,7 @@
 <script>
 export default {
   name: 'treeTransfer',
+  props: ['chooseList', 'treeData'],
   data () {
     return {
       treeName: '组织架构',
@@ -51,79 +52,11 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'label'
-      },
-      treeData: [
-        {
-          id: 1000131,
-          label: '东三省黑龙江集团',
-          children: [
-            {
-              id: 1003422,
-              label: '有限公司A',
-              children: [
-                {
-                  id: 1004521,
-                  label: '质检厂',
-                  data: {
-                    name: 'AAA',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备厂'
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '有限公司B',
-              children: [
-                {
-                  id: 1060121,
-                  label: '炼制厂'
-                }, {
-                  id: 1060122,
-                  label: '电器厂',
-                  children: [
-                    {
-                      id: 1060123,
-                      label: '生产部',
-                      children: [
-                        {
-                          id: 1060125,
-                          label: '电气车间',
-                          children: [
-                            {
-                              id: 1060126,
-                              label: '班组A'
-                            }
-                          ]
-                        }
-                      ]
-                    }, {
-                      id: 1060124,
-                      label: '安监部'
-                    }
-                  ]
-                }, {
-                  id: 1060129,
-                  label: '污水处理厂'
-                }, {
-                  id: 1060130,
-                  label: '炼焦厂'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 1200034,
-          label: 'B集团'
-        }
-      ],
-      chooseList: []
+      }
     }
   },
   created () {
+    console.log(this.treeData)
     this.screenGetData(this.treeData)
   },
   watch: {
