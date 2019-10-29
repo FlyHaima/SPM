@@ -35,3 +35,15 @@
     }
   }
 }
+
+// 重置dialog
+.el-dialog{
+  .el-dialog__header{
+    padding: 15px 20px;
+    background: #409eff;
+    .el-dialog__title {
+      color: #ffffff;
+    }
+  }
+}
+
