@@ -51,6 +51,7 @@
                    :visible.sync="showEdit"
                    :width="'1290px'" :top="'20px'">
           <div class="edit-box">
+            <vue-ueditor-wrap v-model="previewDom" :config="editorConfig"></vue-ueditor-wrap>
           </div>
         </el-dialog>
       </div>
@@ -61,6 +62,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import VueUeditorWrap from 'vue-ueditor-wrap'
 
 export default {
   name: 'systemConstruction',
@@ -84,7 +86,35 @@ export default {
       ],
       showPre: false,
       previewDom: '<div style="width:595.0pt;margin-bottom:72.0pt;margin-top:72.0pt;margin-left:90.0pt;margin-right:90.0pt;"><p>&#24005;&#23792;&#23545;&#20915;&#24343;&#20848;&#20811;</p><p>&#20998;&#20026;&#21152;&#20998;&#21908;</p><p><br/></p><p>&#21435;&#27745;&#31881;wew</p><table class="a1 a3" style="border-collapse:collapse;"><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>1</p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>2</p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>3</p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>3</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>4</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>4</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>56</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>6</p></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>43</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>4</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>5</p></td></tr></table><p><img src="image/word/media/image1.png" width="117.5pt" height="202.75pt"/></p></div>',
-      showEdit: false
+      showEdit: false,
+      editorConfig: {
+        // 编辑器初始z-index
+        zIndex: 3000,
+        // 编辑器不自动被内容撑高
+        autoHeightEnabled: false,
+        // 初始容器高度
+        initialFrameHeight: 600,
+        // 初始容器宽度
+        initialFrameWidth: '100%',
+        // 上传文件接口（这个地址是我为了方便各位体验文件上传功能搭建的临时接口，请勿在生产环境使用！！！）
+        serverUrl: 'http://35.201.165.105:8000/controller.php',
+        // UEditor 资源文件的存放路径，如果你使用的是 vue-cli 生成的项目，通常不需要设置该选项，vue-ueditor-wrap 会自动处理常见的情况，如果需要特殊配置，参考下方的常见问题2
+        UEDITOR_HOME_URL: '/static/UEditor/',
+        // 工具栏
+        toolbars: [[
+          'source', '|', 'undo', 'redo', '|',
+          'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+          'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+          'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+          'directionalityltr', 'directionalityrtl', 'indent', '|',
+          'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+          'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+          'simpleupload', 'insertimage', 'emotion', 'scrawl', '|',
+          'horizontal', 'date', 'time', 'spechars', '|',
+          'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+          'help'
+        ]]
+      }
     }
   },
   methods: {
@@ -96,7 +126,7 @@ export default {
       this.showEdit = true
     }
   },
-  components: {TreeDiagram, BreadCrumb}
+  components: {TreeDiagram, BreadCrumb, VueUeditorWrap}
 }
 </script>
 
@@ -120,9 +150,13 @@ export default {
           margin-right: 4px;
         }
       }
-      .preview-box, edit-box{
+      .preview-box{
         height: 770px;
         overflow-y: auto;
+      }
+      .edit-box{
+        height: 770px;
+        /*overflow-y: auto;*/
       }
     }
   }
