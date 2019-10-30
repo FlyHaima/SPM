@@ -27,58 +27,60 @@
                 <el-dialog :title="'计划发布'" :visible.sync="showPlanDialog"
                            :width="'1004px'"
                            :show-close="false">
-                  <div class="dialog-inner-line">
-                    <div class="inner-item">
-                      <p class="title">课程名称</p>
-                      <p class="val-p"><el-input size="medium" v-model="addPlanData.className"></el-input></p>
+                  <div class="plan-body">
+                    <div class="dialog-inner-line">
+                      <div class="inner-item">
+                        <p class="title">课程名称</p>
+                        <p class="val-p"><el-input size="medium" v-model="addPlanData.className"></el-input></p>
+                      </div>
+                      <div class="inner-item">
+                        <p class="title">类别</p>
+                        <p class="val-p"><el-input size="medium" v-model="addPlanData.planType"></el-input></p>
+                      </div>
                     </div>
-                    <div class="inner-item">
-                      <p class="title">类别</p>
-                      <p class="val-p"><el-input size="medium" v-model="addPlanData.planType"></el-input></p>
+                    <div class="dialog-inner-line">
+                      <div class="inner-item">
+                        <p class="title">开始时间</p>
+                        <p class="val-p">
+                          <el-date-picker
+                            v-model="addPlanData.startTime"
+                            type="datetime"
+                            placeholder="选择日期时间">
+                          </el-date-picker>
+                        </p>
+                      </div>
+                      <div class="inner-item">
+                        <p class="title">结束时间</p>
+                        <p class="val-p">
+                          <el-date-picker
+                            v-model="addPlanData.endTime"
+                            type="datetime"
+                            placeholder="选择日期时间">
+                          </el-date-picker>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div class="dialog-inner-line">
-                    <div class="inner-item">
-                      <p class="title">开始时间</p>
-                      <p class="val-p">
-                        <el-date-picker
-                          v-model="addPlanData.startTime"
-                          type="datetime"
-                          placeholder="选择日期时间">
-                        </el-date-picker>
-                      </p>
+                    <div class="dialog-inner-all">
+                      <p class="title">培训需求</p>
+                      <div class="val-div">
+                        <el-input type="textarea" v-model="addPlanData.need"></el-input>
+                      </div>
                     </div>
-                    <div class="inner-item">
-                      <p class="title">结束时间</p>
-                      <p class="val-p">
-                        <el-date-picker
-                          v-model="addPlanData.endTime"
-                          type="datetime"
-                          placeholder="选择日期时间">
-                        </el-date-picker>
-                      </p>
-                    </div>
-                  </div>
-                  <div class="dialog-inner-all">
-                    <p class="title">培训需求</p>
-                    <div class="val-div">
-                      <el-input type="textarea" v-model="addPlanData.need"></el-input>
-                    </div>
-                  </div>
-                  <div class="dialog-inner-all">
-                    <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
-                    <div class="val-div">
-                      <el-upload
-                        class="upload-demo"
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
-                        multiple
-                        :on-exceed="handleExceed"
-                        :file-list="fileList">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                      </el-upload>
+                    <div class="dialog-inner-all">
+                      <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
+                      <div class="val-div">
+                        <el-upload
+                          class="upload-demo"
+                          action="https://jsonplaceholder.typicode.com/posts/"
+                          :on-preview="handlePreview"
+                          :on-remove="handleRemove"
+                          :before-remove="beforeRemove"
+                          multiple
+                          :on-exceed="handleExceed"
+                          :file-list="fileList">
+                          <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload>
+                      </div>
                     </div>
                   </div>
                   <div slot="footer" class="dialog-footer">
@@ -253,23 +255,25 @@
                   </el-table-column>
                   <el-table-column
                     label="类型"
-                    width="105"
+                    width="135"
                     align="center">
                     <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论开始时间"
+                    width="250"
                     align="center">
                     <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论结束时间"
+                    width="250"
                     align="center">
                     <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="状态"
-                    width="105"
+                    width="135"
                     align="center">
                     <template slot-scope="scope">{{ states[scope.row.state] }}</template>
                   </el-table-column>
@@ -293,6 +297,106 @@
               </div>
             </el-main>
           </el-container>
+          <el-dialog :title="'详细'" :visible.sync="showDetailLog"
+                     :width="'970px'">
+            <div class="detail-log">
+              <el-collapse accordion>
+                <el-collapse-item>
+                  <template slot="title">
+                    基本信息
+                  </template>
+                  <div class="class-out">
+                    <div class="col-inner-item">
+                      <p class="label">课程：</p>
+                      <p>安全生产综合管理</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">学习部门：</p>
+                      <p>安全管理部</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">类别：</p>
+                      <p>考试</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">开始时间：</p>
+                      <p>2019-10-12 12:00</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">结束时间：</p>
+                      <p>2019-10-12 12:00</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">学习方式：</p>
+                      <p>线下学习</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">课程状态：</p>
+                      <p>发布中</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">理论学习状态：</p>
+                      <p>280 人</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">发布人：</p>
+                      <p>管理员</p>
+                    </div>
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="反馈 Feedback">
+                  <template slot="title">课程统计</template>
+                  <div class="class-out">
+                    <div class="col-inner-item">
+                      <p class="label">已学习人数：</p>
+                      <p>10 人</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">未学习人数：</p>
+                      <p>20 人</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">参与学习率：</p>
+                      <p>30 %</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">考试人数：</p>
+                      <p>22 人</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">合格人数：</p>
+                      <p>19 人</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">合格率：</p>
+                      <p>70 %</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">理论学习用时：</p>
+                      <p>30 天</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">实际学习用时：</p>
+                      <p>28 天</p>
+                    </div>
+                    <div class="col-inner-item">
+                      <p class="label">总课时：</p>
+                      <p>280 小时</p>
+                    </div>
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="效率 Efficiency">
+                  <template slot="title">文档附件</template>
+                  <ul class="download-list">
+                    <li v-for="(item, index) in detailDownList" :key="index">
+                      {{item.name}}
+                      <a @click="downloadItem(item.url)">下载</a>
+                    </li>
+                  </ul>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+          </el-dialog>
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -454,6 +558,21 @@ export default {
           ],
           id: 123123
         }
+      ],
+      showDetailLog: false,
+      detailDownList: [
+        {
+          name: 'downloadFileName',
+          url: '******'
+        },
+        {
+          name: 'downloadFileName',
+          url: '******'
+        },
+        {
+          name: 'downloadFileName',
+          url: '******'
+        }
       ]
     }
   },
@@ -531,7 +650,11 @@ export default {
     startLearn (id) {},
     endLearn (id) {},
     downloadFile (files) {},
-    checkDetail (id) {}
+    checkDetail (id) {
+      // get data, then, showDetailLog
+      this.showDetailLog = true
+    },
+    downloadItem (url) {}
   },
   components: {TreeDiagram, BreadCrumb}
 }
@@ -551,84 +674,131 @@ export default {
 /deep/.inner-main-container{
   .el-dialog{
     .el-dialog__body{
-      padding: 20px 60px;
-      .dialog-inner-line{
-        padding-top: 18px;
-        display: flex;
-        justify-content: space-between;
-        .inner-item{
-          width: 415px;
-        }
-        .title{
-          line-height: 42px;
-          color: #7c7c7c;
-          font-size: 16px;
-          font-family: "Source Han Sans CN", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
-          span{
-            font-size: 14px;
-            color: #bebebe;
-            &.red{
-              color: red;
-            }
-            &.margin-lf{
-              margin-left: 20px;
+      padding: 0;
+      .plan-body{
+        padding: 20px 60px;
+        .dialog-inner-line{
+          padding-top: 18px;
+          display: flex;
+          justify-content: space-between;
+          .inner-item{
+            width: 415px;
+          }
+          .title{
+            line-height: 42px;
+            color: #7c7c7c;
+            font-size: 16px;
+            font-family: "Source Han Sans CN", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
+            span{
+              font-size: 14px;
+              color: #bebebe;
+              &.red{
+                color: red;
+              }
+              &.margin-lf{
+                margin-left: 20px;
+              }
             }
           }
-        }
-        .val-p{
-          height: 36px;
-          .el-date-editor.el-input{
-            width: 100%;
-          }
-          .el-input__inner{
+          .val-p{
             height: 36px;
-            line-height: 36px;
-            width: 100%;
+            .el-date-editor.el-input{
+              width: 100%;
+            }
+            .el-input__inner{
+              height: 36px;
+              line-height: 36px;
+              width: 100%;
+            }
+          }
+          .val-div{
+            height: 97px;
           }
         }
-        .val-div{
-          height: 97px;
+        .dialog-inner-all{
+          padding-top: 18px;
+          .inner-item{
+            width: 415px;
+          }
+          .title{
+            line-height: 42px;
+            color: #7c7c7c;
+            font-size: 16px;
+            font-family: "Source Han Sans CN", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
+            span{
+              font-size: 14px;
+              color: #bebebe;
+              &.red{
+                color: red;
+              }
+              &.margin-lf{
+                margin-left: 20px;
+              }
+            }
+          }
+          .val-p{
+            height: 36px;
+            .el-date-editor.el-input{
+              width: 100%;
+            }
+            .el-input__inner{
+              height: 36px;
+              line-height: 36px;
+              width: 100%;
+            }
+          }
+          .val-div{
+            height: 97px;
+            .el-textarea{
+              height: 100%;
+              .el-textarea__inner{
+                height: 100%;
+              }
+            }
+          }
         }
       }
-      .dialog-inner-all{
-        padding-top: 18px;
-        .inner-item{
-          width: 415px;
-        }
-        .title{
-          line-height: 42px;
-          color: #7c7c7c;
+      .detail-log{
+        height: 700px;
+      }
+      .el-collapse-item__header{
+        background: #f8f8f8;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 15px;
+      }
+      .el-collapse-item__content{
+        padding-bottom: 0;
+      }
+      .class-out{
+        padding: 40px;
+        .col-inner-item{
+          display: inline-block;
+          width: 286px;
+          height: 66px;
+          padding-left: 130px;
+          position: relative;
+          line-height: 33px;
+          color: #646464;
           font-size: 16px;
-          font-family: "Source Han Sans CN", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
-          span{
-            font-size: 14px;
-            color: #bebebe;
-            &.red{
-              color: red;
-            }
-            &.margin-lf{
-              margin-left: 20px;
-            }
+          font-weight: 300;
+          .label{
+            position: absolute;
+            width: 124px;
+            top: 0;
+            left: 0;
+            text-align: right;
+            font-weight: 500;
           }
         }
-        .val-p{
-          height: 36px;
-          .el-date-editor.el-input{
-            width: 100%;
-          }
-          .el-input__inner{
-            height: 36px;
-            line-height: 36px;
-            width: 100%;
-          }
-        }
-        .val-div{
-          height: 97px;
-          .el-textarea{
-            height: 100%;
-            .el-textarea__inner{
-              height: 100%;
-            }
+      }
+      .download-list{
+        li{
+          border-top: 1px solid #EBEEF5;
+          line-height: 50px;
+          padding: 0 30px;
+          a{
+            float: right;
           }
         }
       }

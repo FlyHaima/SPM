@@ -23,6 +23,9 @@ const Organization = resolve => require.ensure([], () => resolve(organization), 
 // 安全基础管理--全员培训
 const staffTraining = require('@/components/safety-management/staffTraining')
 const StaffTraining = resolve => require.ensure([], () => resolve(staffTraining), 'pagelist')
+// 安全基础管理--制度建设
+const systemConstruction = require('@/components/safety-management/systemConstruction')
+const SystemConstruction = resolve => require.ensure([], () => resolve(systemConstruction), 'pagelist')
 
 Vue.use(Router)
 
@@ -92,6 +95,12 @@ const routes = [
         name: 'StaffTraining',
         title: '全员培训',
         component: StaffTraining
+      },
+      {
+        path: '/systemConstruction',
+        name: 'SystemConstruction',
+        title: '制度建设',
+        component: SystemConstruction
       },
       {
         path: '/basic',
