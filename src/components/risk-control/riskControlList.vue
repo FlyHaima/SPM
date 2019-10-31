@@ -9,7 +9,6 @@
         <el-main class="inner-content">
           <div class="container-box">
             <el-table
-              :data="tableData"
               border
               style="width: 100%"
               header-align="center">
@@ -30,7 +29,6 @@
                       size="mini"
                       effect="dark">
                       重大风险
-                      <!-- {{ scope.row.name }} -->
                     </el-tag>
                   </template>
                 </el-table-column>
@@ -54,7 +52,6 @@
                       size="mini"
                       effect="dark">
                       一般风险
-                      <!-- {{ scope.row.name }} -->
                     </el-tag>
                   </template>
                 </el-table-column>
@@ -66,7 +63,6 @@
                       size="mini"
                       effect="dark">
                       低风险
-                      <!-- {{ scope.row.name }} -->
                     </el-tag>
                   </template>
                 </el-table-column>
@@ -85,25 +81,10 @@ export default {
   name: 'riskControlList',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
-      pageLoading: false,
-      tableData: [{
-        workshop: '变压站',
-        jobs: '配电员',
-        mianRisk: '员工吸烟',
-        riskFactor: ' ',
-        hazardType: ' ',
-        emergency: ' '
-      }]
+      breadcrumb: ['风险辨识评估', '风险划分']
     }
   },
   methods: {
-    openLoading () {
-      this.pageLoading = true
-    },
-    closeLoading () {
-      this.pageLoading = false
-    }
   },
   components: {
     BreadCrumb
@@ -333,4 +314,3 @@ export default {
   }
 }
 </style>
-

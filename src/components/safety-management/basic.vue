@@ -11,7 +11,7 @@
               <el-avatar :size="80" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
               <div class="basic-info-txt">
                 <p class="basic-info-txt-item">基本信息</p>
-                <p class="basic-info-txt-item">企业用户-哈尔滨-道外区</p>
+                <p class="basic-info-txt-item">当前位置：哈尔滨-道外区</p>
               </div>
             </el-col>
             <el-col :span="18" :offset="1">

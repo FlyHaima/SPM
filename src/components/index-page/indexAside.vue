@@ -59,13 +59,13 @@ export default {
             {
               fname: '安全基础管理',
               name: '全员培训',
-              url: '/',
+              url: '/staffTraining',
               active: false
             },
             {
               fname: '安全基础管理',
               name: '制度建设',
-              url: '/',
+              url: '/systemConstruction',
               active: false
             },
             {

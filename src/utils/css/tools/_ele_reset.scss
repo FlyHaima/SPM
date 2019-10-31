@@ -65,3 +65,17 @@
 .el-input__prefix, .el-input__suffix{
   color: $colorGreen;
 }
+// 重置dialog
+.el-dialog{
+  .el-dialog__header{
+    padding: 15px 20px;
+    background: #409eff;
+    .el-dialog__title {
+      color: #ffffff;
+    }
+  }
+  .el-dialog__headerbtn .el-dialog__close{
+    color: #fff;
+  }
+}
+

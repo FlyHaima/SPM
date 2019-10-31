@@ -10,7 +10,7 @@
           <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true"
+              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true" :show-btns="true"
                             @open-loading="openLoading"
                             @close-loading="closeLoading" >
               </tree-diagram>

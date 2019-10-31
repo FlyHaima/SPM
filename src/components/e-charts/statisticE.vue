@@ -1,27 +1,41 @@
 <template>
   <div class="chart-wrap">
-    <div id="columnA" :style="{ height: '200px'}"></div>
-   <!-- legend-list-vertical 水平方向 -->
-   <div class="legend-list">
-      <div class="legend-item">
-        <i class="legend-color-lump"></i>
-        <span class="legend-text">重大风险</span>
+    <div id="columnA" :style="{ height: `${chartHeight}`}"></div>
+    <!-- chart-tools-vertical 水平方向 -->
+    <div class="chart-tools" :class="classObj">
+      <div class="legend-list" >
+        <div class="legend-item">
+          <i class="legend-color-lump"></i>
+          <span class="legend-text">重大风险</span>
+        </div>
+        <div class="legend-item">
+          <i class="legend-color-lump"></i>
+          <span class="legend-text">较大风险</span>
+        </div>
+        <div class="legend-item">
+          <i class="legend-color-lump"></i>
+          <span class="legend-text">一般风险</span>
+        </div>
+        <div class="legend-item">
+          <i class="legend-color-lump"></i>
+          <span class="legend-text">低风险</span>
+        </div>
       </div>
-      <div class="legend-item">
-        <i class="legend-color-lump"></i>
-        <span class="legend-text">较大风险</span>
-      </div>
-      <div class="legend-item">
-        <i class="legend-color-lump"></i>
-        <span class="legend-text">一般风险</span>
-      </div>
-      <div class="legend-item">
-        <i class="legend-color-lump"></i>
-        <span class="legend-text">低风险</span>
+      <div class="select-date">
+        <el-select
+          v-model="selValue"
+          @change="selChange"
+          >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -32,8 +46,23 @@ export default {
   name: 'columnChart',
   data () {
     return {
+      options: [
+        {
+          value: 1,
+          label: '近一周'
+        }, {
+          value: 2,
+          label: '近两周'
+        }, {
+          value: 3,
+          label: '近一个月'
+        }
+      ],
+      selValue: 2, // 设定初始值，两周
       chartValue: [], // y轴坐标值
       chartxAxis: [], // x轴坐标值
+      allDate: [],
+      allValue: [],
       colorList: [] // 图表色值 d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
     }
   },
@@ -41,6 +70,14 @@ export default {
     chartData: {
       type: Array,
       default: null
+    },
+    chartHeight: {
+      type: String,
+      default: ''
+    },
+    legendVertical: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -61,8 +98,8 @@ export default {
         } else if (item.value > 75 && item.value <= 100) {
           this.colorList.push(['#d13a38', '#0568eb'])
         }
-        this.chartValue.push(item.value)
-        this.chartxAxis.push(item.name)
+        this.allValue.push(item.value)
+        this.allDate.push(item.name)
       })
     },
     setEchart (opt) {
@@ -70,6 +107,21 @@ export default {
       let chartDom = document.getElementById('columnA')
       let myChart = this.$echarts.init(chartDom)
       let chartColorList = this.colorList
+
+      if (!opt) {
+        this.chartValue = this.allValue
+        this.chartxAxis = this.allDate
+      } else if (opt === 1) {
+        this.chartValue = this.allValue.slice(0, 7)
+        this.chartxAxis = this.allDate.slice(0, 7)
+      } else if (opt === 2) {
+        this.chartValue = this.allValue.slice(0, 14)
+        this.chartxAxis = this.allDate.slice(0, 14)
+      } else if (opt === 3) {
+        this.chartValue = this.allValue
+        this.chartxAxis = this.allDate
+      }
+
       // 绘制图表
       let option = {
         color: ['#0568eb'],
@@ -149,6 +201,18 @@ export default {
         ]
       }
       myChart.setOption(option)
+    },
+    selChange () {
+      // 重新筛选数据，再render表格
+      this.setEchart(this.selValue)
+    }
+  },
+  computed: {
+    classObj () {
+      let vm = this
+      if (vm.legendVertical) {
+        return 'chart-tools-vertical'
+      }
     }
   },
   watch: {
@@ -165,17 +229,9 @@ export default {
   position: relative;
 }
 .legend-list{
-  position: absolute;
-  top: 0;
-  left: 0;
   text-align: left;
-  &.legend-list-vertical{
-    left: auto;
-    right: 0;
-    .legend-item{
-      display: inline-block;
-      margin-right: 60px;
-    }
+  .legend-item{
+    margin-bottom: 22px;
   }
 }
 
@@ -215,6 +271,41 @@ export default {
   color: #666666;
   vertical-align: top;
   margin-left: 12px;
-  margin-bottom: 22px;
+  // margin-bottom: 22px;
+}
+.chart-tools{
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.chart-tools-vertical{
+  left: auto;
+  right: 40px;
+  top: -60px;
+  display: flex;
+  .legend-list{
+    display: flex;
+    align-items: center;
+    .legend-item{
+      display: inline-block;
+      margin-right: 30px;
+      margin-bottom: 0;
+    }
+  }
+
+}
+.select-date{
+  display: inline-block;
+  width: 100px;
+  // height: 30px;
+}
+/deep/.el-select{
+  .el-input__inner{
+    height: 26px;
+    line-height: 26px;
+  }
+  .el-input__icon{
+    line-height: 26px;
+  }
 }
 </style>

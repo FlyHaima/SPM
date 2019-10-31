@@ -124,16 +124,14 @@
   </el-tabs>
   <el-dialog
     title="发布消息"
-    :visible.sync="dialogFormMessageVisible">
-      <div class="form-modal">
-        <el-form
-          :model="messageForm"
-          ref="messageForm"
-          :rules="rulesMessage"
-          label-width="100px"
-          label-position="right"
-          size="mini"
-        >
+    :visible.sync="dialogFormMessageVisible" :width="'1000px'" :show-close="false">
+    <div class="form-modal">
+      <el-form
+        :model="messageForm"
+        ref="messageForm"
+        :rules="rulesMessage"
+        label-width="100px"
+        label-position="right">
         <el-form-item label="标题">
           <el-input v-model="messageForm.title"></el-input>
         </el-form-item>
@@ -155,35 +153,54 @@
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="发送时间">
+              <el-input v-model="messageForm.time"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="发送人">
+              <el-input v-model="messageForm.user"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="推送方式">
+              <el-select v-model="messageForm.way" placeholder="">
+                <el-option label="全员推送" value="全员推送"></el-option>
+                <el-option label="选择推送" value="选择推送"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="推送名单" v-show="messageForm.way === '选择推送'">
           <el-row>
-            <el-col :span="8">
-              <el-form-item label="发送时间">
-                <el-input v-model="messageForm.time"></el-input>
-              </el-form-item>
+            <el-col :span="21">
+              <el-input v-model="menuListStr" :disabled="true"></el-input>
             </el-col>
-            <el-col :span="8">
-              <el-form-item label="发送人">
-                <el-input v-model="messageForm.user"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="推送方式">
-                <el-select v-model="messageForm.way" placeholder="">
-                  <el-option label="全员推送" value="全员推送"></el-option>
-                  <el-option label="选择推送" value="选择推送"></el-option>
-                </el-select>
-              </el-form-item>
+            <el-col :span="3">
+              <el-button type="primary" @click="showTreeTransfer = true" class="rt">选择推送</el-button>
             </el-col>
           </el-row>
-        </el-form>
-      </div>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <el-dialog :title="'选择推送目标'" :visible.sync="showTreeTransfer"
+               :width="'774px'"
+               :show-close="false"
+               append-to-body>
+      <tree-transfer :tree-data="treeData" :choose-list="chooseList"></tree-transfer>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitMessageForm()">发布</el-button>
-        <el-button @click="dialogFormMessageVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmChooseList()">确 定</el-button>
+        <el-button @click="showTreeTransfer = false">取 消</el-button>
       </div>
     </el-dialog>
-  <el-dialog :title="'选择推送目标'" :visible="showTreeSelector" :width="'774px'">
-    <tree-transfer></tree-transfer>
+
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="submitMessageForm()">发布</el-button>
+      <el-button @click="dialogFormMessageVisible = false">取 消</el-button>
+    </div>
   </el-dialog>
 </div>
 </template>
@@ -198,7 +215,7 @@ export default {
       currentPage4: 4,
       fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       dialogFormMessageVisible: false,
-      showTreeSelector: true,
+      showTreeTransfer: false,
       messageForm: {
         title: '', // 标题
         text: '', // 文本内容
@@ -208,7 +225,73 @@ export default {
         way: '' // 推送方式
       },
       rulesMessage: {
-      }
+      },
+      treeData: [
+        {
+          id: 1000131,
+          label: '东三省黑龙江集团',
+          children: [
+            {
+              id: 1003422,
+              label: '有限公司A',
+              children: [
+                {
+                  id: 1004521,
+                  label: '质检厂',
+                  data: {
+                    name: 'AAA',
+                    duty: 'clean job'
+                  }
+                }, {
+                  id: 1004522,
+                  label: '设备厂'
+                }
+              ]
+            }, {
+              id: 1000135,
+              label: '有限公司B',
+              children: [
+                {
+                  id: 1060121,
+                  label: '炼制厂'
+                }, {
+                  id: 1060122,
+                  label: '电器厂',
+                  children: [
+                    {
+                      id: 1060123,
+                      label: '生产部',
+                      children: [
+                        {
+                          id: 1060125,
+                          label: '电气车间',
+                          children: [
+                            {
+                              id: 1060126,
+                              label: '班组A'
+                            }
+                          ]
+                        }
+                      ]
+                    }, {
+                      id: 1060124,
+                      label: '安监部'
+                    }
+                  ]
+                }, {
+                  id: 1060129,
+                  label: '污水处理厂'
+                }, {
+                  id: 1060130,
+                  label: '炼焦厂'
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      chooseList: [],
+      menuListStr: ''
     }
   },
   methods: {
@@ -251,7 +334,17 @@ export default {
     },
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 $ { file.name }？`)
+    },
+    confirmChooseList () {
+      this.menuListStr = ''
+      this.chooseList.forEach(item => {
+        this.menuListStr += `${item.nameStr}; `
+      })
+      console.log(this.treeData) // 上传该数据
+      this.showTreeTransfer = false
     }
+  },
+  watch: {
   },
   components: {treeTransfer}
 }

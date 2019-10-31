@@ -19,15 +19,26 @@ export function getLocalStorage (name) {
   }
 }
 
-// 递归循环数组
-export function arrayFunc (tdata, resData) {
-  console.log(tdata)
-  if (Array.isArray(tdata) && tdata.length > 0) {
-    tdata.forEach(function (v, i) {
-      console.log(v.children)
-      let arr = []
-      this.initData(v.children, arr)
-      resData[i].children = arr
-    })
+// 格式化时间，返回####-##-## ##：##
+export function formatTime (t) {
+  let thisD = new Date(t)
+  let tyear = thisD.getFullYear()
+  let tmonth = thisD.getMonth() + 1
+  let tday = thisD.getDate()
+  let thour = thisD.getHours()
+  let tmin = thisD.getMinutes()
+  if (tday < 10) {
+    tday = '0' + tday
   }
+  if (tmonth < 10) {
+    tmonth = '0' + tmonth
+  }
+  if (thour < 10) {
+    thour = '0' + thour
+  }
+  if (tmin < 10) {
+    tmin = '0' + tmin
+  }
+
+  return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
 }
