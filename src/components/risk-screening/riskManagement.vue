@@ -1,9 +1,9 @@
 <template>
-  <div>排查清单</div>
+  <div>riskManagement</div>
 </template>
 <script>
 export default {
-  name: 'screeningList',
+  name: 'riskManagement',
   data () {
     return {
     }

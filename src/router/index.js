@@ -170,6 +170,41 @@ const routes = [
         title: '风险分级管控表',
         component: () =>
           import(`@/components/risk-control/riskControlList.vue`)
+      },
+      {
+        path: '/screeningList',
+        name: 'screeningList',
+        title: '排查清单',
+        component: () =>
+          import(`@/components/risk-screening/screeningList.vue`)
+      },
+      {
+        path: '/screeningPlan',
+        name: 'screeningPlan',
+        title: '排查计划',
+        component: () =>
+          import(`@/components/risk-screening/screeningPlan.vue`)
+      },
+      {
+        path: '/screeningCycle',
+        name: 'screeningCycle',
+        title: '排查周期',
+        component: () =>
+          import(`@/components/risk-screening/screeningCycle.vue`)
+      },
+      {
+        path: '/riskScreening',
+        name: 'riskScreening',
+        title: '隐患排查',
+        component: () =>
+          import(`@/components/risk-screening/riskScreening.vue`)
+      },
+      {
+        path: '/riskManagement',
+        name: 'riskManagement',
+        title: '隐患治理',
+        component: () =>
+          import(`@/components/risk-screening/riskManagement.vue`)
       }
 
     ]

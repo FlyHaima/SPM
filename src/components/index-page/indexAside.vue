@@ -161,31 +161,31 @@ export default {
             {
               fname: '隐患排查治理',
               name: '排查清单',
-              url: '/',
+              url: '/screeningList',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '排查计划',
-              url: '/',
+              url: '/screeningPlan',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '排查周期',
-              url: '/',
+              url: '/screeningCycle',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '隐患排查',
-              url: '/',
+              url: '/riskScreening',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '隐患治理',
-              url: '/',
+              url: '/riskManagement',
               active: false
             }
           ]
