@@ -10,13 +10,13 @@ Router.prototype.push = function push (location) {
 
 // 登录页
 const loginPage = require('@/pages/login')
-const LoginPage = resolve => require.ensure([], () => resolve(loginPage), 'pagelist')
+const LoginPage = resolve => require.ensure([], () => resolve(loginPage), 'basicPageList')
 // 404
 const notFound = require('@/pages/404')
-const NotFound = resolve => require.ensure([], () => resolve(notFound), 'pagelist')
+const NotFound = resolve => require.ensure([], () => resolve(notFound), 'basicPageList')
 // 功能主页
 const indexPage = require('@/pages/index')
-const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'pagelist')
+const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'basicPageList')
 // 安全基础管理--组织机构
 const organization = require('@/components/safety-management/organization')
 const Organization = resolve => require.ensure([], () => resolve(organization), 'pagelist')
@@ -26,6 +26,9 @@ const StaffTraining = resolve => require.ensure([], () => resolve(staffTraining)
 // 安全基础管理--制度建设
 const systemConstruction = require('@/components/safety-management/systemConstruction')
 const SystemConstruction = resolve => require.ensure([], () => resolve(systemConstruction), 'pagelist')
+// 安全基础管理--基础资料
+const basicData = require('@/components/safety-management/basicData')
+const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pagelist')
 
 Vue.use(Router)
 
@@ -108,6 +111,12 @@ const routes = [
         name: 'SystemConstruction',
         title: '制度建设',
         component: SystemConstruction
+      },
+      {
+        path: '/basicData',
+        name: 'BasicData',
+        title: '基础资料',
+        component: BasicData
       },
       {
         path: '/basic',
@@ -207,7 +216,6 @@ const routes = [
         component: () =>
           import(`@/components/risk-screening/riskManagement.vue`)
       }
-
     ]
   },
   {
