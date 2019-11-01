@@ -29,6 +29,10 @@ const SystemConstruction = resolve => require.ensure([], () => resolve(systemCon
 // 安全基础管理--基础资料
 const basicData = require('@/components/safety-management/basicData')
 const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pagelist')
+// 风险辨识评估--风险辨识
+// 风险辨识评估--风险单元
+// 风险辨识评估--评价记录
+// 风险辨识评估--系统大数据
 
 Vue.use(Router)
 

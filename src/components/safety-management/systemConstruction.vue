@@ -160,7 +160,7 @@ export default {
 
     }
   },
-  components: {TreeDiagram, BreadCrumb, VueUeditorWrap}
+  components: {BreadCrumb, VueUeditorWrap}
 }
 </script>
 
