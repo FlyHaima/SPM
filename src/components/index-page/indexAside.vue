@@ -71,7 +71,7 @@ export default {
             {
               fname: '安全基础管理',
               name: '基础资料',
-              url: '/basic',
+              url: '/basicData',
               active: false
             }
           ]

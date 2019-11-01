@@ -33,29 +33,47 @@
             <template slot-scope="scope">
               <el-button type="text" @click="preview(scope.row.id)">预览</el-button>
               <el-button type="text" @click="edit(scope.row.id)">编辑</el-button>
-              <el-button type="text">删除</el-button>
-              <el-button type="text">重置</el-button>
+              <el-button type="text" @click="deleteItem(scope.row.id)">删除</el-button>
+              <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>
             </template>
           </el-table-column>
         </el-table>
-
-        <el-dialog :title="'预览'"
-                :visible.sync="showPre"
-                :width="'1290px'" :top="'20px'">
-          <div class="preview-box">
-            <div v-html="previewDom"></div>
-          </div>
-        </el-dialog>
-
-        <el-dialog :title="'编辑'"
-                   :visible.sync="showEdit"
-                   :width="'1290px'" :top="'20px'">
-          <div class="edit-box">
-            <vue-ueditor-wrap v-model="previewDom" :config="editorConfig"></vue-ueditor-wrap>
-          </div>
-        </el-dialog>
       </div>
     </el-main>
+
+    <el-dialog :title="'预览'"
+               :visible.sync="showPre"
+               :width="'1290px'" :top="'20px'">
+      <div class="preview-box">
+        <div v-html="previewDom"></div>
+      </div>
+    </el-dialog>
+
+    <el-dialog :title="'编辑'"
+               :visible.sync="showEdit"
+               :width="'1290px'" :top="'20px'">
+      <div class="edit-box">
+        <vue-ueditor-wrap v-model="previewDom" :config="editorConfig"></vue-ueditor-wrap>
+        <div slot="footer" class="dialog-footer" style="margin-top: 40px; text-align: right;">
+          <el-button size="small" type="primary" @click="submitEdit()">保 存</el-button>
+          <el-button size="small" @click="showEdit = false">取 消</el-button>
+        </div>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      title="重置"
+      :visible.sync="showReset"
+      :width="'576px'">
+      <div class="reset-div">
+        <p class="title"><i class="notice-icon"></i>系统通知：</p>
+        <p class="content">一旦选择<span>重置文件</span>，文件将重置为最初始的状态。你确定要进行此项操作吗？</p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+            <el-button @click="cancelReset()">取 消</el-button>
+            <el-button type="primary" @click="confirmReset()">确 定</el-button>
+          </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -114,7 +132,9 @@ export default {
           'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
           'help'
         ]]
-      }
+      },
+      editId: '',
+      showReset: false
     }
   },
   methods: {
@@ -124,6 +144,20 @@ export default {
     },
     edit (id) {
       this.showEdit = true
+      this.editId = id
+    },
+    submitEdit () {
+      // this.editId
+    },
+    deleteItem (id) {},
+    resetItem (id) {
+      this.showReset = true
+    },
+    cancelReset () {
+      this.showReset = false
+    },
+    confirmReset () {
+
     }
   },
   components: {TreeDiagram, BreadCrumb, VueUeditorWrap}
@@ -150,13 +184,37 @@ export default {
           margin-right: 4px;
         }
       }
-      .preview-box{
-        height: 770px;
-        overflow-y: auto;
+    }
+  }
+  .preview-box{
+    height: 770px;
+    overflow-y: auto;
+  }
+  .edit-box{
+    height: 770px;
+    /*overflow-y: auto;*/
+  }
+  .reset-div{
+    position: relative;
+    padding-left: 40px;
+    .title{
+      font-size: 20px;
+      position: relative;
+      .notice-icon{
+        position: absolute;
+        display: block;
+        left: -30px;
+        top: 2px;
+        background: url("../../assets/img/dialog-notice-icon.png") no-repeat;
+        width: 20px;
+        height: 18px;
       }
-      .edit-box{
-        height: 770px;
-        /*overflow-y: auto;*/
+    }
+    .content{
+      font-size: 16px;
+      margin-top: 20px;
+      span{
+        color: #409eff;
       }
     }
   }
