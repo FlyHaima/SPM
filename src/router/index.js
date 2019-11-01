@@ -20,6 +20,12 @@ const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'pagel
 // 安全基础管理--组织机构
 const organization = require('@/components/safety-management/organization')
 const Organization = resolve => require.ensure([], () => resolve(organization), 'pagelist')
+// 安全基础管理--全员培训
+const staffTraining = require('@/components/safety-management/staffTraining')
+const StaffTraining = resolve => require.ensure([], () => resolve(staffTraining), 'pagelist')
+// 安全基础管理--制度建设
+const systemConstruction = require('@/components/safety-management/systemConstruction')
+const SystemConstruction = resolve => require.ensure([], () => resolve(systemConstruction), 'pagelist')
 
 Vue.use(Router)
 
@@ -79,17 +85,129 @@ const routes = [
           import(`@/components/home/messagesDetails.vue`)
       },
       {
+        path: '/organigram',
+        name: 'organigram',
+        title: '组织机构图',
+        component: () =>
+          import(`@/components/organigram/organigram.vue`)
+      },
+      {
         path: '/organization',
         name: 'Organization',
         title: '组织机构',
         component: Organization
       },
       {
+        path: '/staffTraining',
+        name: 'StaffTraining',
+        title: '全员培训',
+        component: StaffTraining
+      },
+      {
+        path: '/systemConstruction',
+        name: 'SystemConstruction',
+        title: '制度建设',
+        component: SystemConstruction
+      },
+      {
         path: '/basic',
         name: 'basic',
+        title: '用户信息',
         component: () =>
-          import(`@/components/safety-management/basic.vue`)
+          import(`@/components/home/basic.vue`)
+      },
+      {
+        path: '/riskList',
+        name: 'riskList',
+        title: '风险点清单',
+        component: () =>
+          import(`@/components/risk-control/riskList.vue`)
+      },
+      {
+        path: '/riskInfoCard',
+        name: 'riskInfoCard',
+        title: '岗位风险告知卡',
+        component: () =>
+          import(`@/components/risk-control/riskInfoCard.vue`)
+      },
+      {
+        path: '/riskBook',
+        name: 'riskBook',
+        title: '风险点分级管控台账',
+        component: () =>
+          import(`@/components/risk-control/riskBook.vue`)
+      },
+      {
+        path: '/safeRisk',
+        name: 'safeRisk',
+        title: '重大安全风险',
+        component: () =>
+          import(`@/components/risk-control/safeRisk.vue`)
+      },
+      {
+        path: '/riskBulletinBoard',
+        name: 'riskBulletinBoard',
+        title: '重大安全风险公告栏',
+        component: () =>
+          import(`@/components/risk-control/riskBulletinBoard.vue`)
+      },
+      {
+        path: '/riskColorImage',
+        name: 'riskColorImage',
+        title: '风险四色图',
+        component: () =>
+          import(`@/components/risk-control/riskColorImage.vue`)
+      },
+      {
+        path: '/riskCompareChart',
+        name: 'riskCompareChart',
+        title: '作业风险比较图',
+        component: () =>
+          import(`@/components/risk-control/riskCompareChart.vue`)
+      },
+      {
+        path: '/riskControlList',
+        name: 'riskControlList',
+        title: '风险分级管控表',
+        component: () =>
+          import(`@/components/risk-control/riskControlList.vue`)
+      },
+      {
+        path: '/screeningList',
+        name: 'screeningList',
+        title: '排查清单',
+        component: () =>
+          import(`@/components/risk-screening/screeningList.vue`)
+      },
+      {
+        path: '/screeningPlan',
+        name: 'screeningPlan',
+        title: '排查计划',
+        component: () =>
+          import(`@/components/risk-screening/screeningPlan.vue`)
+      },
+      {
+        path: '/screeningCycle',
+        name: 'screeningCycle',
+        title: '排查周期',
+        component: () =>
+          import(`@/components/risk-screening/screeningCycle.vue`)
+      },
+      {
+        path: '/riskScreening',
+        name: 'riskScreening',
+        title: '隐患排查',
+        component: () =>
+          import(`@/components/risk-screening/riskScreening.vue`)
+      },
+      {
+        path: '/riskManagement',
+        name: 'riskManagement',
+        title: '隐患治理',
+        component: () =>
+          import(`@/components/risk-screening/riskManagement.vue`)
       }
+
     ]
   },
   {

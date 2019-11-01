@@ -10,14 +10,16 @@
           <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true"
+              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true" :show-btns="true"
                             @open-loading="openLoading"
                             @close-loading="closeLoading" >
               </tree-diagram>
             </el-aside>
 
             <el-main class="inner-content">
-              <div class="container-box"></div>
+              <div class="container-box">
+                <organigram :organigram-data="organizationTree"></organigram>
+              </div>
             </el-main>
           </el-container>
         </el-tab-pane>
@@ -151,6 +153,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import Organigram from '../organigram/organigram'
 
 export default {
   name: 'organization',
@@ -162,33 +165,57 @@ export default {
         {
           id: 1000131,
           label: '《安全生产管理平台》东三省黑龙江分部总公司',
+          data: {
+            name: 'AAA',
+            duty: 'clean job'
+          },
           children: [
             {
               id: 1003422,
               label: '安管部',
+              data: {
+                name: 'BBB',
+                duty: 'clean job'
+              },
               children: [
                 {
                   id: 1004521,
                   label: '检查组',
                   data: {
-                    name: 'AAA',
+                    name: 'CCC',
                     duty: 'clean job'
                   }
                 }, {
                   id: 1004522,
-                  label: '设备组'
+                  label: '设备组',
+                  data: {
+                    name: 'ddd',
+                    duty: 'clean job'
+                  }
                 }
               ]
             }, {
               id: 1000135,
               label: '生产部',
+              data: {
+                name: 'eeee',
+                duty: 'clean job'
+              },
               children: [
                 {
                   id: 1060121,
-                  label: '生产A组'
+                  label: '生产A组',
+                  data: {
+                    name: 'BBfffB',
+                    duty: 'clean job'
+                  }
                 }, {
                   id: 1060122,
-                  label: '生产B组'
+                  label: '生产B组',
+                  data: {
+                    name: 'fff',
+                    duty: 'clean job'
+                  }
                 }
               ]
             }
@@ -384,7 +411,11 @@ export default {
       console.log(id)
     }
   },
-  components: {TreeDiagram, BreadCrumb}
+  components: {
+    TreeDiagram,
+    BreadCrumb,
+    Organigram
+  }
 }
 </script>
 

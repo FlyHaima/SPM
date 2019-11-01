@@ -26,24 +26,24 @@
     </div>
     <div class="tree-box">
       <el-tree
-      class="filter-tree"
-      :data="treeData"
-      :props="defaultProps"
-      default-expand-all
-      node-key="id"
-      :filter-node-method="filterNode"
-      :expand-on-click-node="false"
-      @node-click="handleNodeClick"
-      ref="tree">
-        <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
-          <span>{{ node.label }}</span>
-          <span class="right-btns">
-            <i class="el-icon-plus" title="添加节点" @click="append(node, data)"></i>
-            <i class="el-icon-edit" title="修改节点" @click="edit(node)"></i>
-            <i class="el-icon-delete" title="删除节点"  @click="remove(node, data)"></i>
+        class="filter-tree"
+        :data="treeData"
+        :props="defaultProps"
+        default-expand-all
+        node-key="id"
+        :filter-node-method="filterNode"
+        :expand-on-click-node="false"
+        @node-click="handleNodeClick"
+        ref="tree">
+          <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
+            <span>{{ node.label }}</span>
+            <span class="right-btns" v-if="showBtns">
+              <i class="el-icon-plus" title="添加节点" @click="append(node, data)"></i>
+              <i class="el-icon-edit" title="修改节点" @click="edit(node)"></i>
+              <i class="el-icon-delete" title="删除节点"  @click="remove(node, data)"></i>
+            </span>
           </span>
-        </span>
-    </el-tree>
+      </el-tree>
     </div>
   </div>
 </template>
@@ -51,7 +51,25 @@
 <script>
 export default {
   name: 'treeDiagram',
-  props: ['treeData', 'treeName', 'hasUpload'],
+  // props: ['treeData', 'treeName', 'hasUpload', 'showBtns'],
+  props: {
+    treeData: {
+      type: Array,
+      default: null
+    },
+    treeName: {
+      type: String,
+      default: ''
+    },
+    hasUpload: {
+      type: Boolean,
+      default: false
+    },
+    showBtns: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       filterText: '',
