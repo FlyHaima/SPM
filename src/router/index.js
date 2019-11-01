@@ -88,6 +88,13 @@ const routes = [
           import(`@/components/home/messagesDetails.vue`)
       },
       {
+        path: '/organigram',
+        name: 'organigram',
+        title: '组织机构图',
+        component: () =>
+          import(`@/components/organigram/organigram.vue`)
+      },
+      {
         path: '/organization',
         name: 'Organization',
         title: '组织机构',
@@ -108,7 +115,106 @@ const routes = [
       {
         path: '/basicData',
         name: 'BasicData',
+        title: '基础资料',
         component: BasicData
+      },
+      {
+        path: '/basic',
+        name: 'basic',
+        title: '用户信息',
+        component: () =>
+          import(`@/components/home/basic.vue`)
+      },
+      {
+        path: '/riskList',
+        name: 'riskList',
+        title: '风险点清单',
+        component: () =>
+          import(`@/components/risk-control/riskList.vue`)
+      },
+      {
+        path: '/riskInfoCard',
+        name: 'riskInfoCard',
+        title: '岗位风险告知卡',
+        component: () =>
+          import(`@/components/risk-control/riskInfoCard.vue`)
+      },
+      {
+        path: '/riskBook',
+        name: 'riskBook',
+        title: '风险点分级管控台账',
+        component: () =>
+          import(`@/components/risk-control/riskBook.vue`)
+      },
+      {
+        path: '/safeRisk',
+        name: 'safeRisk',
+        title: '重大安全风险',
+        component: () =>
+          import(`@/components/risk-control/safeRisk.vue`)
+      },
+      {
+        path: '/riskBulletinBoard',
+        name: 'riskBulletinBoard',
+        title: '重大安全风险公告栏',
+        component: () =>
+          import(`@/components/risk-control/riskBulletinBoard.vue`)
+      },
+      {
+        path: '/riskColorImage',
+        name: 'riskColorImage',
+        title: '风险四色图',
+        component: () =>
+          import(`@/components/risk-control/riskColorImage.vue`)
+      },
+      {
+        path: '/riskCompareChart',
+        name: 'riskCompareChart',
+        title: '作业风险比较图',
+        component: () =>
+          import(`@/components/risk-control/riskCompareChart.vue`)
+      },
+      {
+        path: '/riskControlList',
+        name: 'riskControlList',
+        title: '风险分级管控表',
+        component: () =>
+          import(`@/components/risk-control/riskControlList.vue`)
+      },
+      {
+        path: '/screeningList',
+        name: 'screeningList',
+        title: '排查清单',
+        component: () =>
+          import(`@/components/risk-screening/screeningList.vue`)
+      },
+      {
+        path: '/screeningPlan',
+        name: 'screeningPlan',
+        title: '排查计划',
+        component: () =>
+          import(`@/components/risk-screening/screeningPlan.vue`)
+      },
+      {
+        path: '/screeningCycle',
+        name: 'screeningCycle',
+        title: '排查周期',
+        component: () =>
+          import(`@/components/risk-screening/screeningCycle.vue`)
+      },
+      {
+        path: '/riskScreening',
+        name: 'riskScreening',
+        title: '隐患排查',
+        component: () =>
+          import(`@/components/risk-screening/riskScreening.vue`)
+      },
+      {
+        path: '/riskManagement',
+        name: 'riskManagement',
+        title: '隐患治理',
+        component: () =>
+          import(`@/components/risk-screening/riskManagement.vue`)
       }
     ]
   },

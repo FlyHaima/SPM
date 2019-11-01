@@ -107,37 +107,49 @@ export default {
             {
               fname: '风险分级管控',
               name: '风险点清单',
-              url: '/',
+              url: '/riskList',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '岗位风险告知卡',
+              url: '/riskInfoCard',
               active: false
             },
             {
               fname: '风险分级管控',
               name: '风险点分级管控台账',
-              url: '/',
+              url: '/riskBook',
               active: false
             },
             {
               fname: '风险分级管控',
               name: '重大安全风险',
-              url: '/',
+              url: '/safeRisk',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '重大安全风险公告栏',
+              url: '/riskBulletinBoard',
               active: false
             },
             {
               fname: '风险分级管控',
               name: '风险四色图',
-              url: '/',
+              url: '/riskColorImage',
               active: false
             },
             {
               fname: '风险分级管控',
               name: '作业风险比较图',
-              url: '/',
+              url: '/riskCompareChart',
               active: false
             },
             {
               fname: '风险分级管控',
               name: '风险分级管控表',
-              url: '/',
+              url: '/riskControlList',
               active: false
             }
           ]
@@ -149,31 +161,31 @@ export default {
             {
               fname: '隐患排查治理',
               name: '排查清单',
-              url: '/',
+              url: '/screeningList',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '排查计划',
-              url: '/',
+              url: '/screeningPlan',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '排查周期',
-              url: '/',
+              url: '/screeningCycle',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '隐患排查',
-              url: '/',
+              url: '/riskScreening',
               active: false
             },
             {
               fname: '隐患排查治理',
               name: '隐患治理',
-              url: '/',
+              url: '/riskManagement',
               active: false
             }
           ]

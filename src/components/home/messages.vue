@@ -2,6 +2,7 @@
 <div class="message-wrap">
   <el-tabs type="border-card">
     <el-tab-pane label="我发布的">
+      <span slot="label"> 我发布的<span class="badge">18</span></span>
       <div class="">
         <div class="info-panel">
           <div class="info-header">
@@ -13,11 +14,22 @@
               <el-button type="danger" size="mini">删除当页消息</el-button>
             </div>
           </div>
+          <div class="info-header">
+            <div class="info-title">
+              <span class="info-title-txt">待办事项</span>
+            </div>
+            <div class="info-link">
+              <el-button type="danger" size="mini">标记当页已处理</el-button>
+            </div>
+          </div>
           <div class="info-content">
             <ul class="list-info">
               <li class="list-info-item">
                 <div class="list-info-title">
-                  <span class="list-info-txt"><span class="list-info-type">[下线通知]</span>你的安全清单并未完善，请点击这里</span>
+                  <span class="list-info-txt">
+                    <span class="list-info-type">
+                      <i class="badge is-dot"></i>
+                      [下线通知]</span>你的安全清单并未完善，请点击这里</span>
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
@@ -112,7 +124,9 @@
   </el-tabs>
   <el-dialog
     title="发布消息"
-    :visible.sync="dialogFormMessageVisible" :width="'1000px'" :show-close="false">
+    :visible.sync="dialogFormMessageVisible"
+    :width="'1000px'"
+    :show-close="false">
     <div class="form-modal">
       <el-form
         :model="messageForm"
@@ -334,7 +348,9 @@ export default {
   },
   watch: {
   },
-  components: {treeTransfer}
+  components: {
+    treeTransfer
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -344,42 +360,56 @@ export default {
     height: 100%;
     background: #ffffff;
   }
-  // 重构tabs样式
-  /deep/.el-tabs{
-    height: 100%;
-    .el-tabs__nav{
-      height: 50px;
-    }
-    .el-tabs__item{
-      height: 51px;
-      line-height: 50px;
-      font-size: 16px;
-      color: #777777;
-      &.is-active{
-        color: $colorPrimary;
-        border-top: 2px solid $colorPrimary;
-      }
-    }
-    .el-tabs--border-card > .el-tabs__content{
-      padding: 0;
-    }
-    .el-tabs__content{
-      height: 100%;
-      .el-tab-pane{
-        height: 100%;
-      }
-    }
-  }
+  // 可以提出公用的样式
   .badge{
     display: inline-block;
     background: $colorRed;
     border-radius: 10px;
-    width: 8px;
-    height: 8px;
-    position: absolute;
-    top: -3px;
-    left: -3px;
+    min-width: 8px;
+    min-height: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 3px;
+    &.is-dot{
+    }
   }
+   // icon
+  .icon-clock{
+    display: inline-block;
+    color: $colorText;
+    position: absolute;
+    margin-left: 2px;
+    margin-top: 2px;
+    width: 15px;
+    height: 15px;
+    position: relative;
+    border: solid 1px currentColor;
+    border-radius: 8px;
+    &::before{
+      content: '';
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 5px;
+      height: 1px;
+      background-color: currentColor;
+      -webkit-transform-origin: 0% 0%;
+              transform-origin: 0% 0%;
+    }
+    &::after{
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 7px;
+      width: 1px;
+      height: 6px;
+      background-color: currentColor;
+      -webkit-transform-origin: 0% 0%;
+              transform-origin: 0% 0%;
+    }
+  }
+  // 页面样式
   .info-panel{
     margin-top: 10px;
   }
@@ -433,6 +463,11 @@ export default {
   .list-info-type{
     margin-right: 15px;
     position: relative;
+    .badge{
+      position: absolute;
+      top: -3px;
+      left: -3px;
+    }
   }
   .list-info-date{
     display: inline-block;
@@ -449,58 +484,13 @@ export default {
     vertical-align: top;
     margin-left: 24px;
   }
-  .icon-clock{
-    display: inline-block;
-    color: $colorText;
-    position: absolute;
-    margin-left: 2px;
-    margin-top: 2px;
-    width: 15px;
-    height: 15px;
-    position: relative;
-    border: solid 1px currentColor;
-    border-radius: 8px;
-    &::before{
-      content: '';
-      position: absolute;
-      top: 7px;
-      left: 7px;
-      width: 5px;
-      height: 1px;
-      background-color: currentColor;
-      -webkit-transform-origin: 0% 0%;
-              transform-origin: 0% 0%;
-    }
-    &::after{
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 7px;
-      width: 1px;
-      height: 6px;
-      background-color: currentColor;
-      -webkit-transform-origin: 0% 0%;
-              transform-origin: 0% 0%;
-    }
-  }
+
+  // 修改组件样式
   .el-icon-delete{
     vertical-align: top;
     margin-top: 2px;
     margin-left: 24px;
     color: $colorText;
-  }
-
-  // 修改组件样式
-  .el-dialog__wrapper >>> {
-    .el-dialog__header{
-      background: $colorPrimary;
-    }
-    .el-dialog__title{
-      color: #ffffff;
-    }
-    .el-dialog__headerbtn .el-dialog__close{
-      color: #ffffff;
-    }
   }
   .form-modal >>>{
     .el-form{
