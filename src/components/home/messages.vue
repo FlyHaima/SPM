@@ -124,7 +124,9 @@
   </el-tabs>
   <el-dialog
     title="发布消息"
-    :visible.sync="dialogFormMessageVisible" :width="'1000px'" :show-close="false">
+    :visible.sync="dialogFormMessageVisible"
+    :width="'1000px'"
+    :show-close="false">
     <div class="form-modal">
       <el-form
         :model="messageForm"
@@ -346,7 +348,9 @@ export default {
   },
   watch: {
   },
-  components: {treeTransfer}
+  components: {
+    treeTransfer
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -488,17 +492,6 @@ export default {
     margin-left: 24px;
     color: $colorText;
   }
-  .el-dialog__wrapper >>> {
-    .el-dialog__header{
-      background: $colorPrimary;
-    }
-    .el-dialog__title{
-      color: #ffffff;
-    }
-    .el-dialog__headerbtn .el-dialog__close{
-      color: #ffffff;
-    }
-  }
   .form-modal >>>{
     .el-form{
       // width: 880px;
@@ -508,33 +501,4 @@ export default {
       // width: 240px;
     }
   }
-  // 重构tabs样式
-  // /deep/.el-tabs{
-  //   height: 100%;
-  //   .el-tabs__nav{
-  //     height: 50px;
-  //   }
-  //   .el-tabs__item{
-  //     height: 51px;
-  //     line-height: 50px;
-  //     font-size: 16px;
-  //     color: #777777;
-  //     .badge{
-  //       margin-left: 12px;
-  //     }
-  //     &.is-active{
-  //       color: $colorPrimary;
-  //       border-top: 2px solid $colorPrimary;
-  //     }
-  //   }
-  //   .el-tabs--border-card > .el-tabs__content{
-  //     padding: 0;
-  //   }
-  //   .el-tabs__content{
-  //     height: 100%;
-  //     .el-tab-pane{
-  //       height: 100%;
-  //     }
-  //   }
-  // }
 </style>

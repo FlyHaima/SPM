@@ -74,25 +74,6 @@ export default {
 
 <style lang="scss" scoped>
   @import '../../utils/css/style.scss';
-.inner-page-container{
-  height: 100%;
-  .el-header{
-    padding: 0;
-  }
-  .el-main{
-    padding: 0;
-  }
-}
-.inner-content{
-    width: 100%;
-    height: 100%;
-    padding: 30px 22px;
-    background: #fff;
-  }
-.inner-main-content{
-  width: 100%;
-  height: 100%;
-}
 .container-box{
   padding: 20px 25px;
 }
@@ -120,7 +101,7 @@ export default {
 .user-box-value{
   display: inline-block;
   font-size: 16px;
-  color: #409eff;
+  color: $colorPrimary;
   margin-left: 24px;
 }
 </style>

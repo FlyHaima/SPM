@@ -26,7 +26,7 @@
                       type="primary"
                       size="medium"
                       icon="el-icon-download"
-                      @click="exportEexcel">
+                      @click="handleAdd">
                       添加</el-button>
                       <el-button
                       type="danger"
@@ -204,17 +204,25 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
+    <own-el-dialog
+      :dialogShow="dialog.dialogVisible"
+    ></own-el-dialog>
   </el-container>
 </template>
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
+import OwnElDialog from '../el-dialog/elDialog'
 export default {
   name: 'screeningList',
   data () {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
+      dialog: {
+        dialogVisible: false
+      },
+      checked: false,
       organizationTree: [
         {
           'children': [
@@ -378,158 +386,27 @@ export default {
   },
   components: {
     TreeReadOnly,
-    BreadCrumb
+    BreadCrumb,
+    OwnElDialog
+  },
+  methods: {
+    openLoading () {
+      this.pageLoading = true
+    },
+    closeLoading () {
+      this.pageLoading = false
+    },
+    handleAdd () {
+      this.dialog.dialogVisible = true
+    },
+    // 导出excel
+    exportEexcel () {
+
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '../../utils/css/style.scss';
-// .inner-page-container{
-//   height: 100%;
-//   .el-header{
-//     padding: 0;
-//   }
-//   .el-main{
-//     padding: 0;
-//   }
-// }
-// .inner-main-content{
-//   width: 100%;
-//   height: 100%;
-//   background: #f2f2f2;
-// }
-// .inner-content{
-//   width: 100%;
-//   height: 100%;
-//   padding: 29px 22px;
-//   background: #fff;
-// }
-/*  el-tab */
-/deep/.el-tabs__content{
-  width: 100%;
-  padding: 50px 0 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-// .content-tools{
-//   display: flex;
-//   justify-content: space-between;
-//   &.is-flex-end{
-//     justify-content: flex-end;
-//   }
-// }
-// .tools-right{
-//   display: flex;
-//   .el-button{
-//     margin-left: 20px;
-//   }
-// }
-.custom-table-header{
-  background: #f5f6fa;
-  border-bottom: 1px solid $colorBorder;
-  font-size: 20px;
-  padding: 20px 10px;
-  color: $colorText;
-  text-align: center;
-}
-.custom-table{
-  width: 816px;
-  margin: 20px auto;
-  border: solid $colorBorder;
-  border-width: 1px 1px 0 1px;
-}
-.custom-tbody{
-  &.is-flex{
-    display: flex;
-    width: 100%;
-    .custom-tr + .custom-tr{
-      border-left: 1px solid $colorBorder;
-    }
-  }
-  &.is-inline{
-    .custom-th-label{
-      min-width: 220px;
-    }
-    .custom-td-value{
-      padding-left: 30px;
-      max-width: 150px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .custom-tr{
-      max-height: 40px;
-      overflow: hidden;
-    }
-  }
-}
-.custom-tr{
-  font-size: 0;
-  border-bottom: 1px solid $colorBorder;
-  flex: 1;
-  &.is-flex{
-    display: flex;
-    .custom-th-label,
-    .custom-td-value{
-      flex: 1;
-    }
-    .custom-th-label + .custom-th-label{
-      border-left: 1px solid $colorBorder;
-    }
-  }
-}
-.custom-th-label{
-  display: inline-block;
-  font-size: 16px;
-  color: $colorText;
-  background: $bgTableHeader;
-  text-align: center;
-  vertical-align: top;
-  padding: 10px 5px;
-  + .custom-td-value{
-    border-left: 1px solid $colorBorder;
-  }
-}
-.custom-td-value{
-  display: inline-block;
-  font-size: 16px;
-  color: $colorText;
-  vertical-align: top;
-  padding: 10px 5px;
-  + .custom-td-value{
-    border-left: 1px solid $colorBorder;
-  }
-}
-.custom-td-text{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-.custom-theader{
-}
-.custom-td-img-list{
-  background: #e0e0e0;
-  padding: 5px;
-  margin: 20px 0 10px;
-}
-.img-list-item{
-  display: inline-block;
-  width: 90px;
-  height: 90px;
-  .item-img{
-    display: inline-block;
-    width: 90px;
-    height: 90px;
-    background: pink;
-  }
-}
-/deep/.el-select .el-input__inner,
-.el-select .el-input__inner:focus,
-.el-select .el-input.is-focus .el-input__inner{
-  border-color: #ffffff !important;
-}
 </style>
