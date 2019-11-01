@@ -11,7 +11,7 @@
         <div class="btn hard-disk"><i></i>本机硬盘</div>
       </li>
       <li>
-        <div class="btn msg-btn"><i></i>消息<span class="num-conner">18</span>
+        <div class="btn msg-btn" @click=" goMorePage() "><i></i>消息<span class="num-conner">18</span>
           <span v-if="msgNum > 0" class="num-conner">{{msgNum > 99 ? '99+' : msgNum}}</span>
         </div>
       </li>
@@ -19,7 +19,7 @@
         <div class="btn skin-btn"><i></i>皮肤</div>
       </li>
       <li>
-        <div class="btn user-name-btn"><i></i>管理员</div>
+        <div class="btn user-name-btn" @click="goUserPage()"><i></i>管理员</div>
       </li>
     </ul>
     <div class="quit-btn inline-block" @click="quit" title="退出登录">
@@ -44,6 +44,18 @@ export default {
     quit () {
       sessionStorage.setItem('token', '')
       this.$router.push('/home')
+    },
+    // 跳转所有信息页面的点击事件
+    goMorePage () {
+      this.$router.push({
+        name: 'messages'
+      })
+    },
+    // 跳转用户信息页面的点击事件
+    goUserPage () {
+      this.$router.push({
+        name: 'basic'
+      })
     }
   }
 }

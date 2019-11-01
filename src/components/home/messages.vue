@@ -509,32 +509,32 @@ export default {
     }
   }
   // 重构tabs样式
-  /deep/.el-tabs{
-    height: 100%;
-    .el-tabs__nav{
-      height: 50px;
-    }
-    .el-tabs__item{
-      height: 51px;
-      line-height: 50px;
-      font-size: 16px;
-      color: #777777;
-      .badge{
-        margin-left: 12px;
-      }
-      &.is-active{
-        color: $colorPrimary;
-        border-top: 2px solid $colorPrimary;
-      }
-    }
-    .el-tabs--border-card > .el-tabs__content{
-      padding: 0;
-    }
-    .el-tabs__content{
-      height: 100%;
-      .el-tab-pane{
-        height: 100%;
-      }
-    }
-  }
+  // /deep/.el-tabs{
+  //   height: 100%;
+  //   .el-tabs__nav{
+  //     height: 50px;
+  //   }
+  //   .el-tabs__item{
+  //     height: 51px;
+  //     line-height: 50px;
+  //     font-size: 16px;
+  //     color: #777777;
+  //     .badge{
+  //       margin-left: 12px;
+  //     }
+  //     &.is-active{
+  //       color: $colorPrimary;
+  //       border-top: 2px solid $colorPrimary;
+  //     }
+  //   }
+  //   .el-tabs--border-card > .el-tabs__content{
+  //     padding: 0;
+  //   }
+  //   .el-tabs__content{
+  //     height: 100%;
+  //     .el-tab-pane{
+  //       height: 100%;
+  //     }
+  //   }
+  // }
 </style>

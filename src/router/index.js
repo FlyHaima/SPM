@@ -112,8 +112,9 @@ const routes = [
       {
         path: '/basic',
         name: 'basic',
+        title: '用户信息',
         component: () =>
-          import(`@/components/safety-management/basic.vue`)
+          import(`@/components/home/basic.vue`)
       },
       {
         path: '/riskList',
