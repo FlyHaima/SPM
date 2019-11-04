@@ -2,9 +2,7 @@
 <!-- 说明：
   -- 1、level：用于规定最多可添加到第几层级；
   -- 2、addBro：如果在最后一级添加节点，会变成添加兄弟节点；
-  -- 3、showEditor：是否显示层级编辑按钮区域（关联权限）；
-  -- 4、showSearch：是否显示search input；
-  -- 5、treeName：树的名称
+  -- 3、treeName：树的名称
  -->
 <template>
   <div class="tree-diagram">
@@ -42,6 +40,11 @@
               <i :class="classObj(data)"></i>
               {{ node.label }}
             </span>
+            <span class="right-btns" v-if="data.riskLevelCode != null">
+              <i class="el-icon-plus" title="添加节点" @click.stop="() =>append(node, data)"></i>
+              <i class="el-icon-edit" title="修改节点" @click.stop="() =>edit(node)"></i>
+              <i class="el-icon-delete" title="删除节点"  @click.stop="() =>remove(node, data)"></i>
+            </span>
           </span>
       </el-tree>
     </div>
@@ -51,7 +54,20 @@
 <script>
 export default {
   name: 'treeDiagram',
-  props: ['treeData', 'treeName', 'hasUpload'],
+  props: {
+    treeData: {
+      type: Array,
+      default: null
+    },
+    treeName: {
+      type: String,
+      default: ''
+    },
+    hasUpload: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       filterText: '',
@@ -86,6 +102,7 @@ export default {
       return data.riskName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
+      console.log(data)
       this.$emit('open-loading', {
         riskId: data.riskId,
         level: data.level,
@@ -104,6 +121,84 @@ export default {
       } else if (data.riskLevelCode === '1') {
         return 'icon-danger'
       }
+    },
+    append (node, data) {
+      this.openAppendBox()
+      if (node.level < this.level) {
+        const newChild = { label: 'testtest', children: [] }
+        if (!data.children) {
+          this.$set(data, 'children', [])
+        }
+        console.log(data)
+        data.children.push(newChild)
+      } else if (this.addBro && node.level === this.level) {
+        // const newBro = { label: 'testtest', children: [] }
+      } else {
+        this.$message({
+          message: '最多可添加到第' + this.level + '级',
+          type: 'warning'
+        })
+      }
+    },
+    openAppendBox () {
+      this.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: '', // 输入正则
+        // inputErrorMessage: '' // 正则验证错误提示
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '节点设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
+    },
+    edit (node) {
+      this.openEditBox()
+      console.log(node)
+      node.data.label = 'new'
+    },
+    openEditBox () {
+      this.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: '', // 输入正则
+        // inputErrorMessage: '' // 正则验证错误提示
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '节点设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
+    },
+    remove (node, data) {
+      this.confirmRemove()
+      // const parent = node.parent
+      // const children = parent.data.children || parent.data
+      // const index = children.findIndex(d => d.id === data.id)
+      // children.splice(index, 1)
+    },
+    confirmRemove () {
+      this.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: '', // 输入正则
+        // inputErrorMessage: '' // 正则验证错误提示
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '节点设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
     }
   },
   watch: {

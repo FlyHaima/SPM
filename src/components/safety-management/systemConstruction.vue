@@ -79,7 +79,6 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
-import TreeDiagram from '../tree-diagram/treeDiagram'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 
 export default {

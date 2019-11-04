@@ -83,7 +83,7 @@ export default {
             {
               fname: '风险辨识评估',
               name: '风险辨识',
-              url: '/',
+              url: '/riskIdentified',
               active: false
             },
             {
