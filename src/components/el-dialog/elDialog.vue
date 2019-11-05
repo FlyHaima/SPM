@@ -3,7 +3,6 @@
     <el-dialog
       title="编辑"
       :visible.sync="dialogVisibleSwitch"
-      :close-on-click-modal="false"
       >
       <span>这是一段信息</span>
       <div slot="footer" class="dialog-footer">

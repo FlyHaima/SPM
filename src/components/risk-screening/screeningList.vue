@@ -198,15 +198,153 @@
 
             <el-main class="inner-content">
               <div class="container-box">
+                <div class="content-tools is-flex-end">
+                  <div class="tools-right">
+                    <el-button
+                      type="primary"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="handleAdd">
+                      添加</el-button>
+                      <el-button
+                      type="danger"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      删除</el-button>
+                      <el-button
+                      type="warning"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      导入</el-button>
+                    <el-button
+                      type="success"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      导出</el-button>
+                  </div>
+                </div>
+                <el-table
+                  :data="tableData"
+                  border
+                  style="width: 100%" >
+                  <el-table-column
+                    prop=" "
+                    label="序号"
+                    width="50">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="单元"
+                    header-align="center">
+                    <el-table-column
+                      prop=" "
+                      label="一级单元"
+                      width="100"
+                      header-align="center">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="二级单元"
+                      width="100"
+                      header-align="center">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="三级单元"
+                      width="100"
+                      header-align="center">
+                    </el-table-column>
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="检查内容"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="是否符合"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="存在问题"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="整改措施"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="责任方"
+                    header-align="center">
+                    <el-table-column
+                      prop=" "
+                      label="岗位"
+                      width="50"
+                      header-align="center">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="班组"
+                      width="50"
+                      header-align="center">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="部门"
+                      width="50"
+                      header-align="center">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="公司"
+                      width="50"
+                      header-align="center">
+                    </el-table-column>
+                  </el-table-column>
+                </el-table>
               </div>
             </el-main>
           </el-container>
         </el-tab-pane>
       </el-tabs>
     </el-main>
-    <own-el-dialog
-      :dialogShow="dialog.dialogVisible"
-    ></own-el-dialog>
+    <el-dialog
+      title="编辑"
+      :visible.sync="dialogVisible">
+      <el-form
+        :model="form"
+        ref="form"
+        size="mini"
+        label-width="100px"
+        label-position="top"
+      >
+        <el-form-item label="排查目标" inline-message>
+          <el-input
+            placeholder="请输入排查目标"></el-input>
+        </el-form-item>
+        <el-form-item label="排查内容与排查标注" >
+          <el-input
+            type="textarea"
+            show-word-limit
+            maxlength="200"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          size="small"
+          @click="submitForm()">确 定</el-button>
+        <el-button
+          size="small"
+          @click="dialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 <script>
@@ -219,9 +357,7 @@ export default {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
-      dialog: {
-        dialogVisible: false
-      },
+      dialogVisible: false,
       checked: false,
       organizationTree: [
         {
@@ -397,7 +533,7 @@ export default {
       this.pageLoading = false
     },
     handleAdd () {
-      this.dialog.dialogVisible = true
+      this.dialogVisible = true
     },
     // 导出excel
     exportEexcel () {

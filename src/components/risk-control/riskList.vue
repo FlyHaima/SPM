@@ -196,38 +196,6 @@ export default {
       importVisible: true, // 导出按钮显示开关
       tableVisible: false, // table显示切换开关
       tagVisible: false, // tag显示开关
-      // tableData1: [
-      //   {
-      //     'oneNo': null,
-      //     'oneName': null,
-      //     'oneId': null,
-      //     'twoId': null,
-      //     'threeId': '1ak070000001',
-      //     'onePid': null,
-      //     'twoNo': null,
-      //     'twoName': null,
-      //     'threeNo': null,
-      //     'threeName': '前端下的风险点',
-      //     'ontPid': null,
-      //     'riskBh': '1',
-      //     'riskPlace': '前端下的风险点',
-      //     'riskYs': '物的因素,人的因素',
-      //     'riskGkrs': '222,1',
-      //     'riskLevel': '1',
-      //     'describes': [
-      //       {
-      //         'workNo': '1',
-      //         'work': '测试数据1',
-      //         'bmp': '风险管控措施1'
-      //       },
-      //       {
-      //         'workNo': '2',
-      //         'work': '测试数据2',
-      //         'bmp': '风险管控措施2'
-      //       }
-      //     ]
-      //   }
-      // ],
       tableData: [],
       riskList: {
         riskBh: '', // 风险点编号
