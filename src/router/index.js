@@ -30,6 +30,73 @@ const SystemConstruction = resolve => require.ensure([], () => resolve(systemCon
 const basicData = require('@/components/safety-management/basicData')
 const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pagelist')
 
+// 首页
+const homeDashboard = require('@/components/home/dashboard.vue')
+const HomeDashboard = resolve => require.ensure([], () => resolve(homeDashboard), 'pagelist')
+// 所有消息
+const messages = require('@/components/home/messages.vue')
+const Messages = resolve => require.ensure([], () => resolve(messages), 'pagelist')
+// 消息详情页
+const messagesDetails = require('@/components/home/messagesDetails.vue')
+const MessagesDetails = resolve => require.ensure([], () => resolve(messagesDetails), 'pagelist')
+// 用户基本信息
+const basic = require('@/components/home/basic.vue')
+const Basic = resolve => require.ensure([], () => resolve(basic), 'pagelist')
+// 组织机构图
+const organigram = require('@/components/organigram/organigram.vue')
+const Organigram = resolve => require.ensure([], () => resolve(organigram), 'pagelist')
+// 风险点清单
+const riskList = require('@/components/risk-control/riskList.vue')
+const RiskList = resolve => require.ensure([], () => resolve(riskList), 'pagelist')
+// 岗位风险告知卡
+const riskInfoCard = require('@/components/risk-control/riskInfoCard.vue')
+const RiskInfoCard = resolve => require.ensure([], () => resolve(riskInfoCard), 'pagelist')
+// 风险点分级管控台账
+const riskBook = require('@/components/risk-control/riskBook.vue')
+const RiskBook = resolve => require.ensure([], () => resolve(riskBook), 'pagelist')
+// 重大安全风险
+const safeRisk = require('@/components/risk-control/safeRisk.vue')
+const SafeRisk = resolve => require.ensure([], () => resolve(safeRisk), 'pagelist')
+// 重大安全风险公告栏
+const riskBulletinBoard = require('@/components/risk-control/riskBulletinBoard.vue')
+const RiskBulletinBoard = resolve => require.ensure([], () => resolve(riskBulletinBoard), 'pagelist')
+// 风险四色图
+const riskColorImage = require('@/components/risk-control/riskColorImage.vue')
+const RiskColorImage = resolve => require.ensure([], () => resolve(riskColorImage), 'pagelist')
+// 作业风险比较图
+const riskCompareChart = require('@/components/risk-control/riskCompareChart.vue')
+const RiskCompareChart = resolve => require.ensure([], () => resolve(riskCompareChart), 'pagelist')
+// 风险分级管控表
+const riskControlList = require('@/components/risk-control/riskControlList.vue')
+const RiskControlList = resolve => require.ensure([], () => resolve(riskControlList), 'pagelist')
+// 排查清单
+const screeningList = require('@/components/risk-screening/screeningList.vue')
+const ScreeningList = resolve => require.ensure([], () => resolve(screeningList), 'pagelist')
+// 排查计划
+const screeningPlan = require('@/components/risk-screening/screeningPlan.vue')
+const ScreeningPlan = resolve => require.ensure([], () => resolve(screeningPlan), 'pagelist')
+// 排查周期
+const screeningCycle = require('@/components/risk-screening/screeningCycle.vue')
+const ScreeningCycle = resolve => require.ensure([], () => resolve(screeningCycle), 'pagelist')
+// 隐患排查
+const riskScreening = require('@/components/risk-screening/riskScreening.vue')
+const RiskScreening = resolve => require.ensure([], () => resolve(riskScreening), 'pagelist')
+// 隐患治理
+const riskManagement = require('@/components/risk-screening/riskManagement.vue')
+const RiskManagement = resolve => require.ensure([], () => resolve(riskManagement), 'pagelist')
+// 用户管理
+const userManagement = require('@/components/config-management/userManagement.vue')
+const UserManagement = resolve => require.ensure([], () => resolve(userManagement), 'pagelist')
+// 角色管理
+const roleManagement = require('@/components/config-management/roleManagement.vue')
+const RoleManagement = resolve => require.ensure([], () => resolve(roleManagement), 'pagelist')
+// 数据管理
+const dataManagement = require('@/components/config-management/dataManagement.vue')
+const DataManagement = resolve => require.ensure([], () => resolve(dataManagement), 'pagelist')
+// 日志
+const log = require('@/components/config-management/log.vue')
+const Log = resolve => require.ensure([], () => resolve(log), 'pagelist')
+
 Vue.use(Router)
 
 const routes = [
@@ -62,8 +129,7 @@ const routes = [
           access: true
         },
         parent: 'IndexPage',
-        component: () =>
-          import(`@/components/home/dashboard.vue`)
+        component: HomeDashboard
       },
       {
         path: '/messages',
@@ -73,8 +139,7 @@ const routes = [
           access: true
         },
         parent: 'IndexPage',
-        component: () =>
-          import(`@/components/home/messages.vue`)
+        component: Messages
       },
       {
         path: '/messagesDetails',
@@ -84,15 +149,13 @@ const routes = [
           access: true
         },
         parent: 'IndexPage',
-        component: () =>
-          import(`@/components/home/messagesDetails.vue`)
+        component: MessagesDetails
       },
       {
         path: '/organigram',
         name: 'organigram',
         title: '组织机构图',
-        component: () =>
-          import(`@/components/organigram/organigram.vue`)
+        component: Organigram
       },
       {
         path: '/organization',
@@ -122,99 +185,110 @@ const routes = [
         path: '/basic',
         name: 'basic',
         title: '用户信息',
-        component: () =>
-          import(`@/components/home/basic.vue`)
+        component: Basic
       },
       {
         path: '/riskList',
         name: 'riskList',
         title: '风险点清单',
-        component: () =>
-          import(`@/components/risk-control/riskList.vue`)
+        component: RiskList
       },
       {
         path: '/riskInfoCard',
         name: 'riskInfoCard',
         title: '岗位风险告知卡',
-        component: () =>
-          import(`@/components/risk-control/riskInfoCard.vue`)
+        component: RiskInfoCard
       },
       {
         path: '/riskBook',
         name: 'riskBook',
         title: '风险点分级管控台账',
-        component: () =>
-          import(`@/components/risk-control/riskBook.vue`)
+        component: RiskBook
       },
       {
         path: '/safeRisk',
         name: 'safeRisk',
         title: '重大安全风险',
-        component: () =>
-          import(`@/components/risk-control/safeRisk.vue`)
+        component: SafeRisk
       },
       {
         path: '/riskBulletinBoard',
         name: 'riskBulletinBoard',
         title: '重大安全风险公告栏',
-        component: () =>
-          import(`@/components/risk-control/riskBulletinBoard.vue`)
+        component: RiskBulletinBoard
       },
       {
         path: '/riskColorImage',
         name: 'riskColorImage',
         title: '风险四色图',
-        component: () =>
-          import(`@/components/risk-control/riskColorImage.vue`)
+        component: RiskColorImage
       },
       {
         path: '/riskCompareChart',
         name: 'riskCompareChart',
         title: '作业风险比较图',
-        component: () =>
-          import(`@/components/risk-control/riskCompareChart.vue`)
+        component: RiskCompareChart
+
       },
       {
         path: '/riskControlList',
         name: 'riskControlList',
         title: '风险分级管控表',
-        component: () =>
-          import(`@/components/risk-control/riskControlList.vue`)
+        component: RiskControlList
       },
       {
         path: '/screeningList',
         name: 'screeningList',
         title: '排查清单',
-        component: () =>
-          import(`@/components/risk-screening/screeningList.vue`)
+        component: ScreeningList
       },
       {
         path: '/screeningPlan',
         name: 'screeningPlan',
         title: '排查计划',
-        component: () =>
-          import(`@/components/risk-screening/screeningPlan.vue`)
+        component: ScreeningPlan
       },
       {
         path: '/screeningCycle',
         name: 'screeningCycle',
         title: '排查周期',
-        component: () =>
-          import(`@/components/risk-screening/screeningCycle.vue`)
+        component: ScreeningCycle
       },
       {
         path: '/riskScreening',
         name: 'riskScreening',
         title: '隐患排查',
-        component: () =>
-          import(`@/components/risk-screening/riskScreening.vue`)
+        component: RiskScreening
       },
       {
         path: '/riskManagement',
         name: 'riskManagement',
         title: '隐患治理',
-        component: () =>
-          import(`@/components/risk-screening/riskManagement.vue`)
+        component: RiskManagement
+      },
+      {
+        path: '/userManagement',
+        name: 'userManagement',
+        title: '用户管理',
+        component: UserManagement
+      },
+      {
+        path: '/roleManagement',
+        name: 'roleManagement',
+        title: '角色管理',
+        component: RoleManagement
+      },
+      {
+        path: '/dataManagement',
+        name: 'dataManagement',
+        title: '数据管理',
+        component: DataManagement
+      },
+      {
+        path: '/log',
+        name: 'log',
+        title: '日志',
+        component: Log
       }
     ]
   },
