@@ -527,7 +527,7 @@ export default {
   },
   methods: {
     openLoading () {
-      this.pageLoading = true
+      // this.pageLoading = true
     },
     closeLoading () {
       this.pageLoading = false

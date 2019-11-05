@@ -211,14 +211,6 @@ export default {
         }
       ],
       gwList: [
-        {
-          'label': '岗位5',
-          'value': '岗位5'
-        },
-        {
-          'label': '岗位2',
-          'value': '岗位2'
-        }
       ],
       tableData: []
     }
@@ -235,12 +227,6 @@ export default {
         if (res.code === 200) {
           this.organizationTree = res.data
         }
-      })
-    },
-    // 获取岗位option列表
-    getGwList () {
-      this.gwList.forEach(item => {
-        console.log(item)
       })
     },
     // 初始化table数据
@@ -273,6 +259,14 @@ export default {
       let token = sessionStorage.getItem('token')
       getTableData(token, id).then(res => {
         if (res.code === 200) {
+          this.gwList = []
+          res.gwList.forEach(item => {
+            let listItem = {
+              label: item.label,
+              value: item.value
+            }
+            this.gwList.push(listItem)
+          })
           if (res.data.length > 1 || res.data.length === 0) {
             this.tableVisible = true
             this.tableData = []
@@ -306,7 +300,7 @@ export default {
       vm.riskId = data.riskId
       vm.form.riskId = data.riskId
       vm.getTableData(vm.riskId)
-      vm.initTable()
+      // vm.initTable()
     },
     closeLoading () {
       this.pageLoading = false
@@ -324,12 +318,6 @@ export default {
       }).then(() => {
         this.$refs.form.validate((valid) => {
           if (valid) {
-            // let postData = {
-            //   riskId: this.riskId,
-            //   id: this.form.id,
-            //   workShop: this.form.workShop,
-            // }
-            console.log('submit')
             submitData(this.form).then((res) => {
               if (res.code === 200) {
                 this.$notify.success('提交成功')
