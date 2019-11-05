@@ -1,16 +1,479 @@
 <template>
-  <div>riskManagement</div>
+  <el-container class="inner-page-container" v-loading="pageLoading">
+    <el-header class="inner-header">
+      <bread-crumb :breadList="breadcrumb">
+      </bread-crumb>
+    </el-header>
+    <el-main class="inner-main-container">
+      <el-tabs type="border-card" class="height-100">
+        <el-tab-pane>
+          <span slot="label">基础管理类隐患排查清单</span>
+          <el-container class="inner-main-content">
+            <el-aside class="inner-aside" width="408px">
+              <tree-read-only
+                :tree-name="'风险单元'"
+                :tree-data="organizationTree"
+                @open-loading="openLoading"
+                @close-loading="closeLoading" >
+              </tree-read-only>
+            </el-aside>
+
+            <el-main class="inner-content">
+              <div class="container-box">
+                <div class="content-tools is-flex-end">
+                  <div class="tools-right">
+                    <el-button
+                      type="primary"
+                      size="medium"
+                      icon="el-icon-plus"
+                      @click="handleAdd">
+                      添加</el-button>
+                      <el-button
+                      type="danger"
+                      size="medium"
+                      icon="el-icon-delete"
+                      @click="exportEexcel">
+                      删除</el-button>
+                      <el-button
+                      type="warning"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      导入</el-button>
+                    <el-button
+                      type="success"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      导出</el-button>
+                  </div>
+                </div>
+                <el-table
+                  :data="tableData"
+                  border
+                  style="width: 100%">
+                  <el-table-column
+                    prop=" "
+                    label="风险点序号"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="风险点位置"
+                    header-align="center">
+                    <el-table-column
+                      prop=" "
+                      label="一级子单元"
+                      width="40">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="二级子单元"
+                      width="40">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="三级子单元"
+                      width="40">
+                    </el-table-column>
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="风险点名称"
+                    width="40"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="风险点编号"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    label="排查发现日期"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    label="重大隐患基本情况"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="可能导致事故类型"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改措施"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改情况"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改部门"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改责任人"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-main>
+          </el-container>
+        </el-tab-pane>
+
+        <el-tab-pane>
+          <span slot="label">生产现场类隐患排查清单</span>
+          <el-container class="inner-main-content">
+            <el-aside class="inner-aside" width="408px">
+              <tree-read-only
+                :tree-name="'风险单元'"
+                :tree-data="organizationTree"
+                @open-loading="openLoading"
+                @close-loading="closeLoading" >
+              </tree-read-only>
+            </el-aside>
+
+            <el-main class="inner-content">
+              <div class="container-box">
+                <div class="content-tools is-flex-end">
+                  <div class="tools-right">
+                    <el-button
+                      type="primary"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="handleAdd">
+                      添加</el-button>
+                      <el-button
+                      type="danger"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      删除</el-button>
+                      <el-button
+                      type="warning"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      导入</el-button>
+                    <el-button
+                      type="success"
+                      size="medium"
+                      icon="el-icon-download"
+                      @click="exportEexcel">
+                      导出</el-button>
+                  </div>
+                </div>
+                <el-table
+                  :data="tableData"
+                  border
+                  style="width: 100%">
+                  <el-table-column
+                    prop=" "
+                    label="风险点序号"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="风险点位置"
+                    header-align="center">
+                    <el-table-column
+                      prop=" "
+                      label="一级子单元"
+                      width="40">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="二级子单元"
+                      width="40">
+                    </el-table-column>
+                    <el-table-column
+                      prop=" "
+                      label="三级子单元"
+                      width="40">
+                    </el-table-column>
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="风险点名称"
+                    width="40"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="风险点编号"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    label="排查发现日期"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    label="重大隐患基本情况"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="可能导致事故类型"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改措施"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改情况"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改部门"
+                    header-align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="整改责任人"
+                    header-align="center"
+                    width="40">
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-main>
+          </el-container>
+        </el-tab-pane>
+      </el-tabs>
+    </el-main>
+    <el-dialog
+      title="编辑"
+      :visible.sync="dialogVisible">
+      <el-form
+        :model="form"
+        ref="form"
+        size="mini"
+        label-width="100px"
+        label-position="top"
+      >
+        <el-form-item label="排查目标" inline-message>
+          <el-input
+            placeholder="请输入排查目标"></el-input>
+        </el-form-item>
+        <el-form-item label="排查内容与排查标注" >
+          <el-input
+            type="textarea"
+            show-word-limit
+            maxlength="200"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          size="small"
+          @click="submitForm()">确 定</el-button>
+        <el-button
+          size="small"
+          @click="dialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+  </el-container>
 </template>
 <script>
+import BreadCrumb from '../Breadcrumb/Breadcrumb'
+import TreeReadOnly from '../tree-diagram/treeReadOnly'
+import OwnElDialog from '../el-dialog/elDialog'
 export default {
   name: 'riskManagement',
   data () {
     return {
+      breadcrumb: ['风险辨识评估', '风险划分'],
+      pageLoading: false,
+      dialogVisible: false,
+      checked: false,
+      organizationTree: [
+        {
+          'children': [
+            {
+              'children': [
+                {
+                  'children': [
+                    {
+                      'children': [
+                        {
+                          'children': null,
+                          'riskId': '1ak070000001',
+                          'riskName': '前端下的风险点',
+                          'riskLevelCode': '2',
+                          'pId': '6',
+                          'orderNo': 1,
+                          'level': '4'
+                        },
+                        {
+                          'children': null,
+                          'riskId': '1ak070000002',
+                          'riskName': '前端下的风险点',
+                          'riskLevelCode': '1',
+                          'pId': '6',
+                          'orderNo': 2,
+                          'level': '4'
+                        },
+                        {
+                          'children': null,
+                          'riskId': '1ak070000003',
+                          'riskName': '前端下的风险点',
+                          'riskLevelCode': '3',
+                          'pId': '6',
+                          'orderNo': 3,
+                          'level': '4'
+                        }
+                      ],
+                      'riskId': '6',
+                      'riskName': '前端',
+                      'riskLevelCode': null,
+                      'pId': '4',
+                      'orderNo': null,
+                      'level': '3'
+                    },
+                    {
+                      'children': null,
+                      'riskId': '1',
+                      'riskName': '测试风险点',
+                      'riskLevelCode': '3',
+                      'pId': '4',
+                      'orderNo': 1,
+                      'level': '4'
+                    },
+                    {
+                      'children': null,
+                      'riskId': '2',
+                      'riskName': '风险点2',
+                      'riskLevelCode': '3',
+                      'pId': '4',
+                      'orderNo': 2,
+                      'level': '4'
+                    }
+                  ],
+                  'riskId': '4',
+                  'riskName': '技术部1',
+                  'riskLevelCode': null,
+                  'pId': '11',
+                  'orderNo': null,
+                  'level': '2'
+                }
+              ],
+              'riskId': '11',
+              'riskName': '黑龙江多米科技有限公司',
+              'riskLevelCode': null,
+              'pId': '1',
+              'orderNo': null,
+              'level': '1'
+            },
+            {
+              'children': [
+                {
+                  'children': null,
+                  'riskId': '1a9020000003',
+                  'riskName': '测试组织节点12',
+                  'riskLevelCode': '3',
+                  'pId': '1a9020000001',
+                  'orderNo': null,
+                  'level': '2'
+                },
+                {
+                  'children': null,
+                  'riskId': '1a9020000006',
+                  'riskName': '测试组织节点555',
+                  'riskLevelCode': '0',
+                  'pId': '1a9020000001',
+                  'orderNo': null,
+                  'level': '2'
+                },
+                {
+                  'children': null,
+                  'riskId': '1aa020000002',
+                  'riskName': '测试组织节点5',
+                  'riskLevelCode': '1',
+                  'pId': '1a9020000001',
+                  'orderNo': null,
+                  'level': '2'
+                },
+                {
+                  'children': null,
+                  'riskId': '2',
+                  'riskName': '人力部',
+                  'pId': '1a9020000001',
+                  'riskLevelCode': '2',
+                  'orderNo': null,
+                  'level': '2'
+                },
+                {
+                  'children': null,
+                  'riskId': '3',
+                  'riskName': '设计部',
+                  'riskLevelCode': '4',
+                  'pId': '1a9020000001',
+                  'orderNo': null,
+                  'level': '2'
+                },
+                {
+                  'children': null,
+                  'riskId': '5',
+                  'riskName': '后端',
+                  'riskLevelCode': '3',
+                  'pId': '1a9020000001',
+                  'orderNo': null,
+                  'level': '3'
+                }
+              ],
+              'riskId': '1a9020000001',
+              'riskName': '黑龙江多米科技有限公司1',
+              'riskLevelCode': null,
+              'pId': '1',
+              'orderNo': null,
+              'level': '1'
+            }
+          ],
+          'riskId': '1',
+          'riskName': '多多集团',
+          'riskLevelCode': null,
+          'pId': '0',
+          'orderNo': null,
+          'level': '0'
+        }
+      ],
+      tableData: [{
+        workshop: '变压站',
+        jobs: '配电员',
+        mianRisk: '员工吸烟',
+        riskFactor: ' ',
+        hazardType: ' ',
+        emergency: ' '
+      }]
+    }
+  },
+  components: {
+    TreeReadOnly,
+    BreadCrumb,
+    OwnElDialog
+  },
+  methods: {
+    openLoading () {
+      this.pageLoading = true
+    },
+    closeLoading () {
+      this.pageLoading = false
+    },
+    handleAdd () {
+      this.dialogVisible = true
+    },
+    // 导出excel
+    exportEexcel () {
+
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
+@import '../../utils/css/style.scss';
 </style>
