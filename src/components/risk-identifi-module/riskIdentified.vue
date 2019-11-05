@@ -44,12 +44,8 @@
                 label="进度"
                 align="center">
                 <template slot-scope="scope">
-                  <el-steps :active="scope.row.progress" align-center>
-                    <el-step></el-step>
-                    <el-step></el-step>
-                    <el-step></el-step>
-                    <el-step></el-step>
-                  </el-steps>
+                  <table-step :active="scope.row.progress">
+                  </table-step>
                 </template>
               </el-table-column>
               <el-table-column
@@ -63,10 +59,20 @@
                 width="80"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="text">辨识</el-button>
+                  <el-button size="mini" type="text" @click="openDialog(scope.row.id)">辨识</el-button>
                 </template>
               </el-table-column>
             </el-table>
+
+            <el-dialog :title="'计划发布'" :visible.sync="showDialog"
+                       :width="'1200px'"
+                       :show-close="false">
+              <div class="dialog-box"></div>
+              <!--<div slot="footer" class="dialog-footer" style="margin-top: 20px; text-align: right;">-->
+                <!--<el-button size="small" type="primary" @click="submitEdit()">保 存</el-button>-->
+                <!--<el-button size="small" @click="showEdit = false">取 消</el-button>-->
+              <!--</div>-->
+            </el-dialog>
 
             <div class="pages">
               <el-pagination
@@ -85,6 +91,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
+import TableStep from '../step/step'
 
 export default {
   name: 'riskIdentified',
@@ -246,22 +253,38 @@ export default {
       riskList: [
         {
           name: '道路光线过暗，看不清',
-          progress: 2,
-          state: 1
+          progress: 0,
+          state: 1,
+          id: 9732
         },
         {
           name: '道路光线过暗，看不清',
           progress: 1,
-          state: 0
+          state: 1,
+          id: 9732
+        },
+        {
+          name: '道路光线过暗，看不清',
+          progress: 2,
+          state: 0,
+          id: 9732
         },
         {
           name: '道路光线过暗，看不清',
           progress: 3,
-          state: 2
+          state: 2,
+          id: 9732
+        },
+        {
+          name: '道路光线过暗，看不清',
+          progress: 4,
+          state: 2,
+          id: 9732
         }
       ],
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
-      multipleSelection: []
+      multipleSelection: [],
+      showDialog: false
     }
   },
   methods: {
@@ -273,9 +296,12 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    openDialog (id) {
+      this.showDialog = true
     }
   },
-  components: {TreeReadOnly, BreadCrumb}
+  components: {TreeReadOnly, BreadCrumb, TableStep}
 }
 </script>
 
@@ -333,6 +359,16 @@ export default {
         margin-top: 28px;
         text-align: right;
       }
+    }
+  }
+}
+/deep/.inner-page-container {
+  .inner-content {
+    .el-table .el-table__body .cell {
+      line-height: 26px;
+    }
+    .el-table td{
+      padding: 5px 0;
     }
   }
 }
