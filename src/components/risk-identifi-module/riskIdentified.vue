@@ -55,6 +55,7 @@
                 <template slot-scope="scope">{{riskStates[scope.row.state]}}</template>
               </el-table-column>
               <el-table-column
+                v-if="isEndPint"
                 label="操作"
                 width="80"
                 align="center">
@@ -64,10 +65,29 @@
               </el-table-column>
             </el-table>
 
-            <el-dialog :title="'计划发布'" :visible.sync="showDialog"
+            <el-dialog :visible.sync="showDialog"
                        :width="'1200px'"
                        :show-close="false">
-              <div class="dialog-box"></div>
+              <div class="dialog-box">
+                <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+                  <el-tab-pane name="step-1">
+                    <span slot="label">① 辨识范围</span>
+                    辨识范围
+                  </el-tab-pane>
+                  <el-tab-pane name="step-2">
+                    <span slot="label">② 划分单元</span>
+                    ② 划分单元
+                  </el-tab-pane>
+                  <el-tab-pane :disabled="true" name="step-3">
+                    <span slot="label">③ 开展评估</span>
+                    ③ 开展评估
+                  </el-tab-pane>
+                  <el-tab-pane name="step-4">
+                    <span slot="label">④ 管控措施</span>
+                    ④ 管控措施
+                  </el-tab-pane>
+                </el-tabs>
+              </div>
               <!--<div slot="footer" class="dialog-footer" style="margin-top: 20px; text-align: right;">-->
                 <!--<el-button size="small" type="primary" @click="submitEdit()">保 存</el-button>-->
                 <!--<el-button size="small" @click="showEdit = false">取 消</el-button>-->
@@ -250,6 +270,7 @@ export default {
           ]
         }
       ],
+      isEndPint: true, // 只有点击最尾节点，才会显示表格里的操作列
       riskList: [
         {
           name: '道路光线过暗，看不清',
@@ -284,7 +305,8 @@ export default {
       ],
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
       multipleSelection: [],
-      showDialog: false
+      showDialog: false,
+      activeName: 'step-2'
     }
   },
   methods: {
@@ -299,6 +321,9 @@ export default {
     },
     openDialog (id) {
       this.showDialog = true
+    },
+    handleClick (tab, event) {
+      console.log(tab, event)
     }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
@@ -359,6 +384,9 @@ export default {
         margin-top: 28px;
         text-align: right;
       }
+      .dialog-box{
+        height: 380px;
+      }
     }
   }
 }
@@ -370,6 +398,22 @@ export default {
     .el-table td{
       padding: 5px 0;
     }
+    .el-dialog{
+      border-radius: 0;
+    }
+    .el-dialog__header{
+      display: none;
+    }
+    .el-dialog__body{
+      padding: 0;
+    }
   }
 }
+/*  el-tab */
+/deep/.inner-main-container{
+  .el-tabs--border-card{
+    height: 100%;
+  }
+}
+
 </style>
