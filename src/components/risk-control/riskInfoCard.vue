@@ -10,7 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
-            @open-loading="openLoading"
+            @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
         </el-aside>
@@ -23,7 +23,7 @@
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="exportEexcel">
+                  @click="exportExcelHandel">
                    导出</el-button>
               </div>
             </div>
@@ -63,6 +63,7 @@
             <el-form
               :model = "form"
               ref = "form"
+              @submit.native.prevent="submitForm"
               class="card-form"
               v-else
             >
@@ -72,7 +73,6 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">车间</div>
                     <div class="custom-td-value is-ellipsis">
-                      <!-- {{riskList.workShop}} -->
                       <el-input
                         v-model.trim="form.workShop"
                         disabled></el-input>
@@ -155,7 +155,8 @@
               <div class="card-button">
                 <el-button
                 type="primary"
-                @click="submitForm">保存</el-button>
+                :loading="submitting"
+                native-type="submit">保存</el-button>
               </div>
             </el-form>
 
@@ -168,172 +169,109 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {
-  getTreeData
-} from '@/api/riskControl/riskList'
-import {
-  getTableData,
-  submitData
-} from '@/api/riskControl/riskCard'
+import axios from '@/api/axios'
+import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'riskInfoCard',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['风险分级管控', '岗位风险告知卡'],
       pageLoading: false,
       tableVisible: false,
       riskId: '', // id
       form: {
-        id: '',
-        riskId: '',
-        workShop: '',
-        gw: '',
-        centerRisk: '',
-        factor: '',
-        riskResult: '',
-        emergency: ''
+        id: '', // 告知卡id
+        riskId: '', // 风险点id
+        workShop: '', // 车间
+        gw: '', // 岗位
+        centerRisk: '', // 主要风险源
+        factor: '', // 因素
+        riskResult: '', // 事故后果
+        emergency: '' // 措施
       },
       organizationTree: [],
-      tableData1: [
-        {
-          'pIds': '0,1am020000782,1am020000783,1am020000794,1am020000803,1am020000804,1am020000805,1at070000002',
-          'id': '1',
-          'riskId': '1at070000002',
-          'workShop': '车间1',
-          'gw': '岗位1',
-          'centerRisk': '风险源1，风险源2',
-          'factor': '因素1，因素2',
-          'riskResult': '危险1，伤害2',
-          'emergency': '措施1，措施2',
-          'impTime': '2019-11-01T03:41:43.000+0000',
-          'imper': 'admin'
-        }
-      ],
-      gwList: [
-      ],
-      tableData: []
+      gwList: [], // 岗位选项列表
+      tableData: [],
+      submitting: false
     }
   },
   created () {
-    // this.initTable()
-    this.getTreeData()
-    this.getTableData(this.riskId)
+    this.fetchTreeData()
   },
   methods: {
     // 获取树的数据
-    getTreeData () {
-      getTreeData().then(res => {
-        if (res.code === 200) {
-          this.organizationTree = res.data
-        }
-      })
-    },
-    // 初始化table数据
-    initTable () {
-      if (this.tableData1.length > 1) {
-        this.tableVisible = true
-        this.tableData1.forEach(item => {
-          let tableItem = {
-            workShop: item.workShop,
-            gw: item.gw,
-            centerRisk: item.centerRisk,
-            factor: item.factor,
-            riskResult: item.riskResult,
-            emergency: item.emergency
+    fetchTreeData () {
+      axios
+        .get('spm/riskia/getRiskTree')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.organizationTree = res.data.data
           }
-          this.tableData.push(tableItem)
         })
-      } else {
-        this.tableVisible = false
-        let fdata = this.tableData1[0]
-        this.form.workShop = fdata.workShop // 车间
-        this.form.centerRisk = fdata.centerRisk // 主要风险源
-        this.form.factor = fdata.factor // 风险因素
-        this.form.riskResult = fdata.riskResult // 潜在事故及危害类型
-        this.form.emergency = fdata.emergency // 异常情况应急措施
-      }
     },
-    // 获取表格数据
-    getTableData (id, level) {
-      let token = sessionStorage.getItem('token')
-      getTableData(token, id).then(res => {
-        if (res.code === 200) {
-          this.gwList = []
-          res.gwList.forEach(item => {
-            let listItem = {
-              label: item.label,
-              value: item.value
-            }
-            this.gwList.push(listItem)
-          })
-          if (res.data.length > 1 || res.data.length === 0) {
-            this.tableVisible = true
-            this.tableData = []
-            res.data.forEach(item => {
-              let tableItem = {
-                workShop: item.workShop,
-                gw: item.gw,
-                centerRisk: item.centerRisk,
-                factor: item.factor,
-                riskResult: item.riskResult,
-                emergency: item.emergency
-              }
-              this.tableData.push(tableItem)
-            })
-          } else {
-            this.tableVisible = false
-            let fdata = res.data[0]
-            this.form.id = fdata.id
-            this.form.workShop = fdata.workShop // 车间
-            this.form.centerRisk = fdata.centerRisk // 主要风险源
-            this.form.factor = fdata.factor // 风险因素
-            this.form.riskResult = fdata.riskResult // 潜在事故及危害类型
-            this.form.emergency = fdata.emergency // 异常情况应急措施
-          }
-        }
-      })
-    },
-    openLoading (data) {
-      // this.pageLoading = true
+    // 获取table数据
+    fetchTableData () {
+      this.pageLoading = true
       let vm = this
-      vm.riskId = data.riskId
-      vm.form.riskId = data.riskId
-      vm.getTableData(vm.riskId)
-      // vm.initTable()
+      axios
+        .get(`spm/riskCard/getRiskCrad?&id=${vm.riskId}`)
+        .then((res) => {
+          if (res.data.code === 200) {
+            if (res.data.gwlist) {
+              this.gwList = res.data.gwlist
+            }
+            if (res.data.data.length > 1 || res.data.data.length === 0) {
+              this.tableVisible = true
+              this.tableData = res.data.data
+            } else {
+              this.tableVisible = false
+              this.form = res.data.data[0]
+            }
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
     },
-    closeLoading () {
-      this.pageLoading = false
-    },
-    // 导出excel
-    exportEexcel () {
-
-    },
+    // form表单提交事件
     submitForm () {
-      // let self = this
       this.$confirm('确定修改风险告知卡?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$refs.form.validate((valid) => {
-          if (valid) {
-            submitData(this.form).then((res) => {
-              if (res.code === 200) {
-                this.$notify.success('提交成功')
-              } else {
-                this.$message({
-                  message: res.message,
-                  type: 'warning'
-                })
-              }
-              this.pageLoading = false
-            })
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
+        this.submitting = true
+        axios
+          .post('spm/riskCard/addCard', this.form)
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$notify.success('提交成功')
+              this.fetchTableData()
+            } else {
+              this.$message({
+                message: res.data.message,
+                type: 'warning'
+              })
+            }
+          })
+          .finally(() => {
+            this.submitting = false
+          })
+      })
+    },
+    treeClickHandle (data) {
+      let vm = this
+      vm.riskId = data.riskId
+      vm.form.riskId = data.riskId
+      vm.fetchTableData()
+    },
+    closeLoading () {
+      this.pageLoading = false
+    },
+    // 导出excel
+    exportExcelHandel () {
+      exportExcel(`spm/riskCard/exportCards`, {
+        id: this.riskId
       })
     }
   },

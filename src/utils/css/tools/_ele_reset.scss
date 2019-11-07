@@ -2,7 +2,9 @@
 
 // 重置 table
 .el-table {
-  td{padding: 0;}
+  td{
+    padding: 4px;
+  }
   th{
     padding: 8px 0;
     background: #f5f6fa;

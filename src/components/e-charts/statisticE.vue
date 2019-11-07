@@ -90,13 +90,13 @@ export default {
     reduceData () {
       this.chartData.forEach(item => {
         if (item.value <= 25) {
-          this.colorList.push(['#d13a38', '#0568eb'])
+          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 25 && item.value <= 50) {
-          this.colorList.push(['#f4a028', '#fff223', '#fff223', '#0568eb'])
+          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 50 && item.value <= 75) {
-          this.colorList.push(['#d13a38', '#f4a028', '#f4a028', '#0568eb'])
+          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 75 && item.value <= 100) {
-          this.colorList.push(['#d13a38', '#0568eb'])
+          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         }
         this.allValue.push(item.value)
         this.allDate.push(item.name)
@@ -190,9 +190,15 @@ export default {
                   0, 0, 0, 1,
                   [
                     {offset: 0, color: chartColorList[index][0]},
-                    {offset: 1, color: chartColorList[index][1]}
-                    // {offset: 0.6, color: chartColorList[index][2]},
-                    // {offset: 1, color: chartColorList[index][3]}
+                    {offset: 0.1, color: chartColorList[index][1]},
+                    {offset: 0.2, color: chartColorList[index][2]},
+                    {offset: 0.3, color: chartColorList[index][3]},
+                    {offset: 0.4, color: chartColorList[index][4]},
+                    {offset: 0.5, color: chartColorList[index][5]},
+                    {offset: 0.6, color: chartColorList[index][6]},
+                    {offset: 0.7, color: chartColorList[index][7]},
+                    {offset: 0.8, color: chartColorList[index][8]},
+                    {offset: 1, color: chartColorList[index][9]}
                   ]
                 )
               }
