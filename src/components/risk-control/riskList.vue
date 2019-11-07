@@ -10,7 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
-            @open-loading="openLoading"
+            @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
         </el-aside>
@@ -24,16 +24,15 @@
                   :limit="1"
                   accept=".xlsx"
                   action="http://upload-z1.qiniup.com"
-                  >
+                  :file-list="importFileList">
                   <el-button type="warning" size="medium" icon="el-icon-upload2">
                    导入</el-button>
                 </el-upload>
-
                 <el-button
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="exportEexcel">
+                  @click="exportEexcelHandel">
                    导出</el-button>
               </div>
             </div>
@@ -178,20 +177,18 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {
-  getTreeData,
-  getTableData
-} from '@/api/riskControl/riskList'
+import axios from '@/api/axios'
+// import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'riskList',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['风险分级管控', '风险点清单'],
       pageLoading: false,
       organizationTree: [], // tree data
       riskId: '', // id
-      level: '', // 树层级,
+      level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
       importVisible: true, // 导出按钮显示开关
       tableVisible: false, // table显示切换开关
@@ -206,108 +203,66 @@ export default {
         riskDjCode: '', // 风险等级code
         riskDj: '' // 风险等级
       },
-      riskTableData: []
+      riskTableData: [],
+      importFileList: [] // 导入列表
+      // importData: {
+      //   code: '200'
+      // } // 上传时附带的额外参数
     }
   },
   created () {
-    this.getTreeData()
-    this.getTableData(this.riskId, this.level)
+    this.fetchTreeData()
+    this.fetchTableData()
   },
   methods: {
     // 获取树的数据
-    getTreeData () {
-      getTreeData().then(res => {
-        if (res.code === 200) {
-          this.organizationTree = res.data
-        }
-      })
-    },
-    initTable () {
-      if (this.tableData1.length > 1) {
-        this.tableVisible = true
-        this.tableData1.forEach(item => {
-          let tableItem = {
-            riskBh: item.riskBh,
-            threeName: item.threeName,
-            riskPlace: item.riskPlace,
-            riskYs: item.riskYs,
-            riskGkrs: item.riskGkrs,
-            riskLevel: item.riskLevel
+    fetchTreeData () {
+      axios
+        .get('spm/riskia/getRiskTree')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.organizationTree = res.data.data
           }
-          this.tableData.push(tableItem)
         })
-      } else {
-        this.tableVisible = false
-        let fdata = this.tableData1[0]
-        fdata.describes.forEach(item => {
-          let tableItem = {
-            workNo: item.workNo, // 序号
-            work: item.work, // 检查事项
-            bmp: item.bmp // 风险管控措施
-          }
-          this.riskTableData.push(tableItem)
-        })
-        this.riskList.riskBh = fdata.riskBh // 风险点编号
-        this.riskList.threeName = fdata.threeName // 风险点名称
-        this.riskList.riskPlace = fdata.riskPlace // 风险点位置
-        this.riskList.riskYs = fdata.riskYs // 风险因素
-        this.riskList.riskGkrs = fdata.riskGkrs // 风险级别
-        this.riskList.riskLevel = fdata.riskLevel // 风险等级
-        this.riskList.riskLevelCode = fdata.riskLevelCode // 管控单位负责人
-      }
     },
-    // 获取表格数据
-    getTableData (id, level) {
-      let token = sessionStorage.getItem('token')
-      getTableData(token, id, level).then(res => {
-        if (res.code === 200) {
-          if (res.data.length > 1 || res.data.length === 0) {
-            this.tableVisible = true
-            this.tableData = []
-            res.data.forEach(item => {
-              let tableItem = {
-                riskBh: item.riskBh,
-                threeName: item.threeName,
-                riskPlace: item.riskPlace,
-                riskYs: item.riskYs,
-                riskGkrs: item.riskGkrs,
-                riskDjCode: item.riskDjCode,
-                riskDj: item.riskDj
+    // 获取table数据
+    fetchTableData () {
+      this.pageLoading = true
+      let vm = this
+      axios
+        .get(`spm/riskLevel/getRiskCrad?&id=${vm.riskId}&level=${vm.level}`)
+        .then((res) => {
+          if (res.data.code === 200) {
+            if (res.data.data.length > 1 || res.data.data.length === 0) {
+              this.tableVisible = true
+              // this.tableData = []
+              this.tableData = res.data.data
+              if (this.tableData.riskDj) {
+                this.tagVisible = true
+              } else {
+                this.tagVisible = false
               }
-              this.tableData.push(tableItem)
-            })
-            if (this.tableData.riskDj) {
-              this.tagVisible = true
             } else {
-              this.tagVisible = false
-            }
-          } else {
-            this.tableVisible = false
-            let fdata = res.data[0]
-            this.riskList.riskBh = fdata.riskBh
-            this.riskList.threeName = fdata.threeName
-            this.riskList.riskPlace = fdata.riskPlace
-            this.riskList.riskYs = fdata.riskYs
-            this.riskList.riskGkrs = fdata.riskGkrs
-            this.riskList.riskDj = fdata.riskDj
-            this.riskList.riskDjCode = fdata.riskDjCode
-            if (this.riskList.riskDj) {
-              this.tagVisible = true
-            } else {
-              this.tagVisible = false
+              this.tableVisible = false
+              this.riskList = res.data.data[0]
+              if (this.riskList.riskDj) {
+                this.tagVisible = true
+              } else {
+                this.tagVisible = false
+              }
             }
           }
-        }
-      })
+        }).finally(() => {
+          this.pageLoading = false
+        })
     },
     // 处理树的点击事件
-    openLoading (data) {
-      // this.pageLoading = true
+    treeClickHandle (data) {
       let vm = this
       vm.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
-      vm.getTableData(vm.riskId, vm.level)
+      vm.fetchTableData()
       if (vm.treeLevel === '4') {
         vm.importVisible = false
       } else {
@@ -318,8 +273,8 @@ export default {
       this.pageLoading = false
     },
     // 导出excel
-    exportEexcel () {
-
+    exportEexcelHandel () {
+      // exportExcel('spm/riskLevel/exportTz')
     }
   },
   computed: {
