@@ -69,22 +69,64 @@
                        :width="'1200px'"
                        :show-close="false">
               <div class="dialog-box">
-                <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
-                  <el-tab-pane name="step-1">
+                <el-tabs v-model="activeStep" @tab-click="handleClick" type="border-card">
+                  <el-tab-pane :disabled="doneStep<1 ? true : false" name="step-1">
                     <span slot="label">① 辨识范围</span>
-                    辨识范围
+                    <div class="step-box step-1-box">
+                      <p class="step-1-p">
+                        <span class="label">风险点：</span>
+                        <el-input size="medium" disabled="disabled" v-model="stepObjA.pointA"></el-input>
+                        <el-input size="medium" disabled="disabled" v-model="stepObjA.pointB"></el-input>
+                        <el-input size="medium" disabled="disabled" v-model="stepObjA.pointC"></el-input>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">辨识范围：</span>
+                        <el-select v-model="stepObjA.identifierRange"  placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in rangeOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">作业步骤：</span>
+                        <el-input size="medium" v-model="stepObjA.workStep"></el-input>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">风险类别/事故后果：</span>
+                        <el-select v-model="stepObjA.riskType"  placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in riskTypeOptions"
+                            :key="item"
+                            :label="item"
+                            :value="item">
+                          </el-option>
+                        </el-select>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">风险因素：</span>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">风险点类别：</span>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">风险评估法：</span>
+                      </p>
+                    </div>
                   </el-tab-pane>
-                  <el-tab-pane name="step-2">
+                  <el-tab-pane :disabled="doneStep<2 ? true : false" name="step-2">
                     <span slot="label">② 划分单元</span>
-                    ② 划分单元
+                    <div class="step-box step-2-box"></div>
                   </el-tab-pane>
-                  <el-tab-pane :disabled="true" name="step-3">
+                  <el-tab-pane :disabled="doneStep<3 ? true : false" name="step-3">
                     <span slot="label">③ 开展评估</span>
-                    ③ 开展评估
+                    <div class="step-box step-3-box"></div>
                   </el-tab-pane>
-                  <el-tab-pane name="step-4">
+                  <el-tab-pane :disabled="doneStep<4 ? true : false" name="step-4">
                     <span slot="label">④ 管控措施</span>
-                    ④ 管控措施
+                    <div class="step-box step-4-box"></div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -306,7 +348,46 @@ export default {
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
       multipleSelection: [],
       showDialog: false,
-      activeName: 'step-2'
+      activeStep: 'step-1', // 1-4; 起始显示tab
+      doneStep: 3, // 1-4; 已完成步
+      stepObjA: {
+        pointA: '电气部',
+        pointB: '变压器',
+        pointC: '设备操作',
+        identifierRange: '',
+        workStep: '',
+        riskType: '',
+        riskReason: '',
+        riskPointType: '',
+        identifierWay: ''
+      },
+      rangeOptions: [
+        {
+          value: '作业活动',
+          label: '作业活动'
+        }, {
+          value: '设备设施',
+          label: '设备设施'
+        }, {
+          value: '人员行为',
+          label: '人员行为'
+        }, {
+          value: '物料材料',
+          label: '物料材料'
+        }, {
+          value: '工艺技术',
+          label: '工艺技术'
+        }, {
+          value: '作业环境',
+          label: '作业环境'
+        }, {
+          value: '安全管理',
+          label: '安全管理'
+        }
+      ],
+      riskTypeOptions: ['物体打击', '车辆伤害', '机械伤害', '触电', '淹溺', '灼烫', '火灾',
+        '高处坠落', '坍塌', '冒顶片帮', '透水', '放炮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸',
+        '其它爆炸', '中毒和窒息', '其它伤害']
     }
   },
   methods: {
@@ -385,7 +466,45 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 380px;
+        height: 468px;
+        .step-box{
+          width: 100%;
+          height: 100%;
+          position: relative;
+          &.step-1-box{
+            .step-1-p{
+              line-height: 36px;
+              height: 36px;
+              margin-bottom: 16px;
+              position: relative;
+              padding-left: 400px;
+              .label{
+                position: absolute;
+                left: 0;
+                width: 330px;
+                line-height: 36px;
+                font-size: 16px;
+                color: #646464;
+                text-align: right;
+              }
+              .el-select{
+                width: 360px;
+              }
+              .el-input{
+                width: 360px;
+              }
+              &:first-child{
+                .el-input{
+                  width: 154px;
+                  margin-right: 17px;
+                }
+              }
+            }
+          }
+          &.step-2-box{}
+          &.step-3-box{}
+          &.step-4-box{}
+        }
       }
     }
   }
@@ -413,6 +532,9 @@ export default {
 /deep/.inner-main-container{
   .el-tabs--border-card{
     height: 100%;
+  }
+  .el-tabs--border-card>.el-tabs__content{
+    height: 428px;
   }
 }
 
