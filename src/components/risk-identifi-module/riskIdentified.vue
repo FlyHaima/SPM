@@ -65,10 +65,10 @@
               </el-table-column>
             </el-table>
 
-            <el-dialog :visible.sync="showDialog"
+            <el-dialog :visible.sync="showDialog" :close-on-click-modal="false" :close-on-press-escape="false"
                        :width="'1200px'"
                        :show-close="false">
-              <div class="dialog-box">
+              <div class="dialog-box" v-loading="dialogLoading">
                 <el-tabs v-model="activeStep" @tab-click="handleClick" type="border-card">
                   <el-tab-pane :disabled="doneStep<1 ? true : false" name="step-1">
                     <span slot="label">① 辨识范围</span>
@@ -107,18 +107,90 @@
                       </p>
                       <p class="step-1-p">
                         <span class="label">风险因素：</span>
+                        <el-cascader
+                          size="medium"
+                          v-model="stepObjA.riskReason"
+                          :options="reasonOptions">
+                        </el-cascader>
                       </p>
                       <p class="step-1-p">
                         <span class="label">风险点类别：</span>
+                        <el-select v-model="stepObjA.riskPointType"  placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in riskPointOptions"
+                            :key="item"
+                            :label="item"
+                            :value="item">
+                          </el-option>
+                        </el-select>
                       </p>
                       <p class="step-1-p">
                         <span class="label">风险评估法：</span>
+                        <el-select v-model="stepObjA.identifierWay"  placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in ideWayOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
                       </p>
+                      <div class="btn-box">
+                        <el-button size="medium" @click="closeDialog">关闭</el-button>
+                        <el-button size="medium" @click="changeStepOne" v-if="doneStep >= 1">修改</el-button>
+                        <el-button size="medium" @click="saveStepOne" v-else>保存</el-button>
+                        <el-button size="medium" type="primary" @click="toStepTwo">下一步</el-button>
+                      </div>
                     </div>
                   </el-tab-pane>
                   <el-tab-pane :disabled="doneStep<2 ? true : false" name="step-2">
                     <span slot="label">② 划分单元</span>
-                    <div class="step-box step-2-box"></div>
+                    <div class="step-box step-2-box">
+                      <div class="units-box">
+                        <div class="unit-item">
+                          <p class="title">一级单元</p>
+                          <p class="input-p">
+                            <span class="label">{{stepObjB.levelNameA}}</span>
+                            <el-input size="medium" v-model="stepObjB.levelNumA" @input="changeLevelNum" @change="changeLevelNum"></el-input>
+                          </p>
+                        </div>
+                        <div class="unit-item">
+                          <p class="title">二级子单元</p>
+                          <p class="input-p">
+                            <span class="label">{{stepObjB.levelNameB}}</span>
+                            <el-input size="medium" v-model="stepObjB.levelNumB" @input="changeLevelNum" @change="changeLevelNum"></el-input>
+                          </p>
+                        </div>
+                        <div class="unit-item">
+                          <p class="title">三级子单元</p>
+                          <p class="input-p">
+                            <span class="label">{{stepObjB.levelNameC}}</span>
+                            <el-input size="medium" v-model="stepObjB.levelNumC" @input="changeLevelNum" @change="changeLevelNum"></el-input>
+                          </p>
+                        </div>
+                      </div>
+                      <p class="step-2-p">
+                        <span class="label">三级风险单元编号</span>
+                        <el-input size="medium" disabled="disabled" v-model="stepObjB.unitLevelNum"></el-input>
+                      </p>
+                      <p class="step-2-p">
+                        <span class="label">负责人</span>
+                        <el-select v-model="stepObjB.administrator"  placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in adminOptions"
+                            :key="item"
+                            :label="item"
+                            :value="item">
+                          </el-option>
+                        </el-select>
+                      </p>
+                      <div class="btn-box">
+                        <el-button size="medium" @click="closeDialog">关闭</el-button>
+                        <el-button size="medium" @click="changeStepTwo" v-if="doneStep >= 2">修改</el-button>
+                        <el-button size="medium" @click="saveStepTwo" v-else>保存</el-button>
+                        <el-button size="medium" type="primary" @click="toStepThree">下一步</el-button>
+                      </div>
+                    </div>
                   </el-tab-pane>
                   <el-tab-pane :disabled="doneStep<3 ? true : false" name="step-3">
                     <span slot="label">③ 开展评估</span>
@@ -160,6 +232,7 @@ export default {
   data () {
     return {
       pageLoading: false,
+      dialogLoading: false,
       breadcrumb: ['风险辨识评估', '风险辨识'],
       organizationTree: [
         {
@@ -348,8 +421,8 @@ export default {
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
       multipleSelection: [],
       showDialog: false,
-      activeStep: 'step-1', // 1-4; 起始显示tab
-      doneStep: 3, // 1-4; 已完成步
+      activeStep: 'step-2', // 1-4; 起始显示tab
+      doneStep: 2, // 1-4; 已完成步。 0代表第一步都未开始
       stepObjA: {
         pointA: '电气部',
         pointB: '变压器',
@@ -387,7 +460,76 @@ export default {
       ],
       riskTypeOptions: ['物体打击', '车辆伤害', '机械伤害', '触电', '淹溺', '灼烫', '火灾',
         '高处坠落', '坍塌', '冒顶片帮', '透水', '放炮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸',
-        '其它爆炸', '中毒和窒息', '其它伤害']
+        '其它爆炸', '中毒和窒息', '其它伤害'],
+      reasonOptions: [
+        {
+          value: '人的因素',
+          label: '人的因素',
+          children: [
+            {
+              value: '人员行为',
+              label: '人员行为'
+            }, {
+              value: '作业活动',
+              label: '作业活动'
+            }
+          ]
+        }, {
+          value: '物的因素',
+          label: '物的因素',
+          children: [
+            {
+              value: '设备设施',
+              label: '设备设施'
+            }, {
+              value: '物料材料',
+              label: '物料材料'
+            }
+          ]
+        }, {
+          value: '环境因素',
+          label: '环境因素',
+          children: [
+            {
+              value: '作业环境',
+              label: '作业环境'
+            }
+          ]
+        }, {
+          value: '管理因素',
+          label: '管理因素',
+          children: [
+            {
+              value: '安全管理',
+              label: '安全管理'
+            }, {
+              value: '工艺技术',
+              label: '工艺技术'
+            }
+          ]
+        }
+      ],
+      riskPointOptions: [ '设备设施', '作业活动' ],
+      ideWayOptions: [
+        {
+          label: '风险矩阵（LS）评价法',
+          value: 'LS'
+        }, {
+          label: '危险性分析（LEC）评价法',
+          value: 'LES'
+        }
+      ],
+      stepObjB: {
+        levelNameA: '电气部',
+        levelNameB: '变压站',
+        levelNameC: '设备操作',
+        levelNumA: '',
+        levelNumB: '',
+        levelNumC: '',
+        unitLevelNum: '',
+        administrator: ''
+      },
+      adminOptions: [ '张三', '李四', '王二麻子' ]
     }
   },
   methods: {
@@ -405,6 +547,30 @@ export default {
     },
     handleClick (tab, event) {
       console.log(tab, event)
+    },
+    toStepTwo () {
+      // 先
+      // 前往第二页
+      this.activeStep = 'step-2'
+    },
+    saveStepOne () {
+      // this.dialogLoading = true
+      // ajax
+    },
+    changeStepOne () {
+      // this.dialogLoading = true
+      // ajax
+    },
+    closeDialog () {
+      this.showDialog = false
+    },
+    changeStepTwo () {},
+    saveStepTwo () {},
+    toStepThree () {
+      this.activeStep = 'step-3'
+    },
+    changeLevelNum () {
+      this.stepObjB.unitLevelNum = `${this.stepObjB.levelNumA}-${this.stepObjB.levelNumB}-${this.stepObjB.levelNumC}`
     }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
@@ -466,7 +632,7 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 468px;
+        height: 430px;
         .step-box{
           width: 100%;
           height: 100%;
@@ -500,8 +666,63 @@ export default {
                 }
               }
             }
+            .btn-box{
+              position: absolute;
+              bottom: 0px;
+              right: 0px;
+            }
           }
-          &.step-2-box{}
+          &.step-2-box{
+            padding: 0 69px;
+            .units-box{
+              width: 100%;
+              display: flex;
+              justify-content: space-between;
+              .unit-item{
+                width: 314px;
+                .title{
+                  font-size: 16px;
+                  color: #646464;
+                  text-align: center;
+                  padding-top: 36px;
+                  line-height: 36px;
+                }
+                .input-p{
+                  margin-top: 18px;
+                  display: flex;
+                  justify-content: space-between;
+                  .label{
+                    display: block;
+                    width: 154px;
+                    line-height: 36px;
+                    text-align: right;
+                    padding-right: 23px;
+                    font-size: 16px;
+                  }
+                }
+                .el-input{
+                  width: 154px;
+                }
+              }
+            }
+            .step-2-p{
+              position: relative;
+              margin-top: 40px;
+              padding-left: 160px;
+              line-height: 36px;
+              .label{
+                position: absolute;
+                text-align: right;
+                width: 131px;
+                left: 0;
+                font-size: 16px;
+              }
+            }
+            .btn-box{
+              margin-top: 40px;
+              text-align: right;
+            }
+          }
           &.step-3-box{}
           &.step-4-box{}
         }
