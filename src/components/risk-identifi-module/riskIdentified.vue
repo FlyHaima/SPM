@@ -194,7 +194,22 @@
                   </el-tab-pane>
                   <el-tab-pane :disabled="doneStep<3 ? true : false" name="step-3">
                     <span slot="label">③ 开展评估</span>
-                    <div class="step-box step-3-box"></div>
+                    <div class="step-box step-3-box">
+                      <div class="line-p">
+                        <div class="line-lf">
+                          <div class="label">事故发生的可能性：</div>
+                          <el-select v-model="stepObjC.LEC.L"  placeholder="请选择" size="medium">
+                            <el-option
+                              v-for="item in adminOptions"
+                              :key="item"
+                              :label="item"
+                              :value="item">
+                            </el-option>
+                          </el-select>
+                        </div>
+                        <div class="line-rt"></div>
+                      </div>
+                    </div>
                   </el-tab-pane>
                   <el-tab-pane :disabled="doneStep<4 ? true : false" name="step-4">
                     <span slot="label">④ 管控措施</span>
@@ -202,10 +217,6 @@
                   </el-tab-pane>
                 </el-tabs>
               </div>
-              <!--<div slot="footer" class="dialog-footer" style="margin-top: 20px; text-align: right;">-->
-                <!--<el-button size="small" type="primary" @click="submitEdit()">保 存</el-button>-->
-                <!--<el-button size="small" @click="showEdit = false">取 消</el-button>-->
-              <!--</div>-->
             </el-dialog>
 
             <div class="pages">
@@ -421,8 +432,8 @@ export default {
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
       multipleSelection: [],
       showDialog: false,
-      activeStep: 'step-2', // 1-4; 起始显示tab
-      doneStep: 2, // 1-4; 已完成步。 0代表第一步都未开始
+      activeStep: 'step-3', // 1-4; 起始显示tab
+      doneStep: 3, // 1-4; 已完成步。 0代表第一步都未开始
       stepObjA: {
         pointA: '电气部',
         pointB: '变压器',
@@ -529,7 +540,62 @@ export default {
         unitLevelNum: '',
         administrator: ''
       },
-      adminOptions: [ '张三', '李四', '王二麻子' ]
+      adminOptions: [ '张三', '李四', '王二麻子' ],
+      stepObjC: {
+        LEC: {
+          L: '',
+          E: '',
+          C: '',
+          D: 0
+        },
+        LS: {
+          L: '',
+          S: '',
+          R: 0
+        },
+        riskLevel: '',
+        managerLevel: '',
+        manager: ''
+      },
+      lec_l_options: [
+        {label: '完全可能预料', value: '10'},
+        {label: '相当可能', value: '6'},
+        {label: '可能，但不经常', value: '3'},
+        {label: '可能性小，完全意外', value: '1'},
+        {label: '很不可能，可能设想', value: '0.5'},
+        {label: '极不可能', value: '0.2'},
+        {label: '实际不可能', value: '0.1'}
+      ],
+      lec_e_options: [
+        {label: '连续暴露', value: '10'},
+        {label: '每天工作时间内暴露', value: '6'},
+        {label: '每周一次或偶然暴露', value: '3'},
+        {label: '每月一次暴露', value: '2'},
+        {label: '每年几次暴露', value: '1'},
+        {label: '非常罕见地暴露', value: '0.5'}
+      ],
+      lec_c_options: [
+        {label: '严重违反法律法规和标准', value: '100'},
+        {label: '违反法律法规和标准', value: '40'},
+        {label: '潜在违反法规和标准', value: '15'},
+        {label: '不符合上级或行业的安全方针、制度、规定等', value: '7'},
+        {label: '不符合公司的安全操作程序、规定', value: '2'},
+        {label: '完全符合', value: '1'}
+      ],
+      ls_l_options: [
+        {label: '在现场没有采取防范、监测、保护、控制措施，或危害的发生不能被发现（没有监测系统），或在正常情况下经常发生此类事故或事件', value: '5'},
+        {label: '危害的发生不容易被发现，现场没有检测系统，也未发生过任何监测，或在现场有控制措施，但未有效执行或控制措施不当，或危害发生或预期情况下发生', value: '4'},
+        {label: '没有保护措施（如没有保护装置、没有个人防护用品等），或未严格按操作程序执行，或危害的发生容易被发现（现场有监测系统），或曾经作过监测，或过去曾经发生类似事故或事件', value: '3'},
+        {label: '危害一旦发生能及时发现，并定期进行监测，或现场有防范控制措施，并能有效执行，或过去偶尔发生事故或事件', value: '2'},
+        {label: '有充分、有效的防范、控制、监测、保护措施，或员工安全卫生意识相当高，严格执行操作规程。极不可能发生事故或事件', value: '1'}
+      ],
+      ls_s_options: [
+        {label: '违反法律、法规和标准', value: '5'},
+        {label: '潜在违反法规和标准', value: '4'},
+        {label: '不符合上级公司或行业的安全方针、制度、规定等', value: '3'},
+        {label: '不符合企业的安全操作程序、规定', value: '2'},
+        {label: '完全符合', value: '1'}
+      ]
     }
   },
   methods: {
@@ -686,6 +752,7 @@ export default {
                   text-align: center;
                   padding-top: 36px;
                   line-height: 36px;
+                  font-weight: 600;
                 }
                 .input-p{
                   margin-top: 18px;
@@ -723,7 +790,18 @@ export default {
               text-align: right;
             }
           }
-          &.step-3-box{}
+          &.step-3-box{
+            .line-p{
+              display: flex;
+              justify-content: space-between;
+              .line-rt{
+                width: 555px;
+              }
+              .line-lf{
+                width: 642px;
+              }
+            }
+          }
           &.step-4-box{}
         }
       }
