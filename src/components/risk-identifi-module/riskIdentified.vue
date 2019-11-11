@@ -197,17 +197,81 @@
                     <div class="step-box step-3-box">
                       <div class="line-p">
                         <div class="line-lf">
-                          <div class="label">事故发生的可能性：</div>
-                          <el-select v-model="stepObjC.LEC.L"  placeholder="请选择" size="medium">
+                          <div class="label">事故发生的可能性</div>
+                          <el-select v-model="stepObjC.LEC.L" @change="changeLEC" placeholder="请选择" size="medium">
                             <el-option
-                              v-for="item in adminOptions"
+                              v-for="item in lec_l_options"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                          </el-select>
+                        </div>
+                        <div class="line-rt">
+                          <div class="label">L值</div>
+                          <el-input v-model="stepObjC.LEC.L" disabled="disabled" size="medium"></el-input>
+                        </div>
+                      </div>
+                      <div class="line-p">
+                        <div class="line-lf">
+                          <div class="label">暴露于危险环境的频率</div>
+                          <el-select v-model="stepObjC.LEC.E" @change="changeLEC" placeholder="请选择" size="medium">
+                            <el-option
+                              v-for="item in lec_e_options"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                          </el-select>
+                        </div>
+                        <div class="line-rt">
+                          <div class="label">E值</div>
+                          <el-input v-model="stepObjC.LEC.E" disabled="disabled" size="medium"></el-input>
+                        </div>
+                      </div>
+                      <div class="line-p">
+                        <div class="line-lf">
+                          <div class="label">事故后果严重程度</div>
+                          <el-select v-model="stepObjC.LEC.C" @change="changeLEC" placeholder="请选择" size="medium">
+                            <el-option
+                              v-for="item in lec_c_options"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                          </el-select>
+                        </div>
+                        <div class="line-rt">
+                          <div class="label">L值</div>
+                          <el-input v-model="stepObjC.LEC.C" disabled="disabled" size="medium"></el-input>
+                        </div>
+                      </div>
+                      <div class="line-p">
+                        <div class="line-lf">
+                          <div class="label">风险值</div>
+                          <el-input v-model="stepObjC.LEC.D" disabled="disabled" size="medium"></el-input>
+                        </div>
+                        <div class="line-rt">
+                          <div class="label">风险等级</div>
+                          <el-input v-model="stepObjC.LEC.D" disabled="disabled" size="medium"></el-input>
+                        </div>
+                      </div>
+                      <div class="line-p">
+                        <div class="line-lf">
+                          <div class="label">管控层级</div>
+                          <el-select v-model="stepObjC.managerLevel"  placeholder="请选择" size="medium">
+                            <el-option
+                              v-for="item in managerLevel"
                               :key="item"
                               :label="item"
                               :value="item">
                             </el-option>
                           </el-select>
                         </div>
-                        <div class="line-rt"></div>
+                        <div class="line-rt">
+                          <div class="label">管控人</div>
+                          <el-input v-model="stepObjC.manager" size="medium"></el-input>
+                        </div>
                       </div>
                     </div>
                   </el-tab-pane>
@@ -595,7 +659,8 @@ export default {
         {label: '不符合上级公司或行业的安全方针、制度、规定等', value: '3'},
         {label: '不符合企业的安全操作程序、规定', value: '2'},
         {label: '完全符合', value: '1'}
-      ]
+      ],
+      managerLevel: ['公司级', '部门级', '车间级', '班组级', '岗位级']
     }
   },
   methods: {
@@ -637,7 +702,8 @@ export default {
     },
     changeLevelNum () {
       this.stepObjB.unitLevelNum = `${this.stepObjB.levelNumA}-${this.stepObjB.levelNumB}-${this.stepObjB.levelNumC}`
-    }
+    },
+    changeLEC () {}
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
 }
@@ -792,13 +858,42 @@ export default {
           }
           &.step-3-box{
             .line-p{
+              margin-top: 25px;
               display: flex;
               justify-content: space-between;
+              padding-right: 118px;
               .line-rt{
-                width: 555px;
+                position: relative;
+                width: 410px;
+                line-height: 36px;
+                padding-left: 150px;
+                .label{
+                  position: absolute;
+                  padding-right: 30px;
+                  left: 0;
+                  width: 150px;
+                  text-align: right;
+                }
+
               }
               .line-lf{
-                width: 642px;
+                position: relative;
+                width: 640px;
+                line-height: 36px;
+                padding-left: 280px;
+                .label{
+                  position: absolute;
+                  padding-right: 30px;
+                  left: 0;
+                  width: 280px;
+                  text-align: right;
+                }
+                .el-select{
+                  width: 360px;
+                }
+                .el-input{
+                  width: 360px;
+                }
               }
             }
           }
