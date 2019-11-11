@@ -136,7 +136,7 @@
                         </el-select>
                       </p>
                       <div class="btn-box">
-                        <el-button size="medium" @click="closeDialog">关闭</el-button>
+                        <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
                         <el-button size="medium" @click="changeStepOne" v-if="doneStep >= 1">修改</el-button>
                         <el-button size="medium" @click="saveStepOne" v-else>保存</el-button>
                         <el-button size="medium" type="primary" @click="toStepTwo">下一步</el-button>
@@ -185,7 +185,7 @@
                         </el-select>
                       </p>
                       <div class="btn-box">
-                        <el-button size="medium" @click="closeDialog">关闭</el-button>
+                        <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
                         <el-button size="medium" @click="changeStepTwo" v-if="doneStep >= 2">修改</el-button>
                         <el-button size="medium" @click="saveStepTwo" v-else>保存</el-button>
                         <el-button size="medium" type="primary" @click="toStepThree">下一步</el-button>
@@ -195,67 +195,115 @@
                   <el-tab-pane :disabled="doneStep<3 ? true : false" name="step-3">
                     <span slot="label">③ 开展评估</span>
                     <div class="step-box step-3-box">
-                      <div class="line-p">
-                        <div class="line-lf">
-                          <div class="label">事故发生的可能性</div>
-                          <el-select v-model="stepObjC.LEC.L" @change="changeLEC" placeholder="请选择" size="medium">
-                            <el-option
-                              v-for="item in lec_l_options"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value">
-                            </el-option>
-                          </el-select>
+                      <template v-if="evaluationMethod === 'LEC'">
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">事故发生的可能性</div>
+                            <el-select v-model="stepObjC.LEC.L" @change="changeLEC" placeholder="请选择" size="medium">
+                              <el-option
+                                v-for="item in lec_l_options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </div>
+                          <div class="line-rt">
+                            <div class="label">L值</div>
+                            <el-input v-model="stepObjC.LEC.L" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                        <div class="line-rt">
-                          <div class="label">L值</div>
-                          <el-input v-model="stepObjC.LEC.L" disabled="disabled" size="medium"></el-input>
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">暴露于危险环境的频率</div>
+                            <el-select v-model="stepObjC.LEC.E" @change="changeLEC" placeholder="请选择" size="medium">
+                              <el-option
+                                v-for="item in lec_e_options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </div>
+                          <div class="line-rt">
+                            <div class="label">E值</div>
+                            <el-input v-model="stepObjC.LEC.E" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                      </div>
-                      <div class="line-p">
-                        <div class="line-lf">
-                          <div class="label">暴露于危险环境的频率</div>
-                          <el-select v-model="stepObjC.LEC.E" @change="changeLEC" placeholder="请选择" size="medium">
-                            <el-option
-                              v-for="item in lec_e_options"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value">
-                            </el-option>
-                          </el-select>
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">事故后果严重程度</div>
+                            <el-select v-model="stepObjC.LEC.C" @change="changeLEC" placeholder="请选择" size="medium">
+                              <el-option
+                                v-for="item in lec_c_options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </div>
+                          <div class="line-rt" v-if="evaluationMethod === 'LEC'">
+                            <div class="label">C值</div>
+                            <el-input v-model="stepObjC.LEC.C" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                        <div class="line-rt">
-                          <div class="label">E值</div>
-                          <el-input v-model="stepObjC.LEC.E" disabled="disabled" size="medium"></el-input>
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">风险值</div>
+                            <el-input v-model="stepObjC.LEC.D" disabled="disabled" size="medium"></el-input>
+                          </div>
+                          <div class="line-rt">
+                            <div class="label">风险等级</div>
+                            <el-input v-model="stepObjC.LEC.riskLevel" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                      </div>
-                      <div class="line-p">
-                        <div class="line-lf">
-                          <div class="label">事故后果严重程度</div>
-                          <el-select v-model="stepObjC.LEC.C" @change="changeLEC" placeholder="请选择" size="medium">
-                            <el-option
-                              v-for="item in lec_c_options"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value">
-                            </el-option>
-                          </el-select>
+                      </template>
+                      <template v-else>
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">事故发生的可能性</div>
+                            <el-select v-model="stepObjC.LS.L" @change="changeLS" placeholder="请选择" size="medium">
+                              <el-option
+                                v-for="item in ls_l_options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </div>
+                          <div class="line-rt">
+                            <div class="label">L值</div>
+                            <el-input v-model="stepObjC.LS.L" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                        <div class="line-rt">
-                          <div class="label">L值</div>
-                          <el-input v-model="stepObjC.LEC.C" disabled="disabled" size="medium"></el-input>
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">事件后果严重性</div>
+                            <el-select v-model="stepObjC.LS.S" @change="changeLS" placeholder="请选择" size="medium">
+                              <el-option
+                                v-for="item in ls_s_options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                          </div>
+                          <div class="line-rt">
+                            <div class="label">S值</div>
+                            <el-input v-model="stepObjC.LS.S" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                      </div>
-                      <div class="line-p">
-                        <div class="line-lf">
-                          <div class="label">风险值</div>
-                          <el-input v-model="stepObjC.LEC.D" disabled="disabled" size="medium"></el-input>
+                        <div class="line-p">
+                          <div class="line-lf">
+                            <div class="label">R值</div>
+                            <el-input v-model="stepObjC.LS.R" disabled="disabled" size="medium"></el-input>
+                          </div>
+                          <div class="line-rt">
+                            <div class="label">风险等级</div>
+                            <el-input v-model="stepObjC.LS.riskLevel" disabled="disabled" size="medium"></el-input>
+                          </div>
                         </div>
-                        <div class="line-rt">
-                          <div class="label">风险等级</div>
-                          <el-input v-model="stepObjC.LEC.D" disabled="disabled" size="medium"></el-input>
-                        </div>
-                      </div>
+                      </template>
                       <div class="line-p">
                         <div class="line-lf">
                           <div class="label">管控层级</div>
@@ -273,11 +321,52 @@
                           <el-input v-model="stepObjC.manager" size="medium"></el-input>
                         </div>
                       </div>
+                      <div class="btn-box" :class="evaluationMethod === 'LS' ? 'isLS' : ''">
+                        <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
+                        <el-button size="medium" @click="changeStepThree" v-if="doneStep >= 3">修改</el-button>
+                        <el-button size="medium" @click="saveStepThree" v-else>保存</el-button>
+                        <el-button size="medium" type="primary" @click="toStepFour">下一步</el-button>
+                      </div>
                     </div>
                   </el-tab-pane>
                   <el-tab-pane :disabled="doneStep<4 ? true : false" name="step-4">
                     <span slot="label">④ 管控措施</span>
-                    <div class="step-box step-4-box"></div>
+                    <div class="step-box step-4-box">
+                      <p class="step-4-p">
+                        <span class="label">应采取的管控措施：</span>
+                        <el-input size="medium" v-model="stepObjD.controlMeasure" disabled="disabled"></el-input>
+                      </p>
+                      <p class="step-4-p">
+                        <span class="label">管控措施依据的标准和规范：</span>
+                        <el-input size="medium" v-model="stepObjD.standard"></el-input>
+                      </p>
+                      <p class="step-4-p">
+                        <span class="label">技术措施：</span>
+                        <el-input size="medium" v-model="stepObjD.technicalMeasures"></el-input>
+                      </p>
+                      <p class="step-4-p">
+                        <span class="label">管理措施：</span>
+                        <el-input size="medium" v-model="stepObjD.managerMeasures"></el-input>
+                      </p>
+                      <p class="step-4-p">
+                        <span class="label">教育措施：</span>
+                        <el-input size="medium" v-model="stepObjD.educationMeasures"></el-input>
+                      </p>
+                      <p class="step-4-p">
+                        <span class="label">防护措施：</span>
+                        <el-input size="medium" v-model="stepObjD.protectMeasures"></el-input>
+                      </p>
+                      <p class="step-4-p">
+                        <span class="label">应急措施：</span>
+                        <el-input size="medium" v-model="stepObjD.emergencyMeasures"></el-input>
+                      </p>
+                      <div class="btn-box">
+                        <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
+                        <el-button size="medium" @click="changeStepFour" v-if="doneStep >= 4">修改</el-button>
+                        <el-button size="medium" @click="saveStepFour" v-else>保存</el-button>
+                        <el-button size="medium" type="primary" @click="finish">完成</el-button>
+                      </div>
+                    </div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -496,8 +585,8 @@ export default {
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
       multipleSelection: [],
       showDialog: false,
-      activeStep: 'step-3', // 1-4; 起始显示tab
-      doneStep: 3, // 1-4; 已完成步。 0代表第一步都未开始
+      activeStep: 'step-4', // 1-4; 起始显示tab
+      doneStep: 4, // 1-4; 已完成步。 0代表第一步都未开始
       stepObjA: {
         pointA: '电气部',
         pointB: '变压器',
@@ -607,20 +696,22 @@ export default {
       adminOptions: [ '张三', '李四', '王二麻子' ],
       stepObjC: {
         LEC: {
-          L: '',
-          E: '',
-          C: '',
-          D: 0
+          L: '0.1',
+          E: '0.5',
+          C: '1',
+          D: 0.05,
+          riskLevel: ''
         },
         LS: {
-          L: '',
-          S: '',
-          R: 0
+          L: '1',
+          S: '1',
+          R: 1,
+          riskLevel: ''
         },
-        riskLevel: '',
         managerLevel: '',
         manager: ''
       },
+      evaluationMethod: 'LS', // LEC 或 LS
       lec_l_options: [
         {label: '完全可能预料', value: '10'},
         {label: '相当可能', value: '6'},
@@ -660,7 +751,16 @@ export default {
         {label: '不符合企业的安全操作程序、规定', value: '2'},
         {label: '完全符合', value: '1'}
       ],
-      managerLevel: ['公司级', '部门级', '车间级', '班组级', '岗位级']
+      managerLevel: ['公司级', '部门级', '车间级', '班组级', '岗位级'],
+      stepObjD: {
+        controlMeasure: '在采取措施降低危害前，不能继续作业，对改进措施进行评估',
+        standard: '',
+        technicalMeasures: '',
+        managerMeasures: '',
+        educationMeasures: '',
+        protectMeasures: '',
+        emergencyMeasures: ''
+      }
     }
   },
   methods: {
@@ -703,7 +803,49 @@ export default {
     changeLevelNum () {
       this.stepObjB.unitLevelNum = `${this.stepObjB.levelNumA}-${this.stepObjB.levelNumB}-${this.stepObjB.levelNumC}`
     },
-    changeLEC () {}
+    changeLEC () {
+      // 避免浮点数相乘出现问题
+      this.stepObjC.LEC.D = (this.stepObjC.LEC.L * 10) * (this.stepObjC.LEC.E * 10) * this.stepObjC.LEC.C / 100
+      this.matchLEC_D()
+    },
+    matchLEC_D () {
+      if (this.stepObjC.LEC.D > 320) {
+        this.stepObjC.LEC.riskLevel = `A/1级 重大风险`
+      } else if (this.stepObjC.LEC.D > 160 && this.stepObjC.LEC.D <= 320) {
+        this.stepObjC.LEC.riskLevel = `B/2级 较大风险`
+      } else if (this.stepObjC.LEC.D > 70 && this.stepObjC.LEC.D <= 160) {
+        this.stepObjC.LEC.riskLevel = `C/3级 一般风险`
+      } else if (this.stepObjC.LEC.D > 20 && this.stepObjC.LEC.D <= 70) {
+        this.stepObjC.LEC.riskLevel = `D/4级 低风险`
+      } else if (this.stepObjC.LEC.D <= 20) {
+        this.stepObjC.LEC.riskLevel = `E/5级 低风险`
+      }
+    },
+    changeLS () {
+      this.stepObjC.LS.R = this.stepObjC.LS.L * this.stepObjC.LS.S
+      this.matchLS_R()
+    },
+    matchLS_R () {
+      if (this.stepObjC.LS.R >= 20) {
+        this.stepObjC.LS.riskLevel = `A/1级 重大风险`
+      } else if (this.stepObjC.LS.R >= 15 && this.stepObjC.LS.R < 20) {
+        this.stepObjC.LS.riskLevel = `B/2级 较大风险`
+      } else if (this.stepObjC.LS.R >= 9 && this.stepObjC.LS.R < 15) {
+        this.stepObjC.LS.riskLevel = `C/3级 一般风险`
+      } else if (this.stepObjC.LS.R >= 4 && this.stepObjC.LS.R < 9) {
+        this.stepObjC.LS.riskLevel = `D/4级 低风险`
+      } else if (this.stepObjC.LS.R < 4) {
+        this.stepObjC.LS.riskLevel = `E/5级 低风险`
+      }
+    },
+    changeStepThree () {},
+    saveStepThree () {},
+    toStepFour () {
+      this.activeStep = 'step-4'
+    },
+    changeStepFour () {},
+    saveStepFour () {},
+    finish () {}
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
 }
@@ -896,8 +1038,43 @@ export default {
                 }
               }
             }
+            .btn-box{
+              margin-top: 18px;
+              text-align: right;
+              &.isLS{
+                margin-top: 79px;
+              }
+            }
           }
-          &.step-4-box{}
+          &.step-4-box{
+            .step-4-p {
+              line-height: 36px;
+              height: 36px;
+              margin-bottom: 16px;
+              position: relative;
+              padding-left: 400px;
+              .label {
+                position: absolute;
+                left: 0;
+                width: 330px;
+                line-height: 36px;
+                font-size: 16px;
+                color: #646464;
+                text-align: right;
+              }
+              .el-select {
+                width: 360px;
+              }
+              .el-input {
+                width: 360px;
+              }
+            }
+            .btn-box{
+              position: absolute;
+              bottom: 0px;
+              right: 0px;
+            }
+          }
         }
       }
     }
