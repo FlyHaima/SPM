@@ -14,7 +14,7 @@
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="exportEexcel">
+                  @click="exportEexcelHandel">
                    导出</el-button>
               </div>
             </div>
@@ -24,95 +24,97 @@
               style="width: 100%"
               header-align="center">
               <el-table-column
-                prop=" "
+                type="index"
                 label="风险序号"
                 width="40">
               </el-table-column>
-              <el-table-column label="风险点位置" header-align="center">
+              <el-table-column
+                label="风险点位置"
+                align="center">
                 <el-table-column
-                  prop=" "
+                  prop="oneName"
                   label="一级单元"
-                  width="80"
-                  header-align="center">
+                  width="85"
+                  align="center">
                 </el-table-column>
                 <el-table-column
-                  prop=" "
+                  prop="twoName"
                   label="二级单元"
-                  width="80"
-                  header-align="center">
+                  width="85"
+                  align="center">
                 </el-table-column>
                 <el-table-column
-                  prop=" "
+                  prop="riskName"
                   label="三级单元"
-                  width="80"
-                  header-align="center">
+                  width="85"
+                  align="center">
                 </el-table-column>
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="riskName"
                 label="风险点名称"
                 width="100"
-                header-align="center">
+                align="center">
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="riskBh"
                 label="风险点编号"
                 width="100"
-                header-align="center">
+                align="center">
               </el-table-column>
               <el-table-column
                 label="风险等级"
                 width="100"
-                header-align="center">
+                align="center">
                 <template slot-scope="scope">
                   <el-tag
                     size="mini"
-                    effect="dark">
-                    低风险
-                    <!-- {{ scope.row.name }} -->
+                    effect="dark"
+                    :class="classObj(scope.row)">
+                    {{ scope.row.riskLevel}}
                   </el-tag>
                 </template>
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="factor"
                 label="风险因素"
                 width="100"
                 header-align="center">
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="riskType"
                 label="风险类别"
                 width="100"
-                header-align="center">
+                align="center">
               </el-table-column>
-              <el-table-column label="管控责任" header-align="center">
+              <el-table-column label="管控责任" align="center">
                 <el-table-column
                   prop=" "
                   label="单位"
                   width="60"
-                  header-align="center">
+                  align="center">
                 </el-table-column>
                 <el-table-column
-                  prop=" "
+                  prop="controlPer"
                   label="责任人"
                   width="80"
-                  header-align="center">
+                  align="center">
                 </el-table-column>
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="riskSourceName"
                 label="隐患检查事项"
                 header-align="center">
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="bmp"
                 label="风险管控措施"
                 header-align="center">
               </el-table-column>
               <el-table-column
-                prop="hazardType"
+                prop=" "
                 label="检查频次"
-                header-align="center">
+                align="center">
               </el-table-column>
             </el-table>
           </div>
@@ -123,33 +125,50 @@
 </template>
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
+import axios from '@/api/axios'
+import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'safeRisk',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
-      pageLoading: false,
-      tableData: [{
-        workshop: '变压站',
-        jobs: '配电员',
-        mianRisk: '员工吸烟',
-        riskFactor: ' ',
-        hazardType: ' ',
-        emergency: ' '
-      }]
+      breadcrumb: ['风险分级管控', '重大安全风险'],
+      tableData: [],
+      pageLoading: false
     }
   },
+  created () {
+    this.fetchTableData()
+  },
   methods: {
-    openLoading () {
+    // 获取table数据
+    fetchTableData () {
       this.pageLoading = true
-    },
-    closeLoading () {
-      this.pageLoading = false
+      axios
+        .get('spm/riskLevel/getRiskZd')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tableData = res.data.data
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
     },
     // 导出excel
-    exportEexcel () {
-
+    exportEexcelHandel () {
+      exportExcel('spm/riskLevel/exportZd')
+    },
+    // tag的class集合
+    classObj (data) {
+      if (data.riskLevelCode === '000104') {
+        return 'tag-low'
+      } else if (data.riskLevelCode === '000103') {
+        return 'tag-normal'
+      } else if (data.riskLevelCode === '000102') {
+        return 'tag-warning'
+      } else if (data.riskLevelCode === '000101') {
+        return 'tag-danger'
+      }
     }
   },
   components: {

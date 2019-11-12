@@ -108,12 +108,6 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {
-// getTreeData
-} from '@/api/riskControl/riskList'
-import {
-// getTableData
-} from '@/api/riskControl/riskCard'
 
 export default {
   name: 'riskBulletinBoard',

@@ -138,7 +138,7 @@
           <el-input v-model="messageForm.title"></el-input>
         </el-form-item>
         <el-form-item label="文本内容">
-          <el-input type="textarea" v-model="messageForm.text"></el-input>
+          <el-input type="textarea" maxlength="200" show-word-limit v-model="messageForm.text"></el-input>
         </el-form-item>
         <el-form-item label="附件上传">
           <el-upload
