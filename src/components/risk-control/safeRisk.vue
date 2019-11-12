@@ -1,5 +1,5 @@
 <template>
-  <el-container class="inner-page-container" v-loading="pageLoading">
+  <el-container class="inner-page-container">
     <el-header class="inner-header">
       <bread-crumb :breadList="breadcrumb">
       </bread-crumb>
@@ -14,17 +14,19 @@
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="exportEexcelHandel">
+                  @click="exportHandel">
                    导出</el-button>
               </div>
             </div>
             <el-table
-              :data="tableData"
+              :data="tables.data"
+              v-loading="tables.loading"
               border
               style="width: 100%"
               header-align="center">
               <el-table-column
                 type="index"
+                :index="tablesDefineIndex"
                 label="风险序号"
                 width="40">
               </el-table-column>
@@ -89,15 +91,15 @@
               </el-table-column>
               <el-table-column label="管控责任" align="center">
                 <el-table-column
-                  prop=" "
+                  prop="deptName"
                   label="单位"
                   width="60"
                   align="center">
                 </el-table-column>
                 <el-table-column
-                  prop="controlPer"
+                  prop="userName"
                   label="责任人"
-                  width="80"
+                  width="140"
                   align="center">
                 </el-table-column>
               </el-table-column>
@@ -112,11 +114,21 @@
                 header-align="center">
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="rate"
                 label="检查频次"
                 align="center">
               </el-table-column>
             </el-table>
+            <div class="el-pagination__wrap text-right">
+              <el-pagination
+                layout="total, sizes, prev, pager, next, jumper"
+                :current-page="tables.page.index"
+                :page-sizes="tables.page.sizes"
+                :page-size="tables.form.limit"
+                :total="tables.page.total"
+                @current-change="tablesHandleCurrentPage"
+                @size-change="tablesHandleSizeChange"></el-pagination>
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -125,48 +137,33 @@
 </template>
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
-import axios from '@/api/axios'
-import exportExcel from '@/api/exportExcel'
+import Tables from '@/mixins/Tables'
 
 export default {
   name: 'safeRisk',
+  mixins: [Tables],
   data () {
     return {
-      breadcrumb: ['风险分级管控', '重大安全风险'],
-      tableData: [],
-      pageLoading: false
+      breadcrumb: ['风险分级管控', '风险点分级管控台账'],
+      tables: {
+        api: 'spm/riskLevel/getRiskZd'
+      }
     }
   },
-  created () {
-    this.fetchTableData()
-  },
   methods: {
-    // 获取table数据
-    fetchTableData () {
-      this.pageLoading = true
-      axios
-        .get('spm/riskLevel/getRiskZd')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.tableData = res.data.data
-          }
-        }).finally(() => {
-          this.pageLoading = false
-        })
-    },
     // 导出excel
-    exportEexcelHandel () {
-      exportExcel('spm/riskLevel/exportZd')
+    exportHandel () {
+      this.tablesExportExcel('spm/riskLevel/exportZd')
     },
     // tag的class集合
     classObj (data) {
-      if (data.riskLevelCode === '000104') {
+      if (data.riskLevelCode === '4') {
         return 'tag-low'
-      } else if (data.riskLevelCode === '000103') {
+      } else if (data.riskLevelCode === '3') {
         return 'tag-normal'
-      } else if (data.riskLevelCode === '000102') {
+      } else if (data.riskLevelCode === '2') {
         return 'tag-warning'
-      } else if (data.riskLevelCode === '000101') {
+      } else if (data.riskLevelCode === '1') {
         return 'tag-danger'
       }
     }
@@ -179,4 +176,5 @@ export default {
 
 <style scoped lang="scss">
 @import '../../utils/css/style.scss';
+
 </style>

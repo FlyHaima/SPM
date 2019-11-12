@@ -21,7 +21,7 @@
           <span class="legend-text">低风险</span>
         </div>
       </div>
-      <div class="select-date">
+      <div v-show="filterDateSwitch" class="select-date">
         <el-select
           v-model="selValue"
           @change="selChange"
@@ -48,21 +48,19 @@ export default {
     return {
       options: [
         {
-          value: 1,
+          value: '1',
           label: '近一周'
         }, {
-          value: 2,
+          value: '2',
           label: '近两周'
         }, {
-          value: 3,
+          value: '3',
           label: '近一个月'
         }
       ],
-      selValue: 2, // 设定初始值，两周
+      selValue: '2', // 设定初始值，两周
       chartValue: [], // y轴坐标值
       chartxAxis: [], // x轴坐标值
-      allDate: [],
-      allValue: [],
       colorList: [] // 图表色值 d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
     }
   },
@@ -70,15 +68,19 @@ export default {
     chartData: {
       type: Array,
       default: null
-    },
+    }, // 图表数据
     chartHeight: {
       type: String,
       default: ''
-    },
-    legendVertical: {
+    }, // 图表高度
+    legendVerticalSwitch: {
       type: Boolean,
       default: false
-    }
+    }, // legend水平方向布局开关
+    filterDateSwitch: {
+      type: Boolean,
+      default: false
+    } // 日期筛选开关
   },
   mounted () {
     this.reduceData()
@@ -88,7 +90,10 @@ export default {
   },
   methods: {
     reduceData () {
+      this.chartValue = []
+      this.chartxAxis = []
       this.chartData.forEach(item => {
+        console.log(item)
         if (item.value <= 25) {
           this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 25 && item.value <= 50) {
@@ -98,8 +103,8 @@ export default {
         } else if (item.value > 75 && item.value <= 100) {
           this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         }
-        this.allValue.push(item.value)
-        this.allDate.push(item.name)
+        this.chartValue.push(item.value)
+        this.chartxAxis.push(item.name)
       })
     },
     setEchart (opt) {
@@ -107,20 +112,6 @@ export default {
       let chartDom = document.getElementById('columnA')
       let myChart = this.$echarts.init(chartDom)
       let chartColorList = this.colorList
-
-      if (!opt) {
-        this.chartValue = this.allValue
-        this.chartxAxis = this.allDate
-      } else if (opt === 1) {
-        this.chartValue = this.allValue.slice(0, 7)
-        this.chartxAxis = this.allDate.slice(0, 7)
-      } else if (opt === 2) {
-        this.chartValue = this.allValue.slice(0, 14)
-        this.chartxAxis = this.allDate.slice(0, 14)
-      } else if (opt === 3) {
-        this.chartValue = this.allValue
-        this.chartxAxis = this.allDate
-      }
 
       // 绘制图表
       let option = {
@@ -208,15 +199,18 @@ export default {
       }
       myChart.setOption(option)
     },
-    selChange () {
-      // 重新筛选数据，再render表格
-      this.setEchart(this.selValue)
+    selChange (data) {
+      this.$emit('sel-change-handle', {
+        selValue: this.selValue
+      })
+      // this.reduceData()
+      // this.setEchart()
     }
   },
   computed: {
     classObj () {
       let vm = this
-      if (vm.legendVertical) {
+      if (vm.legendVerticalSwitch) {
         return 'chart-tools-vertical'
       }
     }

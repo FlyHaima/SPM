@@ -35,28 +35,34 @@
                 <el-table-column
                   prop="workShop"
                   label="车间"
-                  width="180">
+                  width="180"
+                  align="center">
                 </el-table-column>
                 <el-table-column
                   prop="gw"
                   label="岗位"
-                  width="180">
+                  width="180"
+                  align="center">
                 </el-table-column>
                 <el-table-column
                   prop="centerRisk"
-                  label="主要风险源">
+                  label="主要风险源"
+                  align="center">
                 </el-table-column>
                 <el-table-column
                   prop="factor"
-                  label="风险因素">
+                  label="风险因素"
+                  header-align="center">
                 </el-table-column>
                 <el-table-column
                   prop="riskResult"
-                  label="潜在事故及职业危害类型">
+                  label="潜在事故及职业危害类型"
+                  align="center">
                 </el-table-column>
                 <el-table-column
                   prop="emergency"
-                  label="异常状况应急处置">
+                  label="异常状况应急处置"
+                  align="center">
                 </el-table-column>
               </el-table>
             </template>
@@ -198,6 +204,7 @@ export default {
   },
   created () {
     this.fetchTreeData()
+    this.fetchTableData()
   },
   methods: {
     // 获取树的数据
