@@ -17,10 +17,10 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn"><i class></i>导出</a>
-              <a class="import-btn"><i></i>导入</a>
-              <a class="delete-btn"><i class="el-icon-delete"></i>删除</a>
-              <a class="add-btn"><i class="el-icon-plus"></i>添加</a>
+              <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
+              <a class="import-btn" @click="openImportDialog"><i></i>导入</a>
+              <a class="delete-btn" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
+              <a class="add-btn" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
             </p>
 
             <el-table ref="leaderTable"
@@ -845,7 +845,55 @@ export default {
     },
     changeStepFour () {},
     saveStepFour () {},
-    finish () {}
+    finish () {},
+    openAddConfirm () {
+      this.$prompt('危险名称', '添加', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '添加成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
+    },
+    openDeleteConfirm () {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请至少选中一条'
+        })
+        return
+      }
+      this.$confirm('此操作将删除选中项, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
+    },
+    openImportDialog () {
+      // 不知道要干啥呢
+    },
+    openExportDialog () {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请至少选中一条'
+        })
+      } else {
+        // 执行下载
+      }
+    }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
 }
