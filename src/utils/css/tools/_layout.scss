@@ -127,7 +127,6 @@
   &.is-colspan{
     padding: 0;
   }
-
 }
 .custom-th-label-block{
   display: block;
@@ -250,3 +249,9 @@
   }
 }
 
+//分页布局
+.el-pagination__wrap{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}

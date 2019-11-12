@@ -33,6 +33,8 @@ const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pageL
 const riskIdentified = require('@/components/risk-identifi-module/riskIdentified')
 const RiskIdentified = resolve => require.ensure([], () => resolve(riskIdentified), 'pageListB')
 // 风险辨识评估--风险单元
+const riskUnit = require('@/components/risk-identifi-module/riskUnit')
+const RiskUnit = resolve => require.ensure([], () => resolve(riskUnit), 'pageListB')
 // 风险辨识评估--评价记录
 // 风险辨识评估--系统大数据
 
@@ -192,6 +194,12 @@ const routes = [
         name: 'RiskIdentified',
         title: '风险辨识',
         component: RiskIdentified
+      },
+      {
+        path: '/riskUnit',
+        name: 'RiskUnit',
+        title: '风险单元',
+        component: RiskUnit
       },
       {
         path: '/basic',
