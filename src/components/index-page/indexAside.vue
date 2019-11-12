@@ -202,19 +202,19 @@ export default {
             {
               fname: '配置维护管理',
               name: '用户管理',
-              url: '/',
+              url: '/userManagement',
               active: false
             },
             {
               fname: '配置维护管理',
               name: '角色管理',
-              url: '/',
+              url: '/roleManagement',
               active: false
             },
             {
               fname: '配置维护管理',
               name: '数据管理',
-              url: '/',
+              url: '/dataManagement',
               active: false
             },
             // 组织结构管理 这个部分暂时不写，需求未定
@@ -227,7 +227,7 @@ export default {
             {
               fname: '配置维护管理',
               name: '日志',
-              url: '/',
+              url: '/log',
               active: false
             }
           ]

@@ -86,7 +86,7 @@ export default {
       return data.riskName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      this.$emit('open-loading', {
+      this.$emit('tree-click-handle', {
         riskId: data.riskId,
         level: data.level,
         treeLevel: data.treeLevel
