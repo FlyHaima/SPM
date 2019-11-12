@@ -83,19 +83,25 @@ export default {
             {
               fname: '风险辨识评估',
               name: '风险辨识',
-              url: '/',
+              url: '/riskIdentified',
               active: false
             },
             {
               fname: '风险辨识评估',
-              name: '风险划分',
-              url: '/',
+              name: '风险单元',
+              url: '/riskUnit',
               active: false
             },
             {
               fname: '风险辨识评估',
-              name: '风险评估',
-              url: '/',
+              name: '评价记录',
+              url: '/evaluationRecord',
+              active: false
+            },
+            {
+              fname: '风险辨识评估',
+              name: '系统大数据',
+              url: '/systemData',
               active: false
             }
           ]

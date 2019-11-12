@@ -19,16 +19,24 @@ const indexPage = require('@/pages/index')
 const IndexPage = resolve => require.ensure([], () => resolve(indexPage), 'basicPageList')
 // 安全基础管理--组织机构
 const organization = require('@/components/safety-management/organization')
-const Organization = resolve => require.ensure([], () => resolve(organization), 'pagelist')
+const Organization = resolve => require.ensure([], () => resolve(organization), 'pageListA')
 // 安全基础管理--全员培训
 const staffTraining = require('@/components/safety-management/staffTraining')
-const StaffTraining = resolve => require.ensure([], () => resolve(staffTraining), 'pagelist')
+const StaffTraining = resolve => require.ensure([], () => resolve(staffTraining), 'pageListA')
 // 安全基础管理--制度建设
 const systemConstruction = require('@/components/safety-management/systemConstruction')
-const SystemConstruction = resolve => require.ensure([], () => resolve(systemConstruction), 'pagelist')
+const SystemConstruction = resolve => require.ensure([], () => resolve(systemConstruction), 'pageListA')
 // 安全基础管理--基础资料
 const basicData = require('@/components/safety-management/basicData')
-const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pagelist')
+const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pageListA')
+// 风险辨识评估--风险辨识
+const riskIdentified = require('@/components/risk-identifi-module/riskIdentified')
+const RiskIdentified = resolve => require.ensure([], () => resolve(riskIdentified), 'pageListB')
+// 风险辨识评估--风险单元
+const riskUnit = require('@/components/risk-identifi-module/riskUnit')
+const RiskUnit = resolve => require.ensure([], () => resolve(riskUnit), 'pageListB')
+// 风险辨识评估--评价记录
+// 风险辨识评估--系统大数据
 
 // 首页
 const homeDashboard = require('@/components/home/dashboard.vue')
@@ -180,6 +188,18 @@ const routes = [
         name: 'BasicData',
         title: '基础资料',
         component: BasicData
+      },
+      {
+        path: '/riskIdentified',
+        name: 'RiskIdentified',
+        title: '风险辨识',
+        component: RiskIdentified
+      },
+      {
+        path: '/riskUnit',
+        name: 'RiskUnit',
+        title: '风险单元',
+        component: RiskUnit
       },
       {
         path: '/basic',

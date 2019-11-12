@@ -101,7 +101,6 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
-import TreeDiagram from '../tree-diagram/treeDiagram'
 
 export default {
   name: 'basicData',
@@ -213,7 +212,7 @@ export default {
       }
     }
   },
-  components: {TreeDiagram, BreadCrumb}
+  components: {BreadCrumb}
 }
 </script>
 
