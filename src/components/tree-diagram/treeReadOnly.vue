@@ -40,7 +40,7 @@
               <i :class="classObj(data)"></i>
               {{ node.label }}
             </span>
-            <span class="right-btns" v-if="data.riskLevelCode != null">
+            <span class="right-btns" v-if="data.riskLevelCode != null && showBtns">
               <i class="el-icon-plus" title="添加节点" @click.stop="() =>append(node, data)"></i>
               <i class="el-icon-edit" title="修改节点" @click.stop="() =>edit(node)"></i>
               <i class="el-icon-delete" title="删除节点"  @click.stop="() =>remove(node, data)"></i>
@@ -64,6 +64,10 @@ export default {
       default: ''
     },
     hasUpload: {
+      type: Boolean,
+      default: false
+    },
+    showBtns: {
       type: Boolean,
       default: false
     }

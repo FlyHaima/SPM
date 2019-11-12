@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :show-btns="true"
             @open-loading="openLoading"
             @close-loading="closeLoading">
           </tree-read-only>
