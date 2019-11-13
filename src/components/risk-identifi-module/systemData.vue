@@ -15,100 +15,6 @@
           </tree-read-only>
         </el-aside>
         <el-main class="inner-content">
-          <el-tabs type="border-card">
-            <el-tab-pane label="作业活动类">
-              <p class="btn-p">
-                <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
-              </p>
-              <div class="table-box">
-                <el-table
-                  :data="tableData"
-                  style="width: 100%">
-                  <el-table-column
-                    prop="indexNum"
-                    label="序号" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="作业步骤" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="危险源或潜在事件（人、物、作业环境、管理）" align="center"
-                    width="139">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="主要后果" align="center">
-                  </el-table-column>
-                  <el-table-column label="现有控制措施" align="center">
-                    <el-table-column
-                      prop="levelANum" align="center"
-                      label="工程技术" width="79px">
-                    </el-table-column>
-                    <el-table-column
-                      prop="levelANum" align="center"
-                      label="管理措施" width="79px">
-                    </el-table-column>
-                    <el-table-column
-                      prop="levelANum" align="center"
-                      label="培训教育" width="79px">
-                    </el-table-column>
-                    <el-table-column
-                      prop="levelANum" align="center"
-                      label="个体维护" width="79px">
-                    </el-table-column>
-                    <el-table-column
-                      prop="levelANum" align="center"
-                      label="应急处理" width="79px">
-                    </el-table-column>
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="L" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="E" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="C" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="D" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="评价级别" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="管控级别" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="评价级别" align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="indexNum"
-                    label="备注" align="center"
-                    width="75">
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane label="设备设施类">配置管理</el-tab-pane>
-          </el-tabs>
         </el-main>
       </el-container>
     </el-main>
@@ -120,11 +26,11 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 
 export default {
-  name: 'evaluationRecord',
+  name: 'systemData',
   data () {
     return {
       pageLoading: false,
-      breadcrumb: ['风险辨识评估', '评价记录'],
+      breadcrumb: ['风险辨识评估', '系统大数据'],
       organizationTree: [
         {
           'riskId': '1',
@@ -275,17 +181,6 @@ export default {
             }
           ]
         }
-      ],
-      tableData: [
-        {
-          indexNum: 111,
-          levelANum: 1001,
-          levelAName: '风险点层级A',
-          levelBNum: 100102,
-          levelBName: '风险点层级B',
-          levelCNum: 100198,
-          levelCName: '风险点层级C'
-        }
       ]
     }
   },
@@ -306,60 +201,8 @@ export default {
   .inner-content {
     width: 100%;
     height: 100%;
-    padding: 0;
+    padding: 29px 22px;
     background: #fff;
-    .btn-p {
-      margin-top: 15px;
-      height: 36px;
-      line-height: 36px;
-      & > a {
-        float: right;
-        width: 83px;
-        height: 36px;
-        color: #fff;
-        font-size: 16px;
-        text-align: center;
-        margin-left: 28px;
-        i {
-          margin-right: 8px;
-          display: inline-block;
-          width: 15px;
-          height: 15px;
-        }
-      }
-      .export-btn{
-        background: #67c23a;
-        i{
-          background-size: 14px 14px;
-          background: url("../../assets/img/export-icon.png") no-repeat center;
-        }
-      }
-    }
-    .table-box{
-      margin-top: 30px;
-    }
-  }
-}
-/deep/.inner-page-container{
-  .el-tabs--border-card{
-    border: none;
-    box-shadow: none;
-  }
-  .el-tabs__item{
-    border-top: 2px solid #F5F7FA;
-  }
-  .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    border-top: 2px solid #409eff;
-  }
-}
-/deep/.inner-page-container {
-  .inner-content {
-    .el-table td {
-      padding: 18px 4px;
-    }
-    .el-table tbody .cell{
-      padding: 0;
-    }
   }
 }
 </style>
