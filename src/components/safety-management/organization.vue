@@ -18,7 +18,7 @@
 
             <el-main class="inner-content">
               <div class="container-box">
-                <organigram :organigram-data="organizationTree"></organigram>
+                <organigram :organigram-data="orgTreeData"></organigram>
               </div>
             </el-main>
           </el-container>
@@ -164,7 +164,7 @@ export default {
       organizationTree: [
         {
           id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
+          label: '东三省黑龙江分部总公司',
           data: {
             name: 'AAA',
             duty: 'clean job'
@@ -397,7 +397,107 @@ export default {
           concatNum: '18899890977',
           duty: '主要职责内容，balabalbalbalbalbablablab'
         }
-      ]
+      ],
+      // orgTreeData 谜之bug，替换name属性为其他字段，会导致绘制2遍
+      orgTreeData: {
+        id: '10001',
+        name: '风险辨识 东北三省总部',
+        manager: '张三',
+        telNum: '13088889999',
+        duty: '监管工作',
+        children: [
+          {
+            id: '10011',
+            name: 'Classification',
+            manager: '张三',
+            telNum: '13088889999',
+            duty: '监管工作',
+            children: [
+              {
+                id: '10111',
+                name: 'Classification',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              },
+              {
+                id: '10112',
+                name: 'Linear discriminant analysis',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              },
+              {
+                name: 'Linear',
+                id: '10113',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              }
+            ]
+          },
+          {
+            id: '10012',
+            name: 'Classification',
+            manager: '张三',
+            telNum: '13088889999',
+            duty: '监管工作',
+            children: [
+              {
+                id: '10121',
+                name: 'Classification',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              },
+              {
+                name: 'Linear discriminant analysis',
+                id: '10122',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              },
+              {
+                name: 'Linear',
+                id: '10123',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              }
+            ]
+          },
+          {
+            id: '10013',
+            name: 'Classification',
+            manager: '张三',
+            telNum: '13088889999',
+            duty: '监管工作',
+            children: [
+              {
+                id: '10131',
+                name: 'Classification',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              },
+              {
+                name: 'Linear discriminant analysis',
+                id: '10132',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              },
+              {
+                name: 'Linear',
+                id: '10133',
+                manager: '张三',
+                telNum: '',
+                duty: '监管工作'
+              }
+            ]
+          }
+        ]
+      }
     }
   },
   methods: {

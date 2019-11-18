@@ -2,18 +2,18 @@
 <template>
   <div class="organigram-wrap">
     <div id="mountNode"></div>
-    <div
-      v-show="mouseenterLayerSwitch"
+
+    <div v-show="mouseenterLayerSwitch"
       class="mouseenter-layer"
       ref="mouseenterLayer">
       <div class="list-organization">
         <div class="list-organization-item">
           <div class="list-organization-label">人员：</div>
-          <div class="list-organization-value">{{detailValue.name}}</div>
+          <div class="list-organization-value">{{detailValue.manager}}</div>
         </div>
         <div class="list-organization-item">
           <div class="list-organization-label">电话：</div>
-          <div class="list-organization-value">{{detailValue.name}}</div>
+          <div class="list-organization-value">{{detailValue.telNum}}</div>
         </div>
         <div class="list-organization-item">
           <div class="list-organization-label">主要职责：</div>
@@ -21,6 +21,7 @@
         </div>
       </div>
     </div>
+
     <el-dialog title="编辑" :visible.sync="dailogVisibelEdit">
       <div class="form-modal">
         <el-form
@@ -58,7 +59,7 @@
 /* eslint-disable */
 import G6 from '@antv/g6'
 // import '@antv/g6/build/plugin.tool.tooltip'
-import utils from '../../utils/js/common.js'
+// import utils from '../../utils/js/common.js'
 
 export default {
   name: 'organigram',
@@ -74,14 +75,16 @@ export default {
       detailData: [], //组织结构数据
       detailValue: {
         name: '',
-        duty: ''
+        manager: '',
+        duty: '',
+        telNum: ''
       },
       organigramDataObj: []
     }
   },
   props: {
     organigramData: {
-      type: Array,
+      type: Object,
       default: null
     }
   },
@@ -89,12 +92,11 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      let i = 0
-      this.organigramDataObj = this.organigramData
-      this.G6_init(this.organigramDataObj[0])
-      this.initData(this.organigramDataObj[0])
-      console.log(this.detailData)
-
+      // let i = 0
+      console.log(this.organigramData)
+      this.G6_init(this.organigramData)
+      // this.initData(this.organigramDataObj[0])
+      // console.log(this.detailData)
     })
   },
   methods: {
@@ -107,78 +109,101 @@ export default {
         }
       }
     },
-    G6_init (val) {
+    G6_init (treeData) {
+      console.log('run G6 init')
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
-        return [['M', x, y], ['a', r, r, 0, 1, 0, r * 2, 0], ['a', r, r, 0, 1, 0, -r * 2, 0], ['M', x + 2, y], ['L', x + 2 * r - 2, y]];
+        return [
+          ['M', x, y],
+          ['a', r, r, 0, 1, 0, r * 2, 0],
+          ['a', r, r, 0, 1, 0, -r * 2, 0],
+          ['M', x + 2, y],
+          ['L', x + 2 * r - 2, y]
+        ]
       }
       let EXPAND_ICON = function EXPAND_ICON(x, y, r) {
-        return [['M', x, y], ['a', r, r, 0, 1, 0, r * 2, 0], ['a', r, r, 0, 1, 0, -r * 2, 0], ['M', x + 2, y], ['L', x + 2 * r - 2, y], ['M', x + r, y - r + 2], ['L', x + r, y + r - 2]];
+        return [
+          ['M', x, y],
+          ['a', r, r, 0, 1, 0, r * 2, 0],
+          ['a', r, r, 0, 1, 0, -r * 2, 0],
+          ['M', x + 2, y],
+          ['L', x + 2 * r - 2, y],
+          ['M', x + r, y - r + 2],
+          ['L', x + r, y + r - 2]
+        ]
       }
 
       G6.registerNode('tree-node', {
         drawShape: function drawShape(cfg, group) {
-          var rect = group.addShape('rect', {
+          let rect = group.addShape('rect', {
             attrs: {
-              fill: '#ffffff',
-              stroke: '#666666'
+              fill: '#fff',
+              stroke: '#666'
             }
-          });
-          var content = cfg.label.replace(/(.{19})/g, '$1\n');
-          var text = group.addShape('text', {
+          })
+          // 设置渲染节点的文本 label-name， 添加换行
+          let content = cfg.name.replace(/(.{19})/g, '$1\n')
+
+          let text = group.addShape('text', {
             attrs: {
               text: content,
               x: 0,
               y: 0,
               textAlign: 'left',
               textBaseline: 'middle',
-              fill: '#666666',
-              fontSize: '12'
+              fill: '#666'
             }
-          });
-          var bbox = text.getBBox();
-          var hasChildren = cfg.children && cfg.children.length > 0;
+          })
+          let bbox = text.getBBox()
+
+          let hasChildren = cfg.children && cfg.children.length > 0
           if (hasChildren) {
             group.addShape('marker', {
               attrs: {
-                x: bbox.maxX + 8,
-                y: bbox.minX + bbox.height / 2 - 8,
+                x: bbox.maxX + 6,
+                y: bbox.minX + bbox.height / 2 - 6,
                 r: 6,
                 symbol: COLLAPSE_ICON,
-                stroke: '#333333',
+                stroke: '#666',
                 lineWidth: 2
               },
               className: 'collapse-icon'
-            });
+            })
           }
           rect.attr({
             x: bbox.minX - 4,
             y: bbox.minY - 6,
-            width: bbox.width + (hasChildren ? 32 : 18),
-            height: bbox.height + 16
-          });
-          return rect;
+            width: bbox.width + (hasChildren ? 26 : 8),
+            height: bbox.height + 12
+          })
+          return rect
         }
       }, 'single-shape')
 
       const graph = new G6.TreeGraph({
-        container: 'mountNode',
-        width: 800,
+        // renderer: 'svg', // 渲染模式，可选svg，本组件用不上
+        container: 'mountNode', // 容器id
+        width: 1140,
         height: 600,
         modes: {
-          default: [{
-            type: 'collapse-expand',
-            onChange: function onChange(item, collapsed) {
-              let data = item.get('model');
-              let icon = item.get('group').findByClassName('collapse-icon');
-              if (collapsed) {
-                icon.attr('symbol', EXPAND_ICON);
-              } else {
-                icon.attr('symbol', COLLAPSE_ICON);
+          default: [
+            {
+              type: 'collapse-expand',
+              onChange: function onChange(item, collapsed) {
+
+                let data = item.get('model')
+                let icon = item.get('group').findByClassName('collapse-icon')
+                if (collapsed) {
+                  icon.attr('symbol', EXPAND_ICON)
+                } else {
+                  icon.attr('symbol', COLLAPSE_ICON)
+                }
+                data.collapsed = collapsed
+                return true
               }
-              data.collapsed = collapsed;
-              return true;
-            }
-          }, 'drag-canvas', 'zoom-canvas']
+            },
+            'drag-canvas',
+            'zoom-canvas'
+          ]
         },
         defaultNode: {
           shape: 'tree-node',
@@ -196,46 +221,52 @@ export default {
           type: 'compactBox',
           direction: 'LR',
           getId: function getId(d) {
-            return d.id;
+            return d.id
           },
           getHeight: function getHeight() {
-            return 16;
+            return 16
           },
           getWidth: function getWidth() {
-            return 16;
+            return 16
           },
           getVGap: function getVGap() {
-            return 20;
+            return 20
           },
           getHGap: function getHGap() {
-            return 80;
+            return 80
           }
         }
       })
-      graph.data(val)
+
+      graph.data(treeData)
       graph.render()
       graph.fitView()
-      graph.on('node:mouseenter', ev=>{
+
+      graph.on('node:click', ev =>{
+        console.log(ev)
+      })
+
+      graph.on('node:mouseenter', ev =>{
+        // console.log(ev)
         this.mouseenterLayerSwitch = true
       })
-      graph.on('node:mouseleave', ev=>{
+      graph.on('node:mouseleave', ev =>{
         this.mouseenterLayerSwitch = false
         this.dailogVisibelEdit = false
-        this.detailValue = ev.item.get('model').data
-        // console.log(this.detailValue)
-
+        console.log(ev.item.get('model'))
+        this.detailValue = ev.item.get('model')
       })
-      graph.on('node:contextmenu', ev=>{
+      graph.on('node:contextmenu', ev =>{
         this.mouseenterLayerSwitch = false
         this.dailogVisibelEdit = true
       })
     }
   },
   watch: {
-    organigramData (val) {
-      this.G6_init(val)
-      this.initData(val)
-    }
+    // organigramData (val) {
+    //   this.G6_init(val)
+    //   this.initData(val)
+    // }
   }
 }
 </script>
