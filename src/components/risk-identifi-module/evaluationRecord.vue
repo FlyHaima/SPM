@@ -18,11 +18,11 @@
           <el-tabs type="border-card">
             <el-tab-pane label="作业活动类">
               <p class="btn-p">
-                <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
+                <a class="export-btn" @click="openExportDialogA"><i class></i>导出</a>
               </p>
               <div class="table-box">
                 <el-table
-                  :data="tableData"
+                  :data="tableDataA"
                   style="width: 100%">
                   <el-table-column
                     prop="indexNum"
@@ -30,38 +30,38 @@
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="stepNum"
                     label="作业步骤" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="hazard"
                     label="危险源或潜在事件（人、物、作业环境、管理）" align="center"
                     width="139">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="consequence"
                     label="主要后果" align="center">
                   </el-table-column>
                   <el-table-column label="现有控制措施" align="center">
                     <el-table-column
-                      prop="levelANum" align="center"
+                      prop="technical" align="center"
                       label="工程技术" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="levelANum" align="center"
+                      prop="manager" align="center"
                       label="管理措施" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="levelANum" align="center"
+                      prop="education" align="center"
                       label="培训教育" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="levelANum" align="center"
+                      prop="protect" align="center"
                       label="个体维护" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="levelANum" align="center"
+                      prop="emergency" align="center"
                       label="应急处理" width="79px">
                     </el-table-column>
                   </el-table-column>
@@ -86,28 +86,113 @@
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="JLevel"
                     label="评价级别" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="MLevel"
                     label="管控级别" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
-                    label="评价级别" align="center">
+                    prop="advice"
+                    label="建议新增（改进）措施" align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="Remarks"
                     label="备注" align="center"
                     width="75">
                   </el-table-column>
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="设备设施类">配置管理</el-tab-pane>
+            <el-tab-pane label="设备设施类">
+              <p class="btn-p">
+                <a class="export-btn" @click="openExportDialogB"><i class></i>导出</a>
+              </p>
+              <div class="table-box">
+                <el-table
+                  :data="tableDataB"
+                  style="width: 100%">
+                  <el-table-column
+                    prop="indexNum"
+                    label="序号" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="stepNum"
+                    label="作业步骤" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="hazard"
+                    label="危险源或潜在事件（人、物、作业环境、管理）" align="center"
+                    width="139">
+                  </el-table-column>
+                  <el-table-column
+                    prop="consequence"
+                    label="主要后果" align="center">
+                  </el-table-column>
+                  <el-table-column label="现有控制措施" align="center">
+                    <el-table-column
+                      prop="technical" align="center"
+                      label="工程技术" width="79px">
+                    </el-table-column>
+                    <el-table-column
+                      prop="manager" align="center"
+                      label="管理措施" width="79px">
+                    </el-table-column>
+                    <el-table-column
+                      prop="education" align="center"
+                      label="培训教育" width="79px">
+                    </el-table-column>
+                    <el-table-column
+                      prop="protect" align="center"
+                      label="个体维护" width="79px">
+                    </el-table-column>
+                    <el-table-column
+                      prop="emergency" align="center"
+                      label="应急处理" width="79px">
+                    </el-table-column>
+                  </el-table-column>
+                  <el-table-column
+                    prop="L"
+                    label="L" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="S"
+                    label="S" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="R"
+                    label="R" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="JLevel"
+                    label="评价级别" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="MLevel"
+                    label="管控级别" align="center"
+                    width="45">
+                  </el-table-column>
+                  <el-table-column
+                    prop="advice"
+                    label="新增建议（改进）措施" align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop="Remarks"
+                    label="备注" align="center"
+                    width="75">
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-tab-pane>
           </el-tabs>
         </el-main>
       </el-container>
@@ -276,15 +361,45 @@ export default {
           ]
         }
       ],
-      tableData: [
+      tableDataA: [
         {
           indexNum: 111,
-          levelANum: 1001,
-          levelAName: '风险点层级A',
-          levelBNum: 100102,
-          levelBName: '风险点层级B',
-          levelCNum: 100198,
-          levelCName: '风险点层级C'
+          stepNum: 101,
+          hazard: '风险点层级A',
+          consequence: 'boom',
+          technical: '123123',
+          manager: 'qweqwe',
+          education: '风险点层级B',
+          protect: 100198,
+          emergency: '风险点层级C',
+          L: 12,
+          E: 4,
+          C: 0.1,
+          D: 4.8,
+          JLevel: '中等C级',
+          MLevel: 'C',
+          advice: 'stop bullshit',
+          Remarks: 'all bullshit'
+        }
+      ],
+      tableDataB: [
+        {
+          indexNum: 111,
+          stepNum: 101,
+          hazard: '风险点层级A',
+          consequence: 'boom',
+          technical: '123123',
+          manager: 'qweqwe',
+          education: '风险点层级B',
+          protect: 100198,
+          emergency: '风险点层级C',
+          L: 12,
+          S: 4,
+          R: 48,
+          JLevel: '中等C级',
+          MLevel: 'C',
+          advice: 'stop bullshit',
+          Remarks: 'all bullshit'
         }
       ]
     }
@@ -295,7 +410,9 @@ export default {
     },
     closeLoading () {
       this.pageLoading = false
-    }
+    },
+    openExportDialogA () {},
+    openExportDialogB () {}
   },
   components: {TreeReadOnly, BreadCrumb}
 }
