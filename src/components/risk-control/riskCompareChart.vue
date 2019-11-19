@@ -17,7 +17,9 @@
               <statistic-e
                 :chart-data = "chartData"
                 :chart-height = "chartHeight"
-                :legend-vertical = "legendVertical"
+                legend-vertical-switch
+                filter-date-switch
+                @sel-change-handle = "selChangeHandle"
               ></statistic-e>
             </div>
           </div>
@@ -29,40 +31,44 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import statisticE from '@/components/e-charts/statisticE'
+import axios from '@/api/axios'
 export default {
   name: 'riskCompareChart',
   data () {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
-      chartData: [
-        {
-          'value': '25',
-          'name': '煤气'
-        },
-        {
-          'value': '50',
-          'name': '炉前'
-        },
-        {
-          'value': '75',
-          'name': '炉前2'
-        },
-        {
-          'value': '60',
-          'name': '炉前3'
-        },
-        {
-          'value': '80',
-          'name': '炉前4'
-        },
-        {
-          'value': '100',
-          'name': '炉前5'
-        }
-      ],
-      chartHeight: '417px',
-      legendVertical: true
+      chartData: [], // 图表数据
+      chartHeight: '417px', // 图表高度
+      time: '' // 筛选日期
+    }
+  },
+  created () {
+    this.fetchChartData()
+  },
+  methods: {
+    selChangeHandle (data) {
+      let vm = this
+      vm.time = data.selValue
+      this.fetchChartData()
+      // console.log(this.chartData)
+    },
+    // 获取chart的数据
+    fetchChartData () {
+      this.pageLoading = true
+      let vm = this
+      // this.chartData = []
+      axios
+        .get('spm/riskLevel/getWorkRisk', {
+          time: vm.time
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.chartData = res.data.data
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
     }
   },
   components: {

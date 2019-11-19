@@ -155,7 +155,10 @@
                 <el-row :gutter="24">
                   <el-col :span="24">
                     <div class="pie-box">
-                      <statistic-e :chart-data="chartData"></statistic-e>
+                      <statistic-e
+                        :chart-data = "chartData"
+                        :chart-height = "chartHeight"
+                      ></statistic-e>
                     </div>
                   </el-col>
                 </el-row>
@@ -200,7 +203,7 @@ export default {
               'value': 55.2,
               'name': '符合'
             }
-          ],
+          ], // 图形数据
           colorList: [
             '#57d9bb',
             '#4c97d9',
@@ -208,7 +211,7 @@ export default {
             '#f69b27',
             '#4c97d9'
           ]
-        },
+        }, // 图形颜色集合
         {
           title: '隐患发生率',
           pieData: [
@@ -333,7 +336,8 @@ export default {
           'value': '100',
           'name': '炉前5'
         }
-      ]
+      ], // 图表数据
+      chartHeight: '417px' // 图表高度
     }
   },
   components: {
