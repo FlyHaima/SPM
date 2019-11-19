@@ -179,11 +179,14 @@ export default {
         }
       }, 'single-shape')
 
+      let graphW = document.getElementById('mountNode').offsetWidth
+      let graphH = document.getElementById('mountNode').offsetHeight
+
       const graph = new G6.TreeGraph({
         // renderer: 'svg', // 渲染模式，可选svg，本组件用不上
         container: 'mountNode', // 容器id
-        width: 1140,
-        height: 600,
+        width: graphW,
+        height: graphH,
         modes: {
           default: [
             {
@@ -277,6 +280,10 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
+    #mountNode{
+      width: 100%;
+      height: 100%;
+    }
   }
   .mouseenter-layer{
     position: absolute;

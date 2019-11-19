@@ -573,6 +573,8 @@ export default {
     padding: 29px 22px;
     background: #fff;
     .container-box{
+      width: 100%;
+      height: 100%;
       .btn-p{
         height: 36px;
         line-height: 36px;
