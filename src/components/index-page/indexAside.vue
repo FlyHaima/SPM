@@ -566,17 +566,107 @@ export default {
               }
               &.icon20{
                 background: url('../../assets/img/aside-icon01-0.png') no-repeat;
-                background-size: 20px 18px;
+                background-size: 16px 16px;
                 background-position: center center;
               }
               &.icon21{
                 background: url('../../assets/img/aside-icon01-1.png') no-repeat;
-                background-size: 22px 19px;
+                background-size: 19px 16px;
                 background-position: center center;
               }
               &.icon22{
                 background: url('../../assets/img/aside-icon01-2.png') no-repeat;
+                background-size: 16px 18px;
+                background-position: center center;
+              }
+              &.icon23{
+                background: url('../../assets/img/aside-icon01-2.png') no-repeat;
+                background-size: 16px 18px;
+                background-position: center center;
+              }
+              &.icon30{
+                background: url('../../assets/img/aside-icon02-0.png') no-repeat;
+                background-size: 16px 18px;
+                background-position: center center;
+              }
+              &.icon31{
+                background: url('../../assets/img/aside-icon02-1.png') no-repeat;
+                background-size: 16px 14px;
+                background-position: center center;
+              }
+              &.icon32{
+                background: url('../../assets/img/aside-icon02-2.png') no-repeat;
+                background-size: 18px 14px;
+                background-position: center center;
+              }
+              &.icon33{
+                background: url('../../assets/img/aside-icon02-3.png') no-repeat;
+                background-size: 20px 16px;
+                background-position: center center;
+              }
+              &.icon34{
+                background: url('../../assets/img/aside-icon02-4.png') no-repeat;
+                background-size: 18px 18px;
+                background-position: center center;
+              }
+              &.icon35{
+                background: url('../../assets/img/aside-icon02-5.png') no-repeat;
+                background-size: 17px 17px;
+                background-position: center center;
+              }
+              &.icon36{
+                background: url('../../assets/img/aside-icon02-6.png') no-repeat;
                 background-size: 19px 19px;
+                background-position: center center;
+              }
+              &.icon37{
+                background: url('../../assets/img/aside-icon02-7.png') no-repeat;
+                background-size: 18px 18px;
+                background-position: center center;
+              }
+              &.icon40{
+                background: url('../../assets/img/aside-icon03-0.png') no-repeat;
+                background-size: 17px 17px;
+                background-position: center center;
+              }
+              &.icon41{
+                background: url('../../assets/img/aside-icon03-1.png') no-repeat;
+                background-size: 16px 16px;
+                background-position: center center;
+              }
+              &.icon42{
+                background: url('../../assets/img/aside-icon03-2.png') no-repeat;
+                background-size: 17px 15px;
+                background-position: center center;
+              }
+              &.icon43{
+                background: url('../../assets/img/aside-icon03-3.png') no-repeat;
+                background-size: 14px 16px;
+                background-position: center center;
+              }
+              &.icon44{
+                background: url('../../assets/img/aside-icon03-4.png') no-repeat;
+                background-size: 15px 17px;
+                background-position: center center;
+              }
+              &.icon60{
+                background: url('../../assets/img/aside-icon06-0.png') no-repeat;
+                background-size: 17px 19px;
+                background-position: center center;
+              }
+              &.icon61{
+                background: url('../../assets/img/aside-icon06-1.png') no-repeat;
+                background-size: 19px 17px;
+                background-position: center center;
+              }
+              &.icon62{
+                background: url('../../assets/img/aside-icon06-2.png') no-repeat;
+                background-size: 17px 19px;
+                background-position: center center;
+              }
+              &.icon63{
+                background: url('../../assets/img/aside-icon06-3.png') no-repeat;
+                background-size: 16px 18px;
                 background-position: center center;
               }
             }

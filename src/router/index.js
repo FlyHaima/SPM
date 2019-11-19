@@ -8,6 +8,14 @@ Router.prototype.push = function push (location) {
   return routerPush.call(this, location).catch(error => error)
 }
 
+/**
+ * build分包如下：
+ * basicPageList（登录、404、主页index）；
+ * pageListA（安全基础管理 下所有模块）；
+ * pageListB（风险辨识评估 下所有模块）；
+ * 待续
+ * **/
+
 // 登录页
 const loginPage = require('@/pages/login')
 const LoginPage = resolve => require.ensure([], () => resolve(loginPage), 'basicPageList')
@@ -36,8 +44,11 @@ const RiskIdentified = resolve => require.ensure([], () => resolve(riskIdentifie
 const riskUnit = require('@/components/risk-identifi-module/riskUnit')
 const RiskUnit = resolve => require.ensure([], () => resolve(riskUnit), 'pageListB')
 // 风险辨识评估--评价记录
+const evaluationRecord = require('@/components/risk-identifi-module/evaluationRecord')
+const EvaluationRecord = resolve => require.ensure([], () => resolve(evaluationRecord), 'pageListB')
 // 风险辨识评估--系统大数据
-
+const systemData = require('@/components/risk-identifi-module/systemData')
+const SystemData = resolve => require.ensure([], () => resolve(systemData), 'pageListB')
 // 首页
 const homeDashboard = require('@/components/home/dashboard.vue')
 const HomeDashboard = resolve => require.ensure([], () => resolve(homeDashboard), 'pagelist')
@@ -200,6 +211,18 @@ const routes = [
         name: 'RiskUnit',
         title: '风险单元',
         component: RiskUnit
+      },
+      {
+        path: '/evaluationRecord',
+        name: 'EvaluationRecord',
+        title: '评价记录',
+        component: EvaluationRecord
+      },
+      {
+        path: '/systemData',
+        name: 'SystemData',
+        title: '系统大数据',
+        component: SystemData
       },
       {
         path: '/basic',
