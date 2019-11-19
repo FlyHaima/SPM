@@ -92,11 +92,7 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      // let i = 0
-      console.log(this.organigramData)
       this.G6_init(this.organigramData)
-      // this.initData(this.organigramDataObj[0])
-      // console.log(this.detailData)
     })
   },
   methods: {
@@ -110,7 +106,7 @@ export default {
       }
     },
     G6_init (treeData) {
-      console.log('run G6 init')
+      // console.log('run G6 init')
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
         return [
           ['M', x, y],
@@ -204,6 +200,18 @@ export default {
                 return true
               }
             },
+            {
+              type: 'tooltip',
+              formatText(model) {
+                const text = 'manager: ' + model.manager
+                  + '<br/>telNum: ' + model.telNum
+                  + '<br/>duty: ' + model.duty
+                return text
+              },
+              shouldUpdate: e => {
+                return true
+              }
+            },
             'drag-canvas',
             'zoom-canvas'
           ]
@@ -245,22 +253,7 @@ export default {
       graph.render()
       graph.fitView()
 
-      graph.on('node:click', ev =>{
-        console.log(ev)
-      })
-
-      graph.on('node:mouseenter', ev =>{
-        // console.log(ev)
-        this.mouseenterLayerSwitch = true
-      })
-      graph.on('node:mouseleave', ev =>{
-        this.mouseenterLayerSwitch = false
-        this.dailogVisibelEdit = false
-        console.log(ev.item.get('model'))
-        this.detailValue = ev.item.get('model')
-      })
       graph.on('node:contextmenu', ev =>{
-        this.mouseenterLayerSwitch = false
         this.dailogVisibelEdit = true
       })
     }
@@ -321,5 +314,20 @@ export default {
       margin: 0 auto;
     }
   }
+/deep/.organigram-wrap{
+    .g6-tooltip {
+      width: 180px;
+      min-height: 160px;
+      border: 1px solid #e2e2e2;
+      border-radius: 4px;
+      font-size: 15px;
+      line-height: 24px;
+      color: #545454;
+      background-color: #fffbc0;
+      padding: 10px 8px;
+      box-shadow: rgb(174, 174, 174) 0px 0px 10px;
+    }
+  }
+
 </style>
 
