@@ -203,9 +203,9 @@ export default {
             {
               type: 'tooltip',
               formatText(model) {
-                const text = 'manager: ' + model.manager
-                  + '<br/>telNum: ' + model.telNum
-                  + '<br/>duty: ' + model.duty
+                const text = '人员：' + model.manager
+                  + '<br/>电话：' + model.telNum
+                  + '<br/>主要职责：' + model.duty
                 return text
               },
               shouldUpdate: e => {
@@ -317,7 +317,7 @@ export default {
 /deep/.organigram-wrap{
     .g6-tooltip {
       width: 180px;
-      min-height: 160px;
+      min-height: 120px;
       border: 1px solid #e2e2e2;
       border-radius: 4px;
       font-size: 15px;
