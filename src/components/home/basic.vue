@@ -242,7 +242,6 @@ export default {
       if (value === '') {
         callback(new Error('请输入当前用户密码'))
       } else {
-        // let regex = new RegExp('^[a-zA-Z0-9]{6,30}')
         if (!regexPwd.test(value)) {
           callback(new Error('密码格式不正确，请输入字母或数字组成且不少于6位数字符的密码'))
         }

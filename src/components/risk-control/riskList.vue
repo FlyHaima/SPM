@@ -81,7 +81,7 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">风险点名称</div>
                     <div class="custom-td-value">
-                      {{riskList.threeName}}
+                      {{riskList.riskName}}
                     </div>
                   </div>
                   <div class="custom-tr">
@@ -134,7 +134,6 @@
                     <div class="custom-th-label">检查频次</div>
                   </div>
                 </div>
-
                 <div
                   v-for=" item in riskTableData"
                   :key="item.workNo"
@@ -161,7 +160,9 @@
                       </div>
                     </div>
                     <div class="custom-td-value">
-                      <div class="custom-td-text">dd</div>
+                      <div class="custom-td-text">
+                        {{item.rate}}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -230,12 +231,11 @@ export default {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`spm/riskLevel/getRiskCrad?&id=${vm.riskId}&level=${vm.level}`)
+        .get(`spm/riskLevel/getRiskCrad?&id=${vm.riskId}`)
         .then((res) => {
           if (res.data.code === 200) {
             if (res.data.data.length > 1 || res.data.data.length === 0) {
               this.tableVisible = true
-              // this.tableData = []
               this.tableData = res.data.data
               if (this.tableData.riskDj) {
                 this.tagVisible = true
@@ -245,6 +245,7 @@ export default {
             } else {
               this.tableVisible = false
               this.riskList = res.data.data[0]
+              this.riskTableData = this.riskList.describes
               if (this.riskList.riskDj) {
                 this.tagVisible = true
               } else {
