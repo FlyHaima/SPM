@@ -16,6 +16,52 @@
         </el-aside>
         <el-main class="inner-content">
           <div class="container-box">
+            <p class="btn-p">
+              <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
+            </p>
+            <div class="table-box">
+              <el-table
+                :data="tableData"
+                style="width: 100%">
+                <el-table-column
+                  prop="indexNum"
+                  label="风险点序号" align="center"
+                  width="45">
+                </el-table-column>
+                <el-table-column label="风险点位置" align="center">
+                  <el-table-column label="一级子单元" align="center">
+                    <el-table-column
+                      prop="levelANum" align="center"
+                      label="序号">
+                    </el-table-column>
+                    <el-table-column align="center"
+                      prop="levelAName"
+                      label="名称">
+                    </el-table-column>
+                  </el-table-column>
+                  <el-table-column label="二级子单元" align="center">
+                    <el-table-column align="center"
+                      prop="levelBNum"
+                      label="序号">
+                    </el-table-column>
+                    <el-table-column align="center"
+                      prop="levelBName"
+                      label="名称">
+                    </el-table-column>
+                  </el-table-column>
+                  <el-table-column label="三级子单元" align="center">
+                    <el-table-column align="center"
+                      prop="levelCNum"
+                      label="序号">
+                    </el-table-column>
+                    <el-table-column align="center"
+                      prop="levelCName"
+                      label="名称">
+                    </el-table-column>
+                  </el-table-column>
+                </el-table-column>
+              </el-table>
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -183,13 +229,79 @@ export default {
             }
           ]
         }
+      ],
+      tableData: [
+        {
+          indexNum: 1,
+          levelANum: 1001,
+          levelAName: '风险点层级A',
+          levelBNum: 100102,
+          levelBName: '风险点层级B',
+          levelCNum: 100198,
+          levelCName: '风险点层级C'
+        }
       ]
     }
+  },
+  methods: {
+    openLoading () {
+      this.pageLoading = true
+    },
+    closeLoading () {
+      this.pageLoading = false
+    },
+    openExportDialog () {}
   },
   components: {TreeReadOnly, BreadCrumb}
 }
 </script>
 
 <style scoped lang="scss">
+.inner-page-container {
+  .inner-content {
+    width: 100%;
+    height: 100%;
+    padding: 29px 22px;
+    background: #fff;
 
+    .container-box {
+      .btn-p {
+        height: 36px;
+        line-height: 36px;
+        & > a {
+          float: right;
+          width: 83px;
+          height: 36px;
+          color: #fff;
+          font-size: 16px;
+          text-align: center;
+          margin-left: 28px;
+          i {
+            margin-right: 8px;
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+          }
+        }
+        .export-btn{
+          background: #67c23a;
+          i{
+            background-size: 14px 14px;
+            background: url("../../assets/img/export-icon.png") no-repeat center;
+          }
+        }
+      }
+      .table-box{
+        margin-top: 30px;
+      }
+    }
+  }
+}
+/deep/.inner-page-container {
+  .inner-content {
+    .el-table td {
+      padding: 18px 4px;
+    }
+  }
+}
 </style>

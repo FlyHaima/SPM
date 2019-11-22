@@ -1,6 +1,8 @@
 <template>
 <div class="message-wrap">
-  <el-tabs type="border-card">
+  <el-tabs
+    type="border-card"
+    @tab-click='clickTab'>
     <el-tab-pane label="我发布的">
       <span slot="label"> 我发布的<span class="badge">18</span></span>
       <div class="">
@@ -11,43 +13,38 @@
             </div> -->
             <div class="info-link">
               <el-button @click="handleSendMessage" type="primary" size="mini">发布消息</el-button>
-              <el-button type="danger" size="mini">删除当页消息</el-button>
+              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
             </div>
           </div>
-          <div class="info-header">
+          <!-- <div class="info-header">
             <div class="info-title">
               <span class="info-title-txt">待办事项</span>
             </div>
             <div class="info-link">
               <el-button type="danger" size="mini">标记当页已处理</el-button>
             </div>
-          </div>
+          </div> -->
           <div class="info-content">
             <ul class="list-info">
-              <li class="list-info-item">
+              <li
+                v-for="(item, index) in messageData"
+                :key="index"
+                class="list-info-item list-info-item-light">
                 <div class="list-info-title">
                   <span class="list-info-txt">
                     <span class="list-info-type">
-                      <i class="badge is-dot"></i>
-                      [下线通知]</span>你的安全清单并未完善，请点击这里</span>
+                      [{{item.type}}]
+                      <i v-if="item.isRead === '1'" class="badge"></i>
+                    </span>
+                    {{item.title}}
+                  </span>
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
-                  <span class="list-info-date">2019-08-06</span>
+                  <span class="list-info-date">{{item.sendTime}}</span>
                   <span class="list-info-time">10：32</span>
-                  <span class="list-info-user">发布人：王雪</span>                  <i class="el-icon-delete"></i>
-                </div>
-              </li>
-              <li class="list-info-item list-info-item-light">
-                <div class="list-info-title">
-                  <span class="list-info-txt"><span class="list-info-type">[下线通知]</span>你的安全清单并未完善，请点击这里</span>
-                </div>
-                <div class="list-info-right">
-                  <i class="icon-clock"></i>
-                  <span class="list-info-date">2019-08-06</span>
-                  <span class="list-info-time">10：32</span>
-                  <span class="list-info-user">发布人：王雪</span>
-                  <i class="el-icon-delete"></i>
+                  <span class="list-info-user">发布人：{{item.userName}}</span>
+                  <i @click="deleteRow(item)" class="el-icon-delete" ></i>
                 </div>
               </li>
             </ul>
@@ -56,11 +53,9 @@
               background
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page="currentPage4"
-              :page-sizes="[100, 200, 300, 400]"
-              :page-size="100"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="400">
+              :current-page="page.index"
+              layout="total, prev, pager, next, jumper"
+              :total="page.total">
             </el-pagination>
           </div>
         </div>
@@ -71,38 +66,32 @@
         <div class="info-panel">
           <div class="info-header">
             <div class="info-link">
-              <el-button type="success" size="mini">标记当页已读</el-button>
-              <el-button type="danger" size="mini">删除当页消息</el-button>
+              <el-button @click="signReadHandle" type="success" size="mini">标记当页已读</el-button>
+              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
             </div>
           </div>
           <div class="info-content">
             <ul class="list-info">
-              <li @click="goDetailsPage" class="list-info-item">
-                <div class="list-info-title">
-                  <span class="list-info-txt"><span class="list-info-type">[下线通知]</span>你的安全清单并未完善，请点击这里</span>
-                </div>
-                <div class="list-info-right">
-                  <i class="icon-clock"></i>
-                  <span class="list-info-date">2019-08-06</span>
-                  <span class="list-info-time">10：32</span>
-                  <span class="list-info-user">发布人：王雪</span>                  <i class="el-icon-delete"></i>
-                </div>
-              </li>
-              <li class="list-info-item list-info-item-light">
+              <li
+                @click="goDetailsPage"
+                v-for="(item, index) in messageData"
+                :key="index"
+                class="list-info-item list-info-item-light">
                 <div class="list-info-title">
                   <span class="list-info-txt">
                     <span class="list-info-type">
-                      [下线通知]
-                      <i class="badge"></i>
-                    </span>你的安全清单并未完善，请点击这里
+                      [{{item.type}}]
+                      <i v-if="item.isRead === '0'" class="badge"></i>
+                    </span>
+                    {{item.title}}
                   </span>
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
-                  <span class="list-info-date">2019-08-06</span>
+                  <span class="list-info-date">{{item.sendTime}}</span>
                   <span class="list-info-time">10：32</span>
-                  <span class="list-info-user">发布人：王雪</span>
-                  <i class="el-icon-delete"></i>
+                  <span class="list-info-user">发布人：{{item.userName}}</span>
+                  <i @click="deleteRow(item)" class="el-icon-delete" ></i>
                 </div>
               </li>
             </ul>
@@ -111,11 +100,9 @@
               background
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page="currentPage4"
-              :page-sizes="[100, 200, 300, 400]"
-              :page-size="100"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="400">
+              :current-page="page.index"
+              layout="total, prev, pager, next, jumper"
+              :total="page.total">
             </el-pagination>
           </div>
         </div>
@@ -138,7 +125,7 @@
           <el-input v-model="messageForm.title"></el-input>
         </el-form-item>
         <el-form-item label="文本内容">
-          <el-input type="textarea" maxlength="200" show-word-limit v-model="messageForm.text"></el-input>
+          <el-input type="textarea" maxlength="200" show-word-limit v-model="messageForm.textContent"></el-input>
         </el-form-item>
         <el-form-item label="附件上传">
           <el-upload
@@ -163,7 +150,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="发送人">
-              <el-input v-model="messageForm.user"></el-input>
+              <el-input v-model="messageForm.userName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -209,23 +196,32 @@
 
 <script>
 import treeTransfer from '../tree-diagram/treeTransfer'
+import axios from '@/api/axios'
+import qs from 'qs'
 
 export default {
   name: 'messages',
   data () {
     return {
-      currentPage4: 4,
       fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       dialogFormMessageVisible: false,
       showTreeTransfer: false,
+      messageData: [],
       messageForm: {
         title: '', // 标题
-        text: '', // 文本内容
-        attachment: '', // 附件上传
-        user: '', // 发送人
-        time: '', // 发送时间
-        way: '' // 推送方式
+        textContent: '', // 文本内容
+        // attachment: '', // 附件上传
+        userName: '', // 发送人
+        sendTime: '' // 发送时间
+        // way: '' // 推送方式
       },
+      page: {
+        total: 0, // 总条数
+        index: 1, // 当前页面
+        pageNo: 1,
+        pageSize: 10 // limit
+      },
+      tabType: '1', // tab切换
       rulesMessage: {
       },
       treeData: [
@@ -296,12 +292,112 @@ export default {
       menuListStr: ''
     }
   },
+  created () {
+    this.fetchList()
+  },
   methods: {
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    fetchList () {
+      axios
+        .get('spm/msg/getMsgList', {
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize,
+          tabType: this.tabType
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.messageData = res.data.data
+            this.page.total = res.data.total
+          }
+        })
     },
+    // 切换分页数量
+    handleSizeChange (val) {
+      this.fetchList()
+    },
+    // 切换当前页页数
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.page.index = val
+      this.page.pageNo = val
+      this.fetchList()
+    },
+    // 删除当页信息
+    batchDeleteHandle () {
+      let sendData = {
+        pageNo: this.page.pageNo,
+        pageSize: this.page.pageSize
+      }
+      this.$confirm('是否删除当页消息？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .post('/spm/msg/delBatch', qs.stringify(sendData))
+          .then((res) => {
+            console.log(res.data.code)
+            if (res.data.code === 200) {
+              this.$notify.success('删除成功')
+              this.fetchList()
+            }
+          })
+          .finally(() => {
+            this.submitting = false
+          })
+      }).catch(() => {
+        this.submitting = false
+      })
+    },
+    // 删除单条数据
+    deleteRow (row) {
+      // row.visibleDelete = false
+      // this.$set(row, 'fetchDelete', true)
+      console.log(row)
+      let sendData = {
+        id: row.id
+      }
+      axios
+        .post('spm/msg/del', qs.stringify(sendData))
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.$notify.success('删除成功')
+            this.fetchList()
+          }
+        })
+        .finally(() => {
+          // row.fetchDelete = false
+        })
+    },
+    // tab切换事件
+    clickTab (item) {
+      this.tabType = (Number(item.paneName) + 1) + ''
+      console.log(this.tabType)
+      this.fetchList()
+    },
+    signReadHandle () {
+      let sendData = {
+        pageNo: this.page.pageNo,
+        pageSize: this.page.pageSize
+      }
+      this.$confirm('是否标记当前页消息为已读？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .post('/spm/msg/signRead', qs.stringify(sendData))
+          .then((res) => {
+            console.log(res.data.code)
+            if (res.data.code === 200) {
+              this.$notify.success('标记成功')
+              this.fetchList()
+            }
+          })
+          .finally(() => {
+            this.submitting = false
+          })
+      }).catch(() => {
+        this.submitting = false
+      })
     },
     // 跳转信息详情页面的点击事件
     goDetailsPage () {
@@ -315,10 +411,28 @@ export default {
     },
     // 提交发布消息事件
     submitMessageForm () {
-      this.$refs.messageForm.validate((valid) => {
+      let vm = this
+      vm.$refs.messageForm.validate((valid) => {
         if (valid) {
-          alert('submit!')
-          this.dialogFormMessageVisible = false
+          vm.dialogFormMessageVisible = false
+          axios
+            .post('spm/msg/sendMsg', vm.messageForm)
+            .then((res) => {
+              vm.submitting = true
+              if (res.data.code === 200) {
+                vm.$notify.success('发布成功')
+                vm.dialogFormMessageVisible = false
+                vm.fetchListData()
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+            .finally(() => {
+              vm.submitting = false
+            })
         } else {
           console.log('error submit!!')
           return false
@@ -442,7 +556,7 @@ export default {
     position: relative;
     cursor: pointer;
     font-size: 14px;
-    padding: 18px 0px 18px 0px;
+    padding: 10px 0px 10px 0px;
     border-bottom: 1px solid $colorBorder;
     &.list-info-item-light{
       .list-info-type{

@@ -14,6 +14,8 @@ import 'videojs-contrib-hls'
 import echarts from 'echarts'
 import BaseUrl from './api/baseUrl.js'
 import axios from 'axios'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/dist/css/swiper.css'
 
 axios.interceptors.request.use(
   config => {
@@ -36,6 +38,8 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 
 Vue.use(VideoPlayer)
+
+Vue.use(VueAwesomeSwiper)
 
 Vue.prototype.$echarts = echarts
 

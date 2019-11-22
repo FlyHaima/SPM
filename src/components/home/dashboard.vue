@@ -1,16 +1,31 @@
 
 <template>
-  <div class="view-box">
+  <div class="view-box view-box-dashboard">
     <div class="view-box-content">
       <div class="home-header">
         <div class="home-header-left">
           <i class="home-header-icon"></i>
-          <span class="home-header-txt">亲爱的企业，您好！</span>
+          <span class="home-header-txt">我的消息</span>
         </div>
+        <el-carousel
+          height="16px"
+          direction="vertical"
+          :autoplay="true"
+          class="list-info">
+          <el-carousel-item
+            v-for="item in 3"
+            :key="item"
+            class="list-info-item">
+              <div class="list-info-title">
+                <span class="list-info-txt">{{item}}我的消息清单，很长很长的一个清单，龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙我的消息清单，很长很长的一个清单，龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙</span>
+              </div>
+              <div class="list-info-date">2017-12-20</div>
+          </el-carousel-item>
+        </el-carousel>
       </div>
       <div class="home-showcase">
         <el-row :gutter="24">
-          <el-col :span="12">
+          <el-col :span="14">
             <div class="home-entrance">
               <div class="entrance-btn">
                 <span class="entrance-btn-txt">快速进入</span>
@@ -23,11 +38,15 @@
                 </div>
                 <div class="entrance-menu-item">
                   <i class="entrance-menu-icon"></i>
+                  <div class="entrance-menu-txt">重大安全风险</div>
+                </div>
+                <div class="entrance-menu-item">
+                  <i class="entrance-menu-icon"></i>
                   <div class="entrance-menu-txt">重大安全风险公告</div>
                 </div>
                 <div class="entrance-menu-item">
                   <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">隐患治理</div>
+                  <div class="entrance-menu-txt">岗位风险告知卡</div>
                 </div>
                 <div class="entrance-menu-item">
                   <i class="entrance-menu-icon"></i>
@@ -35,30 +54,89 @@
                 </div>
                 <div class="entrance-menu-item">
                   <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">风险分级管控</div>
+                  <div class="entrance-menu-txt">作业风险比较图</div>
                 </div>
                 <div class="entrance-menu-item">
                   <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">风险单元划分</div>
+                  <div class="entrance-menu-txt">风险点分级管控台账</div>
+                </div>
+                <div class="entrance-menu-item">
+                  <i class="entrance-menu-icon"></i>
+                  <div class="entrance-menu-txt">排查实施</div>
+                </div>
+                <div class="entrance-menu-item">
+                  <i class="entrance-menu-icon"></i>
+                  <div class="entrance-menu-txt">治理台账</div>
+                </div>
+                <div class="entrance-menu-item">
+                  <i class="entrance-menu-icon"></i>
+                  <div class="entrance-menu-txt">隐患分级</div>
                 </div>
               </div>
             </div>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="10">
             <div class="info-panel">
-              <div class="info-header">
+              <div class="info-header" style="border: 0;">
                 <div class="info-title">
-                  <span class="info-title-txt">我的消息</span>
+                  <span class="info-title-txt">风险动态显示</span>
                 </div>
-                <div class="info-link">
+                <!-- <div class="info-link">
                   <a
                     href="javascript:;"
                     @click=" goMorePage() "
                     class="info-link-txt">更多</a>
-                </div>
+                </div> -->
               </div>
               <div class="info-content">
-                <ul class="list-info">
+                <gauge class="gauge">
+                  <div class="gauge-tabs-box">
+                    <el-tabs class="gauge-tabs" type="border-card">
+                      <el-tab-pane class="gauge-tab-pane" label="重大风险">
+                        <div class="custom-table gauge-table">
+                          <div class="custom-theader">
+                            <div class="custom-tr is-flex">
+                              <div class="custom-th-label">点：30%</div>
+                              <div class="custom-th-label">线：30%</div>
+                              <div class="custom-th-label">面：30%</div>
+                            </div>
+                          </div>
+                          <div
+                            class="custom-tbody">
+                            <div class="custom-tr is-flex">
+                              <div class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">标签五</el-tag>
+                              </div>
+                              <div class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">标签五</el-tag>
+                              </div>
+                              <div class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">标签五</el-tag>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </el-tab-pane>
+                      <el-tab-pane label="较大风险">低风险</el-tab-pane>
+                      <el-tab-pane label="一般风险">低风险</el-tab-pane>
+                      <el-tab-pane label="低风险">低风险</el-tab-pane>
+                    </el-tabs>
+                  </div>
+                </gauge>
+                <!-- <ul class="list-info">
                   <li class="list-info-item">
                     <div class="list-info-title">
                       <span class="list-info-txt">你的安全清单并未完善，请点击这里</span>
@@ -108,7 +186,7 @@
                     </div>
                     <div class="list-info-date">2017-12-20</div>
                   </li>
-                </ul>
+                </ul> -->
               </div>
             </div>
           </el-col>
@@ -126,15 +204,26 @@
               <div class="info-content">
                 <el-row type="flex" justify="space-around">
                   <el-col
-                    v-for = "item in pieOptions"
-                    :key = "item.id"
-                    :span = "4"
-                    class = "pie-box">
+                    v-for="item in pieOptions"
+                    :key="item.id"
+                    :span="6"
+                    class="pie-box">
                     <pie-c
                       :return-data = "item.pieData"
                       :title = "item.title"
                       :color-list = "item.colorList"
-                       ></pie-c>
+                      :pie-height = "pieHeight"
+                       >
+                       <div class="pie-tips">
+                         <p class="pie-tips-item">
+                           <i class="pie-tips-sign">*</i>
+                           {{item.tipsText}}
+                         </p>
+                         <p class="pie-tips-item">
+                           75% = 300/400
+                         </p>
+                       </div>
+                       </pie-c>
                   </el-col>
                 </el-row>
               </div>
@@ -174,6 +263,7 @@
 
 <script>
 import pieC from '@/components/e-charts/pieC'
+import gauge from '@/components/e-charts/gauge'
 import statisticE from '@/components/e-charts/statisticE'
 export default {
   name: 'home',
@@ -182,6 +272,7 @@ export default {
       pieOptions: [
         {
           title: '全员参与率',
+          tipsText: '全员参与率 = 已参与人数/总人数',
           pieData: [
             {
               'value': 41.1,
@@ -190,30 +281,16 @@ export default {
             {
               'value': 86.5,
               'name': '未参与'
-            },
-            {
-              'value': 24.1,
-              'name': '已上报'
-            },
-            {
-              'value': 55.2,
-              'name': '未上报'
-            },
-            {
-              'value': 55.2,
-              'name': '符合'
             }
           ], // 图形数据
           colorList: [
-            '#57d9bb',
-            '#4c97d9',
-            '#ef7ead',
-            '#f69b27',
-            '#4c97d9'
+            '#0d6ce5',
+            '#3bebc4'
           ]
         }, // 图形颜色集合
         {
           title: '隐患发生率',
+          tipsText: '全员参与率 = 已参与人数/总人数',
           pieData: [
             {
               'value': 41.1,
@@ -225,12 +302,13 @@ export default {
             }
           ],
           colorList: [
-            '#57d9bb',
-            '#4c97d9'
+            '#0d6ce5',
+            '#3bebc4'
           ]
         },
         {
           title: '隐患符合率',
+          tipsText: '全员参与率 = 已参与人数/总人数',
           pieData: [
             {
               'value': 41.1,
@@ -239,25 +317,16 @@ export default {
             {
               'value': 86.5,
               'name': '未参与'
-            },
-            {
-              'value': 24.1,
-              'name': '已上报'
-            },
-            {
-              'value': 55.2,
-              'name': '未上报'
             }
           ],
           colorList: [
-            '#57d9bb',
-            '#4c97d9',
-            '#ef7ead',
-            '#f69b27'
+            '#0d6ce5',
+            '#3bebc4'
           ]
         },
         {
           title: '隐患符合率',
+          tipsText: '全员参与率 = 已参与人数/总人数',
           pieData: [
             {
               'value': 24.1,
@@ -266,48 +335,11 @@ export default {
             {
               'value': 55.2,
               'name': '未上报'
-            },
-            {
-              'value': 55.2,
-              'name': '符合'
             }
           ],
           colorList: [
-            '#ef7ead',
-            '#f69b27',
-            '#4c97d9'
-          ]
-        },
-        {
-          title: '隐患符合率',
-          pieData: [
-            {
-              'value': 41.1,
-              'name': '已参与'
-            },
-            {
-              'value': 86.5,
-              'name': '未参与'
-            },
-            {
-              'value': 24.1,
-              'name': '已上报'
-            },
-            {
-              'value': 55.2,
-              'name': '未上报'
-            },
-            {
-              'value': 55.2,
-              'name': '符合'
-            }
-          ],
-          colorList: [
-            '#57d9bb',
-            '#4c97d9',
-            '#ef7ead',
-            '#f69b27',
-            '#4c97d9'
+            '#0d6ce5',
+            '#3bebc4'
           ]
         }
       ], // 图饼设置项
@@ -337,12 +369,14 @@ export default {
           'name': '炉前5'
         }
       ], // 图表数据
-      chartHeight: '417px' // 图表高度
+      chartHeight: '417px', // 图表高度
+      pieHeight: '200px' // 饼图高度
     }
   },
   components: {
     pieC,
-    statisticE
+    statisticE,
+    gauge
   },
   methods: {
     // 跳转所有信息页面的点击事件
@@ -357,37 +391,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  // @import '../../utils/css/style.scss';
   $colorPrimary: #409eff;
   .view-box{
     background: #ffffff;
   }
-  .home-header{
-    padding: 0 44px;
-    line-height: 66px;
-    border-bottom: 4px solid #e9e9e9;
-  }
-  .home-header-left{
-    display: inline-block;
-    font-size: 0;
-    line-height:  13px;
-  }
-  .home-header-icon{
-    display: inline-block;
-    width: 17px;
-    height: 13px;
-    background-image: url('../../assets/img/home/icon-symbol01.png');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-  }
-  .home-header-txt{
-    font-size: 16px;
-    line-height: 13px;
-    margin-left: 26px;
-    color: #404040;
-  }
 
   .home-showcase{
-    padding: 0 42px;
+    padding: 0 30px;
     border-bottom: 4px solid #e9e9e9;
   }
   .home-entrance{
@@ -417,11 +428,11 @@ export default {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    margin-top: 32px;
-    margin-bottom: 27px;
+    margin-top: 44px;
+    margin-bottom: 44px;
   }
   .entrance-menu-item{
-    flex: 0 0 33.333%;
+    flex: 0 0 20%;
     text-align: center;
     margin-bottom: 62px;
     font-size: 0;
@@ -442,18 +453,40 @@ export default {
       }
     }
     &:nth-child(4){
-      margin-bottom: 0;
       .entrance-menu-icon{
         background-image: url('../../assets/img/home/icon-menu04.png');
       }
     }
     &:nth-child(5){
-      margin-bottom: 0;
       .entrance-menu-icon{
         background-image: url('../../assets/img/home/icon-menu05.png');
       }
     }
     &:nth-child(6){
+      margin-bottom: 0;
+      .entrance-menu-icon{
+        background-image: url('../../assets/img/home/icon-menu06.png');
+      }
+    }
+    &:nth-child(7){
+      margin-bottom: 0;
+      .entrance-menu-icon{
+        background-image: url('../../assets/img/home/icon-menu06.png');
+      }
+    }
+    &:nth-child(8){
+      margin-bottom: 0;
+      .entrance-menu-icon{
+        background-image: url('../../assets/img/home/icon-menu06.png');
+      }
+    }
+    &:nth-child(9){
+      margin-bottom: 0;
+      .entrance-menu-icon{
+        background-image: url('../../assets/img/home/icon-menu06.png');
+      }
+    }
+    &:nth-child(10){
       margin-bottom: 0;
       .entrance-menu-icon{
         background-image: url('../../assets/img/home/icon-menu06.png');
@@ -493,47 +526,66 @@ export default {
   .info-title-txt{
     font-size: 16px;
     line-height: 16px;
-    margin-left: 10px;
+    margin-left: 15px;
   }
   .info-link-txt{
     line-height: 16px;
     color: #333333;
   }
+  .home-header{
+    display: flex;
+    align-items: center;
+    padding: 25px 30px;
+    border-bottom: 4px solid #e9e9e9;
+  }
+  .home-header-left{
+    display: inline-block;
+    font-size: 0;
+    line-height:  16px;
+  }
+  .home-header-icon{
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    background: #409eff;
+    vertical-align: top;
+    // background-image: url('../../assets/img/home/icon-symbol01.png');
+    // background-repeat: no-repeat;
+    // background-size: 100% 100%;
 
+  }
+  .home-header-txt{
+    display: inline-block;
+    font-size: 16px;
+    line-height: 16px;
+    vertical-align: top;
+    margin-left: 15px;
+    color: #404040;
+  }
   .list-info{
-    padding-top: 20px;
-    max-height: 224px;
-    // overflow-y: scroll;
+    width: 70%;
+    margin-left: 65px;
   }
   .list-info-item{
-    display: flex;
-    justify-content: space-between;
-    position: relative;
     font-size: 14px;
-    padding: 5px 0px 5px 16px;
     cursor: pointer;
-    &::after{
-      content: "";
-      position: absolute;
-      left: 4px;
-      top: 50%;
-      display: inline-block;
-      transform: translate(50%, -50%);
-      width: 4px;
-      height: 4px;
-      background: $colorPrimary;
-      border-radius: 50%;
-    }
+    color: #333333;
   }
   .list-info-title{
-    position: relative;
-    max-width: 370px;
-  }
-  .list-info-txt{
+    display: inline-block;
+    max-width: 500px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #313332;
+    vertical-align: top;
+  }
+  .list-info-txt{
+    color: #333333;
+  }
+  .list-info-date{
+    display: inline-block;
+    margin-left: 35px;
+    vertical-align: top;
   }
   .list-info-tag{
     position: absolute;
@@ -558,11 +610,67 @@ export default {
     }
   }
   .pie-box{
-    border-right: 2px solid #e9e9e9;
-    margin-top: 56px;
-    margin-bottom: 40px;
-    &:last-child{
-      border-right: 0;
+    position: relative;
+    margin-top: 40px;
+  }
+  .pie-tips{
+    position: absolute;
+    right: 0;
+    top: 50%;
+  }
+  .pie-tips-item{
+    font-size: 12px;
+    color: #333333;
+    line-height: 20px;
+  }
+  .pie-tips-sign{
+    color: #ff1616;
+  }
+  .gauge-table{
+    width: 300px;
+    background: #ffffff;
+    border-color: transparent;
+    .custom-th-label{
+      background: #ffffff;
+    }
+    .custom-td-value+.custom-td-value{
+      border-color: #ffffff;
+    }
+    .custom-tr.is-flex .custom-th-label+.custom-th-label{
+      border-color: #ffffff;
+    }
+  }
+  .gauge-tabs {
+    position: relative;
+    right: -20px;
+  }
+  .gauge-tabs-box{
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    >>>.el-tabs__content{
+      padding: 0 !important;
+    }
+  }
+  .view-box-dashboard{
+    >>>.el-tabs--border-card{
+      min-height: 131px;
+    }
+    >>>.el-tabs__item{
+      padding: 0 8px;
+      height: 30px;
+      line-height: 26px;
+      border-top: 3px solid transparent;
+      font-weight: 400;
+      &.is-active{
+        border-top-color: #409eff;
+      }
+    }
+  }
+  /deep/.el-carousel{
+    // width: 100px;
+    .el-carousel__indicators{
+      display: none;
     }
   }
 </style>

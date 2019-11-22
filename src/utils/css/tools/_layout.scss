@@ -175,14 +175,26 @@
   height: 100%;
 }
 .custom-td-img-list{
-  background: #e0e0e0;
-  padding: 5px;
+  // background: #e0e0e0;
+  // padding: 5px;
   margin: 20px 0 10px;
+  font-size: 0;
 }
 .img-list-item{
   display: inline-block;
-  width: 90px;
-  height: 90px;
+  // width: 90px;
+  // height: 90px;
+  border: solid $colorBorder;
+  border-width: 4px 0 4px 0px;
+  &:first-child{
+    border-left-width: 4px;
+  }
+  &:last-child{
+    border-right-width: 4px;
+  }
+  + .img-list-item{
+    border-left-width: 4px;
+  }
   .item-img{
     display: inline-block;
     width: 90px;
