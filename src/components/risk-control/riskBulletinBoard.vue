@@ -67,11 +67,39 @@
                 </div>
                 <div class="custom-tr">
                   <div class="custom-th-label">可能导致事故类型</div>
-                  <div class="custom-td-value">dd</div>
+                  <div class="custom-td-value">
+                    <el-select
+                      v-model="value1"
+                      multiple
+                      placeholder="请选择"
+                      @change="selChange">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        >
+                      </el-option>
+                    </el-select>
+                  </div>
                 </div>
                 <div class="custom-tr">
                   <div class="custom-th-label">主要管控措施</div>
-                  <div class="custom-td-value">dd</div>
+                  <div class="custom-td-value">
+                    <el-select
+                      v-model="value2"
+                      multiple
+                      placeholder="请选择"
+                      @change="selChange2">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        >
+                      </el-option>
+                    </el-select>
+                  </div>
                 </div>
                 <div class="custom-tr">
                   <div class="custom-th-label">主要应急措施</div>
@@ -82,17 +110,17 @@
                 <div class="custom-tr text-center">
                   <div class="custom-td-value">
                     <div class="custom-td-img-list">
-                      <div class="img-list-item">
-                        <img class="item-img" src="" alt="">
+                      <div
+                        v-for="(item,index) in imgPathSel"
+                        class="img-list-item"
+                        :key="index">
+                        <img class="item-img" :src="item.imgPath" alt="">
                       </div>
-                      <div class="img-list-item">
-                        <img class="item-img" src="" alt="">
-                      </div>
-                      <div class="img-list-item">
-                        <img class="item-img" src="" alt="">
-                      </div>
-                      <div class="img-list-item">
-                        <img class="item-img" src="" alt="">
+                      <div
+                        v-for="(item,index) in imgPathSel1"
+                        class="img-list-item"
+                        :key="index">
+                        <img class="item-img" :src="item.imgPath" alt="">
                       </div>
                     </div>
                   </div>
@@ -108,6 +136,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
+// import qs from 'qs'
 
 export default {
   name: 'riskBulletinBoard',
@@ -275,7 +304,49 @@ export default {
         emergency: ' '
       }],
       riskList: {
-      }
+      },
+      options: [{
+        value: '1',
+        label: '黄金糕'
+      }, {
+        value: '2',
+        label: '双皮奶',
+        imgPath: 't'
+      }, {
+        value: '3',
+        label: '蚵仔煎',
+        imgPath: 'g'
+      }, {
+        value: '4',
+        label: '龙须面',
+        imgPath: 'j'
+      }, {
+        value: '5',
+        label: '北京烤鸭',
+        imgPath: 'v'
+      }],
+      imgPathColletion: [
+        {
+          id: '1',
+          imgPath: 'https://www.baidu.com/img/baidu_jgylogo3.gif'
+        },
+        {
+          id: '2',
+          imgPath: 'https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1574232098&di=111634ace2347f247ee317c4332bcc4a&src=http://pic1.win4000.com/wallpaper/9/577cb9d43a51d.jpg'
+        },
+        {
+          id: '3',
+          imgPath: 'c'
+        },
+        {
+          id: '4',
+          imgPath: 'g'
+        }
+      ],
+      value1: [],
+      value2: [],
+      imgPathSel: [], // 已选择的图片路径
+      imgPathSel1: [] // 已选择的图片路径
     }
   },
   methods: {
@@ -288,6 +359,28 @@ export default {
     // 导出excel
     exportEexcel () {
 
+    },
+    selChange (data) {
+      let vm = this
+      vm.imgPathSel = []
+      vm.imgPathColletion.forEach(item => {
+        data.forEach(dataItem => {
+          if (item.id === dataItem) {
+            vm.imgPathSel.push(item)
+          }
+        })
+      })
+    },
+    selChange2 (data) {
+      let vm = this
+      vm.imgPathSel1 = []
+      vm.imgPathColletion.forEach(item => {
+        data.forEach(dataItem => {
+          if (item.id === dataItem) {
+            vm.imgPathSel1.push(item)
+          }
+        })
+      })
     }
   },
   components: {
@@ -300,10 +393,19 @@ export default {
 <style scoped lang="scss">
 @import '../../utils/css/style.scss';
 
-/deep/.el-select .el-input__inner,
-.el-select .el-input__inner:focus,
-.el-select .el-input.is-focus .el-input__inner{
-  border-color: #ffffff !important;
-}
+/deep/.el-select {
+  width: 100%;
 
+  .el-input__inner,
+  .el-select .el-input__inner:focus,
+  .el-select .el-input.is-focus .el-input__inner{
+    border-color: #ffffff !important;
+  }
+  .el-input__icon{
+    line-height: 28px;
+  }
+  .el-input--suffix .el-input__inner{
+    padding-left: 0;
+  }
+}
 </style>

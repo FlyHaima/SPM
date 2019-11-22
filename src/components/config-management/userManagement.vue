@@ -26,8 +26,7 @@
                 <el-button
                   type="warning"
                   size="medium"
-                  icon="el-icon-download"
-                  @click="exportHandel">
+                  icon="el-icon-download">
                    导入</el-button>
               </div>
             </div>
@@ -67,7 +66,6 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop=" "
                 label="在职/离职"
                 align="center">
                 <template slot-scope="scope">
@@ -75,7 +73,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop=" "
+                prop="role"
                 label="角色"
                 align="center">
               </el-table-column>
@@ -88,11 +86,6 @@
                 prop="accountState"
                 label="账号状态"
                 header-align="center">
-              </el-table-column>
-              <el-table-column
-                prop="role"
-                label="分配角色"
-                align="center">
               </el-table-column>
               <el-table-column
                 prop=" "
@@ -126,22 +119,22 @@
                   </el-popover> -->
                   <a
                     href="javascript:;"
-                    :class="scope.row.state === '1' ? 'color-primary' : 'color-danger'"
+                    :class="scope.row.state === '1' ? 'color-danger' : 'color-primary'"
                     @click="changeState(scope.row)">
-                    {{ scope.row.state === '1' ? '启用' : '禁用' }}
+                    {{ scope.row.state === '1' ? '禁用' : '启用' }}
                   </a>
-                  <span class="color-primary"> / </span>
+                  <!-- <span class="color-primary"> / </span>
                   <a
                     href="javascript:;"
                     class="color-primary"
                     @click="editRole(scope.row)">分配角色
-                  </a>
+                  </a> -->
                 </template>
               </el-table-column>
             </el-table>
             <div class="el-pagination__wrap text-right">
               <el-pagination
-                layout="total, sizes, prev, pager, next, jumper"
+                layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
                 :page-size="tables.form.limit"
@@ -180,9 +173,9 @@
         </el-form-item>
         <el-form-item
           label="职位:"
-          prop="job">
+          prop="position">
           <el-input
-            v-model.trim="form.job"
+            v-model.trim="form.position"
             placeholder="请输入职位"
             maxlength="25"
             autocomplete></el-input>
@@ -210,7 +203,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="角色:" >
-          <el-select v-model="form.role" placeholder="请选择角色" autocomplete>
+          <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
             <el-option
               v-for="item in roleOptions"
               :key="item.value"
@@ -269,6 +262,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
+import qs from 'qs'
 
 export default {
   name: 'userManagement',
@@ -315,7 +309,7 @@ export default {
         accountName: '', // 账号
         state: '1', // 启用/禁用状态
         telephone: '', // 手机号码
-        role: '', // 角色
+        roleId: '', // 角色
         isWork: '1' // 在职状态
       },
       multipleSelection: [],
@@ -337,20 +331,27 @@ export default {
     this.fetchRoleOptions()
   },
   methods: {
-    // 导出excel
-    exportHandel () {
-      this.tablesExportExcel('spm/user/getUserList')
-    },
     // 修改 启用/禁用 状态
     changeState (row) {
+      console.log(row)
+      let sendData = {
+        userId: row.userId,
+        state: row.state === '1' ? '0' : '1'
+      }
+      let stateLabel = row.state === '1' ? '禁用' : '启用'
+      axios
+        .post('/spm/user/updateState', qs.stringify(sendData))
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.$notify.success(stateLabel + '成功')
+            this.tablesFetchList()
+          }
+        })
+        .finally(() => {})
     },
     // 分配角色
     editRole (row) {
       this.dialogRoleVisible = true
-    },
-    // 删除
-    delHandel (row) {
-
     },
     // 添加事件
     addHandle () {
@@ -363,7 +364,7 @@ export default {
         this.form.position = '' // 职位
         this.form.accountName = '' // 账号
         this.form.telephone = '' // 手机号码
-        this.form.role = '' // 角色
+        this.form.roleId = '' // 角色
       })
     },
     // 编辑
@@ -389,6 +390,7 @@ export default {
     },
     // 编辑状态，回显数据
     initForm (data) {
+      this.submitting = true
       if (data) {
         axios
           .get('/spm/user/getUser', {
@@ -400,6 +402,7 @@ export default {
             }
           })
           .finally(() => {
+            this.submitting = false
           })
       }
     },
@@ -440,28 +443,44 @@ export default {
     submitForm () {
       this.$refs.form.validate((valid) => {
         if (valid) {
+          if (this.editData) {
+            this.saveForm('update', '编辑')
+          } else {
+            this.saveForm('add', '添加')
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    saveForm (post, tip) {
+      let vm = this
+      vm
+        .$confirm(`确定【${tip}】该用户吗？`, '提示', {
+          type: 'warning'
+        })
+        .then(() => {
+          vm.submitting = true
           axios
-            .post('spm/user/addUser', this.form)
+            .post(`spm/user/${post}User`, vm.form)
             .then((res) => {
-              this.submitting = true
+              vm.submitting = true
               if (res.data.code === 200) {
-                this.$notify.success('提交成功')
-                this.dialogAddVisible = false
-                this.tablesFetchList()
+                vm.$notify.success(tip + '成功')
+                vm.dialogAddVisible = false
+                vm.tablesFetchList()
               } else {
-                this.$message({
+                vm.$message({
                   message: res.data.message,
                   type: 'warning'
                 })
               }
             })
             .finally(() => {
-              this.submitting = false
+              vm.submitting = false
             })
-        } else {
-          return false
-        }
-      })
+        })
+        .catch(() => {})
     },
     handleSelectionChange (val) {
       this.multipleSelection = val

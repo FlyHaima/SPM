@@ -116,6 +116,7 @@ const DataManagement = resolve => require.ensure([], () => resolve(dataManagemen
 const log = require('@/components/config-management/log.vue')
 const Log = resolve => require.ensure([], () => resolve(log), 'pagelist')
 
+// 日志
 Vue.use(Router)
 
 const routes = [

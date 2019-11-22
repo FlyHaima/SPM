@@ -93,7 +93,6 @@ export default {
       this.chartValue = []
       this.chartxAxis = []
       this.chartData.forEach(item => {
-        console.log(item)
         if (item.value <= 25) {
           this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 25 && item.value <= 50) {
