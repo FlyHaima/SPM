@@ -219,7 +219,7 @@ export default {
             },
             {
               fname: '配置维护管理',
-              name: '数据管理',
+              name: '数据字典',
               url: '/dataManagement',
               active: false
             },

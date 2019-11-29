@@ -35,5 +35,19 @@ export default {
         resolve(res)
       })
     })
+  },
+  delete (url, params, type) {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'delete',
+        url,
+        params
+        // cancelToken: new CancelToken ((c) => {
+        //   cancel = c
+        // })
+      }).then((res) => {
+        resolve(res)
+      })
+    })
   }
 }

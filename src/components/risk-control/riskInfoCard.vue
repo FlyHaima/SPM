@@ -120,20 +120,39 @@
                   </div>
                   <div class="custom-tr">
                     <div class="custom-th-label">潜在的事故及职业危害类型</div>
+
                     <div class="custom-td-value">
-                      <el-input
-                        maxlength="120"
-                        v-model.trim="form.riskResult"
-                        placeholder="请输入潜在的事故及职业危害类型"></el-input>
+                      <el-select
+                        v-model="form.riskResult"
+                        multiple
+                        placeholder="请选择潜在的事故及职业危害类型"
+                        @change="selChangeRiskResult">
+                        <el-option
+                          v-for="(item,index) in options"
+                          :key="'riskResult' + index"
+                          :label="item.label"
+                          :value="item.value"
+                          >
+                        </el-option>
+                      </el-select>
                     </div>
                   </div>
                   <div class="custom-tr">
                     <div class="custom-th-label">异常状况应急处置</div>
                     <div class="custom-td-value">
-                      <el-input
-                        maxlength="120"
-                        v-model.trim="form.emergency"
-                        placeholder="请输入异常状况应急处置"></el-input>
+                      <el-select
+                        v-model="form.emergency"
+                        multiple
+                        placeholder="请选择异常状况应急处置"
+                        @change="selChangeEmergency">
+                        <el-option
+                          v-for="(item,index) in options"
+                          :key="'emergency' + index"
+                          :label="item.label"
+                          :value="item.value"
+                          >
+                        </el-option>
+                      </el-select>
                     </div>
                   </div>
                 </div>
@@ -141,17 +160,17 @@
                   <div class="custom-tr text-center">
                     <div class="custom-td-value">
                       <div class="custom-td-img-list">
-                        <div class="img-list-item">
-                          <img class="item-img" src="" alt="">
+                        <div
+                          v-for="(item,index) in imgPathSelRiskResult"
+                          class="img-list-item"
+                          :key="'imgRiskResult' + index">
+                          <img class="item-img" :src="item.path" alt="">
                         </div>
-                        <div class="img-list-item">
-                          <img class="item-img" src="" alt="">
-                        </div>
-                        <div class="img-list-item">
-                          <img class="item-img" src="" alt="">
-                        </div>
-                        <div class="img-list-item">
-                          <img class="item-img" src="" alt="">
+                        <div
+                          v-for="(item,index) in imgPathSelEmergency"
+                          class="img-list-item"
+                          :key="'imgEmergency' + index">
+                          <img class="item-img" :src="item.path" alt="">
                         </div>
                       </div>
                     </div>
@@ -183,9 +202,10 @@ export default {
   data () {
     return {
       breadcrumb: ['风险分级管控', '岗位风险告知卡'],
-      pageLoading: false,
-      tableVisible: false,
-      riskId: '', // id
+      pageLoading: false, // 页面loading开关
+      tableVisible: false, // table显示开关
+      submitting: false, // 提交数据loading开关
+      riskId: '', // 风险点id
       form: {
         id: '', // 告知卡id
         riskId: '', // 风险点id
@@ -193,13 +213,16 @@ export default {
         gw: '', // 岗位
         centerRisk: '', // 主要风险源
         factor: '', // 因素
-        riskResult: '', // 事故后果
-        emergency: '' // 措施
+        riskResult: [], // 事故后果
+        emergency: [] // 措施
       },
-      organizationTree: [],
-      gwList: [], // 岗位选项列表
-      tableData: [],
-      submitting: false
+      organizationTree: [], // 组织结构树数据
+      tableData: [], // table列表数据
+      options: [], // 下拉框选择项数据
+      imgPathColletion: [], // 所有图片路径集合
+      imgPathSelRiskResult: [], // 已选择的图片路径 - 潜在的事故及职业危害类型
+      imgPathSelEmergency: [], // 已选择的图片路径 - 异常状况应急处置
+      gwList: [] // 岗位选项列表
     }
   },
   created () {
@@ -207,10 +230,34 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 选择器change事件 - 潜在的事故及职业危害类型
+    selChangeRiskResult (data) {
+      let vm = this
+      vm.imgPathSelRiskResult = []
+      vm.imgPathColletion.forEach(item => {
+        data.forEach(dataItem => {
+          if (item.id === dataItem) {
+            vm.imgPathSelRiskResult.push(item)
+          }
+        })
+      })
+    },
+    // 选择器change事件 - 异常状况应急处置
+    selChangeEmergency (data) {
+      let vm = this
+      vm.imgPathSelEmergency = []
+      vm.imgPathColletion.forEach(item => {
+        data.forEach(dataItem => {
+          if (item.id === dataItem) {
+            vm.imgPathSelEmergency.push(item)
+          }
+        })
+      })
+    },
     // 获取树的数据
     fetchTreeData () {
       axios
-        .get('spm/riskia/getRiskTree')
+        .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
@@ -222,9 +269,11 @@ export default {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`spm/riskCard/getRiskCrad?&id=${vm.riskId}`)
+        .get(`riskCard/getRiskCrad?&id=${vm.riskId}`)
         .then((res) => {
           if (res.data.code === 200) {
+            this.options = res.data.selectList
+            this.imgPathColletion = res.data.picList
             if (res.data.gwlist) {
               this.gwList = res.data.gwlist
             }
@@ -234,6 +283,18 @@ export default {
             } else {
               this.tableVisible = false
               this.form = res.data.data[0]
+              this.form.riskResult = JSON.parse(this.form.riskResult)
+              this.form.emergency = JSON.parse(this.form.emergency)
+              if (vm.form.riskResult) {
+                vm.selChangeRiskResult(vm.form.riskResult)
+              } else {
+                vm.imgPathSelGkcs = []
+              }
+              if (vm.form.emergency) {
+                vm.selChangeEmergency(vm.form.emergency)
+              } else {
+                vm.imgPathSelEmergency = []
+              }
             }
           }
         }).finally(() => {
@@ -248,8 +309,10 @@ export default {
         type: 'warning'
       }).then(() => {
         this.submitting = true
+        this.form.riskResult = JSON.stringify(this.form.riskResult)
+        this.form.emergency = JSON.stringify(this.form.emergency)
         axios
-          .post('spm/riskCard/addCard', this.form)
+          .post('riskCard/addCard', this.form)
           .then((res) => {
             if (res.data.code === 200) {
               this.$notify.success('提交成功')
@@ -266,6 +329,7 @@ export default {
           })
       })
     },
+    // 树节点点击事件处理
     treeClickHandle (data) {
       let vm = this
       vm.riskId = data.riskId
@@ -277,7 +341,7 @@ export default {
     },
     // 导出excel
     exportExcelHandel () {
-      exportExcel(`spm/riskCard/exportCards`, {
+      exportExcel(`riskCard/exportCards`, {
         id: this.riskId
       })
     }
@@ -292,10 +356,19 @@ export default {
 <style scoped lang="scss">
 @import '../../utils/css/style.scss';
 
-/deep/.el-select .el-input__inner,
-.el-select .el-input__inner:focus,
-.el-select .el-input.is-focus .el-input__inner{
-  border-color: #ffffff !important;
-}
+/deep/.el-select {
+  width: 100%;
 
+  .el-input__inner,
+  .el-select .el-input__inner:focus,
+  .el-select .el-input.is-focus .el-input__inner{
+    border-color: #ffffff !important;
+  }
+  .el-input__icon{
+    line-height: 28px;
+  }
+  .el-input--suffix .el-input__inner{
+    padding-left: 0;
+  }
+}
 </style>

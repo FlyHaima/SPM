@@ -61,7 +61,6 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.setEchart()
-      console.log(this.$echarts)
     })
   },
   methods: {

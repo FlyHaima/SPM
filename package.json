@@ -24,6 +24,7 @@
     "echarts": "^4.2.1",
     "element-ui": "^2.10.1",
     "http-proxy-middleware": "^0.19.1",
+    "moment": "^2.24.0",
     "node-sass": "^4.12.0",
     "qs": "^6.7.0",
     "save-file": "^2.3.1",

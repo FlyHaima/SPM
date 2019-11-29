@@ -18,19 +18,19 @@
               <ul class="user-list">
                 <li class="user-list-item">
                   <span class="user-label">用户名：</span>
-                  <span class="user-value">王雪</span>
+                  <span class="user-value">{{userInfo.userName}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">登录ID:</span>
-                  <span class="user-value">1546545314</span>
+                  <span class="user-value">{{userInfo.userId}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号创建时间:</span>
-                  <span class="user-value">2019-06-04 10：16</span>
+                  <span class="user-value">{{userInfo.impTime}}</span>
                 </li>
                  <li class="user-list-item">
                   <span class="user-label">企业名：</span>
-                  <span class="user-value">黑龙江省阿斯顿矿业开采有限公司</span>
+                  <span class="user-value">{{userInfo.companyName}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">所属部门：</span>
@@ -38,7 +38,7 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">职位：</span>
-                  <span class="user-value">安全部部长</span>
+                  <span class="user-value">{{userInfo.position}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">企业资格认证：</span>
@@ -52,9 +52,9 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">上次登录信息：</span>
-                  <span class="user-value">2019-08-06 16：22</span>
+                  <span class="user-value">{{userInfo.lastLogin}}</span>
                   <span class="user-value">
-                    <i class="icon-location"></i>哈尔滨市</span>
+                    <i class="icon-location"></i>{{userInfo.lastAddress}}</span>
                 </li>
               </ul>
             </el-col>
@@ -75,7 +75,11 @@
                 </div>
                 <div class="password-level-text">
                   <span class="password-level-label">安全级别：</span>
-                  <span class="password-level-value" :data-score="passwordLevel">{{passwordLevelText}}</span>
+                  <span
+                    class="password-level-value"
+                    :data-score="passwordLevel">
+                      {{passwordLevelText}}
+                  </span>
                 </div>
               </div>
 
@@ -91,7 +95,7 @@
               </span>
             </div>
             <div class="user-account-operation">
-              <div class="user-account-operation-item">
+              <div v-if="userInfo.password" class="user-account-operation-item">
                 <i class="operation-icon-finish"></i>
                 <span class="operation-txt">已设置</span>
               </div>
@@ -112,7 +116,7 @@
               </span>
             </div>
             <div class="user-account-operation">
-              <div class="user-account-operation-item">
+              <div v-if="userInfo.telephone" class="user-account-operation-item">
                 <i class="operation-icon-finish"></i>
                 <span class="operation-txt">已设置</span>
               </div>
@@ -153,18 +157,18 @@
             label-width="100px"
             status-icon
           >
-            <el-form-item label="旧密码：" prop="passwordOld">
+            <el-form-item label="旧密码：" prop="oldPassword">
               <el-input
                 type="password"
-                v-model="passwordForm.passwordOld"
+                v-model="passwordForm.oldPassword"
                 autocomplete="off"
                 placeholder="请输入旧密码"
                 clearable></el-input>
             </el-form-item>
-            <el-form-item label="新密码：" prop="passwordNew">
+            <el-form-item label="新密码：" prop="Password">
               <el-input
                 type="password"
-                v-model="passwordForm.passwordNew"
+                v-model="passwordForm.Password"
                 autocomplete="off"
                 placeholder="请输入新密码"
                 clearable></el-input>
@@ -172,15 +176,15 @@
             <el-form-item label="确认密码：" prop="passwordConfirm">
               <el-input
                 type="password"
-                v-model="passwordForm.passwordConfirm"
                 autocomplete="off"
+                v-model="passwordForm.passwordConfirm"
                 placeholder="请再次输入新密码"
                 clearable></el-input>
             </el-form-item>
           </el-form>
         </div>
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitPasswordForm()">保 存</el-button>
+          <el-button type="primary" @click="submitPasswordForm()" :loading="submitting">保 存</el-button>
           <el-button @click="dialogFormPasswordVisible = false">取 消</el-button>
         </div>
       </el-dialog>
@@ -233,10 +237,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import axios from '@/api/axios'
+import qs from 'qs'
 export default {
   name: 'basic',
   data () {
-    let regexPwd = new RegExp('^[a-zA-Z0-9]{6,30}')
+    let regexPwd = new RegExp('^[a-zA-Z0-9]{6,12}$')
     // 校验旧密码
     var validatePassOld = (rule, value, callback) => {
       if (value === '') {
@@ -264,7 +271,7 @@ export default {
     var validatePassConfirm = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.passwordForm.passwordNew) {
+      } else if (value !== this.passwordForm.Password) {
         callback(new Error('输入内容与前密码不符!'))
       } else {
         callback()
@@ -287,13 +294,16 @@ export default {
       }
     }
     return {
-      passwordLevel: '', // 密码强度级别
+      submitting: false,
+      // passwordLevel: '', // 密码强度级别
       dialogFormPasswordVisible: false, // 修改密码弹框显示开关
       dialogFormTelVisible: false, // 修改绑定手机号弹框显示开关
       passwordForm: {
-        passwordOld: '', // 旧密码
-        passwordNew: '', // 新密码
-        passwordConfirm: '' // 确认新密码
+        oldPassword: '', // 旧密码
+        Password: '', // 新密码
+        passwordConfirm: '', // 确认新密码
+        userId: '',
+        dmsfbsf: window.localStorage.getItem('TOKEN_KEY')
       }, // 修改密码form
       telForm: {
         telOld: '', // 原手机号码
@@ -301,10 +311,10 @@ export default {
         captcha: '' // 验证码
       }, // 修改绑定手机
       rulesPassword: {
-        passwordOld: [
+        oldPassword: [
           { validator: validatePassOld, trigger: 'blur' }
         ],
-        passwordNew: [
+        Password: [
           { validator: validatePassNew, trigger: 'blur' }
         ],
         passwordConfirm: [
@@ -322,15 +332,32 @@ export default {
     }
   },
   created () {
-    this.passwordLevel = '3'
+    console.log(this.userInfo.userId)
+    this.passwordForm.userId = this.userInfo.userId
   },
   methods: {
     // 提交修改密码事件
     submitPasswordForm () {
+      let vm = this
       this.$refs.passwordForm.validate((valid) => {
         if (valid) {
-          alert('submit!')
-          this.dialogFormPasswordVisible = false
+          axios
+            .post('user/updateUserPsw', qs.stringify(vm.passwordForm))
+            .then((res) => {
+              vm.submitting = true
+              if (res.data.code === 200) {
+                vm.$notify.success('修改密码成功')
+                this.dialogFormPasswordVisible = false
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+            .finally(() => {
+              vm.submitting = false
+            })
         } else {
           console.log('error submit!!')
           return false
@@ -359,13 +386,17 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      userInfo: (state) => state.userInfo,
+      passwordLevel: (state) => state.passwordLevel
+    }),
     computedClass () {
       return {'user-progress': true}
     },
     passwordLevelText () {
-      if (this.passwordLevel === '1') {
+      if (this.passwordLevel === '低') {
         return '低'
-      } else if (this.passwordLevel === '2') {
+      } else if (this.passwordLevel === '中') {
         return '中'
       } else {
         return '高'
@@ -591,17 +622,17 @@ export default {
     border-radius: inherit;
     transition: width 0.5s ease-in-out, background 0.25s;
   }
-  .password-progress-bar--fill[data-score='1'] {
+  .password-progress-bar--fill[data-score='低'] {
     background: $colorRed;
     width: 33.33%;
   }
 
-  .password-progress-bar--fill[data-score='2'] {
+  .password-progress-bar--fill[data-score='中'] {
     background: $colorOrange;
     width: 66.66%;
   }
 
-  .password-progress-bar--fill[data-score='3'] {
+  .password-progress-bar--fill[data-score='高'] {
     background: $colorGreen;
     width: 99.99%;
   }
@@ -616,13 +647,13 @@ export default {
     display: inline-block;
     vertical-align: top;
   }
-  .password-level-value[data-score='1']{
+  .password-level-value[data-score='低']{
     color: $colorRed;
   }
-  .password-level-value[data-score='2']{
+  .password-level-value[data-score='中']{
     color: $colorOrange;
   }
-  .password-level-value[data-score='3']{
+  .password-level-value[data-score='高']{
     color: $colorGreen;
   }
 
