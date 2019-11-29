@@ -1,16 +1,292 @@
 <template>
-  <div>数据管理</div>
+  <el-container class="inner-page-container" v-loading="pageLoading">
+    <el-header class="inner-header">
+      <bread-crumb :breadList="breadcrumb">
+      </bread-crumb>
+    </el-header>
+    <el-main class="inner-main-container">
+      <el-container class="inner-main-content">
+        <el-aside class="inner-aside" width="408px">
+          <div class="inner-aside-content">
+            <el-form :inline="true" class="demo-form-inline">
+              <el-form-item>
+                <el-input
+                  placeholder="请输入搜索内容">
+                  <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                </el-input>
+              </el-form-item>
+              <el-button
+                type="text"
+                icon="el-icon-plus"
+                @click="addClassifyHandle"
+              >新增分类</el-button>
+            </el-form>
+            <el-table
+              :data="tableData"
+              border>
+              <el-table-column
+                label="序号"
+                type="index"
+                width="50">
+              </el-table-column>
+              <el-table-column
+                label="数据字典分类列表"
+                align="center">
+                <template slot-scope="scope">
+                  <div @click="groupClickHandle(scope.row)">{{ scope.row.groupName }}</div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-aside>
+
+        <el-main class="inner-content">
+          <div class="container-box">
+            <div class="content-tools is-flex-end">
+              <div class="tools-right">
+                <el-button
+                  type="primary"
+                  size="medium"
+                  icon="el-icon-plus"
+                  @click="addHandle()">
+                   添加</el-button>
+              </div>
+            </div>
+            <el-table
+              :data="tables.data"
+              border
+              style="width: 100%">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="55"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="code"
+                label="代码"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="content"
+                label="名称"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="remark"
+                label="备注"
+                align="center">
+              </el-table-column>
+            </el-table>
+            <div class="el-pagination__wrap text-right">
+              <el-pagination
+                layout="total, prev, pager, next, jumper"
+                :current-page="tables.page.index"
+                :page-sizes="tables.page.sizes"
+                :page-size="tables.form.limit"
+                :total="tables.page.total"
+                @current-change="tablesHandleCurrentPage"
+                @size-change="tablesHandleSizeChange"></el-pagination>
+            </div>
+          </div>
+        </el-main>
+      </el-container>
+    </el-main>
+    <el-dialog
+      :visible.sync="dialogAddVisible"
+      title="添加"
+      >
+      <el-form
+        :model= "tables.form"
+        ref= "form"
+        size= "mini"
+        label-width= "100px"
+        label-position= "right"
+        @submit.native.prevent= "submitForm"
+        v-loading= "submitting"
+      >
+        <el-form-item
+          label="名称">
+          <el-input
+            placeholder="请输入名称"
+            maxlength="25"
+            autocomplete></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          size="small"
+          @click="submitForm()"
+          v-loading= "submitting"
+          >保 存</el-button>
+        <el-button
+          size="small"
+          @click="dialogAddVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="dialogAddGroupVisible"
+      title="添加分类"
+      >
+      <el-form
+        :model= "formGroup"
+        ref= "formGroup"
+        size= "mini"
+        label-width= "100px"
+        label-position= "right"
+        @submit.native.prevent= "submitFormGroup"
+        v-loading= "submitting"
+      >
+        <el-form-item
+          label="分类名称">
+          <el-input
+            v-model="formGroup.groupName"
+            placeholder="请输入分类名称"
+            maxlength="25"
+            autocomplete></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          size="small"
+          @click="submitFormGroup()"
+          v-loading= "submitting"
+          >保 存</el-button>
+        <el-button
+          size="small"
+          @click="dialogAddGroupVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+  </el-container>
 </template>
 <script>
+import BreadCrumb from '../Breadcrumb/Breadcrumb'
+import axios from '@/api/axios'
+import Tables from '@/mixins/Tables'
+
 export default {
-  name: 'screeningCycle',
+  name: 'dataManagement',
+  mixins: [Tables],
   data () {
     return {
+      breadcrumb: ['配置维护管理', '数据字典'],
+      pageLoading: false, // 页面loading开关
+      submitting: false, // 提交数据loading开关
+      dialogAddVisible: false, // 添加弹框显示开关
+      dialogAddGroupVisible: false, // 添加分类弹框显示开关
+      formGroup: {
+        groupName: ''
+      },
+      tableData: [], // table列表数据
+      tables: {
+        api: 'dic/getList',
+        form: {
+          groupId: ''
+        }
+      }
     }
+  },
+  created () {
+    this.fetchTableData()
+  },
+  methods: {
+    // 添加事件处理
+    addHandle () {
+      this.dialogAddVisible = true
+    },
+    // 添加分类事件处理
+    addClassifyHandle () {
+      this.dialogAddGroupVisible = true
+    },
+    // 获取table数据
+    fetchTableData () {
+      this.pageLoading = true
+      let vm = this
+      axios
+        .get('dic/getGroupList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            vm.tableData = res.data.groupList
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
+    // 分类列表点击事件处理
+    groupClickHandle (item) {
+      this.tables.form.groupId = item.groupId
+      this.tablesFetchList()
+    },
+    // form表单提交事件
+    submitFormGroup () {
+      this.$confirm('确定新增分类?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submitting = true
+        axios
+          .post('dic/addGroup', this.formGroup)
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$notify.success('提交成功')
+              this.fetchTableData()
+              this.dialogAddGroupVisible = false
+            } else {
+              this.$message({
+                message: res.data.message,
+                type: 'warning'
+              })
+            }
+          })
+          .finally(() => {
+            this.submitting = false
+          })
+      })
+    },
+    closeLoading () {
+      this.pageLoading = false
+    }
+  },
+  components: {
+    BreadCrumb
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
+@import '../../utils/css/style.scss';
+.inner-aside{
+  margin-right: 8px;
+  background: #ffffff;
+  .el-form-item{
+    margin-bottom: 14px;
+  }
+  >>>.el-form-item__content{
+    width: 262px;
+    line-height: 33px;
+    .el-input__inner{
+      height: 33px;
+      line-height: 33px;
+      background: #f6f8fa;
+    }
+    .el-input__icon{
+      line-height: 33px;
+    }
+    .el-icon-search{
+      color: #777777;
+    }
 
+  }
+  .el-button{
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+.inner-aside-content{
+  width: 360px;
+  margin: 40px auto;
+}
 </style>

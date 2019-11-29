@@ -51,12 +51,11 @@ export default {
       filterText: '',
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'deptName'
       }
     }
   },
-  created () {
-    console.log(this.treeData)
+  mounted () {
     this.screenGetData(this.treeData)
   },
   watch: {
@@ -87,7 +86,7 @@ export default {
         } else {
           vm.$set(fData, 'selected', true)
           fData.selected = true
-          let newItem = {nameStr: fData.label, id: fData.id}
+          let newItem = {nameStr: fData.deptName, id: fData.deptId}
           vm.chooseList.push(newItem)
         }
       }
@@ -109,7 +108,7 @@ export default {
     screenDelData (sData, id) {
       let vm = this
       for (let i = 0; i < sData.length; i++) {
-        if (sData[i]['id'] === id) {
+        if (sData[i]['deptId'] === id) {
           sData[i]['selected'] = false
           return
         } else if (sData[i].children) {

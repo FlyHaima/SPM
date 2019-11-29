@@ -76,7 +76,7 @@
       width: calc( 100% - 220px);
     }
     .custom-tr{
-      max-height: 40px;
+      // max-height: 40px;
       overflow: hidden;
     }
   }
@@ -85,6 +85,7 @@
   font-size: 0;
   border-bottom: 1px solid $colorBorder;
   flex: 1;
+  background: $bgTableHeader;
   &.is-flex{
     display: flex;
     .custom-th-label,
@@ -109,6 +110,7 @@
   text-align: center;
   vertical-align: top;
   padding: 10px 5px;
+  height: 100%;
   + .custom-td-value{
     border-left: 1px solid $colorBorder;
   }
@@ -150,11 +152,13 @@
   vertical-align: top;
   padding: 10px 5px;
   min-height: 40px;
+  width: 100%;
+  background: #ffffff;
   + .custom-td-value{
     border-left: 1px solid $colorBorder;
   }
   &.is-ellipsis{
-    max-width: 150px;
+    width: calc( 100% - 220px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -198,8 +202,7 @@
   .item-img{
     display: inline-block;
     width: 90px;
-    height: 90px;
-    background: pink;
+    height: 130px;
   }
 }
 .card-form{

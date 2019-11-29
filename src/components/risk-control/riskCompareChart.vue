@@ -59,7 +59,7 @@ export default {
       let vm = this
       // this.chartData = []
       axios
-        .get('spm/riskLevel/getWorkRisk', {
+        .get('riskLevel/getWorkRisk', {
           time: vm.time
         })
         .then((res) => {

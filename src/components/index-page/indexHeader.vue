@@ -3,7 +3,7 @@
     <div class="logo inline-block"></div>
     <ul class="header-menu inline-block">
       <li>
-        <div class="btn task-btn"><i></i>我的任务
+        <div class="btn task-btn" @click="goMineTodoPage()"><i></i>我的待办
           <span v-if="taskNum > 0" class="num-conner">{{taskNum > 99 ? '99+' : taskNum}}</span>
         </div>
       </li>
@@ -11,7 +11,7 @@
         <div class="btn hard-disk"><i></i>本机硬盘</div>
       </li>
       <li>
-        <div class="btn msg-btn" @click=" goMorePage() "><i></i>消息<span class="num-conner">18</span>
+        <div class="btn msg-btn" @click="goMorePage()"><i></i>消息<span class="num-conner">18</span>
           <span v-if="msgNum > 0" class="num-conner">{{msgNum > 99 ? '99+' : msgNum}}</span>
         </div>
       </li>
@@ -19,15 +19,17 @@
         <div class="btn skin-btn"><i></i>皮肤</div>
       </li>
       <li>
-        <div class="btn user-name-btn" @click="goUserPage()"><i></i>管理员</div>
+        <div class="btn user-name-btn" @click="goUserPage()"><i></i>{{userName}}</div>
       </li>
     </ul>
-    <div class="quit-btn inline-block" @click="quit" title="退出登录">
+    <div class="quit-btn inline-block" @click="quitHandle()" title="退出登录">
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import axios from '@/api/axios'
 export default {
   name: 'IndexHeader',
   data () {
@@ -40,15 +42,49 @@ export default {
       showTaskD: true
     }
   },
+  computed: {
+    ...mapState({
+      userName: (state) => state.userInfo.userName
+    })
+  },
+  mounted () {
+  },
   methods: {
-    quit () {
-      sessionStorage.setItem('token', '')
-      this.$router.push('/home')
+    quitHandle () {
+      let vm = this
+      axios
+        .delete('ontroller/logout', {
+          dmsfbsf: window.localStorage.getItem('TOKEN_KEY')
+        })
+        .then((res) => {
+          // vm.submitting = true
+          if (res.data.code === 200) {
+            window.localStorage.setItem('TOKEN_KEY', '')
+            window.location = '/login'
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+          // vm.submitting = false
+        })
+    },
+    // 跳转到我的待办列表页面
+    goMineTodoPage () {
+      this.$router.push({
+        name: 'mineTodo'
+      })
     },
     // 跳转所有信息页面的点击事件
     goMorePage () {
       this.$router.push({
-        name: 'messages'
+        name: 'messages',
+        query: {
+          tabType: '1'
+        }
       })
     },
     // 跳转用户信息页面的点击事件

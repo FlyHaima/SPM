@@ -297,8 +297,7 @@ export default {
     return {
       breadcrumb: ['配置维护管理', '用户管理'],
       tables: {
-        api: 'spm/user/getUserList'
-
+        api: 'user/getUserList'
       },
       dialogRoleVisible: false, // 分配角色弹框开关
       dialogAddVisible: false, // 添加用户弹框开关
@@ -340,7 +339,7 @@ export default {
       }
       let stateLabel = row.state === '1' ? '禁用' : '启用'
       axios
-        .post('/spm/user/updateState', qs.stringify(sendData))
+        .post('user/updateState', qs.stringify(sendData))
         .then((res) => {
           if (res.data.code === 200) {
             this.$notify.success(stateLabel + '成功')
@@ -378,7 +377,7 @@ export default {
     fetchRoleOptions () {
       this.submitting = true
       axios
-        .get('/spm/user/getRoleSelect')
+        .get('user/getRoleSelect')
         .then((res) => {
           if (res.data.code === 200) {
             this.roleOptions = res.data.roleList
@@ -393,7 +392,7 @@ export default {
       this.submitting = true
       if (data) {
         axios
-          .get('/spm/user/getUser', {
+          .get('user/getUser', {
             userId: data
           })
           .then((res) => {
@@ -422,7 +421,7 @@ export default {
           type: 'warning'
         }).then(() => {
           axios
-            .post('/spm/user/delUser', sendDAta)
+            .post('user/delUser', sendDAta)
             .then((res) => {
               console.log(res.data.code)
               if (res.data.code === 200) {
@@ -462,7 +461,7 @@ export default {
         .then(() => {
           vm.submitting = true
           axios
-            .post(`spm/user/${post}User`, vm.form)
+            .post(`user/${post}User`, vm.form)
             .then((res) => {
               vm.submitting = true
               if (res.data.code === 200) {

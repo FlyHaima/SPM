@@ -6,7 +6,7 @@
 
 <script>
 import axios from 'axios'
-import {mapState} from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'App',
@@ -17,9 +17,12 @@ export default {
   },
   computed: { // vuex 参数引入
     ...mapState({
+      // 获取用户信息
+      userInfo: (state) => state.userInfo
     })
   },
   mounted () {
+    this.getUserInfo()
   },
   created () {
     let that = this
@@ -28,7 +31,7 @@ export default {
 
     // 拦截request, 设置全局请求为ajax请求
     axios.interceptors.request.use((config) => {
-      let sessionToken = sessionStorage.getItem('token')
+      let sessionToken = window.localStorage.getItem('TOKEN_KEY')
       if (!sessionToken) {
         sessionToken = ''
       }
@@ -84,6 +87,12 @@ export default {
     // if (localStorage.getItem('loginToUrl')) {
     //   localStorage.removeItem('loginToUrl')
     // }
+  },
+  methods: {
+    // 获取用户基本信息
+    getUserInfo () {
+      this.$store.dispatch('BASE_INFO_SET')
+    }
   }
 }
 </script>
