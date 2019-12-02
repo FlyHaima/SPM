@@ -31,6 +31,15 @@
             </div>
             <p>撤销</p>
           </div>
+          <div class="line-out">
+            <div class="line"></div>
+          </div>
+          <div class="menu-item" @click="saveChange">
+            <div class="menu-icon menu-icon-1">
+              <i class="el-icon-document-checked"></i>
+            </div>
+            <p>保存修改</p>
+          </div>
         </div>
         <div class="body-body">
           <div class="body-header">
@@ -40,16 +49,25 @@
             </el-select>
 
             <i class="el-icon-delete" title="删除"></i>
-            <i class="el-icon-upload2" title="上传"></i>
-            <i class="el-icon-plus" title="添加"></i>
+            <i class="el-icon-upload2" title="上传新图片"></i>
+            <i class="el-icon-plus" title="添加位置"></i>
           </div>
           <div class="canvas-box">
+            <div style="display:none;">
+              <img id="source"
+                   :src="img.url"
+                   :width="img.width"
+                   :height="img.height">
+            </div>
             <canvas id="myCanvas"
-                    width="1180" height="800"
-                    style="border:1px solid #d3d3d3;"
+                    :width="img.width" :height="img.height"
+                    style="background-color: #fff;"
                     @mousedown="mousedown"
                     @mousemove="mousemove"
                     @mouseup="mouseup"
+                    @mouseleave="leaveCanvas"
+                    @mouseenter="enterCanvas"
+                    @contextmenu="openMenu"
             >
               Your browser does not support the HTML5 canvas tag.
             </canvas>
@@ -73,17 +91,21 @@ export default {
       listAA: [],
       mapSelection: '',
       layers: [
+
+      ], // 新建图层
+      oldLayers: [
         {
-          height: 274,
-          strokeStyle: '#0000ff',
+          height: 170,
+          level: 2,
           type: 0,
-          width: 362,
+          width: 110,
           x1: 182,
           x2: 544,
           y1: 109,
           y2: 383
         }
-      ], // 图层
+      ], // 之前存在的图层
+      fillStyles: ['#a3a3a3', '#4680ff', '#fffb09', '#ff9309', '#d13a38'],
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
       starty: 0, // 起始y坐标
@@ -97,16 +119,16 @@ export default {
       type: 0,
       img: {
         url: 'https://yyb.gtimg.com/aiplat/page/product/visionimgidy/img/demo6-16a47e5d31.jpg?max_age=31536000',
-        width: 500,
-        height: 570
+        width: 399,
+        height: 600
       },
       minWidth: 1180,
-      minHeight: 800,
+      minHeight: 747,
       maxWidth: 9000,
       maxHeight: 7000,
       scaleStep: 1.05,
       elementWidth: 1180,
-      elementHeight: 800
+      elementHeight: 747
     }
   },
   mounted () {
@@ -117,24 +139,7 @@ export default {
   },
   methods: {
     canvas_init () {
-      console.log(this.layers)
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-      // const img = document.createElement('img')
-      const img = new Image()
-      img.src = this.img.url
-      console.log(img)
-      img.onload = function () {
-        c.style.backgroundImage = `url(${img.src})`
-        c.style.backgroundSize = this.img.width + 'px ' + this.img.height + 'px'
-        c.style.backgroundRepeat = 'no-repeat'
-        // let prtn = ctx.createPattern(img, 'no-repeat')
-        // ctx.fillStyle = prtn
-        // ctx.fillRect(0, 0, 900, 700)
-      }
-      ctx.drawImage(img, 10, 10, this.img.width, this.img.height)
-      c.onmouseenter = this.enterCanvas()
-      c.onmouseleave = this.leaveCanvas()
+      this.showOld()
     },
     // 获取图片的原始尺寸
     checkImgSize (imgUrl) {
@@ -157,9 +162,10 @@ export default {
       if (c.width <= vm.maxWidth && c.height <= vm.maxHeight) {
         c.width *= vm.scaleStep
         c.height *= vm.scaleStep
-        vm.scale = c.height / vm.minHeight
+        vm.scale = c.height / vm.img.height
         ctx.scale(vm.scale, vm.scale)
         c.style.backgroundSize = `${c.width}px ${c.height}px`
+        vm.showOld()
         vm.reshow()
       }
     },
@@ -168,12 +174,14 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
 
-      if (c.width >= vm.minWidth && c.height >= vm.minHeight) {
+      // debugger
+      if (c.width >= vm.img.width && c.height >= vm.img.height) {
         c.width /= vm.scaleStep
         c.height /= vm.scaleStep
-        vm.scale = c.height / vm.minHeight
+        vm.scale = c.height / vm.img.height
         ctx.scale(vm.scale, vm.scale)
         c.style.backgroundSize = `${c.width}px ${c.height}px`
+        vm.showOld()
         vm.reshow()
       }
     },
@@ -183,6 +191,7 @@ export default {
       const ctx = c.getContext('2d')
       vm.layers.pop()
       ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      vm.showOld()
       vm.reshow()
     },
     clear () {
@@ -191,8 +200,10 @@ export default {
       const ctx = c.getContext('2d')
       vm.layers = []
       ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      vm.showOld()
       vm.reshow()
     },
+    saveChange () {},
     resizeLeft (rect) {
       let vm = this
       const c = document.getElementById('myCanvas')
@@ -329,6 +340,34 @@ export default {
         vm.currentR.width = vm.currentR.x2 - vm.currentR.x1
       }
     },
+    drawImage () {
+      const canvas = document.getElementById('myCanvas')
+      const ctx = canvas.getContext('2d')
+
+      let image = document.getElementById('source')
+
+      ctx.drawImage(image, 0, 0, 399, 600)
+    },
+    // 绘制原有图形，包括背景图
+    showOld () {
+      let vm = this
+      const c = document.getElementById('myCanvas')
+      const ctx = c.getContext('2d')
+      vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
+      // debugger
+      vm.oldLayers.forEach(item => {
+        ctx.beginPath()
+        ctx.rect(item.x1, item.y1, item.width, item.height)
+        ctx.strokeStyle = vm.fillStyles[item.level]
+        ctx.fillStyle = vm.fillStyles[item.level]
+        ctx.globalAlpha = 0.7
+        ctx.fill()
+        ctx.stroke()
+      })
+
+      vm.op = 0 // 在旧节点上，无拖动、放大操作
+    },
+    // 绘制图形（擦除后重绘or第一遍加载时绘制）
     reshow (x, y) {
       let vm = this
       let allNotIn = 1
@@ -338,7 +377,6 @@ export default {
       vm.layers.forEach(item => {
         ctx.beginPath()
         ctx.rect(item.x1, item.y1, item.width, item.height)
-        ctx.strokeStyle = item.strokeStyle
         if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
           vm.resizeLeft(item)
         } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
@@ -360,6 +398,10 @@ export default {
           vm.render(item)
           allNotIn = 0
         }
+        ctx.strokeStyle = vm.fillStyles[item.level]
+        ctx.fillStyle = vm.fillStyles[item.level]
+        ctx.globalAlpha = 0.7
+        ctx.fill()
         ctx.stroke()
       })
       if (vm.flag && allNotIn && vm.op < 3) {
@@ -385,7 +427,7 @@ export default {
       }
     },
     // 确定是否是在绘制的矩形中
-    isPointInRetc (x, y) {
+    isPointInRect (x, y) {
       let vm = this
       let len = vm.layers.length
       for (let i = 0; i < len; i++) {
@@ -394,6 +436,7 @@ export default {
         }
       }
     },
+    // 绘制矩形时，默认最小60*60
     fixPosition (position) {
       if (position.x1 > position.x2) {
         let x = position.x1
@@ -417,14 +460,14 @@ export default {
     },
     mousedown (e) {
       console.log('mousedown:')
-      console.log(e)
+
       let vm = this
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
 
-      vm.startx = (e.pageX - c.offsetLeft + c.parentElement.scrollLeft) / vm.scale
-      vm.starty = (e.pageY - c.offsetTop + c.parentElement.scrollTop) / vm.scale
-      vm.currentR = vm.isPointInRetc(vm.startx, vm.starty)
+      vm.startx = e.layerX / vm.scale
+      vm.starty = e.layerY / vm.scale
+      vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
       if (vm.currentR) {
         vm.leftDistance = vm.startx - vm.currentR.x1
         vm.topDistance = vm.starty - vm.currentR.y1
@@ -432,14 +475,16 @@ export default {
       ctx.strokeRect(vm.x, vm.y, 0, 0)
       ctx.strokeStyle = '#0000ff'
       vm.flag = 1
+      console.log(vm.currentR)
+      console.log(vm.layers)
     },
     mousemove (e) {
       let vm = this
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
 
-      vm.x = (e.pageX - c.offsetLeft + c.parentElement.scrollLeft) / vm.scale
-      vm.y = (e.pageY - c.offsetTop + c.parentElement.scrollTop) / vm.scale
+      vm.x = e.layerX / vm.scale
+      vm.y = e.layerY / vm.scale
       ctx.save()
       ctx.setLineDash([5])
       c.style.cursor = 'default'
@@ -448,12 +493,12 @@ export default {
         ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
       }
       ctx.restore()
+      vm.showOld(vm.x, vm.y)
       vm.reshow(vm.x, vm.y)
     },
     mouseup (e) {
-      console.log('mousedown:')
+      console.log('mouseup:')
       console.log(e)
-      console.log(this.layers)
 
       let vm = this
 
@@ -463,8 +508,8 @@ export default {
           y1: vm.starty,
           x2: vm.x,
           y2: vm.y,
-          strokeStyle: '#0000ff',
-          type: vm.type
+          type: vm.type,
+          level: 0
         }))
       } else if (vm.op >= 3) {
         vm.fixPosition(vm.currentR)
@@ -474,6 +519,10 @@ export default {
       vm.reshow(vm.x, vm.y)
       vm.op = 0
     },
+    openMenu (e) {
+      e.preventDefault()
+      console.log(e)
+    },
     leaveCanvas () {
       const c = document.getElementById('myCanvas')
       c.onmousedown = null
@@ -482,8 +531,6 @@ export default {
     },
     enterCanvas () {
       document.onmouseup = this.mouseup()
-      // c.onmousedown= this.mousedown()
-      // c.onmousemove= this.mousemove()
     }
   },
   components: {
@@ -510,7 +557,7 @@ export default {
         height: 100%;
         line-height: 50px;
         background: #fff;
-        padding: 21px 19px;
+        padding: 21px 17px;
         .menu-item{
           width: 100%;
           color: #646464;
@@ -571,6 +618,7 @@ export default {
           }
         }
         .canvas-box{
+          position: relative;
           width: 100%;
           height: 100%;
           background: #fff;
