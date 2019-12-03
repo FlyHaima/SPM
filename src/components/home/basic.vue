@@ -11,7 +11,7 @@
               <el-avatar :size="80" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
               <div class="basic-info-txt">
                 <p class="basic-info-txt-item">基本信息</p>
-                <p class="basic-info-txt-item">当前位置：哈尔滨-道外区</p>
+                <p class="basic-info-txt-item">当前位置：{{userInfo.city}}-道外区</p>
               </div>
             </el-col>
             <el-col :span="18" :offset="1">
@@ -34,7 +34,7 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">所属部门：</span>
-                  <span class="user-value">安全部</span>
+                  <span class="user-value">{{userInfo.deptName}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">职位：</span>
@@ -42,17 +42,28 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">企业资格认证：</span>
-                  <span class="user-value color-primary">已认证</span>
+                  <span
+                    v-if="userInfo.zgrz"
+                    class="user-value color-primary">
+                      {{verify}}
+                  </span>
+                  <span v-else>
+                    {{unverified}}
+                  </span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号状态：</span>
-                  <span class="user-value color-primary">正常</span>
-                  <span class="user-value color-warning">异常</span>
-                  <span class="user-value color-danger">冻结</span>
+                  <span
+                    v-if="item.value === userInfo.accountState"
+                    v-for="(item, index) in accountStatus"
+                    :key="index"
+                    :label="item.value"
+                    class="user-value color-primary"
+                    :class="classObj(item.value)">{{item.label}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">上次登录信息：</span>
-                  <span class="user-value">{{userInfo.lastLogin}}</span>
+                  <span class="user-value">{{userInfo.lastLogin | send-time-filter}}</span>
                   <span class="user-value">
                     <i class="icon-location"></i>{{userInfo.lastAddress}}</span>
                 </li>
@@ -112,7 +123,7 @@
             <div class="user-account-left">
               <span class="user-account-label">手机绑定</span>
               <span class="user-account-value">
-                您已绑定了手机151****6064【您的手机为安全手机，可以找回密码】
+                您已绑定了手机{{userInfo.telephone}}【您的手机为安全手机，可以找回密码】
               </span>
             </div>
             <div class="user-account-operation">
@@ -240,6 +251,8 @@
 import { mapState } from 'vuex'
 import axios from '@/api/axios'
 import qs from 'qs'
+import moment from 'moment'
+import {ACCOUNT_STATUS, ZGRZ} from '@/constants/status'
 export default {
   name: 'basic',
   data () {
@@ -294,6 +307,9 @@ export default {
       }
     }
     return {
+      accountStatus: ACCOUNT_STATUS, // 账户状态
+      verify: ZGRZ.verify.label, // 已认证
+      unverified: ZGRZ.unverified.label, // 未认证
       submitting: false,
       // passwordLevel: '', // 密码强度级别
       dialogFormPasswordVisible: false, // 修改密码弹框显示开关
@@ -331,11 +347,30 @@ export default {
       } // 修改绑定手机的校验规则
     }
   },
+  filters: {
+    // 格式化日期格式
+    'send-time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD  HH: mm: ss')
+      } else {
+        return null
+      }
+    }
+  },
   created () {
-    console.log(this.userInfo.userId)
     this.passwordForm.userId = this.userInfo.userId
   },
   methods: {
+    // 账号状态的class集合
+    classObj (data) {
+      if (data === '1') {
+        return 'color-primary'
+      } else if (data === '2') {
+        return 'color-warning'
+      } else if (data === '3') {
+        return 'color-danger'
+      }
+    },
     // 提交修改密码事件
     submitPasswordForm () {
       let vm = this
@@ -359,7 +394,6 @@ export default {
               vm.submitting = false
             })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -371,7 +405,6 @@ export default {
           alert('submit!')
           this.dialogFormTelVisible = false
         } else {
-          console.log('error submit!!')
           return false
         }
       })
