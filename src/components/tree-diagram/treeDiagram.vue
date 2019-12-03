@@ -51,7 +51,6 @@
 <script>
 export default {
   name: 'treeDiagram',
-  // props: ['treeData', 'treeName', 'hasUpload', 'showBtns'],
   props: {
     treeData: {
       type: Array,
@@ -210,6 +209,7 @@ export default {
     border-bottom: 1px solid #eeeeee;
     color: #333333;
     font-size: 18px;
+    background: #fff;
     .double-line-icon{
       position: absolute;
       top: 17px;
