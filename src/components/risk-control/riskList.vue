@@ -219,7 +219,7 @@ export default {
     // 获取树的数据
     fetchTreeData () {
       axios
-        .get('spm/riskia/getRiskTree')
+        .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
@@ -231,7 +231,7 @@ export default {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`spm/riskLevel/getRiskCrad?&id=${vm.riskId}`)
+        .get(`riskLevel/getRiskCrad?&id=${vm.riskId}`)
         .then((res) => {
           if (res.data.code === 200) {
             if (res.data.data.length > 1 || res.data.data.length === 0) {
@@ -275,7 +275,7 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
-      // exportExcel('spm/riskLevel/exportTz')
+      // exportExcel('riskLevel/exportTz')
     }
   },
   computed: {

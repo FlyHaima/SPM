@@ -31,9 +31,9 @@ export default {
         form: {
           keyword: '',
           offset: 0,
-          limit: 20,
+          limit: 10,
           pageNo: 1,
-          pageSize: 20
+          pageSize: 10
         },
         data: [],
         sum: [],
@@ -129,6 +129,7 @@ export default {
     tablesHandleCurrentPage (val) {
       this.tables.page.index = val
       this.tables.form.offset = --val * this.tables.form.limit
+      this.tables.form.pageNo = val + 1
       this.tablesFetchList()
     },
     // 切换分页数量

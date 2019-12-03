@@ -33,26 +33,11 @@
           v-for="(item,index) in fileList"
           :key = "index"
           class="attachment-list-item">
-          <img
-            v-if="item.fileType === 'image'"
-            class="attachment-img"
-            :src="item.filePath"
-            alt="上传的图片" />
-          <video
-            v-if="item.fileType === 'video'"
-            :src="item.filePath"
-            controls="controls">
-            您的浏览器不支持 video 标签。
-          </video>
-          <div
-            v-if="item.fileType === 'word'"
-            @click.prevent="downLoadFile(item.filePath)"
-            class="attachment-word-list"
-            v-loading= "submitting">
-            <i class="icon-word"></i>
-            <div class="attachment-word-list-title">{{item.fileName}}</div>
-          </div>
+          <img class="attachment-img" :src="item.filePath" alt="">
         </div>
+        <!-- <div class="attachment-list-item">
+          <img class="attachment-img" src="" alt="">
+        </div> -->
       </div>
     </div>
   </div>
@@ -65,10 +50,8 @@ export default {
   name: 'messagesDetails',
   data () {
     return {
-      submitting: false,
       messageDetailData: {}, // 信息详情数据集合
-      fileList: [], // 附件列表
-      yuming: 'http://file.hljdmkj.com'
+      fileList: [] // 附件列表
     }
   },
   filters: {
@@ -85,22 +68,6 @@ export default {
     this.fetchData()
   },
   methods: {
-    // 下载文件
-    downLoadFile (item) {
-      window.location.href = item
-    },
-    // 在线预览word文件
-    openDoc (data) {
-      if (data) {
-        this.submitting = true
-        window.open(
-          'https://view.officeapps.live.com/op/view.aspx?src=' + data,
-          '_blank'
-        )
-      } else {
-        this.submitting = false
-      }
-    },
     fetchData () {
       axios
         .get('msg/getMsg', {
@@ -114,14 +81,7 @@ export default {
         })
     },
     goBack () {
-      // this.$router.back()
-      // window.history.back()
-      this.$router.push({
-        name: 'messages',
-        query: {
-          tabType: this.$route.query.tabType
-        }
-      })
+      this.$router.back()
     }
   }
 }
@@ -267,37 +227,14 @@ export default {
   }
   .attachment-list-item{
     width: 143px;
+    height: 113px;
     margin-right: 43px;
-    // border: 1px solid #dddddd;
-    border-radius: 8px;
-    video{
-      display: inline-block;
-      width: 143px;
-      height: 113px;
-      border-radius: 6px;
-    }
   }
   .attachment-img{
     display: inline-block;
     width: 143px;
     height: 113px;
+    background: pink;
     border-radius: 6px;
-  }
-  .attachment-word-list{
-    width: 100%;
-    height: 100%;
-    padding: 5px 15px;
-    cursor: pointer;
-    text-align: center;
-  }
-  .icon-word{
-    display: inline-block;
-    width: 80px;
-    height: 80px;
-    background-image: url('../../assets/img/icon-word.png');
-  }
-  .attachment-word-list-title{
-    width: 123px;
-    word-wrap: break-word;
   }
 </style>

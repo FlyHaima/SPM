@@ -1,26 +1,37 @@
 <template>
 <div class="message-wrap">
   <el-tabs
-    v-model="tabType"
     type="border-card"
     @tab-click='clickTab'>
-    <el-tab-pane label="我发布的" name="1">
-      <span slot="label"> 我发布的</span>
+    <el-tab-pane label="我发布的">
+      <span slot="label"> 我发布的<span class="badge">18</span></span>
       <div class="">
         <div class="info-panel">
           <div class="info-header">
+            <!-- <div class="info-title">
+              <span class="info-title-txt">所有消息</span>
+            </div> -->
             <div class="info-link">
               <el-button @click="handleSendMessage" type="primary" size="mini">发布消息</el-button>
               <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
             </div>
           </div>
+          <!-- <div class="info-header">
+            <div class="info-title">
+              <span class="info-title-txt">待办事项</span>
+            </div>
+            <div class="info-link">
+              <el-button type="danger" size="mini">标记当页已处理</el-button>
+            </div>
+          </div> -->
           <div class="info-content">
             <ul class="list-info">
               <li
                 v-for="(item, index) in messageData"
                 :key="index"
+                @click="goDetailsPage(item)"
                 class="list-info-item list-info-item-light">
-                <div class="list-info-title" @click="goDetailsPage(item)">
+                <div class="list-info-title">
                   <span class="list-info-txt">
                     <span v-if="item.type" class="list-info-type">
                       [{{item.type}}]
@@ -53,7 +64,7 @@
         </div>
       </div>
     </el-tab-pane>
-    <el-tab-pane label="我收到的" name="2">
+    <el-tab-pane label="我收到的">
       <div class="">
         <div class="info-panel">
           <div class="info-header">
@@ -65,7 +76,7 @@
           <div class="info-content">
             <ul class="list-info">
               <li
-                @click="goDetailsPage(item)"
+                @click="goDetailsPage"
                 v-for="(item, index) in messageData"
                 :key="index"
                 class="list-info-item list-info-item-light">
@@ -113,46 +124,16 @@
         :rules="rulesMessage"
         label-width="100px"
         label-position="right">
-        <el-row>
-          <el-col :span="14">
-            <el-form-item label="标题" prop="title">
-              <el-input v-model="messageForm.title"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="消息类型" prop="type">
-              <el-select v-model="messageForm.type" placeholder="请选择">
-                <el-option
-                  v-for="item in infoTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="文本内容" prop="textContent">
-          <el-input
-            type="textarea"
-            maxlength="200"
-            show-word-limit
-            v-model="messageForm.textContent"></el-input>
+        <el-form-item label="标题">
+          <el-input v-model="messageForm.title"></el-input>
         </el-form-item>
-        <!--
-          an MS Word document : .doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document
-          image: image/* [所有图片类型] | image/png, image/jpeg, image/gif
-          excel: application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-        -->
+        <el-form-item label="文本内容">
+          <el-input type="textarea" maxlength="200" show-word-limit v-model="messageForm.textContent"></el-input>
+        </el-form-item>
         <el-form-item label="附件上传">
           <el-upload
             class="upload-demo"
-            action="http://upload-z1.qiniu.com"
-            accept="image/jpg, video/mp4, .doc"
-            :data="uploadData"
-            :before-upload="handleBeforeUpload"
-            :on-change="handleChange"
-            :on-success="handleSuccess"
+            action="https://jsonplaceholder.typicode.com/posts/"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
@@ -161,7 +142,7 @@
             :on-exceed="handleExceed"
             :file-list="fileList">
             <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip"><span>*</span>仅支持上传 <span>doc、jpg、mp4</span>格式的文件</div>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
         <el-row>
@@ -171,44 +152,37 @@
             </el-form-item>
           </el-col> -->
           <el-col :span="8">
-            <el-form-item label="发布人" prop="userName">
+            <el-form-item label="发布人">
               <el-input v-model="messageForm.userName" disabled=""></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="推送方式" prop="sendType">
-              <el-select v-model="messageForm.sendType" placeholder="请选择推送方式">
-                <el-option label="全员推送" value="1"></el-option>
-                <el-option label="选择推送" value="2"></el-option>
+            <el-form-item label="推送方式">
+              <el-select v-model="messageForm.way" placeholder="">
+                <el-option label="全员推送" value="全员推送"></el-option>
+                <el-option label="选择推送" value="选择推送"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="推送名单" v-show="messageForm.sendType === '2'">
+        <el-form-item label="推送名单" v-show="messageForm.way === '选择推送'">
           <el-row>
             <el-col :span="21">
-              <el-input v-model="messageForm.sendList" :disabled="true"></el-input>
+              <el-input v-model="menuListStr" :disabled="true"></el-input>
             </el-col>
             <el-col :span="3">
-              <el-button
-                type="primary"
-                @click="treeTransferHandle()"
-                class="rt">选择推送</el-button>
+              <el-button type="primary" @click="showTreeTransfer = true" class="rt">选择推送</el-button>
             </el-col>
           </el-row>
         </el-form-item>
       </el-form>
     </div>
 
-    <el-dialog
-      :title="'选择推送目标'"
-      :visible.sync="showTreeTransfer"
-      :width="'774px'"
-      :show-close="false"
-      append-to-body>
-      <tree-transfer
-        :tree-data="treeData"
-        :choose-list="chooseList"></tree-transfer>
+    <el-dialog :title="'选择推送目标'" :visible.sync="showTreeTransfer"
+               :width="'774px'"
+               :show-close="false"
+               append-to-body>
+      <tree-transfer :tree-data="treeData" :choose-list="chooseList"></tree-transfer>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="confirmChooseList()">确 定</el-button>
         <el-button @click="showTreeTransfer = false">取 消</el-button>
@@ -234,47 +208,103 @@ export default {
   name: 'messages',
   data () {
     return {
-      upload_qiniu_addr: 'http://file.hljdmkj.com/',
-      uploading: false, // upload加载
-      uploadData: {
-        token: ''
-      }, // 上传数据
-      fileList: [], // 上传文件列表
-      uploadList: [], // 上传文件列表
-      dialogFormMessageVisible: false, // 发布消息弹框显示开关
-      showTreeTransfer: false, // 树弹框显示开关
+      fileList: [
+        {
+          name: 'food.jpeg',
+          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+        },
+        {
+          name: 'food2.jpeg',
+          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+        }
+      ],
+      dialogFormMessageVisible: false,
+      showTreeTransfer: false,
       messageData: [], // 信息列表数据
       messageForm: {
         title: '', // 标题
         textContent: '', // 文本内容
-        fileList: '', // 附件上传
+        // attachment: '', // 附件上传
         userName: '', // 发送人
-        // sendTime: '' // 发送时间
-        type: '', // 消息类型
-        sendType: '', // 推送方式
-        sendList: '' // 推送名单列表
+        sendTime: '' // 发送时间
+        // way: '' // 推送方式
       },
-      sendDate: '', // 发送日期
-      sendTime: '', // 发送时间
-      rulesMessage: {
-        title: [
-          { required: true, message: '请输入标题', trigger: 'blur' },
-          { min: 3, max: 25, message: '长度在 3 到 25 个字符', trigger: 'blur' }
-        ],
-        sendType: [
-          { required: true, message: '请选择推动方式', trigger: 'change' }
-        ]
-      },
+      sendDate: '',
+      sendTime: '',
+      rulesMessage: {},
       page: {
         total: 0, // 总条数
         index: 1, // 当前页面
         pageNo: 1,
         pageSize: 10 // limit
       },
-      tabType: '', // tab切换类型
-      treeData: [], // 树数据
-      chooseList: [], // 已选择的treeData
-      infoTypeOptions: [] // 消息类型
+      tabType: '1', // tab切换类型
+      treeData: [
+        {
+          id: 1000131,
+          label: '东三省黑龙江集团',
+          children: [
+            {
+              id: 1003422,
+              label: '有限公司A',
+              children: [
+                {
+                  id: 1004521,
+                  label: '质检厂',
+                  data: {
+                    name: 'AAA',
+                    duty: 'clean job'
+                  }
+                }, {
+                  id: 1004522,
+                  label: '设备厂'
+                }
+              ]
+            }, {
+              id: 1000135,
+              label: '有限公司B',
+              children: [
+                {
+                  id: 1060121,
+                  label: '炼制厂'
+                }, {
+                  id: 1060122,
+                  label: '电器厂',
+                  children: [
+                    {
+                      id: 1060123,
+                      label: '生产部',
+                      children: [
+                        {
+                          id: 1060125,
+                          label: '电气车间',
+                          children: [
+                            {
+                              id: 1060126,
+                              label: '班组A'
+                            }
+                          ]
+                        }
+                      ]
+                    }, {
+                      id: 1060124,
+                      label: '安监部'
+                    }
+                  ]
+                }, {
+                  id: 1060129,
+                  label: '污水处理厂'
+                }, {
+                  id: 1060130,
+                  label: '炼焦厂'
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      chooseList: [],
+      menuListStr: ''
     }
   },
   filters: {
@@ -286,7 +316,6 @@ export default {
         return null
       }
     },
-    // 格式化日期格式
     'date-filter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD')
@@ -294,7 +323,6 @@ export default {
         return null
       }
     },
-    // 格式化时间格式
     'time-filter' (value) {
       if (value) {
         return moment(value).format('HH: mm: ss')
@@ -303,43 +331,21 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapState({
-      userInfo: (state) => state.userInfo
-    })
-  },
   created () {
-    let vm = this
-    // 从路由上存取当前页面的tabType
-    vm.tabType = vm.$route.query.tabType
-    vm.messageForm.userName = vm.userInfo.userName
-    vm.fetchList()
-    vm.fetchTreeData()
-    vm.fetchInfoTypeOptions()
+    this.fetchList()
   },
   methods: {
-    // 获取消息列表数据
     fetchList () {
       axios
-        .get('msg/getMsgList', {
-          pageNo: this.page.pageNo,
-          pageSize: this.page.pageSize,
-          tabType: this.tabType
+        .get('flowAct/todoList', {
+          // pageNo: this.page.pageNo,
+          // pageSize: this.page.pageSize,
+          userId: this.userInfo.userId
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.messageData = res.data.data
             this.page.total = res.data.total
-          }
-        })
-    },
-    // 获取消息列表数据
-    fetchInfoTypeOptions () {
-      axios
-        .get('msg/getMsgTypeList')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.infoTypeOptions = res.data.data
           }
         })
     },
@@ -357,8 +363,7 @@ export default {
     batchDeleteHandle () {
       let sendData = {
         pageNo: this.page.pageNo,
-        pageSize: this.page.pageSize,
-        tabType: this.tabType
+        pageSize: this.page.pageSize
       }
       this.$confirm('是否删除当页消息？', '提示', {
         confirmButtonText: '确定',
@@ -371,7 +376,6 @@ export default {
             console.log(res.data.code)
             if (res.data.code === 200) {
               this.$notify.success('删除成功')
-              this.page.pageNo--
               this.fetchList()
             }
           })
@@ -385,8 +389,7 @@ export default {
     // 删除单条数据
     deleteRow (row) {
       let sendData = {
-        id: row.id,
-        tabType: this.tabType
+        id: row.id
       }
       axios
         .post('msg/del', qs.stringify(sendData))
@@ -401,7 +404,7 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
-      // this.tabType = (Number(item.paneName) + 1) + ''
+      this.tabType = (Number(item.paneName) + 1) + ''
       this.fetchList()
     },
     // 标记当前页已读事件处理
@@ -416,7 +419,7 @@ export default {
         type: 'warning'
       }).then(() => {
         axios
-          .post('/msg/signRead', qs.stringify(sendData))
+          .post('msg/signRead', qs.stringify(sendData))
           .then((res) => {
             if (res.data.code === 200) {
               this.$notify.success('标记成功')
@@ -432,13 +435,11 @@ export default {
     },
     // 跳转信息详情页面的点击事件
     goDetailsPage (item) {
+      console.log(item)
       this.$router.push({
         name: 'messagesDetails',
         params: {
           id: item.id
-        },
-        query: {
-          tabType: this.tabType
         }
       })
     },
@@ -449,7 +450,6 @@ export default {
     // 提交发布消息事件
     submitMessageForm () {
       let vm = this
-      this.messageForm.fileList = JSON.stringify(this.uploadList)
       vm.$refs.messageForm.validate((valid) => {
         if (valid) {
           vm.dialogFormMessageVisible = false
@@ -460,7 +460,7 @@ export default {
               if (res.data.code === 200) {
                 vm.$notify.success('发布成功')
                 vm.dialogFormMessageVisible = false
-                vm.fetchList()
+                vm.fetchListData()
               } else {
                 vm.$message({
                   message: res.data.message,
@@ -477,41 +477,11 @@ export default {
         }
       })
     },
-    handleBeforeUpload (file) {
-      this.uploading = true
-      const isLt1M = file.size / 1024 / 1024 < 1
-      if (!isLt1M) {
-        this.$message.error('上传头像图片大小不能超过 1MB!')
-        this.uploading = false
-      }
-      // let token = sessionStorage.getItem('token')
-      return axios
-        .get('user/qinToken')
-        .then((res) => {
-          this.uploadData.token = res.data
-        })
-      // return getuploadToken(token).then(res => {
-      //   this.uploadData.token = res
-      //     token: res
-      //   }
-      // })
-      // return isLt1M
-    },
-    handleSuccess (response, file, fileList) {
-      this.uploadList = []
-      fileList.forEach(item => {
-        let fItem = {
-          name: item.name,
-          url: this.upload_qiniu_addr + item.response.key
-        }
-        this.uploadList.push(fItem)
-      })
-    },
     handleRemove (file, fileList) {
-      this.fileList = fileList
+      console.log(file, fileList)
     },
     handlePreview (file) {
-      // console.log(file)
+      console.log(file)
     },
     handleExceed (files, fileList) {
       this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
@@ -519,30 +489,19 @@ export default {
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 $ { file.name }？`)
     },
-    handleChange (file, fileList) {
-      // console.log(fileList)
-    },
-    treeTransferHandle () {
-      this.showTreeTransfer = true
-    },
-    // 获取tree数据
-    fetchTreeData () {
-      axios
-        .get('msg/getDeptList')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.treeData = res.data.data
-          }
-        })
-    },
     confirmChooseList () {
-      this.messageForm.sendList = ''
+      this.menuListStr = ''
       this.chooseList.forEach(item => {
-        this.messageForm.sendList += `${item.nameStr}; `
+        this.menuListStr += `${item.nameStr}; `
       })
       console.log(this.treeData) // 上传该数据
       this.showTreeTransfer = false
     }
+  },
+  computed: {
+    ...mapState({
+      userInfo: (state) => state.userInfo
+    })
   },
   watch: {
   },

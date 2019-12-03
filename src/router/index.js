@@ -19,6 +19,9 @@ Router.prototype.push = function push (location) {
 // 登录页
 const loginPage = require('@/pages/login')
 const LoginPage = resolve => require.ensure([], () => resolve(loginPage), 'basicPageList')
+// 注册页
+const registerPage = require('@/pages/register')
+const RegisterPage = resolve => require.ensure([], () => resolve(registerPage), 'basicPageList')
 // 404
 const notFound = require('@/pages/404')
 const NotFound = resolve => require.ensure([], () => resolve(notFound), 'basicPageList')
@@ -58,6 +61,12 @@ const Messages = resolve => require.ensure([], () => resolve(messages), 'pagelis
 // 消息详情页
 const messagesDetails = require('@/components/home/messagesDetails.vue')
 const MessagesDetails = resolve => require.ensure([], () => resolve(messagesDetails), 'pagelist')
+// 我的待办
+const mineTodo = require('@/components/home/mineTodo.vue')
+const MineTodo = resolve => require.ensure([], () => resolve(mineTodo), 'pagelist')
+// 待办详情页
+const mineTodoDetails = require('@/components/home/mineTodoDetails.vue')
+const MineTodoDetails = resolve => require.ensure([], () => resolve(mineTodoDetails), 'pagelist')
 // 用户基本信息
 const basic = require('@/components/home/basic.vue')
 const Basic = resolve => require.ensure([], () => resolve(basic), 'pagelist')
@@ -116,6 +125,7 @@ const DataManagement = resolve => require.ensure([], () => resolve(dataManagemen
 const log = require('@/components/config-management/log.vue')
 const Log = resolve => require.ensure([], () => resolve(log), 'pagelist')
 
+// 日志
 Vue.use(Router)
 
 const routes = [
@@ -126,7 +136,17 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
+    title: '登录',
     component: LoginPage,
+    meta: {
+      allowBack: false
+    }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    title: '注册',
+    component: RegisterPage,
     meta: {
       allowBack: false
     }
@@ -161,7 +181,7 @@ const routes = [
         component: Messages
       },
       {
-        path: '/messagesDetails',
+        path: '/messagesDetails/:id',
         title: '消息详情页',
         name: 'messagesDetails',
         meta: {
@@ -169,6 +189,26 @@ const routes = [
         },
         parent: 'IndexPage',
         component: MessagesDetails
+      },
+      {
+        path: '/mineTodo',
+        title: '我的待办',
+        name: 'mineTodo',
+        meta: {
+          access: true
+        },
+        parent: 'IndexPage',
+        component: MineTodo
+      },
+      {
+        path: '/mineTodoDetails/:id',
+        title: '待办详情页',
+        name: 'mineTodoDetails',
+        meta: {
+          access: true
+        },
+        parent: 'IndexPage',
+        component: MineTodoDetails
       },
       {
         path: '/organigram',

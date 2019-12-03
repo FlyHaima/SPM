@@ -76,21 +76,13 @@
       <el-col :span="8" :offset="1" class="login-content-right">
         <div class="login-box">
           <div class="login-box-inner">
-            <div class="login-title">
-              <div class="login-title-en">ANGUANTONG SYSTEM <span class="txt-bold">PLATFORM</span></div>
-              <div class="login-title-txt">安管通系统平台</div>
-            </div>
             <div class="login-form-box">
               <div class="login-form-header">
-                <div class="login-form-title">欢迎使用系统</div>
-                <el-select v-model="value" placeholder="请选择身份">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
+                <div class="login-form-title">注册</div>
+              </div>
+              <div class="login-form-tips">
+                <span class="login-form-tips-sign">*</span>
+                提示：此注册为企业唯一账号
               </div>
               <el-form
                 :model="form"
@@ -98,32 +90,69 @@
                 status-icon
                 ref="form"
                 class="form-login">
-                <el-form-item prop="accountName">
+                <el-form-item prop="userName">
                   <el-input
                     type="text"
-                    v-model.trim="form.accountName"
                     autocomplete="off"
-                    placeholder="请输入用户名">
-                    <i slot="prefix" class="icon-form icon-form-01"></i>
+                    placeholder="请输入企业社会信用代码"
+                    v-model.trim="form.userName">
+                    <i slot="prefix" class="icon-form icon-form-03"></i>
+                  </el-input>
+                </el-form-item>
+                <el-form-item prop="companyName">
+                  <el-input
+                    type="text"
+                    autocomplete="off"
+                    placeholder="请输入企业名称"
+                    v-model.trim="form.companyName">
+                    <i slot="prefix" class="icon-form icon-form-04"></i>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                   <el-input
-                    type="text"
-                    v-model.trim="form.password"
+                    type="password"
                     autocomplete="off"
-                    placeholder="请输入密码">
+                    placeholder="请输入密码"
+                    v-model.trim="form.password">
                     <i slot="prefix" class="icon-form icon-form-02"></i>
                   </el-input>
                 </el-form-item>
-                <el-form-item class="form-links">
-                  <a class="form-links-item" href="/register">新用户注册</a>
+                <el-form-item prop="confrimPassword">
+                  <el-input
+                    type="text"
+                    autocomplete="off"
+                    placeholder="请确认密码"
+                    v-model.trim="form.confrimPassword">
+                    <i slot="prefix" class="icon-form icon-form-02"></i>
+                  </el-input>
                 </el-form-item>
+                <el-form-item prop="industryName">
+                  <el-select v-model="form.industryName" placeholder="请选择所属行业">
+                    <i slot="prefix" class="icon-form icon-form-05"></i>
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <div class="custom-form-item">
+                  请选择是否使用所属行业大数据
+                  <el-select v-model="value" placeholder="使用">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </div>
                 <el-form-item>
                   <el-button
-                    v-loading="submitting"
-                    @click.prevent="submitForm()"
-                    round>登录</el-button>
+                    :loading="submitting"
+                    @click="submitForm()"
+                    round>注册</el-button>
                 </el-form-item>
               </el-form>
             </div>
@@ -147,16 +176,30 @@ export default {
       submitting: false,
       activeName: 'first',
       form: {
-        accountName: '',
-        password: ''
+        userName: '', // 企业信用代码
+        companyName: '', // 企业名称
+        password: '', // 密码
+        industryName: '' // 所属行业
       },
       rules: {
-        accountName: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 25, message: '长度在 3 到 25 个字符', trigger: 'blur' }
+        userName: [
+          { required: true, message: '请输入企业社会信用代码', trigger: 'blur' },
+          { min: 1, max: 18, message: '长度在 1 到 18 个字符', trigger: 'blur' }
+        ],
+        companyName: [
+          { required: true, message: '请输入企业名称', trigger: 'blur' },
+          { min: 1, max: 25, message: '长度在 1 到 25 个字符', trigger: 'blur' }
+        ],
+        industryName: [
+          { required: true, message: '请选择所属行业', trigger: 'change' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, message: '请确认密码', trigger: 'blur' },
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
         ]
       },
       options: [{
@@ -210,11 +253,6 @@ export default {
     }
   },
   mounted () {
-    // setInterval(() => {
-    //   if (this.swiperSlides.length < 10) {
-    //     this.swiperSlides.push(this.swiperSlides.length + 1)
-    //   }
-    // }, 3000)
     this.swiper.slideTo(3, 1000, false)
   },
   methods: {
@@ -224,15 +262,12 @@ export default {
       vm.$refs.form.validate((valid) => {
         if (valid) {
           axios
-            .post('ontroller/login', vm.form)
+            .post('spm/registerController/register', vm.form)
             .then((res) => {
               vm.submitting = true
               if (res.data.code === 200) {
-                vm.$notify.success('登录成功')
-                // 保存token
-                const token = res.data.data
-                window.localStorage.setItem('TOKEN_KEY', token)
-                window.location = '/dashboard'
+                vm.$notify.success('注册成功')
+                window.location = '/login'
               } else {
                 vm.$message({
                   message: res.data.message,
@@ -379,6 +414,12 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
+.custom-form-item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 57px;
+}
 .form-links-item{
   color: #333333;
 }
@@ -386,17 +427,25 @@ export default {
   .el-form-item__error{
     padding-left: 50px;
   }
-  .el-input{
-    .el-input__inner{
-      border-width: 0 0 1px 0;
-      border-color: #ababab;
-      border-radius: 0;
-      padding-left: 0;
-      height: 20px;
-      line-height: 20px;
-      background: transparent;
-      margin-left: 50px;
-      width: calc(100% - 50px);
+  .el-form-item{
+    margin-bottom: 40px;
+  }
+  .el-form-item__content{
+    .el-input{
+      .el-input__inner{
+        border-width: 0 0 1px 0;
+        border-color: #ababab;
+        border-radius: 0;
+        padding-left: 0;
+        height: 20px;
+        line-height: 20px;
+        background: transparent;
+        margin-left: 50px;
+        width: calc(100% - 50px);
+      }
+    }
+    .el-select{
+      width: 100%;
     }
   }
   .el-button{
@@ -500,13 +549,13 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-03{
-  background-image: url(../assets/img/login/icon-form-02.png)
+  background-image: url(../assets/img/login/icon-form-03.png)
 }
 .icon-form-04{
-  background-image: url(../assets/img/login/icon-form-02.png)
+  background-image: url(../assets/img/login/icon-form-04.png)
 }
 .icon-form-05{
-  background-image: url(../assets/img/login/icon-form-02.png)
+  background-image: url(../assets/img/login/icon-form-05.png)
 }
 
 </style>
