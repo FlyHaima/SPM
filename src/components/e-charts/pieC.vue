@@ -2,7 +2,8 @@
   <div class="chart-circle-box">
     <div :id="echarts"
       ref="echarts"
-      style="height: 200px"></div>
+      :style="{ height: `${pieHeight}`}"></div>
+    <slot></slot>
   </div>
 </template>
 
@@ -26,6 +27,10 @@ export default {
     colorList: {
       type: Array,
       default: null
+    },
+    pieHeight: {
+      type: String,
+      default: ''
     }
   },
   created () {
@@ -46,11 +51,11 @@ export default {
       let option = {
         title: {
           text: this.titleText,
-          x: 'left',
+          x: 'center',
           textStyle: {
             fontWeight: 400,
-            fontSize: 14,
-            color: '#222222'
+            fontSize: 16,
+            color: '#646464'
           }
         },
         tooltip: {
@@ -59,9 +64,13 @@ export default {
         },
         legend: {
           width: 170,
-          bottom: 10,
+          right: '8.5%',
+          top: '30%',
           itemWidth: 10,
-          itemHeight: 10
+          itemHeight: 10,
+          textStyle: {
+            fontSize: 12
+          }
         },
         dataset: {
           source: this.returnData
@@ -70,8 +79,8 @@ export default {
           {
             name: '访问来源',
             type: 'pie',
-            radius: ['20%', '50%'],
-            center: ['50%', '35%'],
+            radius: ['30%', '60%'],
+            center: ['25%', '50%'],
             avoidLabelOverlap: false,
             label: {
               normal: {

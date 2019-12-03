@@ -146,14 +146,14 @@ export default {
     return {
       breadcrumb: ['风险分级管控', '风险点分级管控台账'],
       tables: {
-        api: 'spm/riskLevel/getRiskZd'
+        api: 'riskLevel/getRiskZd'
       }
     }
   },
   methods: {
     // 导出excel
     exportHandel () {
-      this.tablesExportExcel('spm/riskLevel/exportZd')
+      this.tablesExportExcel('riskLevel/exportZd')
     },
     // tag的class集合
     classObj (data) {

@@ -115,7 +115,7 @@ export default {
     fetchTableData () {
       // this.pageLoading = true
       axios
-        .get('spm/riskLevel/getRiskLevels')
+        .get('riskLevel/getRiskLevels')
         .then((res) => {
           if (res.data.code === 200) {
             this.tableData = res.data.data
