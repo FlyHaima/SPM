@@ -30,7 +30,7 @@
         :data="treeData"
         :props="defaultProps"
         default-expand-all
-        node-key="id"
+        node-key="deptId"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
@@ -74,7 +74,7 @@ export default {
       filterText: '',
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'deptName'
       },
       openState: false,
       level: 3,
@@ -100,10 +100,12 @@ export default {
     },
     filterNode (value, data) {
       if (!value) return true
-      return data.label.indexOf(value) !== -1
+      console.log(value)
+      return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      // this.$emit('open-loading')
+      console.log(data.deptId)
+      this.$emit('handleNodeClick', data.deptId)
     },
     append (node, data) {
       this.openAppendBox()
@@ -186,7 +188,6 @@ export default {
   },
   watch: {
     filterText (val) {
-      console.log(this.$refs.tree)
       this.$refs.tree.filter(val)
     }
   }

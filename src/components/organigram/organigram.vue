@@ -259,10 +259,10 @@ export default {
     }
   },
   watch: {
-    // organigramData (val) {
-    //   this.G6_init(val)
-    //   this.initData(val)
-    // }
+    organigramData (val) {
+      this.G6_init(val)
+      this.initData(val)
+    }
   }
 }
 </script>

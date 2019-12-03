@@ -12,7 +12,8 @@
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true" :show-btns="true"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
@@ -154,6 +155,8 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
 import Organigram from '../organigram/organigram'
+import {getOrgTree, getTreeDept} from '@/api/organization'
+import {mapState} from 'vuex'
 
 export default {
   name: 'organization',
@@ -161,78 +164,18 @@ export default {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
-      organizationTree: [
-        {
-          id: 1000131,
-          label: '东三省黑龙江分部总公司',
-          data: {
-            name: 'AAA',
-            duty: 'clean job'
-          },
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              data: {
-                name: 'BBB',
-                duty: 'clean job'
-              },
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'CCC',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组',
-                  data: {
-                    name: 'ddd',
-                    duty: 'clean job'
-                  }
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              data: {
-                name: 'eeee',
-                duty: 'clean job'
-              },
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组',
-                  data: {
-                    name: 'BBfffB',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1060122,
-                  label: '生产B组',
-                  data: {
-                    name: 'fff',
-                    duty: 'clean job'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      organizationTree: [],
       leaderTree: [
         {
-          id: 1000131,
-          label: '黑龙江分部总公司',
+          deptId: 1000131,
+          deptName: '黑龙江分部总公司',
           children: [
             {
-              id: 1003422,
-              label: '组长'
+              deptId: 1003422,
+              deptName: '组长'
             }, {
-              id: 1000135,
-              label: '副组长'
+              deptId: 1000135,
+              deptName: '副组长'
             }
           ]
         }
@@ -500,6 +443,14 @@ export default {
       }
     }
   },
+  created () {
+    this.getOrgTree()
+  },
+  computed: {
+    ...mapState({
+      userInfo: (state) => state.userInfo
+    })
+  },
   methods: {
     openLoading () {
       this.pageLoading = true
@@ -509,6 +460,24 @@ export default {
     },
     editLeaderItem (id) {
       console.log(id)
+    },
+    getOrgTree () {
+      let userId = sessionStorage.getItem('userId')
+      getOrgTree(userId).then((res) => {
+        if (res.code === 200) {
+          this.organizationTree = res.data
+        }
+      })
+    },
+    handleNodeClick (deptId) {
+      this.pageLoading = true
+      getTreeDept(deptId).then((res) => {
+        if (res.code === 200) {
+          // console.log(res.data)
+          this.orgTreeData = res.data[0]
+          this.pageLoading = false
+        }
+      })
     }
   },
   components: {
