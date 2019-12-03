@@ -16,7 +16,8 @@
                     <el-button
                       type="danger"
                       size="medium"
-                      icon="el-icon-delete">
+                      icon="el-icon-delete"
+                      @click.prevent="batchDeleteHandle()">
                       清空当前页</el-button>
                   </div>
                 </div>
@@ -241,6 +242,8 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
+import axios from '@/api/axios'
+import qs from 'qs'
 export default {
   name: 'log',
   mixins: [Tables],
@@ -260,6 +263,35 @@ export default {
     BreadCrumb
   },
   methods: {
+    // 删除当页信息
+    batchDeleteHandle () {
+      let sendData = {
+        pageNo: this.tables.form.pageNo,
+        pageSize: this.tables.form.pageSize,
+        tabType: this.tables.form.logType
+      }
+      this.$confirm('是否删除当页消息？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .post('log/del', qs.stringify(sendData))
+          .then((res) => {
+            console.log(res.data.code)
+            if (res.data.code === 200) {
+              this.$notify.success('删除成功')
+              this.tables.form.pageNo--
+              this.tablesFetchList()
+            }
+          })
+          .finally(() => {
+            this.submitting = false
+          })
+      }).catch(() => {
+        this.submitting = false
+      })
+    },
     // tab切换事件
     clickTab (item) {
       this.tables.form.logType = (Number(item.paneName) + 1) + ''

@@ -22,8 +22,12 @@
               >新增分类</el-button>
             </el-form>
             <el-table
+              ref="singleTable"
+              highlight-current-row
+              @current-change="handleCurrentChange"
               :data="tableData"
-              border>
+              border
+              class="menu-table">
               <el-table-column
                 label="序号"
                 type="index"
@@ -108,9 +112,25 @@
         <el-form-item
           label="名称">
           <el-input
+            v-model="tables.form.content"
             placeholder="请输入名称"
             maxlength="25"
             autocomplete></el-input>
+        </el-form-item>
+        <el-form-item
+          label="代码">
+          <el-input
+            v-model="tables.form.code"
+            placeholder="请输入代码"
+            maxlength="25"
+            autocomplete></el-input>
+        </el-form-item>
+         <el-form-item
+          label="备注">
+          <textarea
+            v-model="tables.form.remark"
+            placeholder="请输入备注"
+            autocomplete></textarea>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -183,15 +203,26 @@ export default {
       tables: {
         api: 'dic/getList',
         form: {
-          groupId: ''
+          groupId: '',
+          content: '', // 名称
+          code: '', // 代码
+          remark: '' // 备注
         }
-      }
+      },
+      currentRow: null
     }
   },
   created () {
     this.fetchTableData()
   },
   methods: {
+    setCurrent (row) {
+      console.log(this.$refs)
+      this.$refs.singleTable.setCurrentRow(row)
+    },
+    handleCurrentChange (val) {
+      this.currentRow = val
+    },
     // 添加事件处理
     addHandle () {
       this.dialogAddVisible = true
@@ -209,6 +240,8 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             vm.tableData = res.data.groupList
+            this.setCurrent(vm.tableData[0])
+            this.groupClickHandle(vm.tableData[0])
           }
         }).finally(() => {
           this.pageLoading = false
@@ -242,6 +275,34 @@ export default {
             }
           })
           .finally(() => {
+            this.submitting = false
+          })
+      })
+    },
+    // form表单提交事件
+    submitForm () {
+      this.$confirm('确定添加数据?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submitting = true
+        axios
+          .post('dic/add', this.tables.form)
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$notify.success('提交成功')
+              this.fetchTableList()
+            } else {
+              this.$message({
+                message: res.data.message,
+                type: 'warning'
+              })
+            }
+          })
+          .finally(() => {
+            this.fetchTableList()
+            this.dialogAddVisible = false
             this.submitting = false
           })
       })
@@ -288,5 +349,11 @@ export default {
 .inner-aside-content{
   width: 360px;
   margin: 40px auto;
+}
+.menu-table{
+  >>> .el-table__body tr.current-row>td{
+    background: $colorPrimary;
+    color: #ffffff;
+  }
 }
 </style>

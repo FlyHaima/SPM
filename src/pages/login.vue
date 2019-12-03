@@ -121,8 +121,8 @@
                 </el-form-item>
                 <el-form-item>
                   <el-button
-                    :loading="submitting"
-                    @click="submitForm()"
+                    v-loading="submitting"
+                    @click.prevent="submitForm()"
                     round>登录</el-button>
                 </el-form-item>
               </el-form>
@@ -156,8 +156,7 @@ export default {
           { min: 3, max: 25, message: '长度在 3 到 25 个字符', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 4, max: 8, message: '长度在 4 到 8 个字符', trigger: 'blur' }
+          { required: true, message: '请输入密码', trigger: 'blur' }
         ]
       },
       options: [{
