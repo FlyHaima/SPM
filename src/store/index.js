@@ -72,7 +72,7 @@ const actions = {
   BASE_INFO_SET ({ commit }) {
     axios
       .get('user/getUserBasicInfo', {
-        dmsfbsf: window.localStorage.getItem('TOKEN_KEY')
+        dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
       })
       .then((res) => {
         if (res.data.success === true) {
