@@ -241,7 +241,8 @@ export default {
       this.graph.render()
       this.graph.fitView()
 
-      this.graph.on('node:contextmenu', ev =>{
+      this.graph.on('node:contextmenu', (e) =>{
+        console.log(e)
         this.dailogVisibelEdit = true
       })
     }
@@ -252,6 +253,10 @@ export default {
       this.graph.render()
       this.graph.fitView()
       this.graph.refresh()
+      this.graph.on('node:contextmenu', (e) =>{
+        console.log(e.item._cfg.id)
+        this.dailogVisibelEdit = true
+      })
     }
   }
 }
