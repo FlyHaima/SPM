@@ -4,8 +4,8 @@
     <div id="mountNode"></div>
 
     <div v-show="mouseenterLayerSwitch"
-      class="mouseenter-layer"
-      ref="mouseenterLayer">
+         class="mouseenter-layer"
+         ref="mouseenterLayer">
       <div class="list-organization">
         <div class="list-organization-item">
           <div class="list-organization-label">人员：</div>
@@ -31,20 +31,20 @@
           label-width="100px"
           label-position="top"
         >
-        <el-form-item label="人员">
-          <el-input v-model="form.user"></el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="form.phone"></el-input>
-        </el-form-item>
-        <el-form-item label="主要责任">
-          <el-input
-            type="textarea"
-            maxlength="200"
-            show-word-limit
-            :rows="4"
-            v-model="form.responsibility"></el-input>
-        </el-form-item>
+          <el-form-item label="人员">
+            <el-input v-model="form.user"></el-input>
+          </el-form-item>
+          <el-form-item label="电话">
+            <el-input v-model="form.phone"></el-input>
+          </el-form-item>
+          <el-form-item label="主要责任">
+            <el-input
+              type="textarea"
+              maxlength="200"
+              show-word-limit
+              :rows="4"
+              v-model="form.responsibility"></el-input>
+          </el-form-item>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -58,8 +58,6 @@
 <script>
 /* eslint-disable */
 import G6 from '@antv/g6'
-// import '@antv/g6/build/plugin.tool.tooltip'
-// import utils from '../../utils/js/common.js'
 
 export default {
   name: 'organigram',
@@ -72,14 +70,14 @@ export default {
       }, // 编辑form
       mouseenterLayerSwitch: false, // 数据预览层显示开关
       dailogVisibelEdit: false, // dailog显示开关
-      detailData: [], //组织结构数据
       detailValue: {
         name: '',
         manager: '',
         duty: '',
         telNum: ''
       },
-      organigramDataObj: []
+      organigramDataObj: [],
+      graph: null
     }
   },
   props: {
@@ -96,17 +94,7 @@ export default {
     })
   },
   methods: {
-    initData (fData) {
-      let vm = this
-      vm.detailData.push(fData.data)
-      if(fData.children) {
-        for (let i = 0; i < fData.children.length; i++) {
-          vm.initData(fData.children[i])
-        }
-      }
-    },
     G6_init (treeData) {
-      // console.log('run G6 init')
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
         return [
           ['M', x, y],
@@ -129,7 +117,7 @@ export default {
       }
 
       G6.registerNode('tree-node', {
-        drawShape: function drawShape(cfg, group) {
+        drawShape: function drawShape (cfg, group) {
           let rect = group.addShape('rect', {
             attrs: {
               fill: '#fff',
@@ -178,7 +166,7 @@ export default {
       let graphW = document.getElementById('mountNode').offsetWidth
       let graphH = document.getElementById('mountNode').offsetHeight
 
-      const graph = new G6.TreeGraph({
+      this.graph = new G6.TreeGraph({
         // renderer: 'svg', // 渲染模式，可选svg，本组件用不上
         container: 'mountNode', // 容器id
         width: graphW,
@@ -249,26 +237,28 @@ export default {
         }
       })
 
-      graph.data(treeData)
-      graph.render()
-      graph.fitView()
+      this.graph.data(treeData)
+      this.graph.render()
+      this.graph.fitView()
 
-      graph.on('node:contextmenu', ev =>{
+      this.graph.on('node:contextmenu', ev =>{
         this.dailogVisibelEdit = true
       })
     }
   },
   watch: {
     organigramData (val) {
-      this.G6_init(val)
-      this.initData(val)
+      this.graph.changeData(val)
+      this.graph.render()
+      this.graph.fitView()
+      this.graph.refresh()
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+  @import '../../utils/css/style.scss';
   .organigram-wrap{
     width: 100%;
     height: 100%;
@@ -286,7 +276,7 @@ export default {
     min-height: 171px;
     background-color: #fffbc0;
     box-shadow: 0px 3px 8px 0px
-      rgba(4, 0, 0, 0.35);
+    rgba(4, 0, 0, 0.35);
     border-radius: 10px;
     padding: 20px 10px;
   }
@@ -314,7 +304,7 @@ export default {
       margin: 0 auto;
     }
   }
-/deep/.organigram-wrap{
+  /deep/.organigram-wrap{
     .g6-tooltip {
       width: 180px;
       min-height: 120px;
