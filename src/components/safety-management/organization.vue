@@ -5,8 +5,8 @@
       </bread-crumb>
     </el-header>
     <el-main class="inner-main-container">
-      <el-tabs type="border-card" class="height-100">
-        <el-tab-pane>
+      <el-tabs type="border-card" class="height-100" v-model="activeName">
+        <el-tab-pane name="tab_a">
           <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
@@ -16,26 +16,29 @@
                             @handleNodeClick="handleNodeClick"
                             @openAppendBox="addTreeData"
                             @editTreeData="editTreeData"
-                            @confirmRemove="confirmRemove"
-                            @editDeptInfo="editDeptInfo">
+                            @confirmRemove="confirmRemove">
               </tree-diagram>
             </el-aside>
 
             <el-main class="inner-content">
               <div class="container-box">
-                <organigram :organigram-data="orgTreeData"></organigram>
+                <organigram :organigram-data="orgTreeData"
+                            :selector="userSelector"
+                            @submitForm="editDeptInfo">
+                </organigram>
               </div>
             </el-main>
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_b">
           <span slot="label">领导小组</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="leaderTree" :tree-name="'领导小组'" :has-upload="false"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading">
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
@@ -55,13 +58,13 @@
                     label="姓名"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.userName }}</template>
                   </el-table-column>
                   <el-table-column
                     label="联系方式"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.concatNum }}</template>
+                    <template slot-scope="scope">{{ scope.row.telephone }}</template>
                   </el-table-column>
                   <el-table-column
                     label="主要职责"
@@ -73,7 +76,7 @@
                     width="80px"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="editLeaderItem(scope.row.id)">编辑</el-button>
+                      <el-button type="text" @click="openUpdateBox(scope.row.id)">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -82,7 +85,10 @@
                   <el-pagination
                     background
                     layout="prev, pager, next"
-                    :total="100">
+                    :total="leaderPageData.total"
+                    :page-size="leaderPageData.pageSize"
+                    :current-page.sync="leaderPageData.currentPageNo"
+                    @current-change="handleLeaderPage">
                   </el-pagination>
                 </div>
               </div>
@@ -90,13 +96,14 @@
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_c">
           <span slot="label">工作小组</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="workTree" :tree-name="'工作小组'" :has-upload="false"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
@@ -134,7 +141,7 @@
                     width="80px"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="editLeaderItem(scope.row.id)">编辑</el-button>
+                      <el-button type="text" @click="openUpdateBox(scope.row.id)">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -143,7 +150,10 @@
                   <el-pagination
                     background
                     layout="prev, pager, next"
-                    :total="100">
+                    :total="workerPageData.total"
+                    :page-size="workerPageData.pageSize"
+                    :current-page.sync="workerPageData.currentPageNo"
+                    @current-change="handleWorkerPage">
                   </el-pagination>
                 </div>
               </div>
@@ -152,6 +162,20 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
+
+    <el-dialog title="主要职责" :visible.sync="dutyVisible" width="30%">
+      <el-form ref="dutyForm" label-width="80px">
+        <el-form-item label="主要职责">
+          <el-input v-model="dutyPostData" type="textarea"
+                    :rows="3"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dutyVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="updateGroup()" size="small" v-show="!updating">确 定</el-button>
+        <el-button type="primary" size="small" disabled v-show="updating"><i class="el-icon-loading"></i>上传中</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -159,7 +183,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
 import Organigram from '../organigram/organigram'
-import {getOrgTree, getTreeDept, addTreeData, editTreeData, delTreeData, editDeptInfo, getLeaderTree} from '@/api/organization'
+import {getOrgTree, getTreeDept, addTreeData, editTreeData, delTreeData, editDeptInfo, getLeaderTree, getLeaderTabel, getWorkerTabel, updateGroup} from '@/api/organization'
 import {mapState} from 'vuex'
 
 export default {
@@ -171,130 +195,8 @@ export default {
       organizationTree: [],
       leaderTree: [],
       workTree: [],
-      leaderData: [
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        }
-      ],
-      workerData: [
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        }
-      ],
+      leaderData: [],
+      workerData: [],
       orgTreeData: {},
       triggerOrgId: '',
       triggerWorkId: '',
@@ -310,14 +212,28 @@ export default {
         deptId: '',
         position: '',
         responsibility: ''
-      }
+      },
+      userSelector: null, // 右键人员选项
+      leaderPageData: {
+        total: 0,
+        pageSize: 10,
+        currentPageNo: 1
+      },
+      workerPageData: {
+        total: 0,
+        pageSize: 10,
+        currentPageNo: 1
+      },
+      activeName: 'tab_a',
+      dutyVisible: false,
+      dutyPostData: '',
+      dutyPostId: '',
+      updating: false
     }
   },
   created () {
     this.getOrgTree(true)
-    this.getWorkTree(true)
     this.getLeaderTree(true)
-    this.open()
   },
   mounted () {
   },
@@ -333,32 +249,45 @@ export default {
     closeLoading () {
       this.pageLoading = false
     },
-    editLeaderItem (id) {
-      console.log(id)
-    },
+    // 获取组织机构 & 工作小组的tree
     getOrgTree (created) {
       this.pageLoading = true
       let userId = sessionStorage.getItem('userId')
       getOrgTree(userId).then((res) => {
         if (res.code === 200) {
-          this.organizationTree = res.data
+          this.organizationTree = res.data[0]
+          this.workTree = res.data[0]
+          this.userSelector = res.data[1]
           if (created) {
-            this.triggerOrgId = res.data[0].deptId
+            this.triggerOrgId = this.organizationTree[0].deptId
+            this.triggerWorkId = this.workTree[0].deptId
             this.handleNodeClick(this.triggerOrgId)
+            this.getWorkerTable()
           }
           this.pageLoading = false
         }
       })
     },
+    // 点击orgTree获取右侧树形数据
     handleNodeClick (deptId) {
-      this.triggerOrgId = deptId
-      this.pageLoading = true
-      getTreeDept(deptId).then((res) => {
-        if (res.code === 200) {
-          this.orgTreeData = this.initTreeData(res.data[0])
-          this.pageLoading = false
-        }
-      })
+      if (this.activeName === 'tab_a') {
+        this.triggerOrgId = deptId
+        this.pageLoading = true
+        getTreeDept(deptId).then((res) => {
+          if (res.code === 200) {
+            this.orgTreeData = this.initTreeData(res.data[0])
+            this.pageLoading = false
+          }
+        })
+      } else if (this.activeName === 'tab_b') {
+        this.triggerLeaderId = deptId
+        this.pageLoading = true
+        this.getLeaderTable()
+      } else if (this.activeName === 'tab_c') {
+        this.triggerWorkId = deptId
+        this.pageLoading = true
+        this.getWorkerTable()
+      }
     },
     // 过滤树形结构图数据
     initTreeData (fData) {
@@ -440,33 +369,21 @@ export default {
           deptId: id
         }
         delTreeData(data).then((res) => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-          this.getOrgTree(true)
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getOrgTree(true)
+          }
         })
       }).catch(() => {
         // after cancel
         this.pageLoading = false
       })
     },
-    // 获取工作小组的tree
-    getWorkTree (created) {
-      this.pageLoading = true
-      let userId = sessionStorage.getItem('userId')
-      getOrgTree(userId).then((res) => {
-        if (res.code === 200) {
-          this.workTree = res.data
-          if (created) {
-            this.triggerWorkId = res.data[0].deptId
-            // this.handleNodeClick(this.triggerOrgId)
-          }
-        }
-      })
-    },
     // 编辑树形结构图中员工的个人信息
-    editDeptInfo () {
+    editDeptInfo (users, type, duty) {
       editDeptInfo().then((res) => {})
     },
     // 获取领导小组的tree
@@ -478,8 +395,64 @@ export default {
           this.leaderTree = res.data
           if (created) {
             this.triggerLeaderId = res.data[0].deptId
+            this.getLeaderTable()
           }
         }
+      })
+    },
+    // 获取领导小组的table
+    getLeaderTable () {
+      let vm = this
+      vm.pageLoading = true
+      getLeaderTabel(vm.triggerLeaderId, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
+        if (res.code === 200) {
+          vm.leaderData = res.data
+          vm.leaderPageData.total = res.total
+        }
+        vm.pageLoading = false
+      })
+    },
+    handleLeaderPage (val) {
+      this.leaderPageData.currentPageNo = val
+      this.getLeaderTable()
+    },
+    // 获取工作小组的table
+    getWorkerTable () {
+      let vm = this
+      vm.pageLoading = true
+      getWorkerTabel(vm.triggerWorkId, vm.workerPageData.currentPageNo, vm.workerPageData.pageSize).then((res) => {
+        if (res.code === 200) {
+          vm.workerData = res.data
+          vm.workerPageData.total = res.total
+        }
+        vm.pageLoading = false
+      })
+    },
+    handleWorkerPage (val) {
+      this.workerPageData.currentPageNo = val
+      this.getWorkerTable()
+    },
+    openUpdateBox (id) {
+      this.dutyVisible = true
+      this.dutyPostId = id
+    },
+    updateGroup () {
+      this.updating = true
+      let data = {
+        id: this.dutyPostId,
+        duty: this.dutyPostData
+      }
+      updateGroup(data).then((res) => {
+        if (res.code === 200) {
+          this.dutyVisible = false
+          this.$message({
+            type: 'success',
+            message: '更新成功'
+          })
+        } else {
+          this.$message.error('更新失败')
+        }
+        this.updating = false
       })
     }
   },

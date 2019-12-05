@@ -32,10 +32,32 @@
           label-position="top"
         >
           <el-form-item label="人员">
-            <el-input v-model="form.user"></el-input>
+            <el-select v-model="users"
+                       filterable
+                       multiple
+                       placeholder="请选择" size="medium">
+              <el-option
+                v-for="item in selector"
+                :key="item.userId"
+                :label="item.userName"
+                :value="item.userId">
+              </el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item label="电话">
-            <el-input v-model="form.phone"></el-input>
+          <el-form-item label="联系方式" v-show="users.length > 0">
+            <p v-for="(item, index) in users" :key="index">
+              {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+            </p>
+          </el-form-item>
+          <el-form-item label="分组类型">
+            <el-select v-model="form.type" placeholder="请选择" size="medium">
+              <el-option
+                v-for="item in allTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="主要责任">
             <el-input
@@ -43,7 +65,7 @@
               maxlength="200"
               show-word-limit
               :rows="4"
-              v-model="form.responsibility"></el-input>
+              v-model="form.duty"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -63,11 +85,15 @@ export default {
   name: 'organigram',
   data() {
     return {
+      users: [],
       form: {
-        user: '', // 人员
-        phone: '', // 电话
-        responsibility: '' // 主要职责
+        type: 1, // 1,领导小组; 2,工作小组
+        duty: '' // 主要职责
       }, // 编辑form
+      allTypes: [
+        {label: '领导小组', value: 1},
+        {label: '工作小组', value: 2}
+      ],
       mouseenterLayerSwitch: false, // 数据预览层显示开关
       dailogVisibelEdit: false, // dailog显示开关
       detailValue: {
@@ -83,6 +109,10 @@ export default {
   props: {
     organigramData: {
       type: Object,
+      default: null
+    },
+    selector: {
+      type: Array,
       default: null
     }
   },
@@ -242,9 +272,23 @@ export default {
       this.graph.fitView()
 
       this.graph.on('node:contextmenu', (e) =>{
-        console.log(e)
+        // console.log(e.item._cfg.id)
         this.dailogVisibelEdit = true
       })
+    },
+    submitForm () {
+      if (this.users.length > 0) {
+        this.$emit('submitForm', this.users, this.form.type, this.form.duty)
+      } else {
+        this.$message.error('人员可多选，但不能为空')
+      }
+    },
+    findItem (id) {
+      for(let i=0; i<this.selector.length; i++){
+        if (this.selector[i].userId == id) {
+          return this.selector[i]
+        }
+      }
     }
   },
   watch: {
@@ -254,7 +298,7 @@ export default {
       this.graph.fitView()
       this.graph.refresh()
       this.graph.on('node:contextmenu', (e) =>{
-        console.log(e.item._cfg.id)
+        // console.log(e.item._cfg.id)
         this.dailogVisibelEdit = true
       })
     }

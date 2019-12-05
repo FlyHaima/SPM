@@ -60,11 +60,47 @@ export function editTreeData (data) {
   })
 }
 
-// 评估报告--删除
+// 安全基础管理--组织机构--删除节点
 export function delTreeData (param) {
   const url = `${baseUrl}/dept/delDept`
 
   return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--组织机构--领导小组--获取table
+export function getLeaderTabel (deptId, pageNo, pageSize) {
+  const url = `${baseUrl}/leadUser/getList?deptId=${deptId}&pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--组织机构--工作小组--获取table
+export function getWorkerTabel (deptId, pageNo, pageSize) {
+  const url = `${baseUrl}/workUser/getList?deptId=${deptId}&pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--组织机构--编辑工作小组/领导小组接口
+export function updateGroup (data) {
+  const url = `${baseUrl}/workUser/updateGroup`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--培训计划--getTreeData
+export function getPlanDeptList () {
+  const url = `${baseUrl}/dept/getPlanDeptList`
+
+  return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
   })
 }
