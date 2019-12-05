@@ -151,9 +151,7 @@
             accept="image/jpg, video/mp4, .doc"
             :data="uploadData"
             :before-upload="handleBeforeUpload"
-            :on-change="handleChange"
             :on-success="handleSuccess"
-            :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
             multiple
@@ -484,18 +482,11 @@ export default {
         this.$message.error('上传头像图片大小不能超过 1MB!')
         this.uploading = false
       }
-      // let token = sessionStorage.getItem('token')
       return axios
         .get('user/qinToken')
         .then((res) => {
           this.uploadData.token = res.data
         })
-      // return getuploadToken(token).then(res => {
-      //   this.uploadData.token = res
-      //     token: res
-      //   }
-      // })
-      // return isLt1M
     },
     handleSuccess (response, file, fileList) {
       this.uploadList = []
@@ -510,17 +501,11 @@ export default {
     handleRemove (file, fileList) {
       this.fileList = fileList
     },
-    handlePreview (file) {
-      // console.log(file)
-    },
     handleExceed (files, fileList) {
       this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 $ { file.name }？`)
-    },
-    handleChange (file, fileList) {
-      // console.log(fileList)
     },
     treeTransferHandle () {
       this.showTreeTransfer = true

@@ -20,6 +20,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-upload
+                  class="tools-item"
                   v-if="importVisible"
                   :limit="1"
                   accept=".xlsx"
@@ -29,6 +30,7 @@
                    导入</el-button>
                 </el-upload>
                 <el-button
+                  class="tools-item"
                   type="success"
                   size="medium"
                   icon="el-icon-download"

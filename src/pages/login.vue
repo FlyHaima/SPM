@@ -109,7 +109,7 @@
                 </el-form-item>
                 <el-form-item prop="password">
                   <el-input
-                    type="text"
+                    type="password"
                     v-model.trim="form.password"
                     autocomplete="off"
                     placeholder="请输入密码">

@@ -17,16 +17,6 @@
 
         <el-main class="inner-content">
           <div class="container-box">
-            <div class="content-tools is-flex-end">
-              <div class="tools-right">
-                <el-button
-                  type="success"
-                  size="medium"
-                  icon="el-icon-download"
-                  @click="exportExcelHandel">
-                   导出</el-button>
-              </div>
-            </div>
             <template v-if="tableVisible">
               <el-table
                 :data="tableData"
@@ -66,125 +56,135 @@
                 </el-table-column>
               </el-table>
             </template>
-            <el-form
-              :model = "form"
-              ref = "form"
-              @submit.native.prevent="submitForm"
-              class="card-form"
-              v-else
-            >
-              <div class="custom-table">
-                <div class="custom-table-header">岗位风险告知卡</div>
-                <div class="custom-tbody is-flex is-inline">
-                  <div class="custom-tr">
-                    <div class="custom-th-label">车间</div>
-                    <div class="custom-td-value is-ellipsis">
-                      <el-input
-                        v-model.trim="form.workShop"
-                        disabled></el-input>
-                    </div>
-                  </div>
-                  <div class="custom-tr">
-                    <div class="custom-th-label">岗位</div>
-                    <div class="custom-td-value">
-                      <el-select v-model="form.gw"  placeholder="请选择" size="mini">
-                        <el-option label="请选择岗位" value=""></el-option>
-                        <el-option
-                          v-for="option in gwList"
-                          :key="option.value"
-                          :label="option.label"
-                          :value="option.value"
-                          ></el-option>
-                      </el-select>
-                    </div>
-                  </div>
+            <template v-else>
+              <div class="content-tools is-flex-end">
+                <div class="tools-right">
+                  <el-button
+                    type="success"
+                    size="medium"
+                    icon="el-icon-download"
+                    @click="exportExcelHandel">
+                    导出</el-button>
                 </div>
-                <div class="custom-tbody is-inline">
-                  <div class="custom-tr">
-                    <div class="custom-th-label">主要风险源</div>
-                    <div class="custom-td-value">
-                      <el-input
-                        maxlength="120"
-                        v-model.trim="form.centerRisk"
-                        placeholder="请输入主要风险源"></el-input>
+              </div>
+              <el-form
+                :model = "form"
+                ref = "form"
+                @submit.native.prevent="submitForm"
+                class="card-form"
+              >
+                <div class="custom-table">
+                  <div class="custom-table-header">岗位风险告知卡</div>
+                  <div class="custom-tbody is-flex is-inline">
+                    <div class="custom-tr">
+                      <div class="custom-th-label">车间</div>
+                      <div class="custom-td-value is-ellipsis">
+                        <el-input
+                          v-model.trim="form.workShop"
+                          disabled></el-input>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label">岗位</div>
+                      <div class="custom-td-value">
+                        <el-select v-model="form.gw"  placeholder="请选择" size="mini">
+                          <el-option label="请选择岗位" value=""></el-option>
+                          <el-option
+                            v-for="option in gwList"
+                            :key="option.value"
+                            :label="option.label"
+                            :value="option.value"
+                            ></el-option>
+                        </el-select>
+                      </div>
                     </div>
                   </div>
-                  <div class="custom-tr">
-                    <div class="custom-th-label">风险因素</div>
-                    <div class="custom-td-value">
-                      <el-input
-                        maxlength="120"
-                        v-model.trim="form.factor"
-                        placeholder="请输入主要风险源"></el-input>
+                  <div class="custom-tbody is-inline">
+                    <div class="custom-tr">
+                      <div class="custom-th-label">主要风险源</div>
+                      <div class="custom-td-value">
+                        <el-input
+                          maxlength="120"
+                          v-model.trim="form.centerRisk"
+                          placeholder="请输入主要风险源"></el-input>
+                      </div>
                     </div>
-                  </div>
-                  <div class="custom-tr">
-                    <div class="custom-th-label">潜在的事故及职业危害类型</div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label">风险因素</div>
+                      <div class="custom-td-value">
+                        <el-input
+                          maxlength="120"
+                          v-model.trim="form.factor"
+                          placeholder="请输入主要风险源"></el-input>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label">潜在的事故及职业危害类型</div>
 
-                    <div class="custom-td-value">
-                      <el-select
-                        v-model="form.riskResult"
-                        multiple
-                        placeholder="请选择潜在的事故及职业危害类型"
-                        @change="selChangeRiskResult">
-                        <el-option
-                          v-for="(item,index) in options"
-                          :key="'riskResult' + index"
-                          :label="item.label"
-                          :value="item.value"
-                          >
-                        </el-option>
-                      </el-select>
+                      <div class="custom-td-value">
+                        <el-select
+                          v-model="form.riskResult"
+                          multiple
+                          placeholder="请选择潜在的事故及职业危害类型"
+                          @change="selChangeRiskResult">
+                          <el-option
+                            v-for="(item,index) in options"
+                            :key="'riskResult' + index"
+                            :label="item.label"
+                            :value="item.value"
+                            >
+                          </el-option>
+                        </el-select>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label">异常状况应急处置</div>
+                      <div class="custom-td-value">
+                        <el-select
+                          v-model="form.emergency"
+                          multiple
+                          placeholder="请选择异常状况应急处置"
+                          @change="selChangeEmergency">
+                          <el-option
+                            v-for="(item,index) in options"
+                            :key="'emergency' + index"
+                            :label="item.label"
+                            :value="item.value"
+                            >
+                          </el-option>
+                        </el-select>
+                      </div>
                     </div>
                   </div>
-                  <div class="custom-tr">
-                    <div class="custom-th-label">异常状况应急处置</div>
-                    <div class="custom-td-value">
-                      <el-select
-                        v-model="form.emergency"
-                        multiple
-                        placeholder="请选择异常状况应急处置"
-                        @change="selChangeEmergency">
-                        <el-option
-                          v-for="(item,index) in options"
-                          :key="'emergency' + index"
-                          :label="item.label"
-                          :value="item.value"
-                          >
-                        </el-option>
-                      </el-select>
-                    </div>
-                  </div>
-                </div>
-                <div class="custom-tbody">
-                  <div class="custom-tr text-center">
-                    <div class="custom-td-value">
-                      <div class="custom-td-img-list">
-                        <div
-                          v-for="(item,index) in imgPathSelRiskResult"
-                          class="img-list-item"
-                          :key="'imgRiskResult' + index">
-                          <img class="item-img" :src="item.path" alt="">
-                        </div>
-                        <div
-                          v-for="(item,index) in imgPathSelEmergency"
-                          class="img-list-item"
-                          :key="'imgEmergency' + index">
-                          <img class="item-img" :src="item.path" alt="">
+                  <div class="custom-tbody">
+                    <div class="custom-tr text-center">
+                      <div class="custom-td-value">
+                        <div class="custom-td-img-list">
+                          <div
+                            v-for="(item,index) in imgPathSelRiskResult"
+                            class="img-list-item"
+                            :key="'imgRiskResult' + index">
+                            <img class="item-img" :src="item.path" alt="">
+                          </div>
+                          <div
+                            v-for="(item,index) in imgPathSelEmergency"
+                            class="img-list-item"
+                            :key="'imgEmergency' + index">
+                            <img class="item-img" :src="item.path" alt="">
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="card-button">
-                <el-button
-                type="primary"
-                :loading="submitting"
-                native-type="submit">保存</el-button>
-              </div>
-            </el-form>
-
+                <div class="card-button">
+                  <el-button
+                  type="primary"
+                  :loading="submitting"
+                  native-type="submit">保存</el-button>
+                </div>
+              </el-form>
+            </template>
           </div>
         </el-main>
       </el-container>
@@ -341,9 +341,7 @@ export default {
     },
     // 导出excel
     exportExcelHandel () {
-      exportExcel(`riskCard/exportCards`, {
-        id: this.riskId
-      })
+      exportExcel(`riskCard/exportCards`, 'id=' + this.riskId)
     }
   },
   components: {

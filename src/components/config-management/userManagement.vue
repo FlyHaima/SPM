@@ -137,10 +137,9 @@
                 layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
-                :page-size="tables.form.limit"
+                :page-size="tables.form.pageSize"
                 :total="tables.page.total"
-                @current-change="tablesHandleCurrentPage"
-                @size-change="tablesHandleSizeChange"></el-pagination>
+                @current-change="tablesHandleCurrentPage"></el-pagination>
             </div>
           </div>
         </el-main>
@@ -371,7 +370,6 @@ export default {
       this.dialogAddVisible = true
       this.editData = row.userId
       this.initForm(this.editData)
-      console.log(this.form)
     },
     // 获取角色数据
     fetchRoleOptions () {

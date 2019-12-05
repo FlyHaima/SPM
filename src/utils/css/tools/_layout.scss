@@ -37,7 +37,8 @@
 }
 .tools-right{
   display: flex;
-  .el-button{
+  .el-button + .el-button,
+  .tools-item + .tools-item{
     margin-left: 20px;
   }
 }
