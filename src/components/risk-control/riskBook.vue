@@ -124,10 +124,9 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
-                :page-size="tables.form.limit"
+                :page-size="tables.form.pageSize"
                 :total="tables.page.total"
-                @current-change="tablesHandleCurrentPage"
-                @size-change="tablesHandleSizeChange"></el-pagination>
+                @current-change="tablesHandleCurrentPage"></el-pagination>
             </div>
           </div>
         </el-main>
@@ -146,14 +145,14 @@ export default {
     return {
       breadcrumb: ['风险分级管控', '风险点分级管控台账'],
       tables: {
-        api: 'spm/riskLevel/getRiskTz'
+        api: 'riskLevel/getRiskTz'
       }
     }
   },
   methods: {
     // 导出excel
     exportHandel () {
-      this.tablesExportExcel('spm/riskLevel/exportTz')
+      this.tablesExportExcel('riskLevel/exportTz')
     },
     // tag的class集合
     classObj (data) {

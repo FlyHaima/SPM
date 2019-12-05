@@ -235,6 +235,12 @@ export default {
               name: '日志',
               url: '/log',
               active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '新闻维护',
+              url: '/newsManage',
+              active: false
             }
           ]
         }
