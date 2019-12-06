@@ -38,7 +38,7 @@
                    导出</el-button>
               </div>
             </div>
-            <div v-if="tableVisible">
+            <template v-if="tableVisible">
               <el-table
                 :data="tableData"
                 border
@@ -70,7 +70,7 @@
                   label="风险等级">
                 </el-table-column>
               </el-table>
-            </div>
+            </template>
             <div v-else>
               <div class="custom-table">
                 <div class="custom-tbody is-inline">

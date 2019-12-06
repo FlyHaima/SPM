@@ -65,7 +65,8 @@
                 type="index"
                 label="序号"
                 width="55"
-                align="center">
+                align="center"
+                :index="tablesDefineIndex">
               </el-table-column>
               <el-table-column
                 prop="code"

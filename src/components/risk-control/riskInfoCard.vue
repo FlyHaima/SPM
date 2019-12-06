@@ -42,9 +42,9 @@
                 <el-table-column
                   prop="factor"
                   label="风险因素"
-                  header-align="center">
+                  align="center">
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                   prop="riskResult"
                   label="潜在事故及职业危害类型"
                   align="center">
@@ -53,11 +53,11 @@
                   prop="emergency"
                   label="异常状况应急处置"
                   align="center">
-                </el-table-column>
+                </el-table-column> -->
               </el-table>
             </template>
             <template v-else>
-              <div class="content-tools is-flex-end">
+              <div v-if="editData" class="content-tools is-flex-end">
                 <div class="tools-right">
                   <el-button
                     type="success"
@@ -120,7 +120,6 @@
                     </div>
                     <div class="custom-tr">
                       <div class="custom-th-label">潜在的事故及职业危害类型</div>
-
                       <div class="custom-td-value">
                         <el-select
                           v-model="form.riskResult"
@@ -218,6 +217,7 @@ export default {
       },
       organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据
+      editData: null,
       options: [], // 下拉框选择项数据
       imgPathColletion: [], // 所有图片路径集合
       imgPathSelRiskResult: [], // 已选择的图片路径 - 潜在的事故及职业危害类型
@@ -232,6 +232,7 @@ export default {
   methods: {
     // 选择器change事件 - 潜在的事故及职业危害类型
     selChangeRiskResult (data) {
+      console.log(data)
       let vm = this
       vm.imgPathSelRiskResult = []
       vm.imgPathColletion.forEach(item => {
@@ -241,6 +242,7 @@ export default {
           }
         })
       })
+      console.log(vm.imgPathSelRiskResult)
     },
     // 选择器change事件 - 异常状况应急处置
     selChangeEmergency (data) {
@@ -253,6 +255,7 @@ export default {
           }
         })
       })
+      console.log(vm.imgPathSelEmergency)
     },
     // 获取树的数据
     fetchTreeData () {
@@ -283,12 +286,13 @@ export default {
             } else {
               this.tableVisible = false
               this.form = res.data.data[0]
+              this.editData = this.form.id
               this.form.riskResult = JSON.parse(this.form.riskResult)
               this.form.emergency = JSON.parse(this.form.emergency)
               if (vm.form.riskResult) {
                 vm.selChangeRiskResult(vm.form.riskResult)
               } else {
-                vm.imgPathSelGkcs = []
+                vm.imgPathSelRiskResult = []
               }
               if (vm.form.emergency) {
                 vm.selChangeEmergency(vm.form.emergency)
