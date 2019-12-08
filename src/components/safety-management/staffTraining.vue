@@ -5,14 +5,15 @@
       </bread-crumb>
     </el-header>
     <el-main class="inner-main-container">
-      <el-tabs type="border-card" class="height-100">
-        <el-tab-pane>
+      <el-tabs type="border-card" class="height-100" v-model="activeName">
+        <el-tab-pane name="tab_a">
           <span slot="label">培训计划</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
@@ -89,8 +90,7 @@
                   </div>
                 </el-dialog>
 
-                <el-table ref="leaderTable"
-                          border
+                <el-table border
                           stripe
                           :data="planList"
                           tooltip-effect="dark"
@@ -98,25 +98,25 @@
                           @selection-change="handleSelectionChange">
                   <el-table-column
                     type="selection"
-                    width="40" align="center">
+                    width="47" align="center">
                   </el-table-column>
                   <el-table-column
                     label="课程名称"
                     width="180"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论开始时间"
                     width="150"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论结束时间"
                     width="150"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="状态"
@@ -128,42 +128,52 @@
                     label="下载次数"
                     width="90"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.downloadTime+'/次' }}</template>
+                    <template slot-scope="scope">{{ scope.row.downloadNum ? scope.row.downloadNum*1 +'/次' : '0/次' }}</template>
                   </el-table-column>
                   <el-table-column
                     label="类型"
                     width="84"
                     align="center">
-                    <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
+                    <template slot-scope="scope">{{ planType[scope.row.category] }}</template>
                   </el-table-column>
                   <el-table-column
                     label="课程创建时间"
                     width="150"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.createTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.planTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="创建人"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.createPerson }}</template>
+                    <template slot-scope="scope">{{ scope.row.creater }}</template>
                   </el-table-column>
                   <el-table-column
                     label="培训需求"
                     align="center">
-                    <template slot-scope="scope"><el-button type="text" @click="checkPlan(scope.row.id)">查看</el-button></template>
+                    <template slot-scope="scope"><el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button></template>
                   </el-table-column>
                 </el-table>
+
+                <div class="pages">
+                  <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="pageDataA.total"
+                    :page-size="pageDataA.pageSize"
+                    :current-page.sync="pageDataA.pageNo"
+                    @current-change="getPlanTable">
+                  </el-pagination>
+                </div>
               </div>
             </el-main>
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_b">
           <span slot="label">培训内容</span>
           <el-container class="inner-main-content bg-fff">
             <div class="container-box">
-              <el-table ref="leaderTable"
-                        border
+              <el-table border
                         stripe
                         :data="trainList"
                         tooltip-effect="dark"
@@ -173,39 +183,39 @@
                   label="课程名称"
                   width="322"
                   align="center">
-                  <template slot-scope="scope">{{ scope.row.name }}</template>
+                  <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
                 </el-table-column>
                 <el-table-column
                   label="类型"
                   width="105"
                   align="center">
-                  <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
+                  <template slot-scope="scope">{{ planType[scope.row.category] }}</template>
                 </el-table-column>
                 <el-table-column
                   label="理论开始时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="理论结束时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际开始时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.trueStartTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.actStartTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际结束时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.trueEndTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.actEndTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="课时"
                   width="105"
                   align="center">
-                  <template slot-scope="scope">{{ scope.row.classHour+'小时' }}</template>
+                  <template slot-scope="scope">{{scope.row.hourRequire ? scope.row.hourRequire+'小时' : '0小时' }}</template>
                 </el-table-column>
                 <el-table-column
                   label="状态"
@@ -225,11 +235,22 @@
                   </template>
                 </el-table-column>
               </el-table>
+
+              <div class="pages">
+                <el-pagination
+                  background
+                  layout="prev, pager, next"
+                  :total="pageDataB.total"
+                  :page-size="pageDataB.pageSize"
+                  :current-page.sync="pageDataB.pageNo"
+                  @current-change="getContentTable">
+                </el-pagination>
+              </div>
             </div>
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_c">
           <span slot="label">培训记录</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
@@ -257,7 +278,7 @@
                     label="类型"
                     width="135"
                     align="center">
-                    <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
+                    <template slot-scope="scope">{{ planType[scope.row.category] }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论开始时间"
@@ -291,7 +312,10 @@
                   <el-pagination
                     background
                     layout="prev, pager, next"
-                    :total="100">
+                    :total="pageDataC.total"
+                    :page-size="pageDataC.pageSize"
+                    :current-page.sync="pageDataC.pageNo"
+                    @current-change="getRecordTable">
                   </el-pagination>
                 </div>
               </div>
@@ -406,6 +430,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import {getPlanDeptList, getPlanTable, getContentTable, releasePlan, deletePlan} from '@/api/organization'
 
 export default {
   name: 'staffTraining',
@@ -413,87 +438,37 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '全员培训'],
-      organizationTree: [
-        {
-          id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'AAA',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组'
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组'
-                }, {
-                  id: 1060122,
-                  label: '生产B组'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      activeName: 'tab_a',
+      triggerAid: '',
+      triggerBid: '',
+      triggerCid: '',
+      pageDataA: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0
+      },
+      pageDataB: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0
+      },
+      pageDataC: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0
+      },
+      organizationTree: [],
       states: {
         '0': '未开始',
         '1': '学习中',
-        '2': '已结束'
+        '2': '已学习',
+        '3': '已结束'
       },
       planType: {
-        'train': '训练',
-        'test': '考试'
+        '1': '训练',
+        '2': '考试'
       },
-      planList: [
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadTime: 0,
-          type: 'train', // train：训练； test：考试
-          createTime: '2019-10-20T14:39:38.000+0000',
-          createPerson: '隔壁老王',
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术',
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadTime: 0,
-          type: 'train', // train：训练； test：考试
-          createTime: '2019-10-20T14:39:38.000+0000',
-          createPerson: '隔壁老王',
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术',
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadTime: 0,
-          type: 'train', // train：训练； test：考试
-          createTime: '2019-10-20T14:39:38.000+0000',
-          createPerson: '隔壁老王',
-          id: 123123
-        }
-      ],
+      planList: [],
       multipleSelection: [],
       showPlanDialog: false,
       addPlanData: {
@@ -512,53 +487,7 @@ export default {
           url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
         }
       ],
-      trainList: [
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          type: 'train', // train：训练； test：考试
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          trueStartTime: '2019-10-20T14:39:38.000+0000',
-          trueEndTime: '2019-10-20T14:39:38.000+0000',
-          classHour: 20,
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadLink: [
-            {url: '****1.doc'},
-            {url: '****2.mp4'}
-          ],
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          type: 'train', // train：训练； test：考试
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          trueStartTime: '2019-10-20T14:39:38.000+0000',
-          trueEndTime: '2019-10-20T14:39:38.000+0000',
-          classHour: 20,
-          state: 1, // 0: 未开始；1：学习中；2：已结束
-          downloadLink: [
-            {url: '****1.doc'},
-            {url: '****2.mp4'}
-          ],
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          type: 'train', // train：训练； test：考试
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          trueStartTime: '2019-10-20T14:39:38.000+0000',
-          trueEndTime: '2019-10-20T14:39:38.000+0000',
-          classHour: 20,
-          state: 2, // 0: 未开始；1：学习中；2：已结束
-          downloadLink: [
-            {url: '****1.doc'},
-            {url: '****2.mp4'}
-          ],
-          id: 123123
-        }
-      ],
+      trainList: [],
       showDetailLog: false,
       detailDownList: [
         {
@@ -577,6 +506,8 @@ export default {
     }
   },
   created () {
+    this.getPlanDeptTree(true)
+    this.getContentTable()
   },
   methods: {
     openLoading () {
@@ -608,13 +539,92 @@ export default {
 
       return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
     },
-    checkPlan (id) {
-      console.log(id)
+    // 点击tree节点
+    handleNodeClick (deptId) {
+      if (this.activeName === 'tab_a') {
+        this.triggerAid = deptId
+        this.pageLoading = true
+        this.getPlanTable()
+      } else if (this.activeName === 'tab_c') {
+        this.triggerCid = deptId
+        this.pageLoading = true
+        // this.getWorkerTable()
+      }
+    },
+    // 获取treeData
+    getPlanDeptTree (create) {
+      getPlanDeptList().then((res) => {
+        if (res.code === 200) {
+          this.organizationTree = res.data
+          if (create) {
+            this.triggerAid = this.organizationTree[0].deptId
+            this.getPlanTable()
+          }
+        } else {
+          this.organizationTree = []
+          this.$message.error('获取数据失败，请稍后刷新页面重试')
+        }
+        this.pageLoading = false
+      })
+    },
+    // 获取培训计划的table
+    getPlanTable () {
+      this.pageLoading = true
+      getPlanTable(this.triggerAid, this.pageDataA.pageNo, this.pageDataA.pageSize).then((res) => {
+        if (res.code === 200) {
+          this.planList = res.data
+          this.pageDataA.total = res.total
+        }
+        this.pageLoading = false
+      })
+    },
+    // 获取培训内容的table
+    getContentTable () {
+      this.pageLoading = true
+      getContentTable(this.pageDataB.pageNo, this.pageDataB.pageSize).then((res) => {
+        if (res.code === 200) {
+          this.trainList = res.data
+          this.pageDataB.total = res.total
+        }
+        this.pageLoading = false
+      })
+    },
+    // 获取培训记录的table
+    getRecordTable () {
+    },
+    checkPlan (need) {
+      let needStr = ''
+      if (need) {
+        needStr = need
+      } else {
+        needStr = '暂无'
+      }
+      this.$alert(needStr, '培训需求')
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
     releasePlan () {
+      let data = {
+        userId: '',
+        deptId: '',
+        courseTitle: this.addPlanData.className, // 课程名称
+        category: this.addPlanData.planType, // 类别
+        hourRequire: 0, // 总课时
+        creater: '', // 计划发布人id
+        planTime: '', // 计划发布时间
+        theorysTime: this.addPlanData.startTime, // 理论开始时间
+        theoryeTime: this.addPlanData.endTime, // 理论结束时间
+        need: this.addPlanData.need, // 培训需求
+        name: '', // 附件名称
+        path: '', // 附件路径
+        size: '', // 附件大小
+        type: ''
+      }
+      releasePlan(data).then((res) => {
+        if (res.code === 200) {
+        }
+      })
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
@@ -629,7 +639,6 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`)
     },
     showRemoveDialog () {
-      console.log(this.multipleSelection)
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'warning',
@@ -637,14 +646,26 @@ export default {
         })
         return
       }
-      this.$alert('确定移除选中项?', '计划删除', {
+      this.$confirm('确定移除选中项?', '计划删除', {
         confirmButtonText: '确定',
-        callback: () => {
-          this.$message({
-            type: 'warning',
-            message: `action:`
-          })
-        }
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // let data = {id: } // 参数不应该是id string 而应该是 this.multipleSelection 一个数组
+        let data = {}
+        deletePlan(data).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     startLearn (id) {},
@@ -842,6 +863,7 @@ export default {
           background: #fff;
           .container-box{
             width: 100%;
+            overflow-y: auto;
           }
         }
       }
@@ -887,11 +909,11 @@ export default {
           color: #707070;
         }
       }
-      .pages{
-        margin-top: 28px;
-        text-align: right;
-      }
     }
+  }
+  .pages{
+    margin-top: 28px;
+    text-align: right;
   }
 }
 </style>

@@ -104,7 +104,7 @@ export default {
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      console.log(data.deptId)
+      console.log('节点deptID：' + data.deptId)
       this.$emit('handleNodeClick', data.deptId)
     },
     addNode (node, data) {

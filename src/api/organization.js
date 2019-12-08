@@ -104,3 +104,93 @@ export function getPlanDeptList () {
     return Promise.resolve(res.data)
   })
 }
+
+// 安全基础管理--全员培训--培训计划table
+export function getPlanTable (deptId, pageNo, pageSize) {
+  const url = `${baseUrl}/train/getPlanList?deptId=${deptId}&pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--培训内容table
+export function getContentTable (pageNo, pageSize) {
+  const url = `${baseUrl}/train/getTrainPersonList?pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--培训记录table
+export function getRecordTable (pageNo, pageSize) {
+  const url = `${baseUrl}/train/getTrainPersonList?pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--计划发布
+export function releasePlan (data) {
+  const url = `${baseUrl}/train/addPlan`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--删除计划
+export function deletePlan (param) {
+  const url = `${baseUrl}/train/addPlan`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--制度建设--获取列表
+export function getConstructionList (pageNo, pageSize) {
+  const url = `${baseUrl}/construction/getConstructionList?pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--制度建设--修改制度建设文件
+export function editSystemFile (data) {
+  const url = `${baseUrl}/construction/editFile`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--制度建设--删除制度建设文件
+export function deleteSystemFile (param) {
+  const url = `${baseUrl}/construction/delConstruction`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--制度建设--重置制度建设文件
+export function resetSystemFile (data) {
+  const url = `${baseUrl}/construction/resetFile`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--基础资料--获取文件类别列表
+export function getBasicCategory () {
+  const url = `${baseUrl}/basticData/getBasicCategory`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
