@@ -60,7 +60,8 @@
             <el-table
               :data="tables.data"
               border
-              style="width: 100%">
+              style="width: 100%"
+              v-loading="tables.loading">
               <el-table-column
                 type="index"
                 label="序号"
