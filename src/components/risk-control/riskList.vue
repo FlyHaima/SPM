@@ -24,9 +24,17 @@
                   v-if="importVisible"
                   :limit="1"
                   accept=".xlsx"
-                  action="http://upload-z1.qiniup.com"
-                  :file-list="importFileList">
-                  <el-button type="warning" size="medium" icon="el-icon-upload2">
+                  action="http://58.155.61.34:8033/spm/riskLevel/importRisks"
+                  :data="uploadData"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :file-list="fileList"
+                  :show-file-list="false">
+                  <el-button
+                    type="warning"
+                    size="medium"
+                    icon="el-icon-upload2"
+                    v-loading="uploading">
                    导入</el-button>
                 </el-upload>
                 <el-button
@@ -208,10 +216,12 @@ export default {
         riskDj: '' // 风险等级
       },
       riskTableData: [],
-      importFileList: [] // 导入列表
-      // importData: {
-      //   code: '200'
-      // } // 上传时附带的额外参数
+      baseUrl: 'http://58.155.61.34:8033/spm/',
+      uploading: false, // 导入loading
+      uploadData: {
+        riskId: this.riskId
+      }, // 上传数据
+      fileList: [] // 导入列表
     }
   },
   created () {
@@ -219,6 +229,16 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 导入
+    handleBeforeUpload (file) {
+      this.uploading = true
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.uploading = false
+      this.fetchTableData()
+    },
     // 获取树的数据
     fetchTreeData () {
       axios

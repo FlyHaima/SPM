@@ -517,7 +517,10 @@ export default {
         riskFactor: ' ',
         hazardType: ' ',
         emergency: ' '
-      }]
+      }],
+      form: {
+
+      }
     }
   },
   components: {

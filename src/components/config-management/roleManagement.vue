@@ -251,9 +251,10 @@ export default {
         this.$message.warning('请选择要删除的行')
       } else {
         this.submitting = true
-        let sendDAta = { userId: [] }
+        let sendDAta = { roleId: [] }
         this.multipleSelection.forEach(item => {
-          sendDAta.userId.push(item.userId)
+          console.log(item.roleId)
+          sendDAta.roleId.push(item.roleId)
         })
         this.$confirm('是否删除？', '提示', {
           confirmButtonText: '确定',
@@ -261,7 +262,7 @@ export default {
           type: 'warning'
         }).then(() => {
           axios
-            .post('/user/delUser', sendDAta)
+            .post('role/delRole', sendDAta)
             .then((res) => {
               console.log(res.data.code)
               if (res.data.code === 200) {
