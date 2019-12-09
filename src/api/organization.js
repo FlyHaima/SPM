@@ -143,7 +143,7 @@ export function releasePlan (data) {
 
 // 安全基础管理--全员培训--删除计划
 export function deletePlan (param) {
-  const url = `${baseUrl}/train/addPlan`
+  const url = `${baseUrl}/train/delPlan`
 
   return axios.delete(url, {params: param}).then((res) => {
     return Promise.resolve(res.data)

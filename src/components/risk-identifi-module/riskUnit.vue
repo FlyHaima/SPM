@@ -12,7 +12,7 @@
             :tree-data="organizationTree"
             @open-loading="openLoading"
             @close-loading="closeLoading"
-            @tree-click-handle="changeTable">
+            @tree-click-handle="getTableData">
           </tree-read-only>
         </el-aside>
         <el-main class="inner-content">
@@ -25,38 +25,38 @@
                 :data="tableData"
                 style="width: 100%">
                 <el-table-column
-                  prop="indexNum"
+                  type="index"
                   label="风险点序号" align="center"
                   width="45">
                 </el-table-column>
                 <el-table-column label="风险点位置" align="center">
                   <el-table-column label="一级子单元" align="center">
                     <el-table-column
-                      prop="levelANum" align="center"
+                      prop="oneNo" align="center"
                       label="序号">
                     </el-table-column>
                     <el-table-column align="center"
-                      prop="levelAName"
+                      prop="oneName"
                       label="名称">
                     </el-table-column>
                   </el-table-column>
                   <el-table-column label="二级子单元" align="center">
                     <el-table-column align="center"
-                      prop="levelBNum"
+                      prop="twoNo"
                       label="序号">
                     </el-table-column>
                     <el-table-column align="center"
-                      prop="levelBName"
+                      prop="twoName"
                       label="名称">
                     </el-table-column>
                   </el-table-column>
                   <el-table-column label="三级子单元" align="center">
                     <el-table-column align="center"
-                      prop="levelCNum"
+                      prop="orderNo"
                       label="序号">
                     </el-table-column>
                     <el-table-column align="center"
-                      prop="levelCName"
+                      prop="riskName"
                       label="名称">
                     </el-table-column>
                   </el-table-column>
@@ -73,7 +73,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {getRiskTree} from '@/api/riskia'
+import {getRiskTree, getRiskUnit} from '@/api/riskia'
 
 export default {
   name: 'riskUnit',
@@ -83,20 +83,11 @@ export default {
       breadcrumb: ['风险辨识评估', '风险单元'],
       organizationTree: [],
       tableData: [
-        {
-          indexNum: 1,
-          levelANum: 1001,
-          levelAName: '风险点层级A',
-          levelBNum: 100102,
-          levelBName: '风险点层级B',
-          levelCNum: 100198,
-          levelCName: '风险点层级C'
-        }
       ]
     }
   },
   created () {
-    this.getRiskTree()
+    this.getRiskTree(true)
   },
   methods: {
     openLoading () {
@@ -106,17 +97,26 @@ export default {
       this.pageLoading = false
     },
     openExportDialog () {},
-    getRiskTree () {
+    getRiskTree (create) {
       this.pageLoading = true
       getRiskTree().then((res) => {
         if (res.code === 200) {
           this.organizationTree = res.data
         }
+        if (create) {
+          this.getTableData(res.data[0])
+        }
         this.pageLoading = false
       })
     },
-    changeTable (data) {
-      console.log(data)
+    getTableData (data) {
+      this.pageLoading = true
+      getRiskUnit(data.riskId).then((res) => {
+        if (res.code === 200) {
+          this.tableData = res.data
+        }
+        this.pageLoading = false
+      })
     }
   },
   components: {TreeReadOnly, BreadCrumb}

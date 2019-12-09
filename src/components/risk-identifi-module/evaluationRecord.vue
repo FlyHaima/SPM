@@ -12,12 +12,12 @@
             :tree-data="organizationTree"
             @open-loading="openLoading"
             @close-loading="closeLoading"
-            @tree-click-handle="changeTable">
+            @tree-click-handle="getTabelData">
           </tree-read-only>
         </el-aside>
         <el-main class="inner-content">
-          <el-tabs type="border-card" v-model="activeName">
-            <el-tab-pane label="作业活动类" name="tab_a">
+          <el-tabs type="border-card" v-model="activeName" @tab-click="changeTab">
+            <el-tab-pane label="作业活动类" name="作业活动">
               <p class="btn-p">
                 <a class="export-btn" @click="openExportDialogA"><i class></i>导出</a>
               </p>
@@ -26,39 +26,39 @@
                   :data="tableDataA"
                   style="width: 100%">
                   <el-table-column
-                    prop="indexNum"
+                    type="index"
                     label="序号" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="stepNum"
+                    prop="work"
                     label="作业步骤" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="hazard"
+                    prop="riskSourceName"
                     label="危险源或潜在事件（人、物、作业环境、管理）" align="center"
                     width="139">
                   </el-table-column>
                   <el-table-column
-                    prop="consequence"
+                    prop="riskSourceType"
                     label="主要后果" align="center">
                   </el-table-column>
                   <el-table-column label="现有控制措施" align="center">
                     <el-table-column
-                      prop="technical" align="center"
+                      prop="technology" align="center"
                       label="工程技术" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="manager" align="center"
+                      prop="bmp" align="center"
                       label="管理措施" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="education" align="center"
+                      prop="train" align="center"
                       label="培训教育" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="protect" align="center"
+                      prop="individual" align="center"
                       label="个体维护" width="79px">
                     </el-table-column>
                     <el-table-column
@@ -67,48 +67,48 @@
                     </el-table-column>
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="l"
                     label="L" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="e"
                     label="E" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="c"
                     label="C" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="indexNum"
+                    prop="d"
                     label="D" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="JLevel"
+                    prop="assessLevel"
                     label="评价级别" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="MLevel"
+                    prop="controlLevel"
                     label="管控级别" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="advice"
+                    prop="mustCs"
                     label="建议新增（改进）措施" align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="Remarks"
+                    prop="remark"
                     label="备注" align="center"
                     width="75">
                   </el-table-column>
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="设备设施类" name="tab_b">
+            <el-tab-pane label="设备设施类" name="设备设施">
               <p class="btn-p">
                 <a class="export-btn" @click="openExportDialogB"><i class></i>导出</a>
               </p>
@@ -117,39 +117,39 @@
                   :data="tableDataB"
                   style="width: 100%">
                   <el-table-column
-                    prop="indexNum"
+                    type="index"
                     label="序号" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="stepNum"
+                    prop="work"
                     label="作业步骤" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="hazard"
+                    prop="riskSourceName"
                     label="危险源或潜在事件（人、物、作业环境、管理）" align="center"
                     width="139">
                   </el-table-column>
                   <el-table-column
-                    prop="consequence"
+                    prop="riskSourceType"
                     label="主要后果" align="center">
                   </el-table-column>
                   <el-table-column label="现有控制措施" align="center">
                     <el-table-column
-                      prop="technical" align="center"
+                      prop="technology" align="center"
                       label="工程技术" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="manager" align="center"
+                      prop="bmp" align="center"
                       label="管理措施" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="education" align="center"
+                      prop="train" align="center"
                       label="培训教育" width="79px">
                     </el-table-column>
                     <el-table-column
-                      prop="protect" align="center"
+                      prop="individual" align="center"
                       label="个体维护" width="79px">
                     </el-table-column>
                     <el-table-column
@@ -158,36 +158,36 @@
                     </el-table-column>
                   </el-table-column>
                   <el-table-column
-                    prop="L"
+                    prop="l"
                     label="L" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="S"
+                    prop="s"
                     label="S" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="R"
+                    prop="d"
                     label="R" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="JLevel"
+                    prop="assessLevel"
                     label="评价级别" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="MLevel"
+                    prop="controlLevel"
                     label="管控级别" align="center"
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="advice"
+                    prop="mustCs"
                     label="新增建议（改进）措施" align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="Remarks"
+                    prop="remark"
                     label="备注" align="center"
                     width="75">
                   </el-table-column>
@@ -204,7 +204,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {getRiskTree} from '@/api/riskia'
+import {getRiskTree, getRiskView} from '@/api/riskia'
 
 export default {
   name: 'evaluationRecord',
@@ -212,53 +212,15 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '评价记录'],
-      activeName: 'tab_a',
+      activeName: '作业活动',
       organizationTree: [],
-      tableDataA: [
-        {
-          indexNum: 111,
-          stepNum: 101,
-          hazard: '风险点层级A',
-          consequence: 'boom',
-          technical: '123123',
-          manager: 'qweqwe',
-          education: '风险点层级B',
-          protect: 100198,
-          emergency: '风险点层级C',
-          L: 12,
-          E: 4,
-          C: 0.1,
-          D: 4.8,
-          JLevel: '中等C级',
-          MLevel: 'C',
-          advice: 'stop bullshit',
-          Remarks: 'all bullshit'
-        }
-      ],
-      tableDataB: [
-        {
-          indexNum: 111,
-          stepNum: 101,
-          hazard: '风险点层级A',
-          consequence: 'boom',
-          technical: '123123',
-          manager: 'qweqwe',
-          education: '风险点层级B',
-          protect: 100198,
-          emergency: '风险点层级C',
-          L: 12,
-          S: 4,
-          R: 48,
-          JLevel: '中等C级',
-          MLevel: 'C',
-          advice: 'stop bullshit',
-          Remarks: 'all bullshit'
-        }
-      ]
+      tableDataA: [],
+      tableDataB: [],
+      currentNode: {}
     }
   },
   created () {
-    this.getRiskTree()
+    this.getRiskTree(true)
   },
   methods: {
     openLoading () {
@@ -269,20 +231,36 @@ export default {
     },
     openExportDialogA () {},
     openExportDialogB () {},
-    getRiskTree () {
+    getRiskTree (create) {
       this.pageLoading = true
       getRiskTree().then((res) => {
         if (res.code === 200) {
           this.organizationTree = res.data
         }
+        if (create) {
+          this.getTabelData(res.data[0])
+        }
         this.pageLoading = false
       })
     },
-    changeTable (data) {
-      console.log(data)
+    getTabelData (data) {
+      this.currentNode = data
+      getRiskView(data.riskId, this.activeName).then((res) => {
+        if (res.code === 200) {
+          this.tableDataA = res.data
+        }
+        this.pageLoading = false
+      })
     },
-    getTableA () {},
-    getTableB () {}
+    changeTab () {
+      this.pageLoading = true
+      getRiskView(this.currentNode.riskId, this.activeName).then((res) => {
+        if (res.code === 200) {
+          this.tableDataB = res.data
+        }
+        this.pageLoading = false
+      })
+    }
   },
   components: {TreeReadOnly, BreadCrumb}
 }

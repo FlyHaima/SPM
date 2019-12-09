@@ -21,7 +21,6 @@
               <div class="container-box">
                 <p class="btn-p">
                   <a class="copy-btn"><i class="el-icon-document-copy"></i>计划复制</a>
-                  <a class="edit-btn"><i class="el-icon-edit"></i>计划编辑</a>
                   <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
                   <a class="release-btn" @click="showPlanDialog = true"><i class="el-icon-plus"></i>计划发布</a>
                 </p>
@@ -148,9 +147,12 @@
                     <template slot-scope="scope">{{ scope.row.creater }}</template>
                   </el-table-column>
                   <el-table-column
-                    label="培训需求"
+                    label="操作"
                     align="center">
-                    <template slot-scope="scope"><el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button></template>
+                    <template slot-scope="scope">
+                      <el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button>
+                      <el-button type="text" @click="checkPlan(scope.row.need)">编辑</el-button>
+                    </template>
                   </el-table-column>
                 </el-table>
 
@@ -482,9 +484,6 @@ export default {
         {
           name: 'food.jpeg',
           url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }, {
-          name: 'food2.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
         }
       ],
       trainList: [],
@@ -606,20 +605,24 @@ export default {
     },
     releasePlan () {
       let data = {
-        userId: '',
+        // userId: '',
         deptId: '',
         courseTitle: this.addPlanData.className, // 课程名称
         category: this.addPlanData.planType, // 类别
         hourRequire: 0, // 总课时
-        creater: '', // 计划发布人id
+        // creater: '', // 计划发布人id
         planTime: '', // 计划发布时间
         theorysTime: this.addPlanData.startTime, // 理论开始时间
         theoryeTime: this.addPlanData.endTime, // 理论结束时间
         need: this.addPlanData.need, // 培训需求
-        name: '', // 附件名称
-        path: '', // 附件路径
-        size: '', // 附件大小
-        type: ''
+        attachmentList: [
+          {
+            name: '', // 附件名称
+            path: '', // 附件路径
+            size: '', // 附件大小
+            type: ''
+          }
+        ]
       }
       releasePlan(data).then((res) => {
         if (res.code === 200) {
@@ -651,8 +654,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // let data = {id: } // 参数不应该是id string 而应该是 this.multipleSelection 一个数组
-        let data = {}
+        // let data = {id: '1,2,3' }
+        let ids = []
+        this.multipleSelection.forEach((item) => {
+          ids.push(item.id)
+        })
+        let data = {id: ids.join(',')}
         deletePlan(data).then((res) => {
           if (res.code === 200) {
             this.$message({
