@@ -89,6 +89,7 @@
   background: $bgTableHeader;
   &.is-flex{
     display: flex;
+    align-items: center;
     .custom-th-label,
     .custom-td-value{
       flex: 1;

@@ -163,7 +163,7 @@ export default {
       tables: {
         api: 'role/getRoleList'
       },
-      dialogRoleVisible: true, // 分配角色弹框开关
+      dialogRoleVisible: false, // 分配角色弹框开关
       dialogAddVisible: false, // 添加用户弹框开关
       radio: 1,
       form: {

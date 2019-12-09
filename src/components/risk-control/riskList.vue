@@ -30,6 +30,7 @@
                    导入</el-button>
                 </el-upload>
                 <el-button
+                  v-if="!tableVisible"
                   class="tools-item"
                   type="success"
                   size="medium"
@@ -103,7 +104,7 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">风险级别</div>
                     <div class="custom-td-value">
-                      {{riskList.riskDjCode}}
+                      {{riskList.riskLevel}}
                     </div>
                   </div>
                   <div class="custom-tr">
@@ -153,7 +154,7 @@
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.workNo}}
+                        {{item.no}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -181,7 +182,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
-// import exportExcel from '@/api/exportExcel'
+import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'riskList',
@@ -267,9 +268,9 @@ export default {
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
       if (vm.treeLevel === '4') {
-        vm.importVisible = false
-      } else {
         vm.importVisible = true
+      } else {
+        vm.importVisible = false
       }
     },
     closeLoading () {
@@ -277,7 +278,7 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
-      // exportExcel('riskLevel/exportTz')
+      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.riskId)
     }
   },
   computed: {

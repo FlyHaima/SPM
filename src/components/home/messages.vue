@@ -232,6 +232,8 @@ export default {
   name: 'messages',
   data () {
     return {
+      submitting: false,
+      pageLoading: false,
       upload_qiniu_addr: 'http://file.hljdmkj.com/',
       uploading: false, // upload加载
       uploadData: {
@@ -399,7 +401,6 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
-      // this.tabType = (Number(item.paneName) + 1) + ''
       this.fetchList()
     },
     // 标记当前页已读事件处理
