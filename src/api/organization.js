@@ -116,7 +116,7 @@ export function getPlanTable (deptId, pageNo, pageSize) {
 
 // 安全基础管理--全员培训--培训内容table
 export function getContentTable (pageNo, pageSize) {
-  const url = `${baseUrl}/train/getTrainPersonList?pageNo=${pageNo}&pageSize=${pageSize}`
+  const url = `${baseUrl}/train/getTrainRecordList?pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
@@ -125,7 +125,7 @@ export function getContentTable (pageNo, pageSize) {
 
 // 安全基础管理--全员培训--培训记录table
 export function getRecordTable (pageNo, pageSize) {
-  const url = `${baseUrl}/train/getTrainPersonList?pageNo=${pageNo}&pageSize=${pageSize}`
+  const url = `${baseUrl}/train/getTrainRecordList?pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
@@ -146,6 +146,15 @@ export function deletePlan (param) {
   const url = `${baseUrl}/train/delPlan`
 
   return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--培训记录--详情
+export function getTrainStatistic (id) {
+  const url = `${baseUrl}/train/getTrainStatistic?id=${id}`
+
+  return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
   })
 }

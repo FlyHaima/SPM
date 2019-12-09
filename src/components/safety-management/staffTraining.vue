@@ -267,14 +267,14 @@
                 <el-table ref="leaderTable"
                           border
                           stripe
-                          :data="trainList"
+                          :data="recordList"
                           tooltip-effect="dark"
                           style="width: 100%"
                           @selection-change="handleSelectionChange">
                   <el-table-column
                     label="课程名称"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
                   </el-table-column>
                   <el-table-column
                     label="类型"
@@ -286,13 +286,13 @@
                     label="理论开始时间"
                     width="250"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论结束时间"
                     width="250"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="状态"
@@ -323,6 +323,7 @@
               </div>
             </el-main>
           </el-container>
+
           <el-dialog :title="'详细'" :visible.sync="showDetailLog"
                      :width="'970px'">
             <div class="detail-log">
@@ -432,7 +433,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
-import {getPlanDeptList, getPlanTable, getContentTable, releasePlan, deletePlan} from '@/api/organization'
+import {getPlanDeptList, getPlanTable, getContentTable, getRecordTable, releasePlan, deletePlan, getTrainStatistic} from '@/api/organization'
 
 export default {
   name: 'staffTraining',
@@ -487,6 +488,7 @@ export default {
         }
       ],
       trainList: [],
+      recordList: [],
       showDetailLog: false,
       detailDownList: [
         {
@@ -507,6 +509,7 @@ export default {
   created () {
     this.getPlanDeptTree(true)
     this.getContentTable()
+    this.getRecordTable()
   },
   methods: {
     openLoading () {
@@ -590,6 +593,14 @@ export default {
     },
     // 获取培训记录的table
     getRecordTable () {
+      this.pageLoading = true
+      getRecordTable(this.pageDataC.pageNo, this.pageDataC.pageSize).then((res) => {
+        if (res.code === 200) {
+          this.recordList = res.data
+          this.pageDataC.total = res.total
+        }
+        this.pageLoading = false
+      })
     },
     checkPlan (need) {
       let needStr = ''
@@ -654,7 +665,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // let data = {id: '1,2,3' }
+        this.pageLoading = true
         let ids = []
         this.multipleSelection.forEach((item) => {
           ids.push(item.id)
@@ -666,6 +677,7 @@ export default {
               type: 'success',
               message: '删除成功!'
             })
+            this.getPlanTable()
           }
         })
       }).catch(() => {
@@ -679,7 +691,12 @@ export default {
     endLearn (id) {},
     downloadFile (files) {},
     checkDetail (id) {
+      this.pageLoading = true
       // get data, then, showDetailLog
+      getTrainStatistic(id).then((res) => {
+        if (res.code === 200) {
+        }
+      })
       this.showDetailLog = true
     },
     downloadItem (url) {}
