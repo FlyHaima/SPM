@@ -204,8 +204,8 @@
         <el-form-item label="角色:" >
           <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
             <el-option
-              v-for="item in roleOptions"
-              :key="item.value"
+              v-for="(item, index) in roleOptions"
+              :key="index"
               :label="item.label"
               :value="item.value">
             </el-option>

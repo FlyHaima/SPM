@@ -14,7 +14,7 @@
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="exportHandel">
+                  @click="exportExcelHandel">
                    导出</el-button>
               </div>
             </div>
@@ -137,7 +137,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
-
+import exportExcel from '@/api/exportExcel'
 export default {
   name: 'safeRisk',
   mixins: [Tables],
@@ -151,8 +151,8 @@ export default {
   },
   methods: {
     // 导出excel
-    exportHandel () {
-      this.tablesExportExcel('riskLevel/exportZd')
+    exportExcelHandel () {
+      exportExcel(`riskLevel/exportZd`)
     },
     // tag的class集合
     classObj (data) {

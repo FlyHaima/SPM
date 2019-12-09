@@ -2,7 +2,7 @@
 <template>
   <div class="wrap login-wrap">
     <el-row class="login-content">
-      <el-col :span="14" class="login-content-left">
+      <el-col :span="16" class="login-content-left">
         <div class="logo"></div>
         <el-tabs v-model="activeName">
           <el-tab-pane label="新闻动态" name="first">
@@ -73,7 +73,7 @@
         </el-tabs>
 
       </el-col>
-      <el-col :span="8" :offset="1" class="login-content-right">
+      <el-col :span="6" :offset="1" class="login-content-right">
         <div class="login-box">
           <div class="login-box-inner">
             <div class="login-form-box">
@@ -130,7 +130,7 @@
                   <el-select v-model="form.industryName" placeholder="请选择所属行业">
                     <i slot="prefix" class="icon-form icon-form-05"></i>
                     <el-option
-                      v-for="item in options"
+                      v-for="item in industryOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value">
@@ -139,9 +139,9 @@
                 </el-form-item>
                 <div class="custom-form-item">
                   请选择是否使用所属行业大数据
-                  <el-select v-model="value" placeholder="使用">
+                  <el-select v-model="form.useIndustry" placeholder="使用">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in useIndustryOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value">
@@ -169,6 +169,7 @@ import axios from '@/api/axios'
 
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import { INDUSTRY_NAME_LIST, USE_INDUSTRY } from '@/constants/status'
 export default {
   name: 'loginPage',
   data () {
@@ -202,7 +203,8 @@ export default {
         userName: '', // 企业信用代码
         companyName: '', // 企业名称
         password: '', // 密码
-        industryName: '' // 所属行业
+        industryName: '', // 所属行业
+        useIndustry: '' // 是否使用大数据
       },
       rules: {
         userName: [
@@ -223,10 +225,8 @@ export default {
           { validator: validatePassConfirm, trigger: 'blur' }
         ]
       },
-      options: [{
-        value: '1',
-        label: '政府'
-      }],
+      industryOptions: INDUSTRY_NAME_LIST,
+      useIndustryOptions: USE_INDUSTRY,
       value: '',
       swiperOption: {
         autoplay: {

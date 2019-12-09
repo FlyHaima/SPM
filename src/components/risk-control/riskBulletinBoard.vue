@@ -171,7 +171,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-// import qs from 'qs'
+import exportExcel from '@/api/exportExcel'
 import axios from '@/api/axios'
 export default {
   name: 'riskBulletinBoard',
@@ -294,7 +294,7 @@ export default {
     },
     // 导出excel
     exportExcelHandel () {
-
+      exportExcel(`riskZdCard/exportCards`, 'id=' + this.riskId)
     },
     // 选择器change事件 - 主要管控措施
     selChangeGkcs (data) {

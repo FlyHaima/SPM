@@ -53,3 +53,21 @@ export const NEWS_TYPE_LIST = [
   flfg,
   aqscsg
 ]
+
+// 所属行业
+export const government = {text: '政府', label: '政府', value: '01'}
+export const enterprise = {text: '企业', label: '企业', value: '02'}
+
+export const INDUSTRY_NAME_LIST = [
+  government,
+  enterprise
+]
+
+// 是否使用行业大数据
+export const use = {text: '使用', label: '使用', value: '1'}
+export const unuse = {text: '不使用', label: '不使用', value: '0'}
+
+export const USE_INDUSTRY = [
+  use,
+  unuse
+]
