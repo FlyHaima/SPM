@@ -40,42 +40,23 @@
               </el-table-column>
               <el-table-column
                 prop="position"
-                label="职位"
+                label="日期"
                 align="center">
               </el-table-column>
               <el-table-column
                 prop="accountName"
-                label="账号"
+                label="排查率"
                 align="center">
-              </el-table-column>
-              <el-table-column
-                label="启用/禁用"
-                align="center">
-                <template slot-scope="scope">
-                  {{ scope.row.state === '1' ? '启用' : '禁用' }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="在职/离职"
-                align="center">
-                <template slot-scope="scope">
-                  {{ scope.row.isWork === '1' ? '在职' : '离职' }}
-                </template>
               </el-table-column>
               <el-table-column
                 prop="role"
-                label="角色"
+                label="次数"
                 align="center">
               </el-table-column>
               <el-table-column
                 prop="telephone"
-                label="电话"
-                header-align="center">
-              </el-table-column>
-              <el-table-column
-                prop="accountState"
-                label="账号状态"
-                header-align="center">
+                label="每次奖励金额"
+                align="center">
               </el-table-column>
               <el-table-column
                 prop=" "
@@ -89,36 +70,11 @@
                     @click="editHandle(scope.row)">编辑
                   </a>
                   <span class="color-primary"> / </span>
-                  <!-- <el-popover
-                    placement="top">
-                    <p>确定【{{ scope.row.state === '1' ? '启用' : '禁用' }}】该用户吗？</p>
-                    <div class="popover-btns">
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="changeState(scope.row)">确定</el-button>
-                      <el-button
-                        size="mini"
-                        type="text"
-                        >取消</el-button>
-                    </div>
-                    <el-button
-                      :type="scope.row.state === '1' ? 'warning' : 'success' "
-                      size="mini">启用
-                    </el-button>
-                  </el-popover> -->
-                  <a
-                    href="javascript:;"
-                    :class="scope.row.state === '1' ? 'color-danger' : 'color-primary'"
-                    @click="changeState(scope.row)">
-                    {{ scope.row.state === '1' ? '禁用' : '启用' }}
-                  </a>
-                  <!-- <span class="color-primary"> / </span>
                   <a
                     href="javascript:;"
                     class="color-primary"
-                    @click="editRole(scope.row)">分配角色
-                  </a> -->
+                    @click="editHandle(scope.row)">详情
+                  </a>
                 </template>
               </el-table-column>
             </el-table>
@@ -150,65 +106,15 @@
         label-position= "right"
         @submit.native.prevent= "submitForm"
         v-loading= "submitting"
+        width="400"
       >
         <el-form-item
-          label="姓名:"
+          label="每次奖励金额"
           prop="userName">
           <el-input
             v-model.trim="form.userName"
             placeholder="请输入姓名"
             maxlength="25"
-            autocomplete></el-input>
-        </el-form-item>
-        <el-form-item
-          label="职位:"
-          prop="position">
-          <el-input
-            v-model.trim="form.position"
-            placeholder="请输入职位"
-            maxlength="25"
-            autocomplete></el-input>
-        </el-form-item>
-        <el-form-item
-          label="账号:"
-          prop="accountName" >
-          <el-input
-            v-model.trim="form.accountName"
-            placeholder="请输入账号"
-            maxlength="25"
-            autocomplete></el-input>
-        </el-form-item>
-        <!-- <el-radio v-for="(item, index) in RELATION_PRODUCT_STATUS_LIST" :key="index" :label="item.value">{{ item.label }}</el-radio> -->
-        <el-form-item label="启用/禁用:" prop="state">
-          <el-radio-group v-model="form.state" autocomplete>
-            <el-radio label="1">启用</el-radio>
-            <el-radio label="0">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="在职/离职:" prop="isWork">
-          <el-radio-group v-model="form.isWork" autocomplete>
-            <el-radio label="1">在职</el-radio>
-            <el-radio label="0">离职</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="角色:" >
-          <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
-            <el-option
-              v-for="(item, index) in roleOptions"
-              :key="index"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="电话:"
-          prop="telephone">
-          <el-input
-            type="number"
-            v-model.trim="form.telephone"
-            placeholder="请输入电话"
-            maxlength="11"
             autocomplete></el-input>
         </el-form-item>
       </el-form>

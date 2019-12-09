@@ -23,7 +23,7 @@
                   class="tools-item"
                   v-if="importVisible"
                   :limit="1"
-                  accept=".xlsx"
+                  accept=".xls"
                   action="http://58.155.61.34:8033/spm/riskLevel/importRisks"
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
@@ -202,7 +202,7 @@ export default {
       riskId: '', // id
       level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
-      importVisible: true, // 导出按钮显示开关
+      importVisible: false, // 导出按钮显示开关
       tableVisible: false, // table显示切换开关
       tagVisible: false, // tag显示开关
       tableData: [],
@@ -219,7 +219,7 @@ export default {
       baseUrl: 'http://58.155.61.34:8033/spm/',
       uploading: false, // 导入loading
       uploadData: {
-        riskId: this.riskId
+        riskId: ''
       }, // 上传数据
       fileList: [] // 导入列表
     }
@@ -284,6 +284,7 @@ export default {
     treeClickHandle (data) {
       let vm = this
       vm.riskId = data.riskId
+      vm.uploadData.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
