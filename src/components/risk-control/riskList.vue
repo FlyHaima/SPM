@@ -22,7 +22,6 @@
                 <el-upload
                   class="tools-item"
                   v-if="importVisible"
-                  :limit="1"
                   accept=".xls"
                   action="http://58.155.61.34:8033/spm/riskLevel/importRisks"
                   :data="uploadData"
