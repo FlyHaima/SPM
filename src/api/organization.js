@@ -159,6 +159,15 @@ export function releasePlan (data) {
   })
 }
 
+// 安全基础管理--全员培训--计划复制
+export function copyPlan (data) {
+  const url = `${baseUrl}/train/copyPlan`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 安全基础管理--全员培训--删除计划
 export function deletePlan (param) {
   const url = `${baseUrl}/train/delPlan`

@@ -383,8 +383,10 @@ export default {
       })
     },
     // 编辑树形结构图中员工的个人信息
-    editDeptInfo (users, type, duty) {
-      editDeptInfo().then((res) => {})
+    editDeptInfo (data) {
+      editDeptInfo(data).then((res) => {
+        if (res.code === 200) {}
+      })
     },
     // 获取领导小组的tree
     getLeaderTree (created) {
@@ -449,6 +451,11 @@ export default {
             type: 'success',
             message: '更新成功'
           })
+          if (this.activeName === 'tab_b') {
+            this.getLeaderTable()
+          } else {
+            this.getWorkerTable()
+          }
         } else {
           this.$message.error('更新失败')
         }

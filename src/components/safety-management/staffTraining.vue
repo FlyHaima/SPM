@@ -20,7 +20,7 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p">
-                  <a class="copy-btn"><i class="el-icon-document-copy"></i>计划复制</a>
+                  <a class="copy-btn" @click="copyPlan"><i class="el-icon-document-copy"></i>计划复制</a>
                   <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
                   <a class="release-btn" @click="showPlanDialog = true"><i class="el-icon-plus"></i>计划发布</a>
                 </p>
@@ -231,9 +231,9 @@
                   align="center">
                   <template slot-scope="scope">
 <!--                    1未学习2学习中3已学习-->
-                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.planId)">开始学习</el-button>
-                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planId)">结束学习</el-button>
-                    <span v-else type="text" style="margin-right: 10px; color: #ddd">结束学习</span>
+                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.planPerId)">开始学习</el-button>
+                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planPerId)">结束学习</el-button>
+                    <span v-else type="text" style="margin-right: 10px; color: #909399;">结束学习</span>
                     <el-button type="text" @click="downloadFile(scope.row.downloadLink)">附件</el-button>
                   </template>
                 </el-table-column>
@@ -442,6 +442,7 @@ import {
   getRecordTable,
   releasePlan,
   deletePlan,
+  copyPlan,
   getTrainStatistic,
   startLearn,
   endLearn
@@ -657,6 +658,15 @@ export default {
       releasePlan(data).then((res) => {
         if (res.code === 200) {
         }
+      })
+    },
+    copyPlan () {
+      this.pageLoading = true
+      copyPlan().then((res) => {
+        if (res.code === 200) {
+          this.getContentTable()
+        }
+        this.pageLoading = false
       })
     },
     handleRemove (file, fileList) {
