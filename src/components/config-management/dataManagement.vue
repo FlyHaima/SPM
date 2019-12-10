@@ -331,7 +331,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 .inner-aside{
   margin-right: 8px;
   background: #ffffff;

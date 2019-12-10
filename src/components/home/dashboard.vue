@@ -15,9 +15,8 @@
           <el-carousel-item
             v-for="(item, index) in messageData"
             :key="index"
-            @click="goDetailsPage(item)"
             class="list-info-item">
-              <div class="list-info-title">
+              <div @click="goDetailsPage(item)" class="list-info-title">
                 <span class="list-info-txt">{{item.title}}</span>
               </div>
               <div class="list-info-date">{{item.sendTime | date-filter}}</div>
@@ -221,6 +220,7 @@ export default {
   name: 'home',
   data () {
     return {
+      pageLoading: false,
       pieOptions: [
         {
           title: '全员参与率',
@@ -295,32 +295,7 @@ export default {
           ]
         }
       ], // 图饼设置项
-      chartData: [
-        {
-          'value': '25',
-          'name': '煤气'
-        },
-        {
-          'value': '50',
-          'name': '炉前'
-        },
-        {
-          'value': '75',
-          'name': '炉前2'
-        },
-        {
-          'value': '60',
-          'name': '炉前3'
-        },
-        {
-          'value': '80',
-          'name': '炉前4'
-        },
-        {
-          'value': '100',
-          'name': '炉前5'
-        }
-      ], // 图表数据
+      chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
       pieHeight: '200px', // 饼图高度
       messageData: [], // 信息列表数据
@@ -348,8 +323,25 @@ export default {
   },
   created () {
     this.fetchList()
+    this.fetchChartData()
   },
   methods: {
+    // 获取chart的数据
+    fetchChartData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('riskLevel/getWorkRisk', {
+          time: 1
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.chartData = res.data.data
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
     // 跳转所有信息页面的点击事件
     goMorePage () {
       this.$router.push({
@@ -358,6 +350,7 @@ export default {
     },
     // 跳转信息详情页面的点击事件
     goDetailsPage (item) {
+      console.log(item)
       this.$router.push({
         name: 'messagesDetails',
         params: {

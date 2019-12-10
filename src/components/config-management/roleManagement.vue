@@ -333,7 +333,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 /deep/.el-collapse{
   border: 0;
   .el-collapse-item__header{
