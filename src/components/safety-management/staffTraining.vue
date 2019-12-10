@@ -230,9 +230,10 @@
                   width="180"
                   align="center">
                   <template slot-scope="scope">
-                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.id)">开始学习</el-button>
-                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.id)">结束学习</el-button>
-                    <span v-else type="text" style="margin-right: 10px;">开始学习</span>
+<!--                    1未学习2学习中3已学习-->
+                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.planId)">开始学习</el-button>
+                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planId)">结束学习</el-button>
+                    <span v-else type="text" style="margin-right: 10px; color: #ddd">结束学习</span>
                     <el-button type="text" @click="downloadFile(scope.row.downloadLink)">附件</el-button>
                   </template>
                 </el-table-column>
@@ -258,7 +259,8 @@
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleRecordTree">
               </tree-diagram>
             </el-aside>
 
@@ -305,7 +307,7 @@
                     width="105"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="checkDetail(scope.row.id)">详细</el-button>
+                      <el-button type="text" @click="checkDetail(scope.row.planId)">详细</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -327,97 +329,97 @@
           <el-dialog :title="'详细'" :visible.sync="showDetailLog"
                      :width="'970px'">
             <div class="detail-log">
-              <el-collapse accordion>
-                <el-collapse-item>
+              <el-collapse accordion v-model="colNames">
+                <el-collapse-item name="col_a">
                   <template slot="title">
                     基本信息
                   </template>
                   <div class="class-out">
                     <div class="col-inner-item">
                       <p class="label">课程：</p>
-                      <p>安全生产综合管理</p>
+                      <p>{{recordDetail.className}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">学习部门：</p>
-                      <p>安全管理部</p>
+                      <p>{{recordDetail.department}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">类别：</p>
-                      <p>考试</p>
+                      <p>{{recordDetail.type}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">开始时间：</p>
-                      <p>2019-10-12 12:00</p>
+                      <p>{{formatTime(recordDetail.startTime)}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">结束时间：</p>
-                      <p>2019-10-12 12:00</p>
+                      <p>{{formatTime(recordDetail.endTime)}}</p>
                     </div>
-                    <div class="col-inner-item">
-                      <p class="label">学习方式：</p>
-                      <p>线下学习</p>
-                    </div>
+<!--                    <div class="col-inner-item">-->
+<!--                      <p class="label">学习方式：</p>-->
+<!--                      <p>{{recordDetail.learningStyle}}</p>-->
+<!--                    </div>-->
                     <div class="col-inner-item">
                       <p class="label">课程状态：</p>
-                      <p>发布中</p>
+                      <p>{{recordDetail.classState}}</p>
                     </div>
                     <div class="col-inner-item">
-                      <p class="label">理论学习状态：</p>
-                      <p>280 人</p>
+                      <p class="label">理论学习人数：</p>
+                      <p>{{recordDetail.theoryNum}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">发布人：</p>
-                      <p>管理员</p>
+                      <p>{{recordDetail.public}}</p>
                     </div>
                   </div>
                 </el-collapse-item>
-                <el-collapse-item title="反馈 Feedback">
+                <el-collapse-item title="反馈 Feedback" name="col_b">
                   <template slot="title">课程统计</template>
                   <div class="class-out">
                     <div class="col-inner-item">
                       <p class="label">已学习人数：</p>
-                      <p>10 人</p>
+                      <p>{{recordDetail.learned}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">未学习人数：</p>
-                      <p>20 人</p>
+                      <p>{{recordDetail.unlearned}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">参与学习率：</p>
-                      <p>30 %</p>
+                      <p>{{recordDetail.learnedRate}} %</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">考试人数：</p>
-                      <p>22 人</p>
+                      <p>{{recordDetail.examination}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">合格人数：</p>
-                      <p>19 人</p>
+                      <p>{{recordDetail.pass}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">合格率：</p>
-                      <p>70 %</p>
+                      <p>{{recordDetail.passRate}} %</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">理论学习用时：</p>
-                      <p>30 天</p>
+                      <p>{{recordDetail.theory}} 小时</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">实际学习用时：</p>
-                      <p>28 天</p>
+                      <p>{{recordDetail.act}} 小时</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">总课时：</p>
-                      <p>280 小时</p>
+                      <p>{{recordDetail.totalHour}} 小时</p>
                     </div>
                   </div>
                 </el-collapse-item>
-                <el-collapse-item title="效率 Efficiency">
+                <el-collapse-item title="效率 Efficiency" name="col_c">
                   <template slot="title">文档附件</template>
                   <ul class="download-list">
-                    <li v-for="(item, index) in detailDownList" :key="index">
+                    <li v-for="(item, index) in recordDetail.downList" :key="index">
                       {{item.name}}
-                      <a @click="downloadItem(item.url)">下载</a>
+                      <a @click="downloadItem(item.path)">下载</a>
                     </li>
                   </ul>
                 </el-collapse-item>
@@ -433,7 +435,17 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
-import {getPlanDeptList, getPlanTable, getContentTable, getRecordTable, releasePlan, deletePlan, getTrainStatistic} from '@/api/organization'
+import {
+  getPlanDeptList,
+  getPlanTable,
+  getContentTable,
+  getRecordTable,
+  releasePlan,
+  deletePlan,
+  getTrainStatistic,
+  startLearn,
+  endLearn
+} from '@/api/organization'
 
 export default {
   name: 'staffTraining',
@@ -443,7 +455,6 @@ export default {
       breadcrumb: ['风险辨识评估', '全员培训'],
       activeName: 'tab_a',
       triggerAid: '',
-      triggerBid: '',
       triggerCid: '',
       pageDataA: {
         pageSize: 10,
@@ -490,20 +501,28 @@ export default {
       trainList: [],
       recordList: [],
       showDetailLog: false,
-      detailDownList: [
-        {
-          name: 'downloadFileName',
-          url: '******'
-        },
-        {
-          name: 'downloadFileName',
-          url: '******'
-        },
-        {
-          name: 'downloadFileName',
-          url: '******'
-        }
-      ]
+      recordDetail: {
+        className: '',
+        department: '',
+        type: '1',
+        startTime: '',
+        endTime: '',
+        // learningStyle: '',
+        classState: '',
+        theoryNum: 0,
+        public: '',
+        learned: 0,
+        unlearned: 0,
+        learnedRate: 0,
+        examination: 0,
+        pass: 0,
+        passRate: 0,
+        theory: 0,
+        act: 0,
+        totalHour: 0,
+        downList: []
+      },
+      colNames: 'col_a'
     }
   },
   created () {
@@ -543,15 +562,15 @@ export default {
     },
     // 点击tree节点
     handleNodeClick (deptId) {
-      if (this.activeName === 'tab_a') {
-        this.triggerAid = deptId
-        this.pageLoading = true
-        this.getPlanTable()
-      } else if (this.activeName === 'tab_c') {
-        this.triggerCid = deptId
-        this.pageLoading = true
-        // this.getWorkerTable()
-      }
+      this.triggerAid = deptId
+      this.pageLoading = true
+      this.getPlanTable()
+    },
+    // 点击记录 tree 节点
+    handleRecordTree (deptId) {
+      this.triggerCid = deptId
+      this.pageLoading = true
+      this.getRecordTable()
     },
     // 获取treeData
     getPlanDeptTree (create) {
@@ -560,6 +579,7 @@ export default {
           this.organizationTree = res.data
           if (create) {
             this.triggerAid = this.organizationTree[0].deptId
+            this.triggerCid = this.organizationTree[0].deptId
             this.getPlanTable()
           }
         } else {
@@ -594,7 +614,7 @@ export default {
     // 获取培训记录的table
     getRecordTable () {
       this.pageLoading = true
-      getRecordTable(this.pageDataC.pageNo, this.pageDataC.pageSize).then((res) => {
+      getRecordTable(this.triggerCid, this.pageDataC.pageNo, this.pageDataC.pageSize).then((res) => {
         if (res.code === 200) {
           this.recordList = res.data
           this.pageDataC.total = res.total
@@ -616,7 +636,6 @@ export default {
     },
     releasePlan () {
       let data = {
-        // userId: '',
         deptId: '',
         courseTitle: this.addPlanData.className, // 课程名称
         category: this.addPlanData.planType, // 类别
@@ -687,17 +706,63 @@ export default {
         })
       })
     },
-    startLearn (id) {},
-    endLearn (id) {},
+    startLearn (id) {
+      this.pageLoading = true
+      let data = {id: id}
+      startLearn(data).then((res) => {
+        if (res.code && res.code === 200) {
+          this.getContentTable()
+          this.pageLoading = false
+        } else {
+          this.pageLoading = false
+          this.$message.error('提交失败，请稍后重试')
+        }
+      })
+    },
+    endLearn (id) {
+      this.pageLoading = true
+      let data = {id: id}
+      endLearn(data).then((res) => {
+        if (res.code && res.code === 200) {
+          this.getContentTable()
+          this.pageLoading = false
+        } else {
+          this.pageLoading = false
+          this.$message.error('提交失败，请稍后重试')
+        }
+      })
+    },
     downloadFile (files) {},
     checkDetail (id) {
       this.pageLoading = true
       // get data, then, showDetailLog
       getTrainStatistic(id).then((res) => {
-        if (res.code === 200) {
+        if (res.code && res.code === 200) {
+          this.recordDetail.className = res.data.trainPlan.courseTitle
+          this.recordDetail.department = res.data.trainPlan.deptName
+          this.recordDetail.type = this.planType[res.data.trainPlan.category]
+          this.recordDetail.startTime = res.data.trainPlan.theorysTime
+          this.recordDetail.endTime = res.data.trainPlan.theoryeTime
+          this.recordDetail.classState = this.states[res.data.trainPlan.state]
+          this.recordDetail.theoryNum = res.data.theor_learn
+          this.recordDetail.public = res.data.trainPlan.creater
+          this.recordDetail.learned = res.data.learned
+          this.recordDetail.unlearned = res.data.unlearned
+          this.recordDetail.learnedRate = (res.data.learnedRate * 100).toFixed(2)
+          this.recordDetail.examination = res.data.examination
+          this.recordDetail.pass = res.data.pass
+          this.recordDetail.passRate = (res.data.passRate * 100).toFixed(2)
+          this.recordDetail.theory = res.data.theory
+          this.recordDetail.act = res.data.act
+          this.recordDetail.totalHour = res.data.totalHour
+          this.recordDetail.downList = res.data.trainPlan.attachmentList
+
+          this.showDetailLog = true
+        } else {
+          this.$message.error('获取数据失败，请稍后刷新页面重试')
         }
       })
-      this.showDetailLog = true
+      this.pageLoading = false
     },
     downloadItem (url) {}
   },

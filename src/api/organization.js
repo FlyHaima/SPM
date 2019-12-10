@@ -116,16 +116,34 @@ export function getPlanTable (deptId, pageNo, pageSize) {
 
 // 安全基础管理--全员培训--培训内容table
 export function getContentTable (pageNo, pageSize) {
-  const url = `${baseUrl}/train/getTrainRecordList?pageNo=${pageNo}&pageSize=${pageSize}`
+  const url = `${baseUrl}/train/getTrainPersonList?pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
   })
 }
 
+// 安全基础管理--全员培训--培训内容table--开始学习
+export function startLearn (data) {
+  const url = `${baseUrl}/train/startLearn`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--全员培训--培训内容table--结束学习
+export function endLearn (data) {
+  const url = `${baseUrl}/train/endLearn`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 安全基础管理--全员培训--培训记录table
-export function getRecordTable (pageNo, pageSize) {
-  const url = `${baseUrl}/train/getTrainRecordList?pageNo=${pageNo}&pageSize=${pageSize}`
+export function getRecordTable (deptId, pageNo, pageSize) {
+  const url = `${baseUrl}/train/getTrainRecordList?deptId=${deptId}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
