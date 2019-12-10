@@ -511,7 +511,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
   .message-wrap{
     width: 100%;
     height: 100%;

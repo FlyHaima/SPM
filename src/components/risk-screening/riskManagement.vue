@@ -37,7 +37,7 @@
                       <el-button
                       type="warning"
                       size="medium"
-                      icon="el-icon-download"
+                      icon="el-icon-upload2"
                       @click="exportEexcel">
                       导入</el-button>
                     <el-button
@@ -475,5 +475,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 </style>

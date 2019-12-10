@@ -23,11 +23,23 @@
                   @click="batchDeleteHandle"
                   :loading="submitting">
                   批量删除</el-button>
-                <el-button
-                  type="warning"
-                  size="medium"
-                  icon="el-icon-download">
+                <el-upload
+                  class="tools-item"
+                  accept=".xls"
+                  action="http://58.155.61.34:8033/spm/user/importUsers"
+                  :data="uploadData"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :file-list="fileList"
+                  :show-file-list="false">
+                  <el-button
+                    type="warning"
+                    size="medium"
+                    icon="el-icon-upload2"
+                    v-loading="uploading"
+                    class="button-custom">
                    导入</el-button>
+                </el-upload>
               </div>
             </div>
             <el-table
@@ -322,13 +334,28 @@ export default {
         telephone: [
           { validator: phoneValidator, trigger: 'blur' }
         ]
-      }
+      },
+      uploading: false, // 导入loading
+      uploadData: {
+        riskId: ''
+      }, // 上传数据
+      fileList: [] // 导入列表
     }
   },
   mounted () {
     this.fetchRoleOptions()
   },
   methods: {
+    // 导入
+    handleBeforeUpload (file) {
+      this.uploading = true
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.uploading = false
+      this.fetchTableData()
+    },
     // 修改 启用/禁用 状态
     changeState (row) {
       console.log(row)
@@ -490,6 +517,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 
 </style>

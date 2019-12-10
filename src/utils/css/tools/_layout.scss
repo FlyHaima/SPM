@@ -34,10 +34,34 @@
   &.is-flex-end{
     justify-content: flex-end;
   }
+  >>>.el-button{
+    border-radius: 0;
+    padding: 10px 15px;
+  }
+  >>>.el-icon-upload2,
+  >>>.el-icon-download{
+    width: 14px;
+    height: 14px;
+    vertical-align: top;
+    background-image: url(/static/images/icon-export.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    &::before{
+      content: none;
+    }
+  }
+  >>>.el-icon-upload2{
+    background-image: url(/static/images/icon-import.png);
+  }
+  >>>.el-icon-download{
+    background-image: url(/static/images/icon-export.png);
+  }
+
 }
 .tools-right{
   display: flex;
   .el-button + .el-button,
+  .el-button + .tools-item,
   .tools-item + .tools-item{
     margin-left: 20px;
   }

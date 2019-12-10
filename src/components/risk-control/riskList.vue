@@ -33,7 +33,8 @@
                     type="warning"
                     size="medium"
                     icon="el-icon-upload2"
-                    v-loading="uploading">
+                    v-loading="uploading"
+                    class="button-custom">
                    导入</el-button>
                 </el-upload>
                 <el-button
@@ -215,7 +216,6 @@ export default {
         riskDj: '' // 风险等级
       },
       riskTableData: [],
-      baseUrl: 'http://58.155.61.34:8033/spm/',
       uploading: false, // 导入loading
       uploadData: {
         riskId: ''
@@ -325,5 +325,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 </style>
