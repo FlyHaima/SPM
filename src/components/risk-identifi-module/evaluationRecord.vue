@@ -267,6 +267,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/utils/css/style.scss';~
 .inner-page-container {
   .inner-content {
     width: 100%;
