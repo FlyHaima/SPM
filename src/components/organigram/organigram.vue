@@ -372,7 +372,7 @@ export default {
         }
         let idBs = this.leadUserB.join(',')
         let itemB = {
-          level: '1',
+          level: '2',
           type: '2',
           userId: idBs,
           duty: this.leaderDutyB
@@ -383,7 +383,7 @@ export default {
         deptId: this.subId,
         list: list
       }
-      // console.log(data)
+      console.log(data)
       if (this.type === '1' && this.workUsers.length > 0) {
         this.$emit('submitForm', data)
       } else if ((this.type === '2' && this.leadUserA.length > 0) || (this.type === '2' && this.leadUserB.length > 0)) {
