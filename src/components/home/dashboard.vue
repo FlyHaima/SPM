@@ -299,7 +299,7 @@ export default {
       chartHeight: '417px', // 图表高度
       pieHeight: '200px', // 饼图高度
       messageData: [], // 信息列表数据
-      tabType: 2,
+      tabType: '2',
       page: {
         pageNo: 1,
         pageSize: 10 // limit
@@ -350,7 +350,6 @@ export default {
     },
     // 跳转信息详情页面的点击事件
     goDetailsPage (item) {
-      console.log(item)
       this.$router.push({
         name: 'messagesDetails',
         params: {
