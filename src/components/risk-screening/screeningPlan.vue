@@ -233,6 +233,7 @@ import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import OwnElDialog from '../el-dialog/elDialog'
 import TreeList from '@/components/tree-diagram/treeList'
 import TreeOrganization from '@/components/tree-diagram/treeOrganization'
+import axios from '@/api/axios'
 export default {
   name: 'screeningPlan',
   data () {
@@ -243,219 +244,7 @@ export default {
       dialogOrganizationVisible: false,
       checked: false,
       isPush: true,
-      organizationTree: [
-        {
-          id: 1000131,
-          label: '东三省黑龙江分部总公司',
-          data: {
-            name: 'AAA',
-            duty: 'clean job'
-          },
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              data: {
-                name: 'BBB',
-                duty: 'clean job'
-              },
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'CCC',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组',
-                  data: {
-                    name: 'ddd',
-                    duty: 'clean job'
-                  }
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              data: {
-                name: 'eeee',
-                duty: 'clean job'
-              },
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组',
-                  data: {
-                    name: 'BBfffB',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1060122,
-                  label: '生产B组',
-                  data: {
-                    name: 'fff',
-                    duty: 'clean job'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      // organizationTree: [
-      //   {
-      //     'children': [
-      //       {
-      //         'children': [
-      //           {
-      //             'children': [
-      //               {
-      //                 'children': [
-      //                   {
-      //                     'children': null,
-      //                     'riskId': '1ak070000001',
-      //                     'riskName': '前端下的风险点',
-      //                     'riskLevelCode': '2',
-      //                     'pId': '6',
-      //                     'orderNo': 1,
-      //                     'level': '4'
-      //                   },
-      //                   {
-      //                     'children': null,
-      //                     'riskId': '1ak070000002',
-      //                     'riskName': '前端下的风险点',
-      //                     'riskLevelCode': '1',
-      //                     'pId': '6',
-      //                     'orderNo': 2,
-      //                     'level': '4'
-      //                   },
-      //                   {
-      //                     'children': null,
-      //                     'riskId': '1ak070000003',
-      //                     'riskName': '前端下的风险点',
-      //                     'riskLevelCode': '3',
-      //                     'pId': '6',
-      //                     'orderNo': 3,
-      //                     'level': '4'
-      //                   }
-      //                 ],
-      //                 'riskId': '6',
-      //                 'riskName': '前端',
-      //                 'riskLevelCode': null,
-      //                 'pId': '4',
-      //                 'orderNo': null,
-      //                 'level': '3'
-      //               },
-      //               {
-      //                 'children': null,
-      //                 'riskId': '1',
-      //                 'riskName': '测试风险点',
-      //                 'riskLevelCode': '3',
-      //                 'pId': '4',
-      //                 'orderNo': 1,
-      //                 'level': '4'
-      //               },
-      //               {
-      //                 'children': null,
-      //                 'riskId': '2',
-      //                 'riskName': '风险点2',
-      //                 'riskLevelCode': '3',
-      //                 'pId': '4',
-      //                 'orderNo': 2,
-      //                 'level': '4'
-      //               }
-      //             ],
-      //             'riskId': '4',
-      //             'riskName': '技术部1',
-      //             'riskLevelCode': null,
-      //             'pId': '11',
-      //             'orderNo': null,
-      //             'level': '2'
-      //           }
-      //         ],
-      //         'riskId': '11',
-      //         'riskName': '黑龙江多米科技有限公司',
-      //         'riskLevelCode': null,
-      //         'pId': '1',
-      //         'orderNo': null,
-      //         'level': '1'
-      //       },
-      //       {
-      //         'children': [
-      //           {
-      //             'children': null,
-      //             'riskId': '1a9020000003',
-      //             'riskName': '测试组织节点12',
-      //             'riskLevelCode': '3',
-      //             'pId': '1a9020000001',
-      //             'orderNo': null,
-      //             'level': '2'
-      //           },
-      //           {
-      //             'children': null,
-      //             'riskId': '1a9020000006',
-      //             'riskName': '测试组织节点555',
-      //             'riskLevelCode': '0',
-      //             'pId': '1a9020000001',
-      //             'orderNo': null,
-      //             'level': '2'
-      //           },
-      //           {
-      //             'children': null,
-      //             'riskId': '1aa020000002',
-      //             'riskName': '测试组织节点5',
-      //             'riskLevelCode': '1',
-      //             'pId': '1a9020000001',
-      //             'orderNo': null,
-      //             'level': '2'
-      //           },
-      //           {
-      //             'children': null,
-      //             'riskId': '2',
-      //             'riskName': '人力部',
-      //             'pId': '1a9020000001',
-      //             'riskLevelCode': '2',
-      //             'orderNo': null,
-      //             'level': '2'
-      //           },
-      //           {
-      //             'children': null,
-      //             'riskId': '3',
-      //             'riskName': '设计部',
-      //             'riskLevelCode': '4',
-      //             'pId': '1a9020000001',
-      //             'orderNo': null,
-      //             'level': '2'
-      //           },
-      //           {
-      //             'children': null,
-      //             'riskId': '5',
-      //             'riskName': '后端',
-      //             'riskLevelCode': '3',
-      //             'pId': '1a9020000001',
-      //             'orderNo': null,
-      //             'level': '3'
-      //           }
-      //         ],
-      //         'riskId': '1a9020000001',
-      //         'riskName': '黑龙江多米科技有限公司1',
-      //         'riskLevelCode': null,
-      //         'pId': '1',
-      //         'orderNo': null,
-      //         'level': '1'
-      //       }
-      //     ],
-      //     'riskId': '1',
-      //     'riskName': '多多集团',
-      //     'riskLevelCode': null,
-      //     'pId': '0',
-      //     'orderNo': null,
-      //     'level': '0'
-      //   }
-      // ],
-
+      organizationTree: [],
       form: {},
       tableData: [],
       listMenuData: [
@@ -479,7 +268,23 @@ export default {
     TreeList,
     TreeOrganization
   },
+  created () {
+    this.fetchOrgTreeData()
+  },
   methods: {
+    // 获取组织机构树数据
+    fetchOrgTreeData () {
+      let userId = sessionStorage.getItem('userId')
+      axios
+        .get('dept/getDeptList', {
+          userId: userId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.organizationTree = res.data.data[0]
+          }
+        })
+    },
     // 创建清单
     addMenuHandle () {
       this.openAppendBox()
