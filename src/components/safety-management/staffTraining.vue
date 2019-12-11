@@ -529,7 +529,6 @@ export default {
   created () {
     this.getPlanDeptTree(true)
     this.getContentTable()
-    this.getRecordTable()
   },
   methods: {
     openLoading () {
@@ -582,6 +581,7 @@ export default {
             this.triggerAid = this.organizationTree[0].deptId
             this.triggerCid = this.organizationTree[0].deptId
             this.getPlanTable()
+            this.getRecordTable()
           }
         } else {
           this.organizationTree = []
