@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <el-dialog title="编辑" :visible.sync="dialogVisibleEdit">
+    <el-dialog title="编辑" :visible.sync="dialogVisibleEdit" v-loading="pageLoading">
       <div class="form-modal">
         <el-form
           ref="form"
@@ -173,7 +173,8 @@ export default {
       },
       organigramDataObj: [],
       graph: null,
-      subId: ''
+      subId: '',
+      pageLoading: false
     }
   },
   props: {
@@ -184,6 +185,10 @@ export default {
     selector: {
       type: Array,
       default: null
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   created () {
@@ -343,7 +348,6 @@ export default {
 
       this.graph.on('node:contextmenu', (e) =>{
         this.subId = e.item._cfg.id
-        console.log(e)
         this.dialogVisibleEdit = true
       })
     },
@@ -379,8 +383,10 @@ export default {
         deptId: this.subId,
         list: list
       }
-      console.log(data)
-      if (this.workUsers.length > 0) {
+      // console.log(data)
+      if (this.type === '1' && this.workUsers.length > 0) {
+        this.$emit('submitForm', data)
+      } else if ((this.type === '2' && this.leadUserA.length > 0) || (this.type === '2' && this.leadUserB.length > 0)) {
         this.$emit('submitForm', data)
       } else {
         this.$message.error('人员不能为空')
@@ -402,8 +408,16 @@ export default {
       this.graph.fitView()
       this.graph.refresh()
       this.graph.on('node:contextmenu', (e) =>{
+        this.subId = e.item._cfg.id
         this.dialogVisibleEdit = true
       })
+    },
+    loading (val) {
+      this.pageLoading = val
+      // 当父组件ajax结束后，返回子组件的loading结束，及可默认为弹窗消失
+      if (!val) {
+        this.dialogVisibleEdit = false
+      }
     }
   }
 }
