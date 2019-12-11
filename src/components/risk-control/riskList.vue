@@ -20,15 +20,26 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-upload
+                  class="tools-item"
                   v-if="importVisible"
-                  :limit="1"
-                  accept=".xlsx"
-                  action="http://upload-z1.qiniup.com"
-                  :file-list="importFileList">
-                  <el-button type="warning" size="medium" icon="el-icon-upload2">
+                  accept=".xls"
+                  action="http://58.155.61.34:8033/spm/riskLevel/importRisks"
+                  :data="uploadData"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :file-list="fileList"
+                  :show-file-list="false">
+                  <el-button
+                    type="warning"
+                    size="medium"
+                    icon="el-icon-upload2"
+                    v-loading="uploading"
+                    class="button-custom">
                    导入</el-button>
                 </el-upload>
                 <el-button
+                  v-if="!tableVisible"
+                  class="tools-item"
                   type="success"
                   size="medium"
                   icon="el-icon-download"
@@ -36,7 +47,7 @@
                    导出</el-button>
               </div>
             </div>
-            <div v-if="tableVisible">
+            <template v-if="tableVisible">
               <el-table
                 :data="tableData"
                 border
@@ -68,7 +79,7 @@
                   label="风险等级">
                 </el-table-column>
               </el-table>
-            </div>
+            </template>
             <div v-else>
               <div class="custom-table">
                 <div class="custom-tbody is-inline">
@@ -101,7 +112,7 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">风险级别</div>
                     <div class="custom-td-value">
-                      {{riskList.riskDjCode}}
+                      {{riskList.riskLevel}}
                     </div>
                   </div>
                   <div class="custom-tr">
@@ -151,7 +162,7 @@
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.workNo}}
+                        {{item.no}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -179,7 +190,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
-// import exportExcel from '@/api/exportExcel'
+import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'riskList',
@@ -191,7 +202,7 @@ export default {
       riskId: '', // id
       level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
-      importVisible: true, // 导出按钮显示开关
+      importVisible: false, // 导出按钮显示开关
       tableVisible: false, // table显示切换开关
       tagVisible: false, // tag显示开关
       tableData: [],
@@ -205,10 +216,11 @@ export default {
         riskDj: '' // 风险等级
       },
       riskTableData: [],
-      importFileList: [] // 导入列表
-      // importData: {
-      //   code: '200'
-      // } // 上传时附带的额外参数
+      uploading: false, // 导入loading
+      uploadData: {
+        riskId: ''
+      }, // 上传数据
+      fileList: [] // 导入列表
     }
   },
   created () {
@@ -216,6 +228,16 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 导入
+    handleBeforeUpload (file) {
+      this.uploading = true
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.uploading = false
+      this.fetchTableData()
+    },
     // 获取树的数据
     fetchTreeData () {
       axios
@@ -261,13 +283,14 @@ export default {
     treeClickHandle (data) {
       let vm = this
       vm.riskId = data.riskId
+      vm.uploadData.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
       if (vm.treeLevel === '4') {
-        vm.importVisible = false
-      } else {
         vm.importVisible = true
+      } else {
+        vm.importVisible = false
       }
     },
     closeLoading () {
@@ -275,7 +298,7 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
-      // exportExcel('riskLevel/exportTz')
+      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.riskId)
     }
   },
   computed: {
@@ -302,5 +325,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 </style>

@@ -2,7 +2,7 @@
 <template>
   <div class="wrap login-wrap">
     <el-row class="login-content">
-      <el-col :span="14" class="login-content-left">
+      <el-col :span="16" class="login-content-left">
         <div class="logo"></div>
         <el-tabs v-model="activeName">
           <el-tab-pane label="新闻动态" name="first">
@@ -73,7 +73,7 @@
         </el-tabs>
 
       </el-col>
-      <el-col :span="8" :offset="1" class="login-content-right">
+      <el-col :span="6" :offset="1" class="login-content-right">
         <div class="login-box">
           <div class="login-box-inner">
             <div class="login-title">
@@ -109,7 +109,7 @@
                 </el-form-item>
                 <el-form-item prop="password">
                   <el-input
-                    type="text"
+                    type="password"
                     v-model.trim="form.password"
                     autocomplete="off"
                     placeholder="请输入密码">

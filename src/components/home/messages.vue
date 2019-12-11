@@ -6,50 +6,48 @@
     @tab-click='clickTab'>
     <el-tab-pane label="我发布的" name="1">
       <span slot="label"> 我发布的</span>
-      <div class="">
-        <div class="info-panel">
-          <div class="info-header">
-            <div class="info-link">
-              <el-button @click="handleSendMessage" type="primary" size="mini">发布消息</el-button>
-              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
-            </div>
+      <div class="info-panel">
+        <div class="info-header">
+          <div class="info-link">
+            <el-button @click="handleSendMessage" type="primary" size="mini">发布消息</el-button>
+            <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
           </div>
-          <div class="info-content">
-            <ul class="list-info">
-              <li
-                v-for="(item, index) in messageData"
-                :key="index"
-                class="list-info-item list-info-item-light">
-                <div class="list-info-title" @click="goDetailsPage(item)">
-                  <span class="list-info-txt">
-                    <span v-if="item.type" class="list-info-type">
-                      [{{item.type}}]
-                      <i v-if="item.isRead === '1'" class="badge"></i>
-                    </span>
-                    {{item.title}}
+        </div>
+        <div class="info-content">
+          <ul class="list-info">
+            <li
+              v-for="(item, index) in messageData"
+              :key="index"
+              class="list-info-item list-info-item-light">
+              <div class="list-info-title" @click="goDetailsPage(item)">
+                <span class="list-info-txt">
+                  <span v-if="item.type" class="list-info-type">
+                    [{{item.type}}]
+                    <i v-if="item.isRead === '1'" class="badge"></i>
                   </span>
-                </div>
-                <div class="list-info-right">
-                  <template v-if="item.sendTime">
-                    <i class="icon-clock"></i>
-                    <span class="list-info-date">{{item.sendTime | date-filter}}</span>
-                    <span class="list-info-time">{{item.sendTime | time-filter}}</span>
-                  </template>
-                  <span class="list-info-user">发布人：{{item.userName}}</span>
-                  <i @click="deleteRow(item)" class="el-icon-delete" ></i>
-                </div>
-              </li>
-            </ul>
-            <el-pagination
-              class="text-right"
-              background
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="page.index"
-              layout="total, prev, pager, next, jumper"
-              :total="page.total">
-            </el-pagination>
-          </div>
+                  {{item.title}}
+                </span>
+              </div>
+              <div class="list-info-right">
+                <template v-if="item.sendTime">
+                  <i class="icon-clock"></i>
+                  <span class="list-info-date">{{item.sendTime | date-filter}}</span>
+                  <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                </template>
+                <span class="list-info-user">发布人：{{item.userName}}</span>
+                <i @click="deleteRow(item)" class="el-icon-delete" ></i>
+              </div>
+            </li>
+          </ul>
+          <el-pagination
+            class="text-right"
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="page.index"
+            layout="total, prev, pager, next, jumper"
+            :total="page.total">
+          </el-pagination>
         </div>
       </div>
     </el-tab-pane>
@@ -151,9 +149,7 @@
             accept="image/jpg, video/mp4, .doc"
             :data="uploadData"
             :before-upload="handleBeforeUpload"
-            :on-change="handleChange"
             :on-success="handleSuccess"
-            :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
             multiple
@@ -234,6 +230,8 @@ export default {
   name: 'messages',
   data () {
     return {
+      submitting: false,
+      pageLoading: false,
       upload_qiniu_addr: 'http://file.hljdmkj.com/',
       uploading: false, // upload加载
       uploadData: {
@@ -401,7 +399,6 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
-      // this.tabType = (Number(item.paneName) + 1) + ''
       this.fetchList()
     },
     // 标记当前页已读事件处理
@@ -484,18 +481,11 @@ export default {
         this.$message.error('上传头像图片大小不能超过 1MB!')
         this.uploading = false
       }
-      // let token = sessionStorage.getItem('token')
       return axios
         .get('user/qinToken')
         .then((res) => {
           this.uploadData.token = res.data
         })
-      // return getuploadToken(token).then(res => {
-      //   this.uploadData.token = res
-      //     token: res
-      //   }
-      // })
-      // return isLt1M
     },
     handleSuccess (response, file, fileList) {
       this.uploadList = []
@@ -510,17 +500,11 @@ export default {
     handleRemove (file, fileList) {
       this.fileList = fileList
     },
-    handlePreview (file) {
-      // console.log(file)
-    },
     handleExceed (files, fileList) {
       this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 $ { file.name }？`)
-    },
-    handleChange (file, fileList) {
-      // console.log(fileList)
     },
     treeTransferHandle () {
       this.showTreeTransfer = true
@@ -545,6 +529,8 @@ export default {
     }
   },
   watch: {
+    // 如果路由有变化，会再次执行该方法
+    '$route': 'fetchList'
   },
   components: {
     treeTransfer
@@ -552,7 +538,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
   .message-wrap{
     width: 100%;
     height: 100%;

@@ -7,15 +7,27 @@
     <el-main class="inner-main-container">
       <el-tabs type="border-card" class="height-100">
         <el-tab-pane>
-          <span slot="label">基础管理类</span>
+          <span slot="label">基础管理类隐患排查清单</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-read-only
-                :tree-name="'风险单元'"
-                :tree-data="organizationTree"
-                @open-loading="openLoading"
-                @close-loading="closeLoading" >
-              </tree-read-only>
+              <div class="left-menu">
+                <div class="aside-title">
+                  <i></i>计划清单
+                  <a
+                    href="javascript:;"
+                    @click="eiditOrganizationHandle()">编辑机构</a>
+                  <a
+                    href="javascript:;"
+                    @click="addMenuHandle()">创建清单</a>
+                  </div>
+
+                <tree-list
+                  :list-data = "listMenuData"
+                  @menu-click-handle="menuClickHandle"
+                  @eidt-menu-handle="eidtMenuHandle"
+                  @del-menu-handle="delMenuHandle"
+                ></tree-list>
+              </div>
             </el-aside>
 
             <el-main class="inner-content">
@@ -76,13 +88,12 @@
         </el-tab-pane>
 
         <el-tab-pane>
-          <span slot="label">生产现场类</span>
+          <span slot="label">生产现场类隐患排查清单</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-read-only
                 :tree-name="'风险单元'"
                 :tree-data="organizationTree"
-                @open-loading="openLoading"
                 @close-loading="closeLoading" >
               </tree-read-only>
             </el-aside>
@@ -194,12 +205,35 @@
           @click="dialogVisible = false">取 消</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      title="编辑机构"
+      :visible.sync="dialogOrganizationVisible"
+      width="30%">
+      <div style="height: 500px">
+        <tree-organization
+          :tree-data= "organizationTree"
+          editVisible
+        ></tree-organization>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          size="small"
+          @click="submitForm()">确 定</el-button>
+        <el-button
+          size="small"
+          @click="dialogOrganizationVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import OwnElDialog from '../el-dialog/elDialog'
+import TreeList from '@/components/tree-diagram/treeList'
+import TreeOrganization from '@/components/tree-diagram/treeOrganization'
+import axios from '@/api/axios'
 export default {
   name: 'screeningPlan',
   data () {
@@ -207,172 +241,83 @@ export default {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
       dialogVisible: false,
+      dialogOrganizationVisible: false,
       checked: false,
       isPush: true,
-      organizationTree: [
+      organizationTree: [],
+      form: {},
+      tableData: [],
+      listMenuData: [
         {
-          'children': [
-            {
-              'children': [
-                {
-                  'children': [
-                    {
-                      'children': [
-                        {
-                          'children': null,
-                          'riskId': '1ak070000001',
-                          'riskName': '前端下的风险点',
-                          'riskLevelCode': '2',
-                          'pId': '6',
-                          'orderNo': 1,
-                          'level': '4'
-                        },
-                        {
-                          'children': null,
-                          'riskId': '1ak070000002',
-                          'riskName': '前端下的风险点',
-                          'riskLevelCode': '1',
-                          'pId': '6',
-                          'orderNo': 2,
-                          'level': '4'
-                        },
-                        {
-                          'children': null,
-                          'riskId': '1ak070000003',
-                          'riskName': '前端下的风险点',
-                          'riskLevelCode': '3',
-                          'pId': '6',
-                          'orderNo': 3,
-                          'level': '4'
-                        }
-                      ],
-                      'riskId': '6',
-                      'riskName': '前端',
-                      'riskLevelCode': null,
-                      'pId': '4',
-                      'orderNo': null,
-                      'level': '3'
-                    },
-                    {
-                      'children': null,
-                      'riskId': '1',
-                      'riskName': '测试风险点',
-                      'riskLevelCode': '3',
-                      'pId': '4',
-                      'orderNo': 1,
-                      'level': '4'
-                    },
-                    {
-                      'children': null,
-                      'riskId': '2',
-                      'riskName': '风险点2',
-                      'riskLevelCode': '3',
-                      'pId': '4',
-                      'orderNo': 2,
-                      'level': '4'
-                    }
-                  ],
-                  'riskId': '4',
-                  'riskName': '技术部1',
-                  'riskLevelCode': null,
-                  'pId': '11',
-                  'orderNo': null,
-                  'level': '2'
-                }
-              ],
-              'riskId': '11',
-              'riskName': '黑龙江多米科技有限公司',
-              'riskLevelCode': null,
-              'pId': '1',
-              'orderNo': null,
-              'level': '1'
-            },
-            {
-              'children': [
-                {
-                  'children': null,
-                  'riskId': '1a9020000003',
-                  'riskName': '测试组织节点12',
-                  'riskLevelCode': '3',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '1a9020000006',
-                  'riskName': '测试组织节点555',
-                  'riskLevelCode': '0',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '1aa020000002',
-                  'riskName': '测试组织节点5',
-                  'riskLevelCode': '1',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '2',
-                  'riskName': '人力部',
-                  'pId': '1a9020000001',
-                  'riskLevelCode': '2',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '3',
-                  'riskName': '设计部',
-                  'riskLevelCode': '4',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '5',
-                  'riskName': '后端',
-                  'riskLevelCode': '3',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '3'
-                }
-              ],
-              'riskId': '1a9020000001',
-              'riskName': '黑龙江多米科技有限公司1',
-              'riskLevelCode': null,
-              'pId': '1',
-              'orderNo': null,
-              'level': '1'
-            }
-          ],
-          'riskId': '1',
-          'riskName': '多多集团',
-          'riskLevelCode': null,
-          'pId': '0',
-          'orderNo': null,
-          'level': '0'
+          id: '1',
+          name: '轮播图',
+          type: '1'
+        },
+        {
+          id: '2',
+          name: '新闻列表',
+          type: '2'
         }
-      ],
-      form: {
-
-      }
+      ] // 计划清单列表数据
     }
   },
   components: {
     TreeReadOnly,
     BreadCrumb,
-    OwnElDialog
+    OwnElDialog,
+    TreeList,
+    TreeOrganization
+  },
+  created () {
+    this.fetchOrgTreeData()
   },
   methods: {
-    openLoading () {
-      this.pageLoading = true
+    // 获取组织机构树数据
+    fetchOrgTreeData () {
+      let userId = sessionStorage.getItem('userId')
+      axios
+        .get('dept/getDeptList', {
+          userId: userId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.organizationTree = res.data.data[0]
+          }
+        })
+    },
+    // 创建清单
+    addMenuHandle () {
+      this.openAppendBox()
+    },
+    openAppendBox () {
+      this.$prompt('请输入清单名称', '添加清单', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '清单设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
+    },
+    // 点击菜单项
+    menuClickHandle (item) {
+      console.log(item)
+    },
+    // 编辑菜单项
+    eidtMenuHandle (item) {
+      // console.log('edit')
+    },
+    // 删除菜单项
+    delMenuHandle (item) {
+      // console.log('del')
+    },
+    // 编辑机构
+    eiditOrganizationHandle () {
+      this.dialogOrganizationVisible = true
     },
     closeLoading () {
       this.pageLoading = false
@@ -389,7 +334,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
+.left-menu{
+  background: #fff;
+  position: relative;
+  width: 400px;
+  height: 100%;
+}
+.aside-title{
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+  padding-left: 37px;
+  height: 50px;
+  line-height: 49px;
+  border-bottom: 1px solid #eeeeee;
+  color: #333333;
+  font-size: 18px;
+  i{
+    position: absolute;
+    top: 17px;
+    left: 20px;
+    display: block;
+    background: url('../../assets/img/blue-double-line.png');
+    width: 3px;
+    height: 16px;
+    background-size: cover;
+  }
+}
+
 .el-form{
   width: 400px;
   margin: 0 auto;

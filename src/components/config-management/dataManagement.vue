@@ -11,6 +11,7 @@
             <el-form :inline="true" class="demo-form-inline">
               <el-form-item>
                 <el-input
+                  v-model="groupName"
                   placeholder="请输入搜索内容">
                   <i slot="prefix" class="el-input__icon el-icon-search"></i>
                 </el-input>
@@ -25,7 +26,7 @@
               ref="singleTable"
               highlight-current-row
               @current-change="handleCurrentChange"
-              :data="tableData"
+              :data="seachTableData"
               border
               class="menu-table">
               <el-table-column
@@ -59,12 +60,14 @@
             <el-table
               :data="tables.data"
               border
-              style="width: 100%">
+              style="width: 100%"
+              v-loading="tables.loading">
               <el-table-column
                 type="index"
                 label="序号"
                 width="55"
-                align="center">
+                align="center"
+                :index="tablesDefineIndex">
               </el-table-column>
               <el-table-column
                 prop="code"
@@ -87,10 +90,9 @@
                 layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
-                :page-size="tables.form.limit"
+                :page-size="tables.form.pageSize"
                 :total="tables.page.total"
-                @current-change="tablesHandleCurrentPage"
-                @size-change="tablesHandleSizeChange"></el-pagination>
+                @current-change="tablesHandleCurrentPage"></el-pagination>
             </div>
           </div>
         </el-main>
@@ -127,10 +129,12 @@
         </el-form-item>
          <el-form-item
           label="备注">
-          <textarea
+          <el-input
+            type="textarea"
             v-model="tables.form.remark"
             placeholder="请输入备注"
-            autocomplete></textarea>
+            autocomplete
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -196,10 +200,12 @@ export default {
       submitting: false, // 提交数据loading开关
       dialogAddVisible: false, // 添加弹框显示开关
       dialogAddGroupVisible: false, // 添加分类弹框显示开关
+      groupName: '',
       formGroup: {
         groupName: ''
       },
       tableData: [], // table列表数据
+      seachTableData: [],
       tables: {
         api: 'dic/getList',
         form: {
@@ -217,7 +223,6 @@ export default {
   },
   methods: {
     setCurrent (row) {
-      console.log(this.$refs)
       this.$refs.singleTable.setCurrentRow(row)
     },
     handleCurrentChange (val) {
@@ -236,12 +241,13 @@ export default {
       this.pageLoading = true
       let vm = this
       axios
-        .get('dic/getGroupList')
+        .get('dic/getGroupList', this.form)
         .then((res) => {
           if (res.data.code === 200) {
             vm.tableData = res.data.groupList
-            this.setCurrent(vm.tableData[0])
-            this.groupClickHandle(vm.tableData[0])
+            vm.seachTableData = vm.tableData
+            this.setCurrent(vm.seachTableData[0])
+            this.groupClickHandle(vm.seachTableData[0])
           }
         }).finally(() => {
           this.pageLoading = false
@@ -313,12 +319,19 @@ export default {
   },
   components: {
     BreadCrumb
+  },
+  watch: {
+    groupName (val) {
+      this.seachTableData = this.tableData.filter(
+        data => !val || data.groupName.toLowerCase().includes(val.toLowerCase())
+      )
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 .inner-aside{
   margin-right: 8px;
   background: #ffffff;

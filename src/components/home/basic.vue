@@ -439,7 +439,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  @import '../../utils/css/style.scss';
+  @import '@/utils/css/style.scss';
 
   // 可提取的公用样式
   .icon-location{

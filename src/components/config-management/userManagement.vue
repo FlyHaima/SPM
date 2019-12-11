@@ -23,11 +23,24 @@
                   @click="batchDeleteHandle"
                   :loading="submitting">
                   批量删除</el-button>
-                <el-button
-                  type="warning"
-                  size="medium"
-                  icon="el-icon-download">
+                <el-upload
+                  class="tools-item"
+                  accept=".xls"
+                  action="http://58.155.61.34:8033/spm/user/importUsers"
+                  :data="uploadData"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :on-error="handleError"
+                  :file-list="fileList"
+                  :show-file-list="false">
+                  <el-button
+                    type="warning"
+                    size="medium"
+                    icon="el-icon-upload2"
+                    v-loading="uploading"
+                    class="button-custom">
                    导入</el-button>
+                </el-upload>
               </div>
             </div>
             <el-table
@@ -137,10 +150,9 @@
                 layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
-                :page-size="tables.form.limit"
+                :page-size="tables.form.pageSize"
                 :total="tables.page.total"
-                @current-change="tablesHandleCurrentPage"
-                @size-change="tablesHandleSizeChange"></el-pagination>
+                @current-change="tablesHandleCurrentPage"></el-pagination>
             </div>
           </div>
         </el-main>
@@ -205,8 +217,8 @@
         <el-form-item label="角色:" >
           <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
             <el-option
-              v-for="item in roleOptions"
-              :key="item.value"
+              v-for="(item, index) in roleOptions"
+              :key="index"
               :label="item.label"
               :value="item.value">
             </el-option>
@@ -323,13 +335,31 @@ export default {
         telephone: [
           { validator: phoneValidator, trigger: 'blur' }
         ]
-      }
+      },
+      uploading: false, // 导入loading
+      uploadData: {
+        riskId: ''
+      }, // 上传数据
+      fileList: [] // 导入列表
     }
   },
   mounted () {
     this.fetchRoleOptions()
   },
   methods: {
+    // 导入
+    handleBeforeUpload (file) {
+      this.uploading = true
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.uploading = false
+      this.tablesFetchList()
+    },
+    // 导入失败
+    handleError (file, fileList) {
+    },
     // 修改 启用/禁用 状态
     changeState (row) {
       console.log(row)
@@ -371,7 +401,6 @@ export default {
       this.dialogAddVisible = true
       this.editData = row.userId
       this.initForm(this.editData)
-      console.log(this.form)
     },
     // 获取角色数据
     fetchRoleOptions () {
@@ -426,6 +455,7 @@ export default {
               console.log(res.data.code)
               if (res.data.code === 200) {
                 this.$notify.success('删除成功')
+                this.tables.form.pageNo--
                 this.tablesFetchList()
                 this.multipleSelection = []
               }
@@ -492,6 +522,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 
 </style>

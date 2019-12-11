@@ -14,7 +14,7 @@
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="exportHandel">
+                  @click="exportExcelHandel">
                    导出</el-button>
               </div>
             </div>
@@ -124,10 +124,9 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
-                :page-size="tables.form.limit"
+                :page-size="tables.form.pageSize"
                 :total="tables.page.total"
-                @current-change="tablesHandleCurrentPage"
-                @size-change="tablesHandleSizeChange"></el-pagination>
+                @current-change="tablesHandleCurrentPage"></el-pagination>
             </div>
           </div>
         </el-main>
@@ -138,6 +137,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
+import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'riskBook',
@@ -146,14 +146,14 @@ export default {
     return {
       breadcrumb: ['风险分级管控', '风险点分级管控台账'],
       tables: {
-        api: 'spm/riskLevel/getRiskTz'
+        api: 'riskLevel/getRiskTz'
       }
     }
   },
   methods: {
     // 导出excel
-    exportHandel () {
-      this.tablesExportExcel('spm/riskLevel/exportTz')
+    exportExcelHandel () {
+      exportExcel(`riskLevel/exportTz`)
     },
     // tag的class集合
     classObj (data) {
@@ -175,6 +175,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 
 </style>

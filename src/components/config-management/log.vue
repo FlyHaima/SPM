@@ -30,8 +30,9 @@
                   <el-table-column
                     label="序号"
                     type="index"
-                    width="55"
-                    align="center">
+                    width="65"
+                    align="center"
+                    :index="tablesDefineIndex">
                   </el-table-column>
                   <el-table-column
                     prop="logTimeStr"
@@ -64,7 +65,7 @@
                     align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="logType"
+                    prop="description"
                     label="操作"
                     align="center">
                   </el-table-column>
@@ -74,10 +75,9 @@
                     layout="total, prev, pager, next, jumper"
                     :current-page="tables.page.index"
                     :page-sizes="tables.page.sizes"
-                    :page-size="tables.form.limit"
+                    :page-size="tables.form.pageSize"
                     :total="tables.page.total"
-                    @current-change="tablesHandleCurrentPage"
-                    @size-change="tablesHandleSizeChange"></el-pagination>
+                    @current-change="tablesHandleCurrentPage"></el-pagination>
                 </div>
               </div>
             </el-main>
@@ -93,7 +93,8 @@
                     <el-button
                       type="danger"
                       size="medium"
-                      icon="el-icon-delete">
+                      icon="el-icon-delete"
+                       @click.prevent="batchDeleteHandle()">
                       清空当前页</el-button>
                   </div>
                 </div>
@@ -107,7 +108,8 @@
                     label="序号"
                     type="index"
                     width="55"
-                    align="center">
+                    align="center"
+                    :index="tablesDefineIndex">
                   </el-table-column>
                   <el-table-column
                     prop="logTimeStr"
@@ -140,7 +142,7 @@
                     align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="logType"
+                    prop="description"
                     label="操作"
                     align="center">
                   </el-table-column>
@@ -150,10 +152,9 @@
                     layout="total, prev, pager, next, jumper"
                     :current-page="tables.page.index"
                     :page-sizes="tables.page.sizes"
-                    :page-size="tables.form.limit"
+                    :page-size="tables.form.pageSize"
                     :total="tables.page.total"
-                    @current-change="tablesHandleCurrentPage"
-                    @size-change="tablesHandleSizeChange"></el-pagination>
+                    @current-change="tablesHandleCurrentPage"></el-pagination>
                 </div>
               </div>
             </el-main>
@@ -169,7 +170,8 @@
                     <el-button
                       type="danger"
                       size="medium"
-                      icon="el-icon-delete">
+                      icon="el-icon-delete"
+                      @click.prevent="batchDeleteHandle()">
                       清空当前页</el-button>
                   </div>
                 </div>
@@ -183,7 +185,8 @@
                     label="序号"
                     type="index"
                     width="55"
-                    align="center">
+                    align="center"
+                    :index="tablesDefineIndex">
                   </el-table-column>
                   <el-table-column
                     prop="logTimeStr"
@@ -216,8 +219,8 @@
                     align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="logType"
-                    label="操作"
+                    prop="errorMsg"
+                    label="错误信息"
                     align="center">
                   </el-table-column>
                 </el-table>
@@ -226,10 +229,9 @@
                     layout="total, prev, pager, next, jumper"
                     :current-page="tables.page.index"
                     :page-sizes="tables.page.sizes"
-                    :page-size="tables.form.limit"
+                    :page-size="tables.form.pageSize"
                     :total="tables.page.total"
-                    @current-change="tablesHandleCurrentPage"
-                    @size-change="tablesHandleSizeChange"></el-pagination>
+                    @current-change="tablesHandleCurrentPage"></el-pagination>
                 </div>
               </div>
             </el-main>
@@ -254,7 +256,7 @@ export default {
       tables: {
         api: 'log/getLogList',
         form: {
-          logType: '1'
+          tabType: '1'
         }
       }
     }
@@ -268,7 +270,7 @@ export default {
       let sendData = {
         pageNo: this.tables.form.pageNo,
         pageSize: this.tables.form.pageSize,
-        tabType: this.tables.form.logType
+        tabType: this.tables.form.tabType
       }
       this.$confirm('是否删除当页消息？', '提示', {
         confirmButtonText: '确定',
@@ -281,7 +283,8 @@ export default {
             console.log(res.data.code)
             if (res.data.code === 200) {
               this.$notify.success('删除成功')
-              this.tables.form.pageNo--
+              this.tables.form.pageNo = 1
+              this.tables.page.index = 1
               this.tablesFetchList()
             }
           })
@@ -294,7 +297,9 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
-      this.tables.form.logType = (Number(item.paneName) + 1) + ''
+      this.tables.form.tabType = (Number(item.paneName) + 1) + ''
+      this.tables.form.pageNo = 1
+      this.tables.page.index = 1
       this.tablesFetchList()
     }
   }
@@ -302,5 +307,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 </style>

@@ -29,9 +29,9 @@ export default {
       tables: {
         _defaultForm: {},
         form: {
-          keyword: '',
-          offset: 0,
-          limit: 10,
+          // keyword: '',
+          // offset: 0,
+          // limit: 10,
           pageNo: 1,
           pageSize: 10
         },
@@ -39,9 +39,9 @@ export default {
         sum: [],
         loading: false,
         page: {
-          total: 0,
-          index: 1,
-          sizes: [10, 20, 50]
+          total: 0, // 共多少条
+          index: 1, // 当前页数
+          sizes: [10, 20, 50] // 分页集合
         },
         auto: true
       }
@@ -56,54 +56,54 @@ export default {
     }
   },
   methods: {
-    tableReset () {
-      if (this.queryDate) {
-        this.queryDate = ''
-      }
-      if (this.queryDateSecond) {
-        this.queryDateSecond = ''
-      }
-      try {
-        let defaultForm = this.tables._defaultForm
-        let form = this.tables.form
-        let ignores = ['offset', 'limit']
-        for (let key in form) {
-          if (form.hasOwnProperty(key) && ignores.indexOf(key) === -1) {
-            // 将默认表单值复制回表单
-            form[key] = defaultForm[key]
-          }
-        }
-      } catch (e) {
-        console.error(this.tables.form)
-      }
-    },
+    // tableReset () {
+    //   if (this.queryDate) {
+    //     this.queryDate = ''
+    //   }
+    //   if (this.queryDateSecond) {
+    //     this.queryDateSecond = ''
+    //   }
+    //   try {
+    //     let defaultForm = this.tables._defaultForm
+    //     let form = this.tables.form
+    //     let ignores = ['offset', 'limit']
+    //     for (let key in form) {
+    //       if (form.hasOwnProperty(key) && ignores.indexOf(key) === -1) {
+    //         // 将默认表单值复制回表单
+    //         form[key] = defaultForm[key]
+    //       }
+    //     }
+    //   } catch (e) {
+    //     console.error(this.tables.form)
+    //   }
+    // },
     // 表单submit 事件响应
-    tableSearchHandler () {
-      this.tables.form.offset = 0
-      this.tables.page.index = 1
-      this.tablesFetchList()
-    },
-    tablesSortChangeHandler ({
-      column,
-      prop,
-      order
-    }) {
-      // table 绑定  @sort-change
-      // column 绑定 sortable="custom"
-      // 不改变当前页
-      // this.tables.page.index = 1
-      // this.tables.form.offset = 0
-      this.tables.form.orderBy = prop
-      switch (order) {
-        case 'ascending':
-          this.tables.form.sort = 'ASC'
-          break
-        case 'descending':
-          this.tables.form.sort = 'DESC'
-          break
-      }
-      this.tablesFetchList()
-    },
+    // tableSearchHandler () {
+    //   this.tables.form.offset = 0
+    //   this.tables.page.index = 1
+    //   this.tablesFetchList()
+    // },
+    // tablesSortChangeHandler ({
+    //   column,
+    //   prop,
+    //   order
+    // }) {
+    //   // table 绑定  @sort-change
+    //   // column 绑定 sortable="custom"
+    //   // 不改变当前页
+    //   // this.tables.page.index = 1
+    //   // this.tables.form.offset = 0
+    //   this.tables.form.orderBy = prop
+    //   switch (order) {
+    //     case 'ascending':
+    //       this.tables.form.sort = 'ASC'
+    //       break
+    //     case 'descending':
+    //       this.tables.form.sort = 'DESC'
+    //       break
+    //   }
+    //   this.tablesFetchList()
+    // },
     // 获取列表
     tablesFetchList () {
       this.tables.loading = true
@@ -123,23 +123,23 @@ export default {
     },
     // 序号
     tablesDefineIndex (index) {
-      return index + 1 + (this.tables.page.index - 1) * this.tables.form.limit
+      return index + 1 + (this.tables.page.index - 1) * this.tables.form.pageSize
     },
     // 切换当前页页数
     tablesHandleCurrentPage (val) {
       this.tables.page.index = val
-      this.tables.form.offset = --val * this.tables.form.limit
-      this.tables.form.pageNo = val + 1
+      // this.tables.form.offset = --val * this.tables.form.limit
+      this.tables.form.pageNo = val
       this.tablesFetchList()
     },
     // 切换分页数量
-    tablesHandleSizeChange (val) {
-      this.tables.form.limit = val
-      this.tables.form.offset = 0
-      this.tables.page.index = 1
-      // this.tables.form.offset = val * this.tables.page.index
-      this.tablesFetchList()
-    },
+    // tablesHandleSizeChange (val) {
+    //   this.tables.form.limit = val
+    //   // this.tables.form.offset = 0
+    //   this.tables.page.index = 1
+    //   // this.tables.form.offset = val * this.tables.page.index
+    //   this.tablesFetchList()
+    // },
     // 导出
     tablesExportExcel (api, params = this.tables.form) {
       exportExcel(api, params)
