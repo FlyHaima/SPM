@@ -31,7 +31,7 @@ export default {
 
     // 拦截request, 设置全局请求为ajax请求
     axios.interceptors.request.use((config) => {
-      let sessionToken = window.localStorage.getItem('TOKEN_KEY')
+      let sessionToken = sessionStorage.getItem('TOKEN_KEY')
       if (!sessionToken) {
         sessionToken = ''
       }
@@ -48,8 +48,8 @@ export default {
     axios.interceptors.response.use((response) => {
       if (response.headers.tokenmessagecode === '401') {
         // this.$message.error('Token已失效，请重新登录')
-        sessionStorage.setItem('token', '')
-        that.$router.push('/home')
+        sessionStorage.setItem('TOKEN_KEY', '')
+        that.$router.push('/login')
       }
       return response
     }, (err) => { // 这里是返回状态码不为200时候的错误处理

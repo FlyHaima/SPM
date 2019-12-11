@@ -11,7 +11,7 @@
             <div class="aside-title"><i></i>文件</div>
             <ul class="aside-list">
               <li v-for="(item, index) in fileTypes" :key="index">
-                <a class="type-item" :class="item.active ? 'active' : ''" @click="clickMenuItem(item.typeStr, index)">{{item.name}}</a>
+                <a class="type-item" :class="item.active ? 'active' : ''" @click="clickMenuItem(item.name, index)">{{item.name}}</a>
               </li>
             </ul>
           </div>
@@ -101,6 +101,7 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
+import {getBasicCategory} from '@/api/organization'
 
 export default {
   name: 'basicData',
@@ -109,41 +110,7 @@ export default {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '制度建设'],
       showTableA: true,
-      fileTypes: [
-        {
-          name: '全部文件',
-          typeStr: 'all',
-          active: true
-        }, {
-          name: '公司内相关制度',
-          typeStr: 'A-1',
-          active: false
-        }, {
-          name: '说明书，流程图',
-          typeStr: 'B-1',
-          active: false
-        }, {
-          name: '规程方案',
-          typeStr: 'C-1',
-          active: false
-        }, {
-          name: '理化性质说明书',
-          typeStr: 'D-1',
-          active: false
-        }, {
-          name: '相关事故管理',
-          typeStr: 'E-2',
-          active: false
-        }, {
-          name: '平面图',
-          typeStr: 'F-2',
-          active: false
-        }, {
-          name: '证件管理',
-          typeStr: 'F-4',
-          active: false
-        }
-      ],
+      fileTypes: [],
       dataListA: [
         {
           name: '风险辨识清单--评估报告A23-01',
@@ -175,6 +142,9 @@ export default {
       typesB: {A: '卫生', B: '消防'}
     }
   },
+  created () {
+    this.getBasicCategory()
+  },
   methods: {
     formatTime (t) {
       let thisD = new Date(t)
@@ -198,18 +168,41 @@ export default {
 
       return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
     },
-    clickMenuItem (type, index) {
+    clickMenuItem (name, index) {
       if (this.fileTypes[index].active) {
         return
       }
       this.fileTypes.forEach((item) => { item.active = false })
       this.fileTypes[index].active = true
       // change table data
-      if (type === 'F-4') {
+      if (name === '证件管理') {
         this.showTableA = false
       } else {
         this.showTableA = true
       }
+    },
+    getBasicCategory () {
+      this.pageLoading = true
+      getBasicCategory().then((res) => {
+        if (res.code === 200) {
+          console.log(res.data)
+          let fileTypes = [{
+            name: '全部文件',
+            typeStr: 'all',
+            active: true
+          }]
+          res.data.forEach((item) => {
+            let typeItem = {
+              name: item.name,
+              typeStr: item.id,
+              active: false
+            }
+            fileTypes.push(typeItem)
+          })
+          this.fileTypes = fileTypes
+        }
+        this.pageLoading = false
+      })
     }
   },
   components: {BreadCrumb}
