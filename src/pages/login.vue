@@ -231,7 +231,7 @@ export default {
                 vm.$notify.success('登录成功')
                 // 保存token
                 const token = res.data.data
-                window.localStorage.setItem('TOKEN_KEY', token)
+                sessionStorage.setItem('TOKEN_KEY', token)
                 window.location = '/dashboard'
               } else {
                 vm.$message({

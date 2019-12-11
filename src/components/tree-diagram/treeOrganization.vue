@@ -8,39 +8,23 @@
  -->
 <template>
   <div class="tree-diagram">
-    <div class="tree-title">
-      <i class="double-line-icon"></i>
-      {{treeName}}
-      <div class="tree-search">
-        <el-input
-          size="mini"
-          placeholder="输入关键字进行过滤"
-          v-model="filterText">
-        </el-input>
-      </div>
-      <div class="slide-btns">
-        <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button>
-        <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
-        <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
-      </div>
-    </div>
     <div class="tree-box">
       <el-tree
         class="filter-tree"
         :data="treeData"
         :props="defaultProps"
         default-expand-all
-        node-key="deptId"
+        node-key="id"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns" v-if="showBtns">
-              <i class="el-icon-plus" title="添加节点" @click.stop="addNode(node, data)"></i>
-              <i class="el-icon-edit" title="修改节点" @click.stop="edit(node, data)"></i>
-              <i class="el-icon-delete" title="删除节点"  @click.stop="remove(node, data)"></i>
+            <span class="right-btns" >
+              <i v-if="addVisible" class="el-icon-plus" title="添加节点" @click="append(node, data)"></i>
+              <i v-if="editVisible" class="el-icon-edit" title="修改节点" @click="edit(node)"></i>
+              <i v-if="delVisible" class="el-icon-delete" title="删除节点"  @click="remove(node, data)"></i>
             </span>
           </span>
       </el-tree>
@@ -64,28 +48,34 @@ export default {
       type: Boolean,
       default: false
     },
-    showBtns: {
+    addVisible: {
       type: Boolean,
       default: false
-    }
+    }, // 添加按钮显示开关
+    editVisible: {
+      type: Boolean,
+      default: false
+    }, // 编辑按钮显示开关
+    delVisible: {
+      type: Boolean,
+      default: false
+    } // 删除按钮显示开关
   },
   data () {
     return {
       filterText: '',
       defaultProps: {
         children: 'children',
-        label: 'deptName'
+        label: 'label'
       },
       openState: false,
-      level: 7,
+      level: 3,
       addBro: false
     }
   },
   methods: {
     openUpload () {},
-    uploadExcel () {
-
-    },
+    uploadExcel () {},
     openAll () {
       this.openState = !this.openState
       for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
@@ -100,32 +90,93 @@ export default {
     },
     filterNode (value, data) {
       if (!value) return true
-      console.log(value)
-      return data.deptName.indexOf(value) !== -1
+      return data.label.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      console.log('节点deptID：' + data.deptId)
-      this.$emit('handleNodeClick', data.deptId)
+      // this.$emit('open-loading')
     },
-    addNode (node, data) {
-      if (node.level > this.level) {
+    append (node, data) {
+      this.openAppendBox()
+      if (node.level < this.level) {
+        const newChild = { label: 'testtest', children: [] }
+        if (!data.children) {
+          this.$set(data, 'children', [])
+        }
+        console.log(data)
+        data.children.push(newChild)
+      } else if (this.addBro && node.level === this.level) {
+        // const newBro = { label: 'testtest', children: [] }
+      } else {
         this.$message({
           message: '最多可添加到第' + this.level + '级',
           type: 'warning'
         })
-      } else {
-        this.$emit('openAppendBox', data.deptId)
       }
     },
-    edit (node, data) {
-      this.$emit('editTreeData', data.deptId)
+    openAppendBox () {
+      this.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: '', // 输入正则
+        // inputErrorMessage: '' // 正则验证错误提示
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '节点设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
+    },
+    edit (node) {
+      this.openEditBox()
+      console.log(node)
+      node.data.label = 'new'
+    },
+    openEditBox () {
+      this.$prompt('请输入节点名称', '修改节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: '', // 输入正则
+        // inputErrorMessage: '' // 正则验证错误提示
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '节点设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
     },
     remove (node, data) {
-      this.$emit('confirmRemove', data.deptId)
+      this.confirmRemove()
+      // const parent = node.parent
+      // const children = parent.data.children || parent.data
+      // const index = children.findIndex(d => d.id === data.id)
+      // children.splice(index, 1)
+    },
+    confirmRemove () {
+      this.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: '', // 输入正则
+        // inputErrorMessage: '' // 正则验证错误提示
+      }).then(() => {
+        // 添加ajax
+        this.$message({
+          type: 'success',
+          message: '节点设置成功'
+        })
+      }).catch(() => {
+        // after cancel, do nothing
+      })
     }
   },
   watch: {
     filterText (val) {
+      console.log(this.$refs.tree)
       this.$refs.tree.filter(val)
     }
   }
@@ -148,7 +199,6 @@ export default {
     border-bottom: 1px solid #eeeeee;
     color: #333333;
     font-size: 18px;
-    background: #fff;
     .double-line-icon{
       position: absolute;
       top: 17px;

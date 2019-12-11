@@ -30,6 +30,7 @@
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
                   :on-success="handleSuccess"
+                  :on-error="handleError"
                   :file-list="fileList"
                   :show-file-list="false">
                   <el-button
@@ -354,7 +355,10 @@ export default {
     handleSuccess (response, file, fileList) {
       this.$notify.success('导入成功')
       this.uploading = false
-      this.fetchTableData()
+      this.tablesFetchList()
+    },
+    // 导入失败
+    handleError (file, fileList) {
     },
     // 修改 启用/禁用 状态
     changeState (row) {
@@ -451,6 +455,7 @@ export default {
               console.log(res.data.code)
               if (res.data.code === 200) {
                 this.$notify.success('删除成功')
+                this.tables.form.pageNo--
                 this.tablesFetchList()
                 this.multipleSelection = []
               }

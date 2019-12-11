@@ -5,22 +5,22 @@
       </bread-crumb>
     </el-header>
     <el-main class="inner-main-container">
-      <el-tabs type="border-card" class="height-100">
-        <el-tab-pane>
+      <el-tabs type="border-card" class="height-100" v-model="activeName">
+        <el-tab-pane name="tab_a">
           <span slot="label">培训计划</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p">
-                  <a class="copy-btn"><i class="el-icon-document-copy"></i>计划复制</a>
-                  <a class="edit-btn"><i class="el-icon-edit"></i>计划编辑</a>
+                  <a class="copy-btn" @click="copyPlan"><i class="el-icon-document-copy"></i>计划复制</a>
                   <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
                   <a class="release-btn" @click="showPlanDialog = true"><i class="el-icon-plus"></i>计划发布</a>
                 </p>
@@ -89,8 +89,7 @@
                   </div>
                 </el-dialog>
 
-                <el-table ref="leaderTable"
-                          border
+                <el-table border
                           stripe
                           :data="planList"
                           tooltip-effect="dark"
@@ -98,25 +97,25 @@
                           @selection-change="handleSelectionChange">
                   <el-table-column
                     type="selection"
-                    width="40" align="center">
+                    width="47" align="center">
                   </el-table-column>
                   <el-table-column
                     label="课程名称"
                     width="180"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论开始时间"
                     width="150"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论结束时间"
                     width="150"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="状态"
@@ -128,42 +127,55 @@
                     label="下载次数"
                     width="90"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.downloadTime+'/次' }}</template>
+                    <template slot-scope="scope">{{ scope.row.downloadNum ? scope.row.downloadNum*1 +'/次' : '0/次' }}</template>
                   </el-table-column>
                   <el-table-column
                     label="类型"
                     width="84"
                     align="center">
-                    <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
+                    <template slot-scope="scope">{{ planType[scope.row.category] }}</template>
                   </el-table-column>
                   <el-table-column
                     label="课程创建时间"
                     width="150"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.createTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.planTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="创建人"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.createPerson }}</template>
+                    <template slot-scope="scope">{{ scope.row.creater }}</template>
                   </el-table-column>
                   <el-table-column
-                    label="培训需求"
+                    label="操作"
                     align="center">
-                    <template slot-scope="scope"><el-button type="text" @click="checkPlan(scope.row.id)">查看</el-button></template>
+                    <template slot-scope="scope">
+                      <el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button>
+                      <el-button type="text" @click="checkPlan(scope.row.need)">编辑</el-button>
+                    </template>
                   </el-table-column>
                 </el-table>
+
+                <div class="pages">
+                  <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="pageDataA.total"
+                    :page-size="pageDataA.pageSize"
+                    :current-page.sync="pageDataA.pageNo"
+                    @current-change="getPlanTable">
+                  </el-pagination>
+                </div>
               </div>
             </el-main>
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_b">
           <span slot="label">培训内容</span>
           <el-container class="inner-main-content bg-fff">
             <div class="container-box">
-              <el-table ref="leaderTable"
-                        border
+              <el-table border
                         stripe
                         :data="trainList"
                         tooltip-effect="dark"
@@ -173,39 +185,39 @@
                   label="课程名称"
                   width="322"
                   align="center">
-                  <template slot-scope="scope">{{ scope.row.name }}</template>
+                  <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
                 </el-table-column>
                 <el-table-column
                   label="类型"
                   width="105"
                   align="center">
-                  <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
+                  <template slot-scope="scope">{{ planType[scope.row.category] }}</template>
                 </el-table-column>
                 <el-table-column
                   label="理论开始时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="理论结束时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际开始时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.trueStartTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.actStartTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际结束时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.trueEndTime) }}</template>
+                  <template slot-scope="scope">{{ formatTime(scope.row.actEndTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="课时"
                   width="105"
                   align="center">
-                  <template slot-scope="scope">{{ scope.row.classHour+'小时' }}</template>
+                  <template slot-scope="scope">{{scope.row.hourRequire ? scope.row.hourRequire+'小时' : '0小时' }}</template>
                 </el-table-column>
                 <el-table-column
                   label="状态"
@@ -218,24 +230,37 @@
                   width="180"
                   align="center">
                   <template slot-scope="scope">
-                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.id)">开始学习</el-button>
-                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.id)">结束学习</el-button>
-                    <span v-else type="text" style="margin-right: 10px;">开始学习</span>
+<!--                    1未学习2学习中3已学习-->
+                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.planPerId)">开始学习</el-button>
+                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planPerId)">结束学习</el-button>
+                    <span v-else type="text" style="margin-right: 10px; color: #909399;">结束学习</span>
                     <el-button type="text" @click="downloadFile(scope.row.downloadLink)">附件</el-button>
                   </template>
                 </el-table-column>
               </el-table>
+
+              <div class="pages">
+                <el-pagination
+                  background
+                  layout="prev, pager, next"
+                  :total="pageDataB.total"
+                  :page-size="pageDataB.pageSize"
+                  :current-page.sync="pageDataB.pageNo"
+                  @current-change="getContentTable">
+                </el-pagination>
+              </div>
             </div>
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_c">
           <span slot="label">培训记录</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleRecordTree">
               </tree-diagram>
             </el-aside>
 
@@ -244,32 +269,32 @@
                 <el-table ref="leaderTable"
                           border
                           stripe
-                          :data="trainList"
+                          :data="recordList"
                           tooltip-effect="dark"
                           style="width: 100%"
                           @selection-change="handleSelectionChange">
                   <el-table-column
                     label="课程名称"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
                   </el-table-column>
                   <el-table-column
                     label="类型"
                     width="135"
                     align="center">
-                    <template slot-scope="scope">{{ planType[scope.row.type] }}</template>
+                    <template slot-scope="scope">{{ planType[scope.row.category] }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论开始时间"
                     width="250"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.startTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="理论结束时间"
                     width="250"
                     align="center">
-                    <template slot-scope="scope">{{ formatTime(scope.row.endTime) }}</template>
+                    <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                   </el-table-column>
                   <el-table-column
                     label="状态"
@@ -282,7 +307,7 @@
                     width="105"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="checkDetail(scope.row.id)">详细</el-button>
+                      <el-button type="text" @click="checkDetail(scope.row.planId)">详细</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -291,106 +316,110 @@
                   <el-pagination
                     background
                     layout="prev, pager, next"
-                    :total="100">
+                    :total="pageDataC.total"
+                    :page-size="pageDataC.pageSize"
+                    :current-page.sync="pageDataC.pageNo"
+                    @current-change="getRecordTable">
                   </el-pagination>
                 </div>
               </div>
             </el-main>
           </el-container>
+
           <el-dialog :title="'详细'" :visible.sync="showDetailLog"
                      :width="'970px'">
             <div class="detail-log">
-              <el-collapse accordion>
-                <el-collapse-item>
+              <el-collapse accordion v-model="colNames">
+                <el-collapse-item name="col_a">
                   <template slot="title">
                     基本信息
                   </template>
                   <div class="class-out">
                     <div class="col-inner-item">
                       <p class="label">课程：</p>
-                      <p>安全生产综合管理</p>
+                      <p>{{recordDetail.className}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">学习部门：</p>
-                      <p>安全管理部</p>
+                      <p>{{recordDetail.department}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">类别：</p>
-                      <p>考试</p>
+                      <p>{{recordDetail.type}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">开始时间：</p>
-                      <p>2019-10-12 12:00</p>
+                      <p>{{formatTime(recordDetail.startTime)}}</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">结束时间：</p>
-                      <p>2019-10-12 12:00</p>
+                      <p>{{formatTime(recordDetail.endTime)}}</p>
                     </div>
-                    <div class="col-inner-item">
-                      <p class="label">学习方式：</p>
-                      <p>线下学习</p>
-                    </div>
+<!--                    <div class="col-inner-item">-->
+<!--                      <p class="label">学习方式：</p>-->
+<!--                      <p>{{recordDetail.learningStyle}}</p>-->
+<!--                    </div>-->
                     <div class="col-inner-item">
                       <p class="label">课程状态：</p>
-                      <p>发布中</p>
+                      <p>{{recordDetail.classState}}</p>
                     </div>
                     <div class="col-inner-item">
-                      <p class="label">理论学习状态：</p>
-                      <p>280 人</p>
+                      <p class="label">理论学习人数：</p>
+                      <p>{{recordDetail.theoryNum}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">发布人：</p>
-                      <p>管理员</p>
+                      <p>{{recordDetail.public}}</p>
                     </div>
                   </div>
                 </el-collapse-item>
-                <el-collapse-item title="反馈 Feedback">
+                <el-collapse-item title="反馈 Feedback" name="col_b">
                   <template slot="title">课程统计</template>
                   <div class="class-out">
                     <div class="col-inner-item">
                       <p class="label">已学习人数：</p>
-                      <p>10 人</p>
+                      <p>{{recordDetail.learned}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">未学习人数：</p>
-                      <p>20 人</p>
+                      <p>{{recordDetail.unlearned}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">参与学习率：</p>
-                      <p>30 %</p>
+                      <p>{{recordDetail.learnedRate}} %</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">考试人数：</p>
-                      <p>22 人</p>
+                      <p>{{recordDetail.examination}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">合格人数：</p>
-                      <p>19 人</p>
+                      <p>{{recordDetail.pass}} 人</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">合格率：</p>
-                      <p>70 %</p>
+                      <p>{{recordDetail.passRate}} %</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">理论学习用时：</p>
-                      <p>30 天</p>
+                      <p>{{recordDetail.theory}} 小时</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">实际学习用时：</p>
-                      <p>28 天</p>
+                      <p>{{recordDetail.act}} 小时</p>
                     </div>
                     <div class="col-inner-item">
                       <p class="label">总课时：</p>
-                      <p>280 小时</p>
+                      <p>{{recordDetail.totalHour}} 小时</p>
                     </div>
                   </div>
                 </el-collapse-item>
-                <el-collapse-item title="效率 Efficiency">
+                <el-collapse-item title="效率 Efficiency" name="col_c">
                   <template slot="title">文档附件</template>
                   <ul class="download-list">
-                    <li v-for="(item, index) in detailDownList" :key="index">
+                    <li v-for="(item, index) in recordDetail.downList" :key="index">
                       {{item.name}}
-                      <a @click="downloadItem(item.url)">下载</a>
+                      <a @click="downloadItem(item.path)">下载</a>
                     </li>
                   </ul>
                 </el-collapse-item>
@@ -406,6 +435,18 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import {
+  getPlanDeptList,
+  getPlanTable,
+  getContentTable,
+  getRecordTable,
+  releasePlan,
+  deletePlan,
+  copyPlan,
+  getTrainStatistic,
+  startLearn,
+  endLearn
+} from '@/api/organization'
 
 export default {
   name: 'staffTraining',
@@ -413,87 +454,36 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '全员培训'],
-      organizationTree: [
-        {
-          id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'AAA',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组'
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组'
-                }, {
-                  id: 1060122,
-                  label: '生产B组'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      activeName: 'tab_a',
+      triggerAid: '',
+      triggerCid: '',
+      pageDataA: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0
+      },
+      pageDataB: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0
+      },
+      pageDataC: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0
+      },
+      organizationTree: [],
       states: {
         '0': '未开始',
         '1': '学习中',
-        '2': '已结束'
+        '2': '已学习',
+        '3': '已结束'
       },
       planType: {
-        'train': '训练',
-        'test': '考试'
+        '1': '训练',
+        '2': '考试'
       },
-      planList: [
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadTime: 0,
-          type: 'train', // train：训练； test：考试
-          createTime: '2019-10-20T14:39:38.000+0000',
-          createPerson: '隔壁老王',
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术',
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadTime: 0,
-          type: 'train', // train：训练； test：考试
-          createTime: '2019-10-20T14:39:38.000+0000',
-          createPerson: '隔壁老王',
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术',
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadTime: 0,
-          type: 'train', // train：训练； test：考试
-          createTime: '2019-10-20T14:39:38.000+0000',
-          createPerson: '隔壁老王',
-          id: 123123
-        }
-      ],
+      planList: [],
       multipleSelection: [],
       showPlanDialog: false,
       addPlanData: {
@@ -507,76 +497,39 @@ export default {
         {
           name: 'food.jpeg',
           url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }, {
-          name: 'food2.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
         }
       ],
-      trainList: [
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          type: 'train', // train：训练； test：考试
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          trueStartTime: '2019-10-20T14:39:38.000+0000',
-          trueEndTime: '2019-10-20T14:39:38.000+0000',
-          classHour: 20,
-          state: 0, // 0: 未开始；1：学习中；2：已结束
-          downloadLink: [
-            {url: '****1.doc'},
-            {url: '****2.mp4'}
-          ],
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          type: 'train', // train：训练； test：考试
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          trueStartTime: '2019-10-20T14:39:38.000+0000',
-          trueEndTime: '2019-10-20T14:39:38.000+0000',
-          classHour: 20,
-          state: 1, // 0: 未开始；1：学习中；2：已结束
-          downloadLink: [
-            {url: '****1.doc'},
-            {url: '****2.mp4'}
-          ],
-          id: 123123
-        },
-        {
-          name: '矿石管理与生产技术浮点数打发士大夫',
-          type: 'train', // train：训练； test：考试
-          startTime: '2019-10-20T14:39:38.000+0000',
-          endTime: '2019-10-20T14:39:38.000+0000',
-          trueStartTime: '2019-10-20T14:39:38.000+0000',
-          trueEndTime: '2019-10-20T14:39:38.000+0000',
-          classHour: 20,
-          state: 2, // 0: 未开始；1：学习中；2：已结束
-          downloadLink: [
-            {url: '****1.doc'},
-            {url: '****2.mp4'}
-          ],
-          id: 123123
-        }
-      ],
+      trainList: [],
+      recordList: [],
       showDetailLog: false,
-      detailDownList: [
-        {
-          name: 'downloadFileName',
-          url: '******'
-        },
-        {
-          name: 'downloadFileName',
-          url: '******'
-        },
-        {
-          name: 'downloadFileName',
-          url: '******'
-        }
-      ]
+      recordDetail: {
+        className: '',
+        department: '',
+        type: '1',
+        startTime: '',
+        endTime: '',
+        // learningStyle: '',
+        classState: '',
+        theoryNum: 0,
+        public: '',
+        learned: 0,
+        unlearned: 0,
+        learnedRate: 0,
+        examination: 0,
+        pass: 0,
+        passRate: 0,
+        theory: 0,
+        act: 0,
+        totalHour: 0,
+        downList: []
+      },
+      colNames: 'col_a'
     }
   },
   created () {
+    this.getPlanDeptTree(true)
+    this.getContentTable()
+    this.getRecordTable()
   },
   methods: {
     openLoading () {
@@ -608,13 +561,113 @@ export default {
 
       return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
     },
-    checkPlan (id) {
-      console.log(id)
+    // 点击tree节点
+    handleNodeClick (deptId) {
+      this.triggerAid = deptId
+      this.pageLoading = true
+      this.getPlanTable()
+    },
+    // 点击记录 tree 节点
+    handleRecordTree (deptId) {
+      this.triggerCid = deptId
+      this.pageLoading = true
+      this.getRecordTable()
+    },
+    // 获取treeData
+    getPlanDeptTree (create) {
+      getPlanDeptList().then((res) => {
+        if (res.code === 200) {
+          this.organizationTree = res.data
+          if (create) {
+            this.triggerAid = this.organizationTree[0].deptId
+            this.triggerCid = this.organizationTree[0].deptId
+            this.getPlanTable()
+          }
+        } else {
+          this.organizationTree = []
+          this.$message.error('获取数据失败，请稍后刷新页面重试')
+        }
+        this.pageLoading = false
+      })
+    },
+    // 获取培训计划的table
+    getPlanTable () {
+      this.pageLoading = true
+      getPlanTable(this.triggerAid, this.pageDataA.pageNo, this.pageDataA.pageSize).then((res) => {
+        if (res.code === 200) {
+          this.planList = res.data
+          this.pageDataA.total = res.total
+        }
+        this.pageLoading = false
+      })
+    },
+    // 获取培训内容的table
+    getContentTable () {
+      this.pageLoading = true
+      getContentTable(this.pageDataB.pageNo, this.pageDataB.pageSize).then((res) => {
+        if (res.code === 200) {
+          this.trainList = res.data
+          this.pageDataB.total = res.total
+        }
+        this.pageLoading = false
+      })
+    },
+    // 获取培训记录的table
+    getRecordTable () {
+      this.pageLoading = true
+      getRecordTable(this.triggerCid, this.pageDataC.pageNo, this.pageDataC.pageSize).then((res) => {
+        if (res.code === 200) {
+          this.recordList = res.data
+          this.pageDataC.total = res.total
+        }
+        this.pageLoading = false
+      })
+    },
+    checkPlan (need) {
+      let needStr = ''
+      if (need) {
+        needStr = need
+      } else {
+        needStr = '暂无'
+      }
+      this.$alert(needStr, '培训需求')
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
     releasePlan () {
+      let data = {
+        deptId: '',
+        courseTitle: this.addPlanData.className, // 课程名称
+        category: this.addPlanData.planType, // 类别
+        hourRequire: 0, // 总课时
+        // creater: '', // 计划发布人id
+        planTime: '', // 计划发布时间
+        theorysTime: this.addPlanData.startTime, // 理论开始时间
+        theoryeTime: this.addPlanData.endTime, // 理论结束时间
+        need: this.addPlanData.need, // 培训需求
+        attachmentList: [
+          {
+            name: '', // 附件名称
+            path: '', // 附件路径
+            size: '', // 附件大小
+            type: ''
+          }
+        ]
+      }
+      releasePlan(data).then((res) => {
+        if (res.code === 200) {
+        }
+      })
+    },
+    copyPlan () {
+      this.pageLoading = true
+      copyPlan().then((res) => {
+        if (res.code === 200) {
+          this.getContentTable()
+        }
+        this.pageLoading = false
+      })
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
@@ -629,7 +682,6 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`)
     },
     showRemoveDialog () {
-      console.log(this.multipleSelection)
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'warning',
@@ -637,22 +689,90 @@ export default {
         })
         return
       }
-      this.$alert('确定移除选中项?', '计划删除', {
+      this.$confirm('确定移除选中项?', '计划删除', {
         confirmButtonText: '确定',
-        callback: () => {
-          this.$message({
-            type: 'warning',
-            message: `action:`
-          })
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.pageLoading = true
+        let ids = []
+        this.multipleSelection.forEach((item) => {
+          ids.push(item.id)
+        })
+        let data = {id: ids.join(',')}
+        deletePlan(data).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getPlanTable()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    startLearn (id) {
+      this.pageLoading = true
+      let data = {id: id}
+      startLearn(data).then((res) => {
+        if (res.code && res.code === 200) {
+          this.getContentTable()
+          this.pageLoading = false
+        } else {
+          this.pageLoading = false
+          this.$message.error('提交失败，请稍后重试')
         }
       })
     },
-    startLearn (id) {},
-    endLearn (id) {},
+    endLearn (id) {
+      this.pageLoading = true
+      let data = {id: id}
+      endLearn(data).then((res) => {
+        if (res.code && res.code === 200) {
+          this.getContentTable()
+          this.pageLoading = false
+        } else {
+          this.pageLoading = false
+          this.$message.error('提交失败，请稍后重试')
+        }
+      })
+    },
     downloadFile (files) {},
     checkDetail (id) {
+      this.pageLoading = true
       // get data, then, showDetailLog
-      this.showDetailLog = true
+      getTrainStatistic(id).then((res) => {
+        if (res.code && res.code === 200) {
+          this.recordDetail.className = res.data.trainPlan.courseTitle
+          this.recordDetail.department = res.data.trainPlan.deptName
+          this.recordDetail.type = this.planType[res.data.trainPlan.category]
+          this.recordDetail.startTime = res.data.trainPlan.theorysTime
+          this.recordDetail.endTime = res.data.trainPlan.theoryeTime
+          this.recordDetail.classState = this.states[res.data.trainPlan.state]
+          this.recordDetail.theoryNum = res.data.theor_learn
+          this.recordDetail.public = res.data.trainPlan.creater
+          this.recordDetail.learned = res.data.learned
+          this.recordDetail.unlearned = res.data.unlearned
+          this.recordDetail.learnedRate = (res.data.learnedRate * 100).toFixed(2)
+          this.recordDetail.examination = res.data.examination
+          this.recordDetail.pass = res.data.pass
+          this.recordDetail.passRate = (res.data.passRate * 100).toFixed(2)
+          this.recordDetail.theory = res.data.theory
+          this.recordDetail.act = res.data.act
+          this.recordDetail.totalHour = res.data.totalHour
+          this.recordDetail.downList = res.data.trainPlan.attachmentList
+
+          this.showDetailLog = true
+        } else {
+          this.$message.error('获取数据失败，请稍后刷新页面重试')
+        }
+      })
+      this.pageLoading = false
     },
     downloadItem (url) {}
   },
@@ -842,6 +962,7 @@ export default {
           background: #fff;
           .container-box{
             width: 100%;
+            overflow-y: auto;
           }
         }
       }
@@ -887,11 +1008,11 @@ export default {
           color: #707070;
         }
       }
-      .pages{
-        margin-top: 28px;
-        text-align: right;
-      }
     }
+  }
+  .pages{
+    margin-top: 28px;
+    text-align: right;
   }
 }
 </style>

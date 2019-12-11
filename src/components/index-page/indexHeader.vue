@@ -54,12 +54,12 @@ export default {
       let vm = this
       axios
         .delete('ontroller/logout', {
-          dmsfbsf: window.localStorage.getItem('TOKEN_KEY')
+          dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
         })
         .then((res) => {
           // vm.submitting = true
           if (res.data.code === 200) {
-            window.localStorage.setItem('TOKEN_KEY', '')
+            sessionStorage.setItem('TOKEN_KEY', '')
             window.location = '/login'
           } else {
             vm.$message({
