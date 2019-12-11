@@ -3,25 +3,6 @@
   <div class="organigram-wrap">
     <div id="mountNode"></div>
 
-    <div v-show="mouseenterLayerSwitch"
-         class="mouseenter-layer"
-         ref="mouseenterLayer">
-      <div class="list-organization">
-        <div class="list-organization-item">
-          <div class="list-organization-label">人员：</div>
-          <div class="list-organization-value">{{detailValue.manager}}</div>
-        </div>
-        <div class="list-organization-item">
-          <div class="list-organization-label">电话：</div>
-          <div class="list-organization-value">{{detailValue.telNum}}</div>
-        </div>
-        <div class="list-organization-item">
-          <div class="list-organization-label">主要职责：</div>
-          <div class="list-organization-value">{{detailValue.duty}}</div>
-        </div>
-      </div>
-    </div>
-
     <el-dialog title="编辑" :visible.sync="dialogVisibleEdit" v-loading="pageLoading">
       <div class="form-modal">
         <el-form
@@ -162,15 +143,7 @@ export default {
       workerDuty: '',
       leaderDutyA: '',
       leaderDutyB: '',
-      duty: '',
-      mouseenterLayerSwitch: false, // 数据预览层显示开关
       dialogVisibleEdit: false, // dialog显示开关
-      detailValue: {
-        name: '',
-        manager: '',
-        duty: '',
-        telNum: ''
-      },
       organigramDataObj: [],
       graph: null,
       subId: '',
@@ -200,6 +173,7 @@ export default {
   },
   methods: {
     G6_init (treeData) {
+      let vm = this
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
         return [
           ['M', x, y],
@@ -296,9 +270,65 @@ export default {
             {
               type: 'tooltip',
               formatText(model) {
-                const text = '人员：' + model.manager
-                  + '<br/>电话：' + model.telNum
-                  + '<br/>主要职责：' + model.duty
+                let list = model.workList
+                let text = ''
+                // debugger
+                if (list.length === 0) {
+                  text = '<span style="font-weight: 600;">人员：</span>'
+                    + '<br/><span style="font-weight: 600;">电话：</'
+                    + 'span><br/><span style="font-weight: 600;">主要职责：</span>'
+                } else if (list.length === 1) {
+                  let worker = []
+
+                  if (list[0].userId) {
+                    worker = list[0].userId.split(',')
+                    text = '<span style="font-weight: 600;">管理人员：</span>'
+                    worker.forEach((item) => {
+                      text += '<br/>' + vm.findItem(item).userName + '&nbsp;&nbsp;' + vm.findItem(item).telephone
+                    })
+                    text += '<br/><span style="font-weight: 600;">主要职责：</span>' + list[0].duty
+                  } else {
+                    text = '<span style="font-weight: 600;">人员：</'
+                      + 'span><br/><span style="font-weight: 600;">电话：</'
+                      + 'span><br/><span style="font-weight: 600;">主要职责：</span>' + list[0].duty
+                  }
+                } else if (list.length === 2) {
+                  let managerA = [],
+                      managerB = [],
+                      dutyA = '',
+                      dutyB = ''
+                  list.forEach((item) => {
+                    if (item.level === '1') {
+                      dutyA = item.duty
+                      if (item.userId) {
+                        let ids = item.userId.split(',')
+                        ids.forEach((eachItem) => {
+                          console.log(vm.findItem(eachItem))
+                          managerA.push(vm.findItem(eachItem))
+                        })
+                      }
+                    } else if (item.level === '2') {
+                      dutyB = item.duty
+                      if (item.userId) {
+                        let ids = item.userId.split(',')
+                        ids.forEach((eachItem) => {
+                          managerB.push(vm.findItem(eachItem))
+                        })
+                      }
+                    }
+                  })
+
+                  text = '<span style="font-weight: 600;">正负责人：</span>'
+                  managerA.forEach((item) => {
+                    text += '<br/>' + item.userName + '&nbsp;&nbsp;' + item.telephone
+                  })
+                  text += '<br/><span style="font-weight: 600;">主要职责：</span>' + dutyA
+                  text += '<br/>' + '<span style="font-weight: 600;">副负责人：</span>'
+                  managerB.forEach((item) => {
+                    text += '<br/>' + item.userName + '&nbsp;&nbsp;' + item.telephone
+                  })
+                  text += '<br/><span style="font-weight: 600;">主要职责：</span>' + dutyB
+                }
                 return text
               },
               shouldUpdate: e => {
@@ -343,13 +373,7 @@ export default {
       })
 
       this.graph.data(treeData)
-      this.graph.render()
-      this.graph.fitView()
-
-      this.graph.on('node:contextmenu', (e) =>{
-        this.subId = e.item._cfg.id
-        this.dialogVisibleEdit = true
-      })
+      this.refresh()
     },
     submitForm () {
       let list = []
@@ -383,7 +407,7 @@ export default {
         deptId: this.subId,
         list: list
       }
-      console.log(data)
+
       if (this.type === '1' && this.workUsers.length > 0) {
         this.$emit('submitForm', data)
       } else if ((this.type === '2' && this.leadUserA.length > 0) || (this.type === '2' && this.leadUserB.length > 0)) {
@@ -399,18 +423,59 @@ export default {
           return this.selector[i]
         }
       }
+    },
+    refresh () {
+      this.graph.render()
+      this.graph.fitView()
+      this.graph.refresh()
+      this.graph.on('node:contextmenu', (e) =>{
+        console.log(e.item._cfg.model)
+        this.filter(e.item._cfg.model.workList)
+        this.subId = e.item._cfg.id
+        this.dialogVisibleEdit = true
+      })
+    },
+    filter (list) {
+      if (list.length == 0 || !list) {
+        this.type = '1'
+        this.workUsers = []
+        this.leadUserA = []
+        this.leadUserB = []
+        this.workerDuty = ''
+        this.leaderDutyA = ''
+        this.leaderDutyB = ''
+      } else if (list[0].type == '1') {
+        this.type = '1'
+        this.workUsers = list[0].id ? list[0].id.split(',') : []
+        this.leadUserA = []
+        this.leadUserB = []
+        this.workerDuty = list[0].duty
+        this.leaderDutyA = ''
+        this.leaderDutyB = ''
+      } else if (list[0].type == '2') {
+        this.type = '2'
+        this.workUsers = []
+        this.leadUserA = []
+        this.leadUserB = []
+        this.workerDuty = ''
+        this.leaderDutyA = ''
+        this.leaderDutyB = ''
+        list.forEach((item) => {
+          if (item.level == '1') {
+            this.leadUserA = item.id ? item.id.split(',') : []
+            this.leaderDutyA = item.duty
+          } else {
+            this.leadUserB = item.id ? item.id.split(',') : []
+            this.leaderDutyB = item.duty
+          }
+        })
+      }
     }
   },
   watch: {
     organigramData (val) {
       this.graph.changeData(val)
-      this.graph.render()
-      this.graph.fitView()
-      this.graph.refresh()
-      this.graph.on('node:contextmenu', (e) =>{
-        this.subId = e.item._cfg.id
-        this.dialogVisibleEdit = true
-      })
+      this.refresh()
     },
     loading (val) {
       this.pageLoading = val
@@ -472,7 +537,7 @@ export default {
   }
   /deep/.organigram-wrap{
     .g6-tooltip {
-      width: 180px;
+      width: 280px;
       min-height: 120px;
       border: 1px solid #e2e2e2;
       border-radius: 4px;

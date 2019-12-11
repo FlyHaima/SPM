@@ -297,9 +297,10 @@ export default {
       let newTree = {
         id: fData.deptId,
         name: fData.deptName,
-        manager: fData.userName,
-        telNum: fData.telephone,
-        duty: fData.duty,
+        // manager: fData.userName,
+        // telNum: fData.telephone,
+        // duty: fData.duty,
+        workList: fData.workList,
         children: []
       }
       if (fData.children) {
