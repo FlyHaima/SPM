@@ -2,7 +2,7 @@
 <template>
   <div class="wrap login-wrap">
     <el-row class="login-content">
-      <el-col :span="14" class="login-content-left">
+      <el-col :span="16" class="login-content-left">
         <div class="logo"></div>
         <el-tabs v-model="activeName">
           <el-tab-pane label="新闻动态" name="first">
@@ -73,7 +73,7 @@
         </el-tabs>
 
       </el-col>
-      <el-col :span="8" :offset="1" class="login-content-right">
+      <el-col :span="6" :offset="1" class="login-content-right">
         <div class="login-box">
           <div class="login-box-inner">
             <div class="login-form-box">
@@ -90,12 +90,12 @@
                 status-icon
                 ref="form"
                 class="form-login">
-                <el-form-item prop="userName">
+                <el-form-item prop="accountName">
                   <el-input
                     type="text"
                     autocomplete="off"
                     placeholder="请输入企业社会信用代码"
-                    v-model.trim="form.userName">
+                    v-model.trim="form.accountName">
                     <i slot="prefix" class="icon-form icon-form-03"></i>
                   </el-input>
                 </el-form-item>
@@ -119,7 +119,7 @@
                 </el-form-item>
                 <el-form-item prop="confrimPassword">
                   <el-input
-                    type="text"
+                    type="password"
                     autocomplete="off"
                     placeholder="请确认密码"
                     v-model.trim="form.confrimPassword">
@@ -130,7 +130,7 @@
                   <el-select v-model="form.industryName" placeholder="请选择所属行业">
                     <i slot="prefix" class="icon-form icon-form-05"></i>
                     <el-option
-                      v-for="item in options"
+                      v-for="item in industryOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value">
@@ -139,9 +139,9 @@
                 </el-form-item>
                 <div class="custom-form-item">
                   请选择是否使用所属行业大数据
-                  <el-select v-model="value" placeholder="使用">
+                  <el-select v-model="form.useIndustry" placeholder="使用">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in useIndustryOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value">
@@ -169,9 +169,33 @@ import axios from '@/api/axios'
 
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import { INDUSTRY_NAME_LIST, USE_INDUSTRY } from '@/constants/status'
 export default {
   name: 'loginPage',
   data () {
+    let regexPwd = new RegExp('^[a-zA-Z0-9]{6,12}$')
+    // 校验新密码
+    var validatePassNew = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入字母或数字组成且不少于6位数字符的密码'))
+      } else {
+        // let regex = new RegExp('^[a-zA-Z0-9]{6,30}')
+        if (!regexPwd.test(value)) {
+          callback(new Error('密码格式不正确，请输入字母或数字组成且不少于6位数字符的密码'))
+        }
+        callback()
+      }
+    }
+    // 再次确认密码的校验
+    var validatePassConfirm = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.form.password) {
+        callback(new Error('输入内容与前密码不符!'))
+      } else {
+        callback()
+      }
+    }
     return {
       submitting: false,
       activeName: 'first',
@@ -179,7 +203,8 @@ export default {
         userName: '', // 企业信用代码
         companyName: '', // 企业名称
         password: '', // 密码
-        industryName: '' // 所属行业
+        industryName: '', // 所属行业
+        useIndustry: '' // 是否使用大数据
       },
       rules: {
         userName: [
@@ -194,18 +219,14 @@ export default {
           { required: true, message: '请选择所属行业', trigger: 'change' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+          { validator: validatePassNew, trigger: 'blur' }
         ],
-        confirmPassword: [
-          { required: true, message: '请确认密码', trigger: 'blur' },
-          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        confrimPassword: [
+          { validator: validatePassConfirm, trigger: 'blur' }
         ]
       },
-      options: [{
-        value: '1',
-        label: '政府'
-      }],
+      industryOptions: INDUSTRY_NAME_LIST,
+      useIndustryOptions: USE_INDUSTRY,
       value: '',
       swiperOption: {
         autoplay: {
@@ -262,7 +283,7 @@ export default {
       vm.$refs.form.validate((valid) => {
         if (valid) {
           axios
-            .post('spm/registerController/register', vm.form)
+            .post('registerController/register', vm.form)
             .then((res) => {
               vm.submitting = true
               if (res.data.code === 200) {

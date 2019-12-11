@@ -4,8 +4,8 @@
     <div id="mountNode"></div>
 
     <div v-show="mouseenterLayerSwitch"
-      class="mouseenter-layer"
-      ref="mouseenterLayer">
+         class="mouseenter-layer"
+         ref="mouseenterLayer">
       <div class="list-organization">
         <div class="list-organization-item">
           <div class="list-organization-label">人员：</div>
@@ -22,34 +22,115 @@
       </div>
     </div>
 
-    <el-dialog title="编辑" :visible.sync="dailogVisibelEdit">
+    <el-dialog title="编辑" :visible.sync="dialogVisibleEdit">
       <div class="form-modal">
         <el-form
-          :model="form"
           ref="form"
           size="mini"
           label-width="100px"
           label-position="top"
         >
-        <el-form-item label="人员">
-          <el-input v-model="form.user"></el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="form.phone"></el-input>
-        </el-form-item>
-        <el-form-item label="主要责任">
-          <el-input
-            type="textarea"
-            maxlength="200"
-            show-word-limit
-            :rows="4"
-            v-model="form.responsibility"></el-input>
-        </el-form-item>
+          <el-form-item label="类型">
+            <el-select v-model="type"
+                       placeholder="请选择" size="medium">
+              <el-option
+                v-for="item in types"
+                :key="item.data"
+                :label="item.label"
+                :value="item.data">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <template v-if="type === '1'">
+            <el-form-item label="人员">
+              <el-select v-model="workUsers"
+                         filterable
+                         multiple
+                         placeholder="请选择" size="medium">
+                <el-option
+                  v-for="item in selector"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-show="workUsers.length > 0">
+              <p v-for="(item, index) in workUsers" :key="index">
+                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+              </p>
+            </el-form-item>
+            <el-form-item label="主要责任">
+              <el-input
+                type="textarea"
+                maxlength="200"
+                show-word-limit
+                :rows="4"
+                v-model="workerDuty"></el-input>
+            </el-form-item>
+          </template>
+
+          <template v-else-if="type === '2'">
+            <el-form-item label="正职">
+              <el-select v-model="leadUserA"
+                         filterable
+                         multiple :multiple-limit="limitLeaderA"
+                         placeholder="请选择" size="medium">
+                <el-option
+                  v-for="item in selector"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-show="leadUserA.length > 0">
+              <p v-for="(item, index) in leadUserA" :key="index">
+                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+              </p>
+            </el-form-item>
+            <el-form-item label="主要责任">
+              <el-input
+                type="textarea"
+                maxlength="200"
+                show-word-limit
+                :rows="4"
+                v-model="leaderDutyA"></el-input>
+            </el-form-item>
+
+            <el-form-item label="副职">
+              <el-select v-model="leadUserB"
+                         filterable
+                         multiple :multiple-limit="limitLeaderB"
+                         placeholder="请选择" size="medium">
+                <el-option
+                  v-for="item in selector"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-show="leadUserB.length > 0">
+              <p v-for="(item, index) in leadUserB" :key="index">
+                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+              </p>
+            </el-form-item>
+            <el-form-item label="主要责任">
+              <el-input
+                type="textarea"
+                maxlength="200"
+                show-word-limit
+                :rows="4"
+                v-model="leaderDutyB"></el-input>
+            </el-form-item>
+          </template>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" size="small" @click="submitForm()">保 存</el-button>
-        <el-button size="small" @click="dailogVisibelEdit = false">取 消</el-button>
+        <el-button size="small" @click="dialogVisibleEdit = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -58,33 +139,50 @@
 <script>
 /* eslint-disable */
 import G6 from '@antv/g6'
-// import '@antv/g6/build/plugin.tool.tooltip'
-// import utils from '../../utils/js/common.js'
 
 export default {
   name: 'organigram',
   data() {
     return {
-      form: {
-        user: '', // 人员
-        phone: '', // 电话
-        responsibility: '' // 主要职责
-      }, // 编辑form
+      limitLeaderA: 1,
+      limitLeaderB: 3,
+      types: [
+        {
+          data: '1',
+          label: '工作小组'
+        }, {
+          data: '2',
+          label: '领导小组'
+        }
+      ],
+      type: '1',
+      workUsers: [],
+      leadUserA: [],
+      leadUserB: [],
+      workerDuty: '',
+      leaderDutyA: '',
+      leaderDutyB: '',
+      duty: '',
       mouseenterLayerSwitch: false, // 数据预览层显示开关
-      dailogVisibelEdit: false, // dailog显示开关
-      detailData: [], //组织结构数据
+      dialogVisibleEdit: false, // dialog显示开关
       detailValue: {
         name: '',
         manager: '',
         duty: '',
         telNum: ''
       },
-      organigramDataObj: []
+      organigramDataObj: [],
+      graph: null,
+      subId: ''
     }
   },
   props: {
     organigramData: {
       type: Object,
+      default: null
+    },
+    selector: {
+      type: Array,
       default: null
     }
   },
@@ -96,17 +194,7 @@ export default {
     })
   },
   methods: {
-    initData (fData) {
-      let vm = this
-      vm.detailData.push(fData.data)
-      if(fData.children) {
-        for (let i = 0; i < fData.children.length; i++) {
-          vm.initData(fData.children[i])
-        }
-      }
-    },
     G6_init (treeData) {
-      // console.log('run G6 init')
       let COLLAPSE_ICON = function COLLAPSE_ICON(x, y, r) {
         return [
           ['M', x, y],
@@ -129,7 +217,7 @@ export default {
       }
 
       G6.registerNode('tree-node', {
-        drawShape: function drawShape(cfg, group) {
+        drawShape: function drawShape (cfg, group) {
           let rect = group.addShape('rect', {
             attrs: {
               fill: '#fff',
@@ -178,7 +266,7 @@ export default {
       let graphW = document.getElementById('mountNode').offsetWidth
       let graphH = document.getElementById('mountNode').offsetHeight
 
-      const graph = new G6.TreeGraph({
+      this.graph = new G6.TreeGraph({
         // renderer: 'svg', // 渲染模式，可选svg，本组件用不上
         container: 'mountNode', // 容器id
         width: graphW,
@@ -249,26 +337,80 @@ export default {
         }
       })
 
-      graph.data(treeData)
-      graph.render()
-      graph.fitView()
+      this.graph.data(treeData)
+      this.graph.render()
+      this.graph.fitView()
 
-      graph.on('node:contextmenu', ev =>{
-        this.dailogVisibelEdit = true
+      this.graph.on('node:contextmenu', (e) =>{
+        this.subId = e.item._cfg.id
+        console.log(e)
+        this.dialogVisibleEdit = true
       })
+    },
+    submitForm () {
+      let list = []
+      if (this.type === '1') {
+        let ids = this.workUsers.join(',')
+        let item = {
+          level: '',
+          type: '1',
+          userId: ids,
+          duty: this.workerDuty
+        }
+        list.push(item)
+      } else {
+        let idAs = this.leadUserA.join(',')
+        let itemA = {
+          level: '1',
+          type: '2',
+          userId: idAs,
+          duty: this.leaderDutyA
+        }
+        let idBs = this.leadUserB.join(',')
+        let itemB = {
+          level: '1',
+          type: '2',
+          userId: idBs,
+          duty: this.leaderDutyB
+        }
+        list = [itemA, itemB]
+      }
+      let data = {
+        deptId: this.subId,
+        list: list
+      }
+      console.log(data)
+      if (this.workUsers.length > 0) {
+        this.$emit('submitForm', data)
+      } else {
+        this.$message.error('人员不能为空')
+      }
+    },
+    // 根据id 查selector item
+    findItem (id) {
+      for(let i=0; i<this.selector.length; i++){
+        if (this.selector[i].userId == id) {
+          return this.selector[i]
+        }
+      }
     }
   },
   watch: {
-    // organigramData (val) {
-    //   this.G6_init(val)
-    //   this.initData(val)
-    // }
+    organigramData (val) {
+      this.graph.changeData(val)
+      this.graph.render()
+      this.graph.fitView()
+      this.graph.refresh()
+      this.graph.on('node:contextmenu', (e) =>{
+        this.dialogVisibleEdit = true
+      })
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+  @import '../../utils/css/style.scss';
   .organigram-wrap{
     width: 100%;
     height: 100%;
@@ -286,7 +428,7 @@ export default {
     min-height: 171px;
     background-color: #fffbc0;
     box-shadow: 0px 3px 8px 0px
-      rgba(4, 0, 0, 0.35);
+    rgba(4, 0, 0, 0.35);
     border-radius: 10px;
     padding: 20px 10px;
   }
@@ -314,7 +456,7 @@ export default {
       margin: 0 auto;
     }
   }
-/deep/.organigram-wrap{
+  /deep/.organigram-wrap{
     .g6-tooltip {
       width: 180px;
       min-height: 120px;

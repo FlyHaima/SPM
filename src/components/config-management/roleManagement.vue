@@ -68,10 +68,9 @@
                 layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
-                :page-size="tables.form.limit"
+                :page-size="tables.form.pageSize"
                 :total="tables.page.total"
-                @current-change="tablesHandleCurrentPage"
-                @size-change="tablesHandleSizeChange"></el-pagination>
+                @current-change="tablesHandleCurrentPage"></el-pagination>
             </div>
           </div>
         </el-main>
@@ -164,7 +163,7 @@ export default {
       tables: {
         api: 'role/getRoleList'
       },
-      dialogRoleVisible: true, // 分配角色弹框开关
+      dialogRoleVisible: false, // 分配角色弹框开关
       dialogAddVisible: false, // 添加用户弹框开关
       radio: 1,
       form: {
@@ -252,9 +251,10 @@ export default {
         this.$message.warning('请选择要删除的行')
       } else {
         this.submitting = true
-        let sendDAta = { userId: [] }
+        let sendDAta = { roleId: [] }
         this.multipleSelection.forEach(item => {
-          sendDAta.userId.push(item.userId)
+          console.log(item.roleId)
+          sendDAta.roleId.push(item.roleId)
         })
         this.$confirm('是否删除？', '提示', {
           confirmButtonText: '确定',
@@ -262,7 +262,7 @@ export default {
           type: 'warning'
         }).then(() => {
           axios
-            .post('/user/delUser', sendDAta)
+            .post('role/delRole', sendDAta)
             .then((res) => {
               console.log(res.data.code)
               if (res.data.code === 200) {
@@ -333,7 +333,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/style.scss';
 /deep/.el-collapse{
   border: 0;
   .el-collapse-item__header{

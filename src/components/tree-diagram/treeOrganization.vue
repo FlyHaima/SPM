@@ -37,10 +37,10 @@
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns" v-if="showBtns">
-              <i class="el-icon-plus" title="添加节点" @click.stop="addNode(node, data)"></i>
-              <i class="el-icon-edit" title="修改节点" @click.stop="edit(node, data)"></i>
-              <i class="el-icon-delete" title="删除节点"  @click.stop="remove(node, data)"></i>
+            <span class="right-btns">
+              <i v-if="addVisible" class="el-icon-plus" title="添加节点" @click.stop="addNode(node, data)"></i>
+              <i v-if="editVisible" class="el-icon-edit" title="修改节点" @click.stop="edit(node, data)"></i>
+              <i v-if="delVisible" class="el-icon-delete" title="删除节点"  @click.stop="remove(node, data)"></i>
             </span>
           </span>
       </el-tree>

@@ -21,9 +21,17 @@
         </template>
         <!-- 没有下级，当前级别需点击 -->
         <template v-else>
-          <div class="title only-title"
-               @click="turnToPage(item.url, item.name, indexA, 0, 'isRemote')"
-               :class="item.active ? 'active' : ''">
+          <a
+            v-if="item.name === '应急指挥调度'"
+            :href="getURL(item.url)"
+            class="title only-title"
+            :class="item.active ? 'active' : ''"
+            target="_blank">
+            <i></i>{{item.name}}</a>
+          <div
+            v-else class="title only-title"
+            @click="turnToPage(item.url, item.name, indexA, 0, 'isRemote')"
+            :class="item.active ? 'active' : ''">
             <i></i>{{item.name}}
           </div>
         </template>
@@ -35,6 +43,7 @@
 <script>
 import {mapState} from 'vuex'
 import {setLocalStorage} from '../../utils/js/common'
+import axios from '@/api/axios'
 
 export default {
   name: 'IndexAside',
@@ -199,7 +208,7 @@ export default {
         {
           name: '应急指挥调度',
           active: false,
-          url: '/'
+          url: ''
         },
         {
           name: '配置维护管理',
@@ -235,10 +244,23 @@ export default {
               name: '日志',
               url: '/log',
               active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '新闻维护',
+              url: '/newsManage',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '绩效考核',
+              url: '/performanceAssessment',
+              active: false
             }
           ]
         }
-      ]
+      ],
+      linkUrl: '' // 应急指挥调度跳转链接
     }
   },
   computed: { // vuex 参数引入
@@ -247,6 +269,7 @@ export default {
     })
   },
   created () {
+    this.initURL()
     // menuList参数的active属性是前台自添加, 原始请求下来的数据是没有active的
     // let returenMenu = [
     //   {
@@ -341,6 +364,39 @@ export default {
     // }
   },
   methods: {
+    // 初始化应急指挥调度url
+    initURL () {
+      let dmsfbsf = window.localStorage.getItem('TOKEN_KEY')
+      axios
+        .get('sso/getEmergency', {
+          dmsfbsf: dmsfbsf
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.linkUrl = res.data.data
+            this.menuList.forEach((item) => {
+              if (item.name === '应急指挥调度') {
+                item.url = this.linkUrl
+                this.getURL(item.url)
+              } else {
+              }
+            })
+          }
+        })
+    },
+    getURL (url) {
+      let strURL = ''
+      if (url) {
+        if (url.substr(0, 7).toLowerCase() === 'http://' || url.substr(0, 8).toLowerCase() === 'https://') {
+          strURL = url
+        } else {
+          strURL = 'http://' + url
+        }
+        return strURL
+      } else {
+        return null
+      }
+    },
     foldingMenu (index) {
       let vm = this
       vm.menuList.forEach((i) => {
@@ -451,6 +507,7 @@ export default {
         }
       }
       .title{
+        display: inline-block;
         height: 70px;
         line-height: 70px;
         padding-left: 60px;

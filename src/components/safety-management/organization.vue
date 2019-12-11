@@ -5,32 +5,40 @@
       </bread-crumb>
     </el-header>
     <el-main class="inner-main-container">
-      <el-tabs type="border-card" class="height-100">
-        <el-tab-pane>
+      <el-tabs type="border-card" class="height-100" v-model="activeName">
+        <el-tab-pane name="tab_a">
           <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true" :show-btns="true"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick"
+                            @openAppendBox="addTreeData"
+                            @editTreeData="editTreeData"
+                            @confirmRemove="confirmRemove">
               </tree-diagram>
             </el-aside>
 
             <el-main class="inner-content">
               <div class="container-box">
-                <organigram :organigram-data="orgTreeData"></organigram>
+                <organigram :organigram-data="orgTreeData"
+                            :selector="userSelector"
+                            @submitForm="editDeptInfo">
+                </organigram>
               </div>
             </el-main>
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_b">
           <span slot="label">领导小组</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="leaderTree" :tree-name="'领导小组'" :has-upload="false"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
@@ -50,13 +58,13 @@
                     label="姓名"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.userName }}</template>
                   </el-table-column>
                   <el-table-column
                     label="联系方式"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.concatNum }}</template>
+                    <template slot-scope="scope">{{ scope.row.telephone }}</template>
                   </el-table-column>
                   <el-table-column
                     label="主要职责"
@@ -68,7 +76,7 @@
                     width="80px"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="editLeaderItem(scope.row.id)">编辑</el-button>
+                      <el-button type="text" @click="openUpdateBox(scope.row.id)">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -77,7 +85,10 @@
                   <el-pagination
                     background
                     layout="prev, pager, next"
-                    :total="100">
+                    :total="leaderPageData.total"
+                    :page-size="leaderPageData.pageSize"
+                    :current-page.sync="leaderPageData.currentPageNo"
+                    @current-change="handleLeaderPage">
                   </el-pagination>
                 </div>
               </div>
@@ -85,13 +96,14 @@
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane name="tab_c">
           <span slot="label">工作小组</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-diagram :tree-data="workTree" :tree-name="'工作小组'" :has-upload="false"
                             @open-loading="openLoading"
-                            @close-loading="closeLoading" >
+                            @close-loading="closeLoading"
+                            @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
 
@@ -129,7 +141,7 @@
                     width="80px"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="editLeaderItem(scope.row.id)">编辑</el-button>
+                      <el-button type="text" @click="openUpdateBox(scope.row.id)">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -138,7 +150,10 @@
                   <el-pagination
                     background
                     layout="prev, pager, next"
-                    :total="100">
+                    :total="workerPageData.total"
+                    :page-size="workerPageData.pageSize"
+                    :current-page.sync="workerPageData.currentPageNo"
+                    @current-change="handleWorkerPage">
                   </el-pagination>
                 </div>
               </div>
@@ -147,6 +162,20 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
+
+    <el-dialog title="主要职责" :visible.sync="dutyVisible" width="30%">
+      <el-form ref="dutyForm" label-width="80px">
+        <el-form-item label="主要职责">
+          <el-input v-model="dutyPostData" type="textarea"
+                    :rows="3"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dutyVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="updateGroup()" size="small" v-show="!updating">确 定</el-button>
+        <el-button type="primary" size="small" disabled v-show="updating"><i class="el-icon-loading"></i>上传中</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -154,6 +183,8 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
 import Organigram from '../organigram/organigram'
+import {getOrgTree, getTreeDept, addTreeData, editTreeData, delTreeData, editDeptInfo, getLeaderTree, getLeaderTabel, getWorkerTabel, updateGroup} from '@/api/organization'
+import {mapState} from 'vuex'
 
 export default {
   name: 'organization',
@@ -161,344 +192,55 @@ export default {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
-      organizationTree: [
-        {
-          id: 1000131,
-          label: '东三省黑龙江分部总公司',
-          data: {
-            name: 'AAA',
-            duty: 'clean job'
-          },
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              data: {
-                name: 'BBB',
-                duty: 'clean job'
-              },
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'CCC',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组',
-                  data: {
-                    name: 'ddd',
-                    duty: 'clean job'
-                  }
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              data: {
-                name: 'eeee',
-                duty: 'clean job'
-              },
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组',
-                  data: {
-                    name: 'BBfffB',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1060122,
-                  label: '生产B组',
-                  data: {
-                    name: 'fff',
-                    duty: 'clean job'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      leaderTree: [
-        {
-          id: 1000131,
-          label: '黑龙江分部总公司',
-          children: [
-            {
-              id: 1003422,
-              label: '组长'
-            }, {
-              id: 1000135,
-              label: '副组长'
-            }
-          ]
-        }
-      ],
-      workTree: [
-        {
-          id: 1000131,
-          label: '《安全生产管理平台》东三省黑龙江分部总公司',
-          children: [
-            {
-              id: 1003422,
-              label: '安管部',
-              children: [
-                {
-                  id: 1004521,
-                  label: '检查组',
-                  data: {
-                    name: 'AAA',
-                    duty: 'clean job'
-                  }
-                }, {
-                  id: 1004522,
-                  label: '设备组'
-                }
-              ]
-            }, {
-              id: 1000135,
-              label: '生产部',
-              children: [
-                {
-                  id: 1060121,
-                  label: '生产A组'
-                }, {
-                  id: 1060122,
-                  label: '生产B组'
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      leaderData: [
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        }
-      ],
-      workerData: [
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        },
-        {
-          id: 1234123,
-          name: '王小虎',
-          concatNum: '18899890977',
-          duty: '主要职责内容，balabalbalbalbalbablablab'
-        }
-      ],
-      // orgTreeData 谜之bug，替换name属性为其他字段，会导致绘制2遍
-      orgTreeData: {
-        id: '10001',
-        name: '风险辨识 东北三省总部',
-        manager: '张三',
-        telNum: '13088889999',
-        duty: '监管工作',
-        children: [
-          {
-            id: '10011',
-            name: 'Classification',
-            manager: '张三',
-            telNum: '13088889999',
-            duty: '监管工作',
-            children: [
-              {
-                id: '10111',
-                name: 'Classification',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              },
-              {
-                id: '10112',
-                name: 'Linear discriminant analysis',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              },
-              {
-                name: 'Linear',
-                id: '10113',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              }
-            ]
-          },
-          {
-            id: '10012',
-            name: 'Classification',
-            manager: '张三',
-            telNum: '13088889999',
-            duty: '监管工作',
-            children: [
-              {
-                id: '10121',
-                name: 'Classification',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              },
-              {
-                name: 'Linear discriminant analysis',
-                id: '10122',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              },
-              {
-                name: 'Linear',
-                id: '10123',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              }
-            ]
-          },
-          {
-            id: '10013',
-            name: 'Classification',
-            manager: '张三',
-            telNum: '13088889999',
-            duty: '监管工作',
-            children: [
-              {
-                id: '10131',
-                name: 'Classification',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              },
-              {
-                name: 'Linear discriminant analysis',
-                id: '10132',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              },
-              {
-                name: 'Linear',
-                id: '10133',
-                manager: '张三',
-                telNum: '',
-                duty: '监管工作'
-              }
-            ]
-          }
-        ]
-      }
+      organizationTree: [],
+      leaderTree: [],
+      workTree: [],
+      leaderData: [],
+      workerData: [],
+      orgTreeData: {},
+      triggerOrgId: '',
+      triggerWorkId: '',
+      triggerLeaderId: '',
+      addOrgData: {
+        deptName: '',
+        pId: '',
+        position: '',
+        responsibility: ''
+      },
+      editOrgData: {
+        deptName: '',
+        deptId: '',
+        position: '',
+        responsibility: ''
+      },
+      userSelector: null, // 右键人员选项
+      leaderPageData: {
+        total: 0,
+        pageSize: 10,
+        currentPageNo: 1
+      },
+      workerPageData: {
+        total: 0,
+        pageSize: 10,
+        currentPageNo: 1
+      },
+      activeName: 'tab_a',
+      dutyVisible: false,
+      dutyPostData: '',
+      dutyPostId: '',
+      updating: false
     }
+  },
+  created () {
+    this.getOrgTree(true)
+    this.getLeaderTree(true)
+  },
+  mounted () {
+  },
+  computed: {
+    ...mapState({
+      userInfo: (state) => state.userInfo
+    })
   },
   methods: {
     openLoading () {
@@ -507,8 +249,218 @@ export default {
     closeLoading () {
       this.pageLoading = false
     },
-    editLeaderItem (id) {
-      console.log(id)
+    // 获取组织机构 & 工作小组的tree
+    getOrgTree (created) {
+      this.pageLoading = true
+      let userId = sessionStorage.getItem('userId')
+      getOrgTree(userId).then((res) => {
+        if (res.code === 200) {
+          this.organizationTree = res.data[0]
+          this.workTree = res.data[0]
+          this.userSelector = res.data[1]
+          if (created) {
+            this.triggerOrgId = this.organizationTree[0].deptId
+            this.triggerWorkId = this.workTree[0].deptId
+            this.handleNodeClick(this.triggerOrgId)
+            this.getWorkerTable()
+          }
+          this.pageLoading = false
+        }
+      })
+    },
+    // 点击orgTree获取右侧树形数据
+    handleNodeClick (deptId) {
+      if (this.activeName === 'tab_a') {
+        this.triggerOrgId = deptId
+        this.pageLoading = true
+        getTreeDept(deptId).then((res) => {
+          if (res.code === 200) {
+            this.orgTreeData = this.initTreeData(res.data[0])
+            this.pageLoading = false
+          }
+        })
+      } else if (this.activeName === 'tab_b') {
+        this.triggerLeaderId = deptId
+        this.pageLoading = true
+        this.getLeaderTable()
+      } else if (this.activeName === 'tab_c') {
+        this.triggerWorkId = deptId
+        this.pageLoading = true
+        this.getWorkerTable()
+      }
+    },
+    // 过滤树形结构图数据
+    initTreeData (fData) {
+      let vm = this
+      let newTree = {
+        id: fData.deptId,
+        name: fData.deptName,
+        manager: fData.userName,
+        telNum: fData.telephone,
+        duty: fData.duty,
+        children: []
+      }
+      if (fData.children) {
+        fData.children.forEach((item) => {
+          newTree.children.push(vm.initTreeData(item))
+        })
+      }
+      return newTree
+    },
+    // 添加orgTree的节点
+    addTreeData (fid) {
+      this.pageLoading = true
+      this.addOrgData.pId = fid
+      this.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^.{1,12}$/, // 输入正则
+        inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
+      }).then(({ value }) => {
+        this.addOrgData.deptName = value
+        addTreeData(this.addOrgData).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '节点设置成功'
+            })
+            this.getOrgTree(true)
+          }
+        })
+      }).catch(() => {
+        // after cancel
+        this.pageLoading = false
+      })
+    },
+    // 编辑orgTree的节点
+    editTreeData (fid) {
+      this.pageLoading = true
+      this.editOrgData.deptId = fid
+      this.$prompt('请修改节点名称', '编辑节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^.{1,12}$/, // 输入正则
+        inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
+      }).then(({ value }) => {
+        this.editOrgData.deptName = value
+        editTreeData(this.editOrgData).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '节点设置成功'
+            })
+            this.getOrgTree(true)
+          }
+        })
+      }).catch(() => {
+        // after cancel
+        this.pageLoading = false
+      })
+    },
+    // 删除orgTree的节点，包括下属节点
+    confirmRemove (id) {
+      this.pageLoading = true
+      this.$confirm('此操作将永久删除该节点, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let data = {
+          deptId: id
+        }
+        delTreeData(data).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getOrgTree(true)
+          }
+        })
+      }).catch(() => {
+        // after cancel
+        this.pageLoading = false
+      })
+    },
+    // 编辑树形结构图中员工的个人信息
+    editDeptInfo (data) {
+      editDeptInfo(data).then((res) => {
+        if (res.code === 200) {}
+      })
+    },
+    // 获取领导小组的tree
+    getLeaderTree (created) {
+      this.pageLoading = true
+      let userId = sessionStorage.getItem('userId')
+      getLeaderTree(userId).then((res) => {
+        if (res.code === 200) {
+          this.leaderTree = res.data
+          if (created) {
+            this.triggerLeaderId = res.data[0].deptId
+            this.getLeaderTable()
+          }
+        }
+      })
+    },
+    // 获取领导小组的table
+    getLeaderTable () {
+      let vm = this
+      vm.pageLoading = true
+      getLeaderTabel(vm.triggerLeaderId, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
+        if (res.code === 200) {
+          vm.leaderData = res.data
+          vm.leaderPageData.total = res.total
+        }
+        vm.pageLoading = false
+      })
+    },
+    handleLeaderPage (val) {
+      this.leaderPageData.currentPageNo = val
+      this.getLeaderTable()
+    },
+    // 获取工作小组的table
+    getWorkerTable () {
+      let vm = this
+      vm.pageLoading = true
+      getWorkerTabel(vm.triggerWorkId, vm.workerPageData.currentPageNo, vm.workerPageData.pageSize).then((res) => {
+        if (res.code === 200) {
+          vm.workerData = res.data
+          vm.workerPageData.total = res.total
+        }
+        vm.pageLoading = false
+      })
+    },
+    handleWorkerPage (val) {
+      this.workerPageData.currentPageNo = val
+      this.getWorkerTable()
+    },
+    openUpdateBox (id) {
+      this.dutyVisible = true
+      this.dutyPostId = id
+    },
+    updateGroup () {
+      this.updating = true
+      let data = {
+        id: this.dutyPostId,
+        duty: this.dutyPostData
+      }
+      updateGroup(data).then((res) => {
+        if (res.code === 200) {
+          this.dutyVisible = false
+          this.$message({
+            type: 'success',
+            message: '更新成功'
+          })
+          if (this.activeName === 'tab_b') {
+            this.getLeaderTable()
+          } else {
+            this.getWorkerTable()
+          }
+        } else {
+          this.$message.error('更新失败')
+        }
+        this.updating = false
+      })
     }
   },
   components: {
@@ -520,108 +472,108 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.inner-page-container{
-  height: 100%;
-  .el-header{
-    padding: 0;
-  }
-  .el-main{
-    padding: 0;
-  }
-}
-/*  el-tab */
-/deep/.inner-main-container{
-  .el-tabs--border-card{
-    position: relative;
-    border-color: #eeeeee;
-  }
-  .el-tabs__nav{
-    height: 50px;
-  }
-  .el-tabs__item{
-    height: 51px;
-    line-height: 50px;
-    font-size: 16px;
-    color: #777;
-    &.is-active{
-      color: #409EFF;
-      border-top: 2px solid #409EFF;
+  .inner-page-container{
+    height: 100%;
+    .el-header{
+      padding: 0;
+    }
+    .el-main{
+      padding: 0;
     }
   }
-  .el-tabs__content{
-    height: 100%;
-    width: 100%;
-    padding: 50px 0 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    .el-tab-pane{
+  /*  el-tab */
+  /deep/.inner-main-container{
+    .el-tabs--border-card{
+      position: relative;
+      border-color: #eeeeee;
+    }
+    .el-tabs__nav{
+      height: 50px;
+    }
+    .el-tabs__item{
+      height: 51px;
+      line-height: 50px;
+      font-size: 16px;
+      color: #777;
+      &.is-active{
+        color: #409EFF;
+        border-top: 2px solid #409EFF;
+      }
+    }
+    .el-tabs__content{
       height: 100%;
-      .inner-main-content{
-        background: #f2f2f2;
-        width: 100%;
+      width: 100%;
+      padding: 50px 0 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      .el-tab-pane{
         height: 100%;
+        .inner-main-content{
+          background: #f2f2f2;
+          width: 100%;
+          height: 100%;
+        }
       }
     }
   }
-}
 
-.inner-page-container{
-  .inner-content{
-    width: 100%;
-    height: 100%;
-    padding: 29px 22px;
-    background: #fff;
-    .container-box{
+  .inner-page-container{
+    .inner-content{
       width: 100%;
       height: 100%;
-      .btn-p{
-        height: 36px;
-        line-height: 36px;
-        &>a{
-          float: right;
-          width: 83px;
+      padding: 29px 22px;
+      background: #fff;
+      .container-box{
+        width: 100%;
+        height: 100%;
+        .btn-p{
           height: 36px;
-          color: #fff;
-          font-size: 16px;
-          text-align: center;
-          margin-left: 28px;
-          i{
-            margin-right: 8px;
-            display: inline-block;
-            width: 15px;
+          line-height: 36px;
+          &>a{
+            float: right;
+            width: 83px;
             height: 36px;
-            vertical-align: top;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            margin-left: 28px;
+            i{
+              margin-right: 8px;
+              display: inline-block;
+              width: 15px;
+              height: 36px;
+              vertical-align: top;
+            }
+          }
+          .import-btn{
+            background: #e6a23c;
+            i{
+              background-size: 15px 13px;
+              background: url("../../assets/img/import-icon.png") no-repeat center;
+            }
+          }
+          .export-btn{
+            background: #67c23a;
+            i{
+              background-size: 14px 14px;
+              background: url("../../assets/img/export-icon.png") no-repeat center;
+            }
           }
         }
-        .import-btn{
-          background: #e6a23c;
-          i{
-            background-size: 15px 13px;
-            background: url("../../assets/img/import-icon.png") no-repeat center;
-          }
+        .el-table{
+          margin-top: 25px;
         }
-        .export-btn{
-          background: #67c23a;
-          i{
-            background-size: 14px 14px;
-            background: url("../../assets/img/export-icon.png") no-repeat center;
-          }
+        .pages{
+          margin-top: 28px;
+          text-align: right;
         }
-      }
-      .el-table{
-        margin-top: 25px;
-      }
-      .pages{
-        margin-top: 28px;
-        text-align: right;
       }
     }
   }
-}
-.inner-main-content{
-  width: 100%;
-  height: 100%;
-}
+  .inner-main-content{
+    width: 100%;
+    height: 100%;
+  }
 
 </style>

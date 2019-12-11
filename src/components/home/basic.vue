@@ -319,7 +319,7 @@ export default {
         Password: '', // 新密码
         passwordConfirm: '', // 确认新密码
         userId: '',
-        dmsfbsf: window.localStorage.getItem('TOKEN_KEY')
+        dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
       }, // 修改密码form
       telForm: {
         telOld: '', // 原手机号码
@@ -439,7 +439,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  @import '../../utils/css/style.scss';
+  @import '@/utils/css/style.scss';
 
   // 可提取的公用样式
   .icon-location{

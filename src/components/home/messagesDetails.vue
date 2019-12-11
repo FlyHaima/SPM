@@ -115,7 +115,6 @@ export default {
     },
     goBack () {
       // this.$router.back()
-      // window.history.back()
       this.$router.push({
         name: 'messages',
         query: {
@@ -128,7 +127,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../../utils/css/style.scss';
+  @import '@/utils/css/style.scss';
   .view-box{
     width: 100%;
     min-height: 100%;

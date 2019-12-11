@@ -13,13 +13,13 @@
           :autoplay="true"
           class="list-info">
           <el-carousel-item
-            v-for="item in 3"
-            :key="item"
+            v-for="(item, index) in messageData"
+            :key="index"
             class="list-info-item">
-              <div class="list-info-title">
-                <span class="list-info-txt">{{item}}我的消息清单，很长很长的一个清单，龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙我的消息清单，很长很长的一个清单，龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙龙</span>
+              <div @click="goDetailsPage(item)" class="list-info-title">
+                <span class="list-info-txt">{{item.title}}</span>
               </div>
-              <div class="list-info-date">2017-12-20</div>
+              <div class="list-info-date">{{item.sendTime | date-filter}}</div>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -136,57 +136,6 @@
                     </el-tabs>
                   </div>
                 </gauge>
-                <!-- <ul class="list-info">
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <span class="list-info-txt">你的安全清单并未完善，请点击这里</span>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                  <li class="list-info-item">
-                    <div class="list-info-title">
-                      <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                      <div class="list-info-tag">NEW</div>
-                    </div>
-                    <div class="list-info-date">2017-12-20</div>
-                  </li>
-                </ul> -->
               </div>
             </div>
           </el-col>
@@ -265,10 +214,13 @@
 import pieC from '@/components/e-charts/pieC'
 import gauge from '@/components/e-charts/gauge'
 import statisticE from '@/components/e-charts/statisticE'
+import axios from '@/api/axios'
+import moment from 'moment'
 export default {
   name: 'home',
   data () {
     return {
+      pageLoading: false,
       pieOptions: [
         {
           title: '全员参与率',
@@ -343,34 +295,25 @@ export default {
           ]
         }
       ], // 图饼设置项
-      chartData: [
-        {
-          'value': '25',
-          'name': '煤气'
-        },
-        {
-          'value': '50',
-          'name': '炉前'
-        },
-        {
-          'value': '75',
-          'name': '炉前2'
-        },
-        {
-          'value': '60',
-          'name': '炉前3'
-        },
-        {
-          'value': '80',
-          'name': '炉前4'
-        },
-        {
-          'value': '100',
-          'name': '炉前5'
-        }
-      ], // 图表数据
+      chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
-      pieHeight: '200px' // 饼图高度
+      pieHeight: '200px', // 饼图高度
+      messageData: [], // 信息列表数据
+      tabType: '2',
+      page: {
+        pageNo: 1,
+        pageSize: 10 // limit
+      }
+    }
+  },
+  filters: {
+    // 格式化日期格式
+    'date-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD')
+      } else {
+        return null
+      }
     }
   },
   components: {
@@ -378,12 +321,58 @@ export default {
     statisticE,
     gauge
   },
+  created () {
+    this.fetchList()
+    this.fetchChartData()
+  },
   methods: {
+    // 获取chart的数据
+    fetchChartData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('riskLevel/getWorkRisk', {
+          time: 1
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.chartData = res.data.data
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
     // 跳转所有信息页面的点击事件
     goMorePage () {
       this.$router.push({
         name: 'messages'
       })
+    },
+    // 跳转信息详情页面的点击事件
+    goDetailsPage (item) {
+      this.$router.push({
+        name: 'messagesDetails',
+        params: {
+          id: item.id
+        },
+        query: {
+          tabType: this.tabType
+        }
+      })
+    },
+    // 获取消息列表数据
+    fetchList () {
+      axios
+        .get('msg/getMsgList', {
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize,
+          tabType: this.tabType
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.messageData = res.data.data
+          }
+        })
     }
   }
 

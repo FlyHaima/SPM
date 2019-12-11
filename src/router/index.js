@@ -124,7 +124,12 @@ const DataManagement = resolve => require.ensure([], () => resolve(dataManagemen
 // 日志
 const log = require('@/components/config-management/log.vue')
 const Log = resolve => require.ensure([], () => resolve(log), 'pagelist')
-
+// 新闻维护
+const newsManage = require('@/components/config-management/newsManage.vue')
+const NewsManage = resolve => require.ensure([], () => resolve(newsManage), 'pagelist')
+// 绩效考核
+const performanceAssessment = require('@/components/config-management/performanceAssessment.vue')
+const PerformanceAssessment = resolve => require.ensure([], () => resolve(performanceAssessment), 'pagelist')
 // 日志
 Vue.use(Router)
 
@@ -372,6 +377,18 @@ const routes = [
         name: 'log',
         title: '日志',
         component: Log
+      },
+      {
+        path: '/newsManage',
+        name: 'newsManage',
+        title: '新闻维护',
+        component: NewsManage
+      },
+      {
+        path: '/performanceAssessment',
+        name: 'performanceAssessment',
+        title: '绩效考核',
+        component: PerformanceAssessment
       }
     ]
   },

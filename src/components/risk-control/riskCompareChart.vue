@@ -55,9 +55,8 @@ export default {
     },
     // 获取chart的数据
     fetchChartData () {
-      this.pageLoading = true
       let vm = this
-      // this.chartData = []
+      vm.pageLoading = true
       axios
         .get('riskLevel/getWorkRisk', {
           time: vm.time
@@ -79,7 +78,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../../utils/css/style.scss';
+  @import '@/utils/css/style.scss';
 .container-box{
   padding: 20px 25px;
 }
