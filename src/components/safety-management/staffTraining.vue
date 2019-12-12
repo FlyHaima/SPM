@@ -24,6 +24,7 @@
                   <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
                   <a class="release-btn" @click="showPlanDialog = true"><i class="el-icon-plus"></i>计划发布</a>
                 </p>
+
                 <el-dialog :title="'计划发布'" :visible.sync="showPlanDialog"
                            :width="'1004px'"
                            :show-close="false">
@@ -35,7 +36,16 @@
                       </div>
                       <div class="inner-item">
                         <p class="title">类别</p>
-                        <p class="val-p"><el-input size="medium" v-model="addPlanData.planType"></el-input></p>
+                        <p class="val-p">
+                          <el-select size="medium" v-model="addPlanData.planType" style="width: 100%;">
+                            <el-option
+                              v-for="item in lessonTypes"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                          </el-select>
+                        </p>
                       </div>
                     </div>
                     <div class="dialog-inner-line">
@@ -60,6 +70,14 @@
                         </p>
                       </div>
                     </div>
+                    <div class="dialog-inner-line">
+                      <div class="inner-item">
+                        <p class="title">总课时(小时)</p>
+                        <p class="val-p">
+                          <el-input size="medium" v-model="addPlanData.hourRequire"></el-input>
+                        </p>
+                      </div>
+                    </div>
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
@@ -69,23 +87,120 @@
                     <div class="dialog-inner-all">
                       <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
                       <div class="val-div">
-                        <el-upload
-                          class="upload-demo"
-                          action="https://jsonplaceholder.typicode.com/posts/"
-                          :on-preview="handlePreview"
-                          :on-remove="handleRemove"
-                          :before-remove="beforeRemove"
-                          multiple
-                          :on-exceed="handleExceed"
-                          :file-list="fileList">
+                        <el-upload multiple
+                                   class="upload-demo"
+                                   :data="uploadData"
+                                   :action="uploadingAddress"
+                                   :on-preview="handlePreview"
+                                   :on-remove="handleRemove"
+                                   :before-upload="handleBeforeUpload"
+                                   :before-remove="beforeRemove"
+                                   :on-exceed="handleExceed"
+                                   :file-list="fileList">
                           <el-button size="small" type="primary">点击上传</el-button>
                         </el-upload>
+                        <!--                        <el-upload-->
+                        <!--                          :limit="1"-->
+                        <!--                          class="upload-demo"-->
+                        <!--                          accept=".doc,.docx"-->
+                        <!--                          action="http://upload-z1.qiniup.com"-->
+                        <!--                          :before-upload="beforeAvatarUpload"-->
+                        <!--                          :on-success="handleAvatarSuccess"-->
+                        <!--                          :on-remove="handleRemove"-->
+                        <!--                          :file-list="fileList"-->
+                        <!--                          :data="postData">-->
+                        <!--                          <el-button size="small" type="primary">点击上传</el-button>-->
+                        <!--                          <div slot="tip" class="el-upload__tip">只能上传doc/docx文件，且不超过5Mb</div>-->
+                        <!--                        </el-upload>-->
                       </div>
                     </div>
                   </div>
                   <div slot="footer" class="dialog-footer">
                     <el-button size="small" type="primary" @click="releasePlan()">保 存</el-button>
                     <el-button size="small" @click="showPlanDialog = false">取 消</el-button>
+                  </div>
+                </el-dialog>
+
+                <el-dialog :title="'编辑计划'" :visible.sync="showEditDialog"
+                           :width="'1004px'"
+                           :show-close="false">
+                  <div class="plan-body">
+                    <div class="dialog-inner-line">
+                      <div class="inner-item">
+                        <p class="title">课程名称</p>
+                        <p class="val-p"><el-input size="medium" v-model="editData.className"></el-input></p>
+                      </div>
+                      <div class="inner-item">
+                        <p class="title">类别</p>
+                        <p class="val-p">
+                          <el-select size="medium" v-model="editData.planType" style="width: 100%;">
+                            <el-option
+                              v-for="item in lessonTypes"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                          </el-select>
+                          <!--                          <el-input size="medium" v-model="addPlanData.planType"></el-input>-->
+                        </p>
+                      </div>
+                    </div>
+                    <div class="dialog-inner-line">
+                      <div class="inner-item">
+                        <p class="title">开始时间</p>
+                        <p class="val-p">
+                          <el-date-picker
+                            v-model="editData.startTime"
+                            type="datetime"
+                            placeholder="选择日期时间">
+                          </el-date-picker>
+                        </p>
+                      </div>
+                      <div class="inner-item">
+                        <p class="title">结束时间</p>
+                        <p class="val-p">
+                          <el-date-picker
+                            v-model="editData.endTime"
+                            type="datetime"
+                            placeholder="选择日期时间">
+                          </el-date-picker>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="dialog-inner-line">
+                      <div class="inner-item">
+                        <p class="title">总课时(小时)</p>
+                        <p class="val-p">
+                          <el-input size="medium" v-model="editData.hourRequire"></el-input>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="dialog-inner-all">
+                      <p class="title">培训需求</p>
+                      <div class="val-div">
+                        <el-input type="textarea" v-model="editData.need"></el-input>
+                      </div>
+                    </div>
+                    <div class="dialog-inner-all">
+                      <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
+                      <div class="val-div">
+                        <el-upload multiple
+                                   class="upload-demo"
+                                   :data="uploadData"
+                                   :action="uploadingAddress"
+                                   :on-preview="handlePreview"
+                                   :on-remove="handleRemove"
+                                   :before-remove="beforeRemove"
+                                   :on-exceed="handleExceed"
+                                   :file-list="editData.fileList">
+                          <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload>
+                      </div>
+                    </div>
+                  </div>
+                  <div slot="footer" class="dialog-footer">
+                    <el-button size="small" type="primary" @click="confirmEdit()">确认修改</el-button>
+                    <el-button size="small" @click="showEditDialog = false">取 消</el-button>
                   </div>
                 </el-dialog>
 
@@ -435,6 +550,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import base from '../../api/baseUrl'
 import {
   getPlanDeptList,
   getPlanTable,
@@ -447,6 +563,7 @@ import {
   startLearn,
   endLearn
 } from '@/api/organization'
+import {getQiNiuToken} from '@/api/upload'
 
 export default {
   name: 'staffTraining',
@@ -454,6 +571,11 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '全员培训'],
+      uploadingAddress: '',
+      fileAddress: '',
+      uploadData: {
+        token: ''
+      },
       activeName: 'tab_a',
       triggerAid: '',
       triggerCid: '',
@@ -483,6 +605,15 @@ export default {
         '1': '训练',
         '2': '考试'
       },
+      lessonTypes: [
+        {
+          label: '训练',
+          value: '1'
+        }, {
+          label: '考试',
+          value: '2'
+        }
+      ],
       planList: [],
       multipleSelection: [],
       showPlanDialog: false,
@@ -490,6 +621,7 @@ export default {
         className: '',
         planType: '',
         startTime: '',
+        hourRequire: 0,
         endTime: '',
         need: ''
       },
@@ -523,10 +655,24 @@ export default {
         totalHour: 0,
         downList: []
       },
-      colNames: 'col_a'
+      colNames: 'col_a',
+      editData: {
+        className: '',
+        planType: '',
+        startTime: '',
+        hourRequire: 0,
+        endTime: '',
+        need: '',
+        fileList: []
+      },
+      showEditDialog: false
     }
   },
   created () {
+    // 设置七牛云
+    this.uploadingAddress = base.uploadQiniuAdr
+    this.fileAddress = base.fileQiniuAddr
+
     this.getPlanDeptTree(true)
     this.getContentTable()
   },
@@ -623,6 +769,7 @@ export default {
         this.pageLoading = false
       })
     },
+    // 弹窗具体需求
     checkPlan (need) {
       let needStr = ''
       if (need) {
@@ -635,14 +782,39 @@ export default {
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
+    handleBeforeUpload (file) {
+      // this.uploading = true
+      // const isLt1M = file.size / 1024 / 1024 < 1
+      // if (!isLt1M) {
+      //   this.$message.error('上传头像图片大小不能超过 1MB!')
+      //   this.uploading = false
+      // }
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    handleSuccess (response, file, fileList) {
+      this.uploadList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name,
+          url: this.fileAddress + item.response.key
+        }
+        this.uploadList.push(fItem)
+      })
+    },
     releasePlan () {
+      if (!this.addPlanData.className || !this.addPlanData.planType || !this.addPlanData.hourRequire || !this.addPlanData.startTime || !this.addPlanData.endTime) {
+        this.$message.error('课程名称、类别、课时、理论开始时间、理论结束时间为必填项')
+        return
+      }
       let data = {
-        deptId: '',
+        deptId: this.triggerAid, // 当前节点部门ID
         courseTitle: this.addPlanData.className, // 课程名称
         category: this.addPlanData.planType, // 类别
-        hourRequire: 0, // 总课时
+        hourRequire: this.addPlanData.hourRequire, // 总课时
         // creater: '', // 计划发布人id
-        planTime: '', // 计划发布时间
+        // planTime: '', // 计划发布时间 系统自动生成
         theorysTime: this.addPlanData.startTime, // 理论开始时间
         theoryeTime: this.addPlanData.endTime, // 理论结束时间
         need: this.addPlanData.need, // 培训需求
@@ -659,6 +831,10 @@ export default {
         if (res.code === 200) {
         }
       })
+    },
+    // 确认edit
+    confirmEdit () {
+
     },
     copyPlan () {
       this.pageLoading = true
