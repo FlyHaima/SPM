@@ -429,7 +429,7 @@ export default {
       this.graph.fitView()
       this.graph.refresh()
       this.graph.on('node:contextmenu', (e) =>{
-        console.log(e.item._cfg.model)
+        // console.log(e.item._cfg.model)
         this.filter(e.item._cfg.model.workList)
         this.subId = e.item._cfg.id
         this.dialogVisibleEdit = true
@@ -446,7 +446,7 @@ export default {
         this.leaderDutyB = ''
       } else if (list[0].type == '1') {
         this.type = '1'
-        this.workUsers = list[0].id ? list[0].id.split(',') : []
+        this.workUsers = list[0].userId ? list[0].userId.split(',') : []
         this.leadUserA = []
         this.leadUserB = []
         this.workerDuty = list[0].duty
@@ -462,10 +462,10 @@ export default {
         this.leaderDutyB = ''
         list.forEach((item) => {
           if (item.level == '1') {
-            this.leadUserA = item.id ? item.id.split(',') : []
+            this.leadUserA = item.userId ? item.userId.split(',') : []
             this.leaderDutyA = item.duty
           } else {
-            this.leadUserB = item.id ? item.id.split(',') : []
+            this.leadUserB = item.userId ? item.userId.split(',') : []
             this.leaderDutyB = item.duty
           }
         })
