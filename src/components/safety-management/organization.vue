@@ -124,13 +124,13 @@
                     label="姓名"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.userName }}</template>
                   </el-table-column>
                   <el-table-column
                     label="联系方式"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.concatNum }}</template>
+                    <template slot-scope="scope">{{ scope.row.telephone }}</template>
                   </el-table-column>
                   <el-table-column
                     label="主要职责"

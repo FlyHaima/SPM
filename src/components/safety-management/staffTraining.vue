@@ -96,6 +96,7 @@
                                    :before-upload="handleBeforeUpload"
                                    :on-success="handleSuccess"
                                    :on-preview="handlePreview"
+                                   :on-remove="handleRemove"
                                    :on-exceed="handleExceed"
                                    :file-list="fileList">
                           <el-button size="small" type="primary">点击上传</el-button>
@@ -547,6 +548,7 @@ import {
   getContentTable,
   getRecordTable,
   releasePlan,
+  updatePlan,
   deletePlan,
   copyPlan,
   getTrainStatistic,
@@ -774,7 +776,15 @@ export default {
         this.$message.error('选择预期结束时间需大于开始时间')
         return
       }
-      console.log(this.list)
+      let list = []
+      this.fileList.forEach(item => {
+        let listItem = {
+          name: item.name,
+          path: item.path,
+          size: item.size
+        }
+        list.push(listItem)
+      })
       let data = {
         deptId: this.triggerAid, // 当前节点部门ID
         courseTitle: this.addPlanData.className, // 课程名称
@@ -785,7 +795,7 @@ export default {
         theorysTime: this.addPlanData.startTime, // 理论开始时间
         theoryeTime: this.addPlanData.endTime, // 理论结束时间
         need: this.addPlanData.need, // 培训需求
-        attachmentList: this.fileList
+        attachmentList: list
       }
       let vm = this
       releasePlan(data).then((res) => {
@@ -805,18 +815,47 @@ export default {
       this.showEditDialog = true
       console.log(data)
       this.editData = {
-        className: '',
-        planType: '',
-        startTime: '',
-        hourRequire: 0,
-        endTime: '',
-        need: '',
-        fileList: []
+        className: data.courseTitle,
+        planType: data.category,
+        startTime: data.theorysTime,
+        hourRequire: data.hourRequire,
+        endTime: data.theoryeTime,
+        need: data.need,
+        fileList: data.attachmentList ? data.attachmentList : []
       }
     },
     // 确认edit
     confirmEdit () {
-
+      if (!this.editData.className || !this.editData.planType || !this.editData.hourRequire || !this.editData.startTime || !this.editData.endTime) {
+        this.$message.error('课程名称、类别、课时、理论开始时间、理论结束时间为必填项')
+        return
+      }
+      if ((new Date(this.editData.startTime)).getTime() >= (new Date(this.editData.endTime)).getTime()) {
+        this.$message.error('选择预期结束时间需大于开始时间')
+        return
+      }
+      let data = {
+        deptId: this.triggerAid, // 当前节点部门ID
+        courseTitle: this.editData.className, // 课程名称
+        category: this.editData.planType, // 类别
+        hourRequire: this.editData.hourRequire, // 总课时
+        theorysTime: this.editData.startTime, // 理论开始时间
+        theoryeTime: this.editData.endTime, // 理论结束时间
+        need: this.editData.need, // 培训需求
+        attachmentList: this.editData.fileList
+      }
+      let vm = this
+      updatePlan(data).then((res) => {
+        if (res.code === 200) {
+          vm.showPlanDialog = false
+          vm.pageLoading = true
+          vm.getPlanTable()
+          vm.getContentTable()
+          vm.getRecordTable()
+        } else {
+          vm.$message.error(res.message || '计划发布失败，请稍后重试')
+        }
+      })
     },
     copyPlan () {
       this.pageLoading = true
@@ -853,6 +892,9 @@ export default {
         }
         this.fileList.push(fItem)
       })
+    },
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
     },
     handlePreview (file) {
       console.log(file)
