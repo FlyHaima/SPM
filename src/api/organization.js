@@ -70,8 +70,8 @@ export function delTreeData (param) {
 }
 
 // 安全基础管理--组织机构--领导小组--获取table
-export function getLeaderTabel (deptId, pageNo, pageSize) {
-  const url = `${baseUrl}/leadUser/getList?deptId=${deptId}&pageNo=${pageNo}&pageSize=${pageSize}`
+export function getLeaderTabel (deptId, position, pageNo, pageSize) {
+  const url = `${baseUrl}/leadUser/getList?deptId=${deptId}&position=${position}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)

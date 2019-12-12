@@ -91,27 +91,15 @@
                                    class="upload-demo"
                                    :data="uploadData"
                                    :action="uploadingAddress"
-                                   :on-preview="handlePreview"
-                                   :on-remove="handleRemove"
+                                   accept=".doc, .docx, .mp4"
+                                   :limit="3"
                                    :before-upload="handleBeforeUpload"
-                                   :before-remove="beforeRemove"
+                                   :on-success="handleSuccess"
+                                   :on-preview="handlePreview"
                                    :on-exceed="handleExceed"
                                    :file-list="fileList">
                           <el-button size="small" type="primary">点击上传</el-button>
                         </el-upload>
-                        <!--                        <el-upload-->
-                        <!--                          :limit="1"-->
-                        <!--                          class="upload-demo"-->
-                        <!--                          accept=".doc,.docx"-->
-                        <!--                          action="http://upload-z1.qiniup.com"-->
-                        <!--                          :before-upload="beforeAvatarUpload"-->
-                        <!--                          :on-success="handleAvatarSuccess"-->
-                        <!--                          :on-remove="handleRemove"-->
-                        <!--                          :file-list="fileList"-->
-                        <!--                          :data="postData">-->
-                        <!--                          <el-button size="small" type="primary">点击上传</el-button>-->
-                        <!--                          <div slot="tip" class="el-upload__tip">只能上传doc/docx文件，且不超过5Mb</div>-->
-                        <!--                        </el-upload>-->
                       </div>
                     </div>
                   </div>
@@ -188,9 +176,11 @@
                                    class="upload-demo"
                                    :data="uploadData"
                                    :action="uploadingAddress"
+                                   accept=".doc, .docx, .mp4"
+                                   :limit="3"
+                                   :before-upload="handleBeforeUpload"
+                                   :on-success="handleSuccess"
                                    :on-preview="handlePreview"
-                                   :on-remove="handleRemove"
-                                   :before-remove="beforeRemove"
                                    :on-exceed="handleExceed"
                                    :file-list="editData.fileList">
                           <el-button size="small" type="primary">点击上传</el-button>
@@ -266,7 +256,7 @@
                     align="center">
                     <template slot-scope="scope">
                       <el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button>
-                      <el-button type="text" @click="checkPlan(scope.row.need)">编辑</el-button>
+                      <el-button type="text" @click="openItemEditor(scope.row)">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -625,12 +615,7 @@ export default {
         endTime: '',
         need: ''
       },
-      fileList: [
-        {
-          name: 'food.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }
-      ],
+      fileList: [],
       trainList: [],
       recordList: [],
       showDetailLog: false,
@@ -779,35 +764,17 @@ export default {
       }
       this.$alert(needStr, '培训需求')
     },
-    handleSelectionChange (val) {
-      this.multipleSelection = val
-    },
-    handleBeforeUpload (file) {
-      // this.uploading = true
-      // const isLt1M = file.size / 1024 / 1024 < 1
-      // if (!isLt1M) {
-      //   this.$message.error('上传头像图片大小不能超过 1MB!')
-      //   this.uploading = false
-      // }
-      return getQiNiuToken().then((res) => {
-        this.uploadData.token = res
-      })
-    },
-    handleSuccess (response, file, fileList) {
-      this.uploadList = []
-      fileList.forEach(item => {
-        let fItem = {
-          name: item.name,
-          url: this.fileAddress + item.response.key
-        }
-        this.uploadList.push(fItem)
-      })
-    },
+    // 发布计划
     releasePlan () {
       if (!this.addPlanData.className || !this.addPlanData.planType || !this.addPlanData.hourRequire || !this.addPlanData.startTime || !this.addPlanData.endTime) {
         this.$message.error('课程名称、类别、课时、理论开始时间、理论结束时间为必填项')
         return
       }
+      if ((new Date(this.addPlanData.startTime)).getTime() >= (new Date(this.addPlanData.endTime)).getTime()) {
+        this.$message.error('选择预期结束时间需大于开始时间')
+        return
+      }
+      console.log(this.list)
       let data = {
         deptId: this.triggerAid, // 当前节点部门ID
         courseTitle: this.addPlanData.className, // 课程名称
@@ -818,19 +785,34 @@ export default {
         theorysTime: this.addPlanData.startTime, // 理论开始时间
         theoryeTime: this.addPlanData.endTime, // 理论结束时间
         need: this.addPlanData.need, // 培训需求
-        attachmentList: [
-          {
-            name: '', // 附件名称
-            path: '', // 附件路径
-            size: '', // 附件大小
-            type: ''
-          }
-        ]
+        attachmentList: this.fileList
       }
+      let vm = this
       releasePlan(data).then((res) => {
         if (res.code === 200) {
+          vm.showPlanDialog = false
+          vm.pageLoading = true
+          vm.getPlanTable()
+          vm.getContentTable()
+          vm.getRecordTable()
+        } else {
+          vm.$message.error(res.message || '计划发布失败，请稍后重试')
         }
       })
+    },
+    // 打开编辑窗口
+    openItemEditor (data) {
+      this.showEditDialog = true
+      console.log(data)
+      this.editData = {
+        className: '',
+        planType: '',
+        startTime: '',
+        hourRequire: 0,
+        endTime: '',
+        need: '',
+        fileList: []
+      }
     },
     // 确认edit
     confirmEdit () {
@@ -845,8 +827,32 @@ export default {
         this.pageLoading = false
       })
     },
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    },
+    // upload前，获取七牛云的token
+    handleBeforeUpload (file) {
+      // this.uploading = true
+      // const isLt1M = file.size / 1024 / 1024 < 1
+      // if (!isLt1M) {
+      //   this.$message.error('上传头像图片大小不能超过 1MB!')
+      //   this.uploading = false
+      // }
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    // 上传结束后，返回上传结果
+    handleSuccess (response, file, fileList) {
+      this.fileList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name, // 附件名称
+          path: this.fileAddress + item.response.key, // 附件路径
+          size: item.size // 附件大小
+        }
+        this.fileList.push(fItem)
+      })
     },
     handlePreview (file) {
       console.log(file)

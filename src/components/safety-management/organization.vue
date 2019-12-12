@@ -230,7 +230,8 @@ export default {
       dutyPostData: '',
       dutyPostId: '',
       updating: false,
-      dialogLoading: false
+      dialogLoading: false,
+      leaderPosition: null
     }
   },
   created () {
@@ -271,7 +272,7 @@ export default {
       })
     },
     // 点击orgTree获取右侧树形数据
-    handleNodeClick (deptId) {
+    handleNodeClick (deptId, position) {
       if (this.activeName === 'tab_a') {
         this.triggerOrgId = deptId
         this.pageLoading = true
@@ -282,6 +283,7 @@ export default {
           }
         })
       } else if (this.activeName === 'tab_b') {
+        this.leaderPosition = position
         this.triggerLeaderId = deptId
         this.pageLoading = true
         this.getLeaderTable()
@@ -413,7 +415,7 @@ export default {
     getLeaderTable () {
       let vm = this
       vm.pageLoading = true
-      getLeaderTabel(vm.triggerLeaderId, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
+      getLeaderTabel(vm.triggerLeaderId, vm.leaderPosition, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
         if (res.code === 200) {
           vm.leaderData = res.data
           vm.leaderPageData.total = res.total
