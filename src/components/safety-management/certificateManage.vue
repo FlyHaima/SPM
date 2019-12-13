@@ -21,30 +21,31 @@
             <p class="btn-p">
               <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
             </p>
+
             <el-table border
                       stripe
-                      :data="dataListA"
+                      :data="dataList"
                       tooltip-effect="dark"
                       style="width: 100%">
               <el-table-column
-                label="文件名"
+                label="证件名称"
                 align="center">
                 <template slot-scope="scope">{{ scope.row.name }}</template>
               </el-table-column>
               <el-table-column
-                label="文档类型"
+                label="证件种类"
                 align="center">
-                <template slot-scope="scope">{{ fileTypesA[scope.row.fileType] }}</template>
+                <template slot-scope="scope">{{ typesB[scope.row.type] }}</template>
               </el-table-column>
               <el-table-column
-                label="类型"
-                align="center">
-                <template slot-scope="scope">{{ typesA[scope.row.type] }}</template>
-              </el-table-column>
-              <el-table-column
-                label="时间"
+                label="证件有效截止日期"
                 align="center">
                 <template slot-scope="scope">{{ formatTime(scope.row.time) }}</template>
+              </el-table-column>
+              <el-table-column
+                label="登录ID"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.id }}</template>
               </el-table-column>
               <el-table-column
                 label="操作"
@@ -64,39 +65,28 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
-import {getBasicCategory} from '@/api/organization'
 
 export default {
-  name: 'basicData',
+  name: 'certificateManage',
   data () {
     return {
       pageLoading: false,
-      breadcrumb: ['风险辨识评估', '制度建设'],
-      showTableA: true,
+      breadcrumb: ['风险辨识评估', '证件管理'],
       fileTypes: [],
-      dataListA: [
+      dataList: [
         {
-          name: '风险辨识清单--评估报告A23-01',
-          fileType: 'doc',
-          type: 'A',
-          time: '2019-10-20T14:39:38.000+0000',
-          url: '****.doc',
-          id: 31231
-        }, {
-          name: '风险辨识清单--评估报告A23-01',
-          fileType: 'doc',
+          name: '企业卫生许可证',
           type: 'A',
           time: '2019-10-20T14:39:38.000+0000',
           url: '****.doc',
           id: 31231
         }
       ],
-      fileTypesA: {doc: '文本', img: '图片', video: '视频'},
-      typesA: {A: '国家安全规范', B: '行业安全规范', C: '公司内部安全规范'}
+      typesB: {A: '卫生', B: '消防'}
     }
   },
   created () {
-    this.getBasicCategory()
+    // this.getBasicCategory()
   },
   methods: {
     formatTime (t) {
@@ -128,29 +118,25 @@ export default {
       this.fileTypes.forEach((item) => { item.active = false })
       this.fileTypes[index].active = true
     },
-    getBasicCategory (create) {
+    getBasicCategory () {
       this.pageLoading = true
-      getBasicCategory().then((res) => {
-        if (res.code === 200) {
-          console.log(res.data)
-          let fileTypes = []
-          res.data.forEach((item) => {
-            let typeItem = {
-              name: item.name,
-              typeStr: item.id,
-              active: false
-            }
-            fileTypes.push(typeItem)
-          })
-          this.fileTypes = fileTypes
-          if (create) {
-            getTable()
-          }
-        }
-        this.pageLoading = false
-      })
-    },
-    getTable () {}
+      // getBasicCategory().then((res) => {
+      //   if (res.code === 200) {
+      //     console.log(res.data)
+      //     let fileTypes = []
+      //     res.data.forEach((item) => {
+      //       let typeItem = {
+      //         name: item.name,
+      //         typeStr: item.id,
+      //         active: false
+      //       }
+      //       fileTypes.push(typeItem)
+      //     })
+      //     this.fileTypes = fileTypes
+      //   }
+      //   this.pageLoading = false
+      // })
+    }
   },
   components: {BreadCrumb}
 }

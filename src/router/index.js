@@ -40,6 +40,9 @@ const SystemConstruction = resolve => require.ensure([], () => resolve(systemCon
 // 安全基础管理--基础资料
 const basicData = require('@/components/safety-management/basicData')
 const BasicData = resolve => require.ensure([], () => resolve(basicData), 'pageListA')
+// 安全基础管理--证件管理
+const certificateManage = require('@/components/safety-management/certificateManage')
+const CertificateManage = resolve => require.ensure([], () => resolve(certificateManage), 'pageListA')
 // 风险辨识评估--风险辨识
 const riskIdentified = require('@/components/risk-identifi-module/riskIdentified')
 const RiskIdentified = resolve => require.ensure([], () => resolve(riskIdentified), 'pageListB')
@@ -244,6 +247,12 @@ const routes = [
         name: 'BasicData',
         title: '基础资料',
         component: BasicData
+      },
+      {
+        path: '/certificateManage',
+        name: 'CertificateManage',
+        title: '证件管理',
+        component: CertificateManage
       },
       {
         path: '/riskIdentified',

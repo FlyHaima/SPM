@@ -82,6 +82,12 @@ export default {
               name: '基础资料',
               url: '/basicData',
               active: false
+            },
+            {
+              fname: '安全基础管理',
+              name: '证件管理',
+              url: '/certificateManage',
+              active: false
             }
           ]
         },

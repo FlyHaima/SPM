@@ -31,8 +31,8 @@
             width="220"
             align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="preview(scope.row.id)">预览</el-button>
-              <el-button type="text" @click="edit(scope.row.id)">编辑</el-button>
+              <el-button type="text" @click="preview(scope.row)">预览</el-button>
+              <el-button type="text" @click="edit(scope.row)">编辑</el-button>
               <el-button type="text" @click="deleteItem(scope.row.id)">删除</el-button>
               <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>
             </template>
@@ -64,12 +64,35 @@
                :visible.sync="showEdit"
                :width="'1290px'" :top="'20px'">
       <div class="edit-box">
-        <vue-ueditor-wrap v-model="previewDom" :config="editorConfig"></vue-ueditor-wrap>
+        <vue-ueditor-wrap v-model="previewDom" :config="editorConfig" @beforeInit="addCustomButtom"></vue-ueditor-wrap>
         <div slot="footer" class="dialog-footer" style="margin-top: 40px; text-align: right;">
           <el-button size="small" type="primary" @click="submitEdit()">保 存</el-button>
           <el-button size="small" @click="showEdit = false">取 消</el-button>
         </div>
       </div>
+
+      <el-dialog
+        width="30%"
+        title="图片上传"
+        :visible.sync="innerVisible"
+        append-to-body>
+        <el-upload
+          class="upload-demo"
+          :action="baseUrl"
+          :data="uploadData"
+          :before-upload="handleBeforeUpload"
+          :on-preview="handlePreview"
+          :on-success="handleSuccess"
+          :on-remove="handleRemove"
+          :file-list="imgList">
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+
+        <div slot="footer" class="dialog-footer" style="margin-top: 40px; text-align: right;">
+          <el-button size="small" type="primary" @click="confirmImg()">确 定</el-button>
+        </div>
+      </el-dialog>
     </el-dialog>
   </el-container>
 </template>
@@ -77,7 +100,9 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import VueUeditorWrap from 'vue-ueditor-wrap'
+import base from '@/api/baseUrl'
 import {getConstructionList, editSystemFile, deleteSystemFile, resetSystemFile} from '@/api/organization'
+import {getQiNiuToken} from '@/api/upload'
 
 export default {
   name: 'systemConstruction',
@@ -87,7 +112,7 @@ export default {
       breadcrumb: ['风险辨识评估', '制度建设'],
       systemList: [],
       showPre: false,
-      previewDom: '<div style="width:595.0pt;margin-bottom:72.0pt;margin-top:72.0pt;margin-left:90.0pt;margin-right:90.0pt;"><p>&#24005;&#23792;&#23545;&#20915;&#24343;&#20848;&#20811;</p><p>&#20998;&#20026;&#21152;&#20998;&#21908;</p><p><br/></p><p>&#21435;&#27745;&#31881;wew</p><table class="a1 a3" style="border-collapse:collapse;"><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>1</p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>2</p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p/></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>3</p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>3</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>4</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>4</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>56</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>6</p></td></tr><tr class="a1 a3"><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.85pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p><br/></p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>43</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>4</p></td><td class="a1 a3" style="width:60.9pt;border-top:0.5px solid #000000;border-bottom:0.5px solid #000000;border-left:0.5px solid #000000;border-right:0.5px solid #000000;"><p>5</p></td></tr></table><p><img src="image/word/media/image1.png" width="117.5pt" height="202.75pt"/></p></div>',
+      previewDom: '',
       showEdit: false,
       editorConfig: {
         // 编辑器初始z-index
@@ -99,7 +124,7 @@ export default {
         // 初始容器宽度
         initialFrameWidth: '100%',
         // 上传文件接口（这个地址是我为了方便各位体验文件上传功能搭建的临时接口，请勿在生产环境使用！！！）
-        serverUrl: 'http://35.201.165.105:8000/controller.php',
+        // serverUrl: base.uploadQiniuAdr,
         // UEditor 资源文件的存放路径，如果你使用的是 vue-cli 生成的项目，通常不需要设置该选项，vue-ueditor-wrap 会自动处理常见的情况，如果需要特殊配置，参考下方的常见问题2
         UEDITOR_HOME_URL: '/static/UEditor/',
         // 工具栏
@@ -111,7 +136,7 @@ export default {
           'directionalityltr', 'directionalityrtl', 'indent', '|',
           'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
           'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
-          'simpleupload', 'insertimage', 'emotion', 'scrawl', '|',
+          'emotion', '|',
           'horizontal', 'date', 'time', 'spechars', '|',
           'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
           'help'
@@ -122,10 +147,19 @@ export default {
         pageSize: 10,
         pageNo: 1,
         total: 0
+      },
+      imgList: [],
+      baseUrl: '',
+      fileAddress: '',
+      innerVisible: false,
+      uploadData: {
+        token: ''
       }
     }
   },
   created () {
+    this.baseUrl = base.uploadQiniuAdr
+    this.fileAddress = base.fileQiniuAddr
     this.getConstructionList()
   },
   methods: {
@@ -139,17 +173,22 @@ export default {
         this.pageLoading = false
       })
     },
-    preview (id) {
-      // previewDom
+    preview (data) {
+      this.previewDom = data.fileData ? data.fileData : ''
       this.showPre = true
     },
-    edit (id) {
+    edit (data) {
       this.showEdit = true
-      this.editId = id
+      this.editId = data.id
+      this.previewDom = data.fileData ? data.fileData : ''
     },
     submitEdit () {
       // this.editId
-      editSystemFile().then((res) => {
+      let data = {
+        id: this.editId,
+        fileData: this.previewDom
+      }
+      editSystemFile(data).then((res) => {
         if (res.code === 200) {
 
         }
@@ -205,6 +244,93 @@ export default {
           message: '已取消重置'
         })
       })
+    },
+    handlePreview () {},
+    handleSuccess (response, file, fileList) {
+      this.imgList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name, // 附件名称
+          path: this.fileAddress + item.response.key, // 附件路径
+          size: item.size // 附件大小
+        }
+        this.imgList.push(fItem)
+      })
+    },
+    handleRemove (file, fileList) {
+      this.imgList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name, // 附件名称
+          path: this.fileAddress + item.response.key, // 附件路径
+          size: item.size // 附件大小
+        }
+        this.imgList.push(fItem)
+      })
+    },
+    handleBeforeUpload (file) {
+      // const isLt1M = file.size / 1024 / 1024 < 1
+      // if (!isLt1M) {
+      //   this.$message.error('上传头像图片大小不能超过 1MB!')
+      //   this.uploading = false
+      // }
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    confirmImg () {
+    },
+    addCustomButtom (editorId) {
+      let vm = this
+      window.UE.registerUI('add-img-button',
+        function (editor, uiName) {
+        // debugger
+          // 注册按钮执行时的 command 命令，使用命令默认就会带有回退操作
+          editor.registerCommand(uiName, {
+            execCommand: function () {
+              let domHtml = ''
+              this.imgList.forEach(item => {
+                domHtml += '<img src=" + item.path +">'
+              })
+              editor.execCommand('inserthtml', domHtml)
+            }
+          })
+
+          // 创建一个 button
+          let btn = new window.UE.ui.Button({
+            // 按钮的名字
+            name: uiName,
+            // 提示
+            title: '添加图片',
+            // 需要添加的额外样式，可指定 icon 图标
+            cssRules: 'height: 20px !important; width: 20px !important; background-image: url(../images/icons.png); background-position: -380px 0px;',
+            // 点击时执行的命令
+            onclick: function () {
+              // 这里可以不用执行命令，做你自己的操作也可
+              vm.imgList = []
+              vm.innerVisible = true
+              vm.confirmImg()
+              // editor.execCommand(uiName)
+            }
+          })
+
+          // 当点到编辑内容上时，按钮要做的状态反射
+          editor.addListener('selectionchange', function () {
+            let state = editor.queryCommandState(uiName)
+            if (state === -1) {
+              btn.setDisabled(true)
+              btn.setChecked(false)
+            } else {
+              btn.setDisabled(false)
+              btn.setChecked(state)
+            }
+          })
+
+          // 因为你是添加 button，所以需要返回这个 button
+          return btn
+        },
+        null /* 指定添加到工具栏上的哪个位置，默认时追加到最后 */,
+        editorId /* 指定这个 UI 是哪个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮 */)
     }
   },
   components: {BreadCrumb, VueUeditorWrap}
