@@ -643,6 +643,7 @@ export default {
       },
       colNames: 'col_a',
       editData: {
+        id: '',
         className: '',
         planType: '',
         startTime: '',
@@ -831,10 +832,10 @@ export default {
         hourRequire: '',
         endTime: '',
         need: '',
-        fileList: []
+        fileList: [],
+        id: ''
       }
       this.showEditDialog = true
-      console.log(data)
       this.editData = {
         className: data.courseTitle,
         planType: data.category,
@@ -842,7 +843,8 @@ export default {
         hourRequire: data.hourRequire,
         endTime: data.theoryeTime,
         need: data.need,
-        fileList: data.attachmentList ? data.attachmentList : []
+        fileList: data.attachmentList ? data.attachmentList : [],
+        id: data.id
       }
     },
     // 确认edit
@@ -865,6 +867,7 @@ export default {
         list.push(listItem)
       })
       let data = {
+        id: this.editData.id,
         deptId: this.triggerAid, // 当前节点部门ID
         courseTitle: this.editData.className, // 课程名称
         category: this.editData.planType, // 类别
@@ -877,7 +880,7 @@ export default {
       let vm = this
       updatePlan(data).then((res) => {
         if (res.code === 200) {
-          vm.showPlanDialog = false
+          vm.showEditDialog = false
           vm.pageLoading = true
           vm.getPlanTable()
           vm.getContentTable()
@@ -1049,6 +1052,7 @@ export default {
           this.recordDetail.totalHour = res.data.totalHour
           this.recordDetail.downList = res.data.trainPlan.attachmentList
 
+          this.colNames = 'col_a'
           this.showDetailLog = true
         } else {
           this.$message.error('获取数据失败，请稍后刷新页面重试')
