@@ -22,7 +22,7 @@
                 <p class="btn-p">
                   <a class="copy-btn" @click="copyPlan"><i class="el-icon-document-copy"></i>计划复制</a>
                   <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
-                  <a class="release-btn" @click="showPlanDialog = true"><i class="el-icon-plus"></i>计划发布</a>
+                  <a class="release-btn" @click="openReleasePlan"><i class="el-icon-plus"></i>计划发布</a>
                 </p>
 
                 <el-dialog :title="'计划发布'" :visible.sync="showPlanDialog"
@@ -95,7 +95,6 @@
                                    :limit="3"
                                    :before-upload="handleBeforeUpload"
                                    :on-success="handleSuccess"
-                                   :on-preview="handlePreview"
                                    :on-remove="handleRemove"
                                    :on-exceed="handleExceed"
                                    :file-list="fileList">
@@ -180,8 +179,8 @@
                                    accept=".doc, .docx, .mp4"
                                    :limit="3"
                                    :before-upload="handleBeforeUpload"
-                                   :on-success="handleSuccess"
-                                   :on-preview="handlePreview"
+                                   :on-success="handleSuccessA"
+                                   :on-remove="handleRemoveA"
                                    :on-exceed="handleExceed"
                                    :file-list="editData.fileList">
                           <el-button size="small" type="primary">点击上传</el-button>
@@ -613,7 +612,7 @@ export default {
         className: '',
         planType: '',
         startTime: '',
-        hourRequire: 0,
+        hourRequire: '',
         endTime: '',
         need: ''
       },
@@ -766,6 +765,19 @@ export default {
       }
       this.$alert(needStr, '培训需求')
     },
+    // 打开发布计划窗口
+    openReleasePlan () {
+      this.addPlanData = {
+        className: '',
+        planType: '',
+        startTime: '',
+        hourRequire: '',
+        endTime: '',
+        need: ''
+      }
+      this.fileList = []
+      this.showPlanDialog = true
+    },
     // 发布计划
     releasePlan () {
       if (!this.addPlanData.className || !this.addPlanData.planType || !this.addPlanData.hourRequire || !this.addPlanData.startTime || !this.addPlanData.endTime) {
@@ -779,9 +791,9 @@ export default {
       let list = []
       this.fileList.forEach(item => {
         let listItem = {
-          name: item.name,
-          path: item.path,
-          size: item.size
+          'name': item.name,
+          'path': item.path,
+          'size': item.size.toString()
         }
         list.push(listItem)
       })
@@ -812,6 +824,15 @@ export default {
     },
     // 打开编辑窗口
     openItemEditor (data) {
+      this.editData = {
+        className: '',
+        planType: '',
+        startTime: '',
+        hourRequire: '',
+        endTime: '',
+        need: '',
+        fileList: []
+      }
       this.showEditDialog = true
       console.log(data)
       this.editData = {
@@ -834,6 +855,15 @@ export default {
         this.$message.error('选择预期结束时间需大于开始时间')
         return
       }
+      let list = []
+      this.editData.fileList.forEach(item => {
+        let listItem = {
+          'name': item.name,
+          'path': item.path,
+          'size': item.size.toString()
+        }
+        list.push(listItem)
+      })
       let data = {
         deptId: this.triggerAid, // 当前节点部门ID
         courseTitle: this.editData.className, // 课程名称
@@ -842,7 +872,7 @@ export default {
         theorysTime: this.editData.startTime, // 理论开始时间
         theoryeTime: this.editData.endTime, // 理论结束时间
         need: this.editData.need, // 培训需求
-        attachmentList: this.editData.fileList
+        attachmentList: list
       }
       let vm = this
       updatePlan(data).then((res) => {
@@ -853,7 +883,7 @@ export default {
           vm.getContentTable()
           vm.getRecordTable()
         } else {
-          vm.$message.error(res.message || '计划发布失败，请稍后重试')
+          vm.$message.error(res.message || '计划编辑失败，请稍后重试')
         }
       })
     },
@@ -893,17 +923,45 @@ export default {
         this.fileList.push(fItem)
       })
     },
+    // 每次删除后再遍历
     handleRemove (file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePreview (file) {
-      console.log(file)
+      this.fileList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name, // 附件名称
+          path: this.fileAddress + item.response.key, // 附件路径
+          size: item.size // 附件大小
+        }
+        this.fileList.push(fItem)
+      })
     },
     handleExceed (files, fileList) {
       this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleSuccessA (response, file, fileList) {
+      this.editData.fileList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name, // 附件名称
+          path: this.fileAddress + item.response.key, // 附件路径
+          size: item.size // 附件大小
+        }
+        this.editData.fileList.push(fItem)
+      })
+    },
+    handleRemoveA (file, fileList) {
+      this.editData.fileList = []
+      fileList.forEach(item => {
+        let fItem = {
+          name: item.name, // 附件名称
+          path: this.fileAddress + item.response.key, // 附件路径
+          size: item.size // 附件大小
+        }
+        this.editData.fileList.push(fItem)
+      })
     },
     showRemoveDialog () {
       if (this.multipleSelection.length === 0) {
