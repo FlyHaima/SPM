@@ -144,7 +144,7 @@ export default {
           })
           this.fileTypes = fileTypes
           if (create) {
-            getTable()
+            this.getTable()
           }
         }
         this.pageLoading = false
