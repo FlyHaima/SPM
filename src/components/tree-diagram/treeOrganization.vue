@@ -88,15 +88,11 @@ export default {
     },
     openAll () {
       this.openState = !this.openState
-      for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-        this.$refs.tree.store._getAllNodes()[i].expanded = true
-      }
+      this.$refs.tree.$children[0].expanded = true
     },
     closeAll () {
       this.openState = !this.openState
-      for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-        this.$refs.tree.store._getAllNodes()[i].expanded = false
-      }
+      this.$refs.tree.$children[0].expanded = false
     },
     filterNode (value, data) {
       if (!value) return true

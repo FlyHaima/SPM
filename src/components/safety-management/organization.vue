@@ -191,7 +191,7 @@ export default {
   name: 'organization',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['安全基础管理', '组织机构'],
       pageLoading: false,
       organizationTree: [],
       leaderTree: [],
