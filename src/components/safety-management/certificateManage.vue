@@ -6,58 +6,48 @@
     </el-header>
     <el-main class="inner-main-container">
       <el-container class="inner-main-content">
-        <el-aside class="inner-aside" width="408px">
-          <div class="left-menu">
-            <div class="aside-title"><i></i>文件</div>
-            <ul class="aside-list">
-              <li v-for="(item, index) in fileTypes" :key="index">
-                <a class="type-item" :class="item.active ? 'active' : ''" @click="clickMenuItem(item.name, index)">{{item.name}}</a>
-              </li>
-            </ul>
-          </div>
-        </el-aside>
-        <el-main class="inner-content">
-          <div class="container-box">
-            <p class="btn-p">
-              <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
-            </p>
 
-            <el-table border
-                      stripe
-                      :data="dataList"
-                      tooltip-effect="dark"
-                      style="width: 100%">
-              <el-table-column
-                label="证件名称"
-                align="center">
-                <template slot-scope="scope">{{ scope.row.name }}</template>
-              </el-table-column>
-              <el-table-column
-                label="证件种类"
-                align="center">
-                <template slot-scope="scope">{{ typesB[scope.row.type] }}</template>
-              </el-table-column>
-              <el-table-column
-                label="证件有效截止日期"
-                align="center">
-                <template slot-scope="scope">{{ formatTime(scope.row.time) }}</template>
-              </el-table-column>
-              <el-table-column
-                label="登录ID"
-                align="center">
-                <template slot-scope="scope">{{ scope.row.id }}</template>
-              </el-table-column>
-              <el-table-column
-                label="操作"
-                align="center">
-                <template slot-scope="scope">
-                  <el-button type="text">下载</el-button>
-                  <el-button type="text" style="color: #f56c6c;">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-main>
+        <div class="container-box">
+          <p class="btn-p">
+            <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
+          </p>
+
+          <el-table border
+                    stripe
+                    :data="dataList"
+                    tooltip-effect="dark"
+                    style="width: 100%">
+            <el-table-column
+              label="证件名称"
+              align="center">
+              <template slot-scope="scope">{{ scope.row.name }}</template>
+            </el-table-column>
+            <el-table-column
+              label="证件种类"
+              align="center">
+              <template slot-scope="scope">{{ typesB[scope.row.type] }}</template>
+            </el-table-column>
+            <el-table-column
+              label="证件有效截止日期"
+              align="center">
+              <template slot-scope="scope">{{ formatTime(scope.row.time) }}</template>
+            </el-table-column>
+            <el-table-column
+              label="登录ID"
+              align="center">
+              <template slot-scope="scope">{{ scope.row.id }}</template>
+            </el-table-column>
+            <el-table-column
+              label="操作"
+              align="center">
+              <template slot-scope="scope">
+                <el-button type="text">下载</el-button>
+                <el-button type="text" style="color: #f56c6c;">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
       </el-container>
     </el-main>
   </el-container>
@@ -71,8 +61,7 @@ export default {
   data () {
     return {
       pageLoading: false,
-      breadcrumb: ['风险辨识评估', '证件管理'],
-      fileTypes: [],
+      breadcrumb: ['安全基础管理', '证件管理'],
       dataList: [
         {
           name: '企业卫生许可证',
@@ -216,6 +205,7 @@ export default {
   .container-box{
     background: #fff;
     height: 100%;
+    width: 100%;
     overflow-y: auto;
     padding: 25px;
     .btn-p{

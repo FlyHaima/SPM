@@ -239,3 +239,12 @@ export function getBasicCategory () {
     return Promise.resolve(res.data)
   })
 }
+
+// 安全基础管理--基础资料--获取文件列表
+export function getBasicList (basicCategoryId, pageNo, pageSize) {
+  const url = `${baseUrl}/basticData/getBasicList?basicCategoryId=${basicCategoryId}&pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

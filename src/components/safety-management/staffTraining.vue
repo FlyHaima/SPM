@@ -561,7 +561,7 @@ export default {
   data () {
     return {
       pageLoading: false,
-      breadcrumb: ['风险辨识评估', '全员培训'],
+      breadcrumb: ['安全基础管理', '全员培训'],
       uploadingAddress: '',
       fileAddress: '',
       uploadData: {

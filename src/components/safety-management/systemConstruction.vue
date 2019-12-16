@@ -109,7 +109,7 @@ export default {
   data () {
     return {
       pageLoading: false,
-      breadcrumb: ['风险辨识评估', '制度建设'],
+      breadcrumb: ['安全基础管理', '制度建设'],
       systemList: [],
       showPre: false,
       previewDom: '',
