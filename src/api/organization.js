@@ -248,3 +248,21 @@ export function getBasicList (basicCategoryId, pageNo, pageSize) {
     return Promise.resolve(res.data)
   })
 }
+
+// 安全基础管理--基础资料--删除
+export function delBasicFile (param) {
+  const url = `${baseUrl}/basticData/delBasicFile`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--证件管理--获取证件列表
+export function getDocumentList (riskId) {
+  const url = `${baseUrl}/document/getDocumentList?risk_id=${riskId}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

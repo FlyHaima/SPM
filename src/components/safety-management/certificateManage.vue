@@ -20,17 +20,17 @@
             <el-table-column
               label="证件名称"
               align="center">
-              <template slot-scope="scope">{{ scope.row.name }}</template>
+              <template slot-scope="scope">{{ scope.row.documentName }}</template>
             </el-table-column>
             <el-table-column
               label="证件种类"
               align="center">
-              <template slot-scope="scope">{{ typesB[scope.row.type] }}</template>
+              <template slot-scope="scope">{{ scope.row.documentType }}</template>
             </el-table-column>
             <el-table-column
               label="证件有效截止日期"
               align="center">
-              <template slot-scope="scope">{{ formatTime(scope.row.time) }}</template>
+              <template slot-scope="scope">{{ formatTime(scope.row.expiryDate) }}</template>
             </el-table-column>
             <el-table-column
               label="登录ID"
@@ -41,8 +41,8 @@
               label="操作"
               align="center">
               <template slot-scope="scope">
-                <el-button type="text">下载</el-button>
-                <el-button type="text" style="color: #f56c6c;">删除</el-button>
+                <el-button type="text" @click="download(scope.row.id)">下载</el-button>
+                <el-button type="text" style="color: #f56c6c;" @click="delete(scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -55,6 +55,7 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
+import {getDocumentList} from '@/api/organization'
 
 export default {
   name: 'certificateManage',
@@ -70,12 +71,11 @@ export default {
           url: '****.doc',
           id: 31231
         }
-      ],
-      typesB: {A: '卫生', B: '消防'}
+      ]
     }
   },
   created () {
-    // this.getBasicCategory()
+    this.getTableData()
   },
   methods: {
     formatTime (t) {
@@ -100,32 +100,18 @@ export default {
 
       return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
     },
-    clickMenuItem (name, index) {
-      if (this.fileTypes[index].active) {
-        return
-      }
-      this.fileTypes.forEach((item) => { item.active = false })
-      this.fileTypes[index].active = true
-    },
-    getBasicCategory () {
+    getTableData () {
       this.pageLoading = true
-      // getBasicCategory().then((res) => {
-      //   if (res.code === 200) {
-      //     console.log(res.data)
-      //     let fileTypes = []
-      //     res.data.forEach((item) => {
-      //       let typeItem = {
-      //         name: item.name,
-      //         typeStr: item.id,
-      //         active: false
-      //       }
-      //       fileTypes.push(typeItem)
-      //     })
-      //     this.fileTypes = fileTypes
-      //   }
-      //   this.pageLoading = false
-      // })
-    }
+      let userId = sessionStorage.getItem('userId')
+      getDocumentList(userId).then(res => {
+        if (res.code === 200) {
+          this.dataList = res.data
+        }
+        this.pageLoading = false
+      })
+    },
+    download (id) {},
+    delete (id) {}
   },
   components: {BreadCrumb}
 }
