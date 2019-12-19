@@ -11,6 +11,10 @@
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
             :show-btns="true"
+            @tree-click-handle="getRiskTable"
+            @tree-add-item="addTreeNode"
+            @tree-edit-item="editTreeNode"
+            @tree-del-item="delTreeNode"
             @open-loading="openLoading"
             @close-loading="closeLoading">
           </tree-read-only>
@@ -20,8 +24,8 @@
             <p class="btn-p">
               <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
               <a class="import-btn" @click="openImportDialog"><i></i>导入</a>
-              <a class="delete-btn" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
-              <a class="add-btn" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
+              <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
+              <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
             </p>
 
             <el-table ref="leaderTable"
@@ -39,13 +43,13 @@
                 label="危险源名称"
                 width="300"
                 align="center">
-                <template slot-scope="scope">{{ scope.row.name }}</template>
+                <template slot-scope="scope">{{ scope.row.riskSourceName }}</template>
               </el-table-column>
               <el-table-column
                 label="进度"
                 align="center">
                 <template slot-scope="scope">
-                  <table-step :active="scope.row.progress">
+                  <table-step :active="scope.row.speed * 1">
                   </table-step>
                 </template>
               </el-table-column>
@@ -53,7 +57,7 @@
                 label="风险识别状态"
                 width="180"
                 align="center">
-                <template slot-scope="scope">{{riskStates[scope.row.state]}}</template>
+                <template slot-scope="scope">{{riskStates[scope.row.state - 1]}}</template>
               </el-table-column>
               <el-table-column
                 v-if="isEndPint"
@@ -61,7 +65,8 @@
                 width="80"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="text" @click="openDialog(scope.row.id)">辨识</el-button>
+                  <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row.id)">辨识</el-button>
+                  <span v-else style="color: #dcdfe6; cursor: not-allowed;">辨识</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -372,14 +377,6 @@
                 </el-tabs>
               </div>
             </el-dialog>
-
-            <div class="pages">
-              <el-pagination
-                background
-                layout="prev, pager, next"
-                :total="100">
-              </el-pagination>
-            </div>
           </div>
         </el-main>
       </el-container>
@@ -391,198 +388,27 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import TableStep from '../step/step'
+import {
+  getRiskTree,
+  getDescribeList,
+  addRiskTree,
+  updateRiskTree,
+  delRiskTree,
+  addDescribe,
+  delDescribe
+} from '@/api/riskia'
 
 export default {
   name: 'riskIdentified',
   data () {
     return {
+      currentTreeData: {riskId: '', level: '1', treeLevel: '1'},
       pageLoading: false,
       dialogLoading: false,
       breadcrumb: ['风险辨识评估', '风险辨识'],
-      organizationTree: [
-        {
-          'riskId': '1',
-          'riskName': '多多集团',
-          'riskLevelCode': null,
-          'pId': '0',
-          'orderNo': null,
-          'level': '0',
-          'children': [
-            {
-              'children': [
-                {
-                  'children': [
-                    {
-                      'children': [
-                        {
-                          'children': null,
-                          'riskId': '1ak070000001',
-                          'riskName': '前端下的风险点',
-                          'riskLevelCode': '2',
-                          'pId': '6',
-                          'orderNo': 1,
-                          'level': '4'
-                        },
-                        {
-                          'children': null,
-                          'riskId': '1ak070000002',
-                          'riskName': '前端下的风险点',
-                          'riskLevelCode': '1',
-                          'pId': '6',
-                          'orderNo': 2,
-                          'level': '4'
-                        },
-                        {
-                          'children': null,
-                          'riskId': '1ak070000003',
-                          'riskName': '前端下的风险点',
-                          'riskLevelCode': '3',
-                          'pId': '6',
-                          'orderNo': 3,
-                          'level': '4'
-                        }
-                      ],
-                      'riskId': '6',
-                      'riskName': '前端',
-                      'riskLevelCode': null,
-                      'pId': '4',
-                      'orderNo': null,
-                      'level': '3'
-                    },
-                    {
-                      'children': null,
-                      'riskId': '1',
-                      'riskName': '测试风险点',
-                      'riskLevelCode': '3',
-                      'pId': '4',
-                      'orderNo': 1,
-                      'level': '4'
-                    },
-                    {
-                      'children': null,
-                      'riskId': '2',
-                      'riskName': '风险点2',
-                      'riskLevelCode': '3',
-                      'pId': '4',
-                      'orderNo': 2,
-                      'level': '4'
-                    }
-                  ],
-                  'riskId': '4',
-                  'riskName': '技术部1',
-                  'riskLevelCode': null,
-                  'pId': '11',
-                  'orderNo': null,
-                  'level': '2'
-                }
-              ],
-              'riskId': '11',
-              'riskName': '黑龙江多米科技有限公司',
-              'riskLevelCode': null,
-              'pId': '1',
-              'orderNo': null,
-              'level': '1'
-            },
-            {
-              'children': [
-                {
-                  'children': null,
-                  'riskId': '1a9020000003',
-                  'riskName': '测试组织节点12',
-                  'riskLevelCode': '3',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '1a9020000006',
-                  'riskName': '测试组织节点555',
-                  'riskLevelCode': '0',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '1aa020000002',
-                  'riskName': '测试组织节点5',
-                  'riskLevelCode': '1',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '2',
-                  'riskName': '人力部',
-                  'pId': '1a9020000001',
-                  'riskLevelCode': '2',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '3',
-                  'riskName': '设计部',
-                  'riskLevelCode': '4',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '2'
-                },
-                {
-                  'children': null,
-                  'riskId': '5',
-                  'riskName': '后端',
-                  'riskLevelCode': '3',
-                  'pId': '1a9020000001',
-                  'orderNo': null,
-                  'level': '3'
-                }
-              ],
-              'riskId': '1a9020000001',
-              'riskName': '黑龙江多米科技有限公司1',
-              'riskLevelCode': null,
-              'pId': '1',
-              'orderNo': null,
-              'level': '1'
-            }
-          ]
-        }
-      ],
+      organizationTree: [],
       isEndPint: true, // 只有点击最尾节点，才会显示表格里的操作列
-      riskList: [
-        {
-          name: '道路光线过暗，看不清',
-          progress: 0,
-          state: 1,
-          id: 9732
-        },
-        {
-          name: '道路光线过暗，看不清',
-          progress: 1,
-          state: 1,
-          id: 9732
-        },
-        {
-          name: '道路光线过暗，看不清',
-          progress: 2,
-          state: 0,
-          id: 9732
-        },
-        {
-          name: '道路光线过暗，看不清',
-          progress: 3,
-          state: 2,
-          id: 9732
-        },
-        {
-          name: '道路光线过暗，看不清',
-          progress: 4,
-          state: 2,
-          id: 9732
-        }
-      ],
+      riskList: [],
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
       multipleSelection: [],
       showDialog: false,
@@ -764,7 +590,41 @@ export default {
       }
     }
   },
+  created () {
+    this.getRiskTree(true)
+  },
   methods: {
+    getRiskTree (create) {
+      this.pageLoading = true
+      getRiskTree().then((res) => {
+        if (res.code === 200) {
+          this.organizationTree = res.data
+        }
+        if (create) {
+          console.log(res.data)
+          let data = {
+            riskId: res.data[0].riskId,
+            level: '1',
+            treeLevel: '1'
+          }
+          this.getRiskTable(data)
+        }
+        this.pageLoading = false
+      })
+    },
+    getRiskTable (data) {
+      let vm = this
+      vm.currentTreeData = data
+      // console.log(vm.currentTreeData)
+      vm.pageLoading = true
+      let riskId = data.riskId
+      getDescribeList(riskId).then(res => {
+        if (res.code === 200) {
+          vm.riskList = res.data
+        }
+        vm.pageLoading = false
+      })
+    },
     openLoading () {
       this.pageLoading = true
     },
@@ -847,18 +707,113 @@ export default {
     changeStepFour () {},
     saveStepFour () {},
     finish () {},
+    addTreeNode (data) {
+      console.log(data)
+      let vm = this
+      vm.pageLoading = true
+      vm.$prompt('请输入节点名称', '添加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        let postData = {
+          riskName: value,
+          pId: data.pId
+        }
+        addRiskTree(postData).then(res => {
+          if (res.code === 200) {
+            vm.$message({
+              type: 'success',
+              message: '节点设置成功'
+            })
+            vm.getRiskTree()
+          }
+          vm.pageLoading = false
+        })
+      }).catch(() => {
+        // after cancel
+        vm.pageLoading = false
+      })
+    },
+    editTreeNode (data) {
+      let vm = this
+      vm.pageLoading = true
+      vm.$prompt('编辑节点名称', '编辑名称', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        let postData = {
+          riskId: data.riskId,
+          riskName: value
+        }
+        updateRiskTree(postData).then(res => {
+          if (res.code === 200) {
+            vm.$message({
+              type: 'success',
+              message: '节点设置成功'
+            })
+            vm.getRiskTree()
+          }
+        })
+        vm.pageLoading = false
+      }).catch(() => {
+        // after cancel
+        vm.pageLoading = false
+      })
+    },
+    delTreeNode (data) {
+      this.pageLoading = true
+      this.$confirm('此操作将删除选中项, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let postData = {riskId: data.riskId}
+        delRiskTree(postData).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getRiskTree()
+          }
+          this.pageLoading = false
+        })
+      }).catch(() => {
+        // after cancel
+        this.pageLoading = false
+      })
+    },
     openAddConfirm () {
+      let vm = this
+      vm.pageLoading = true
       this.$prompt('危险名称', '添加', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
-      }).then(() => {
+      }).then(({ value }) => {
         // 添加ajax
-        this.$message({
-          type: 'success',
-          message: '添加成功'
+        let data = {
+          riskSourceName: value,
+          riskId: vm.currentTreeData.riskId
+        }
+        addDescribe(data).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '添加成功'
+            })
+            console.log(vm.currentTreeData)
+            let data = {
+              riskId: vm.currentTreeData.riskId,
+              level: vm.currentTreeData.level,
+              treeLevel: vm.currentTreeData.treeLevel
+            }
+            vm.getRiskTable(data)
+          }
+          vm.pageLoading = false
         })
       }).catch(() => {
-        // after cancel, do nothing
+        // after cancel
+        vm.pageLoading = false
       })
     },
     openDeleteConfirm () {
@@ -874,12 +829,30 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+        console.log(this.multipleSelection)
+        let postList = []
+        this.multipleSelection.forEach(item => {
+          postList.push(item.id)
+        })
+        let postData = {id: postList}
+        delDescribe(postData).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            let data = {
+              riskId: this.currentTreeData.riskId,
+              level: this.currentTreeData.level,
+              treeLevel: this.currentTreeData.treeLevel
+            }
+            this.getRiskTable(data)
+          }
+          this.pageLoading = false
         })
       }).catch(() => {
-        // after cancel, do nothing
+        // after cancel
+        this.pageLoading = false
       })
     },
     openImportDialog () {
@@ -956,12 +929,13 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 430px;
+        height: 445px;
         .step-box{
           width: 100%;
           height: 100%;
           position: relative;
           &.step-1-box{
+            padding-top: 8px;
             .step-1-p{
               line-height: 36px;
               height: 36px;
@@ -1097,6 +1071,7 @@ export default {
             }
           }
           &.step-4-box{
+            padding-top: 8px;
             .step-4-p {
               line-height: 36px;
               height: 36px;
@@ -1155,7 +1130,7 @@ export default {
     height: 100%;
   }
   .el-tabs--border-card>.el-tabs__content{
-    height: 428px;
+    height: 435px;
   }
 }
 

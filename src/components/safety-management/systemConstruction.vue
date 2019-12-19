@@ -34,7 +34,7 @@
               <el-button type="text" @click="preview(scope.row)">预览</el-button>
               <el-button type="text" @click="edit(scope.row)">编辑</el-button>
               <el-button type="text" @click="deleteItem(scope.row.id)">删除</el-button>
-              <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>
+<!--              <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>-->
             </template>
           </el-table-column>
         </el-table>
