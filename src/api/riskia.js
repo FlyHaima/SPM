@@ -86,3 +86,12 @@ export function delDescribe (data) {
     return Promise.resolve(res.data)
   })
 }
+
+// 风险辨识评估--风险辨识--风险辨识评估四步走
+export function updateDescribe (data, step) {
+  const url = `${baseUrl}/riskia/updateDescribe?step=${step}`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

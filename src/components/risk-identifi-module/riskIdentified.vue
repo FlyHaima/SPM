@@ -23,7 +23,7 @@
           <div class="container-box">
             <p class="btn-p">
               <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
-              <a class="import-btn" @click="openImportDialog"><i></i>导入</a>
+              <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a>
               <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
               <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
             </p>
@@ -65,8 +65,8 @@
                 width="80"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row.id)">辨识</el-button>
-                  <span v-else style="color: #dcdfe6; cursor: not-allowed;">辨识</span>
+                  <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row)">辨识</el-button>
+                  <el-button v-else size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -76,7 +76,7 @@
                        :show-close="false">
               <div class="dialog-box" v-loading="dialogLoading">
                 <el-tabs v-model="activeStep" @tab-click="handleClick" type="border-card">
-                  <el-tab-pane :disabled="doneStep<1 ? true : false" name="step-1">
+                  <el-tab-pane name="step-1">
                     <span slot="label">① 辨识范围</span>
                     <div class="step-box step-1-box">
                       <p class="step-1-p">
@@ -143,8 +143,8 @@
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepOne" v-if="doneStep >= 1">修改</el-button>
-                        <el-button size="medium" @click="saveStepOne" v-else>保存</el-button>
+                        <el-button size="medium" @click="changeStepOne" v-if="doneStep >= 1">修改并关闭</el-button>
+                        <el-button size="medium" @click="changeStepOne" v-else>保存并关闭</el-button>
                         <el-button size="medium" type="primary" @click="toStepTwo">下一步</el-button>
                       </div>
                     </div>
@@ -180,7 +180,7 @@
                         <el-input size="medium" disabled="disabled" v-model="stepObjB.unitLevelNum"></el-input>
                       </p>
                       <p class="step-2-p">
-                        <span class="label">负责人</span>
+                        <span class="label">负责机构</span>
                         <el-select v-model="stepObjB.administrator"  placeholder="请选择" size="medium">
                           <el-option
                             v-for="item in adminOptions"
@@ -192,8 +192,8 @@
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepTwo" v-if="doneStep >= 2">修改</el-button>
-                        <el-button size="medium" @click="saveStepTwo" v-else>保存</el-button>
+                        <el-button size="medium" @click="changeStepTwo" v-if="doneStep >= 2">修改并关闭</el-button>
+                        <el-button size="medium" @click="changeStepTwo" v-else>保存并关闭</el-button>
                         <el-button size="medium" type="primary" @click="toStepThree">下一步</el-button>
                       </div>
                     </div>
@@ -329,8 +329,8 @@
                       </div>
                       <div class="btn-box" :class="evaluationMethod === 'LS' ? 'isLS' : ''">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepThree" v-if="doneStep >= 3">修改</el-button>
-                        <el-button size="medium" @click="saveStepThree" v-else>保存</el-button>
+                        <el-button size="medium" @click="changeStepThree" v-if="doneStep >= 3">修改并关闭</el-button>
+                        <el-button size="medium" @click="changeStepThree" v-else>保存并关闭</el-button>
                         <el-button size="medium" type="primary" @click="toStepFour">下一步</el-button>
                       </div>
                     </div>
@@ -340,7 +340,7 @@
                     <div class="step-box step-4-box">
                       <p class="step-4-p">
                         <span class="label">应采取的管控措施：</span>
-                        <el-input size="medium" v-model="stepObjD.controlMeasure" disabled="disabled"></el-input>
+                        <el-input size="medium" v-model="stepObjD.controlMeasure"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管控措施依据的标准和规范：</span>
@@ -368,9 +368,8 @@
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepFour" v-if="doneStep >= 4">修改</el-button>
-                        <el-button size="medium" @click="saveStepFour" v-else>保存</el-button>
-                        <el-button size="medium" type="primary" @click="finish">完成</el-button>
+                        <el-button size="medium" @click="changeStepFour" v-if="doneStep >= 4">修改并关闭</el-button>
+                        <el-button size="medium" type="primary" @click="finish" v-else>完成</el-button>
                       </div>
                     </div>
                   </el-tab-pane>
@@ -395,7 +394,8 @@ import {
   updateRiskTree,
   delRiskTree,
   addDescribe,
-  delDescribe
+  delDescribe,
+  updateDescribe
 } from '@/api/riskia'
 
 export default {
@@ -413,11 +413,11 @@ export default {
       multipleSelection: [],
       showDialog: false,
       activeStep: 'step-4', // 1-4; 起始显示tab
-      doneStep: 4, // 1-4; 已完成步。 0代表第一步都未开始
+      doneStep: 0, // 1-4; 已完成步。 0代表第一步都未开始
       stepObjA: {
-        pointA: '电气部',
-        pointB: '变压器',
-        pointC: '设备操作',
+        pointA: '',
+        pointB: '',
+        pointC: '',
         identifierRange: '',
         workStep: '',
         riskType: '',
@@ -425,6 +425,7 @@ export default {
         riskPointType: '',
         identifierWay: ''
       },
+      // 辨识范围 options
       rangeOptions: [
         {
           value: '作业活动',
@@ -449,9 +450,11 @@ export default {
           label: '安全管理'
         }
       ],
+      // 风险类别/事故后果
       riskTypeOptions: ['物体打击', '车辆伤害', '机械伤害', '触电', '淹溺', '灼烫', '火灾',
         '高处坠落', '坍塌', '冒顶片帮', '透水', '放炮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸',
         '其它爆炸', '中毒和窒息', '其它伤害'],
+      // 风险因素
       reasonOptions: [
         {
           value: '人的因素',
@@ -500,20 +503,22 @@ export default {
           ]
         }
       ],
+      // 风险点类别
       riskPointOptions: [ '设备设施', '作业活动' ],
+      // 风险评估法
       ideWayOptions: [
         {
           label: '风险矩阵（LS）评价法',
           value: 'LS'
         }, {
           label: '危险性分析（LEC）评价法',
-          value: 'LES'
+          value: 'LEC'
         }
       ],
       stepObjB: {
-        levelNameA: '电气部',
-        levelNameB: '变压站',
-        levelNameC: '设备操作',
+        levelNameA: '',
+        levelNameB: '',
+        levelNameC: '',
         levelNumA: '',
         levelNumB: '',
         levelNumC: '',
@@ -580,14 +585,15 @@ export default {
       ],
       managerLevel: ['公司级', '部门级', '车间级', '班组级', '岗位级'],
       stepObjD: {
-        controlMeasure: '在采取措施降低危害前，不能继续作业，对改进措施进行评估',
+        controlMeasure: '',
         standard: '',
         technicalMeasures: '',
         managerMeasures: '',
         educationMeasures: '',
         protectMeasures: '',
         emergencyMeasures: ''
-      }
+      },
+      currentData: {}
     }
   },
   created () {
@@ -634,32 +640,158 @@ export default {
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
-    openDialog (id) {
+    openDialog (d) {
+      console.log(d)
+      this.currentData = d
+      if (d.speed === '0') {
+        this.activeStep = 'step-1'
+      } else {
+        this.activeStep = 'step-' + d.speed
+      }
+      this.doneStep = d.speed * 1
+      this.evaluationMethod = d.ram ? d.ram : 'LS'
+      this.stepObjA = {
+        pointA: d.oneName ? d.oneName : '',
+        pointB: d.twoName ? d.twoName : '',
+        pointC: d.riskName ? d.riskName : '',
+        identifierRange: d.project ? d.project : '',
+        workStep: d.work ? d.work : '',
+        riskType: d.riskSourceType ? d.riskSourceType : '',
+        riskReason: d.factor ? d.factor.split('/') : '',
+        riskPointType: d.riskType ? d.riskType : '',
+        identifierWay: d.ram ? d.ram : ''
+      }
+      this.stepObjB = {
+        levelNameA: d.oneName ? d.oneName : '',
+        levelNameB: d.twoName ? d.twoName : '',
+        levelNameC: d.riskName ? d.riskName : '',
+        levelNumA: d.oneNo ? d.oneNo : '',
+        levelNumB: d.twoNo ? d.twoNo : '',
+        levelNumC: d.orderNo ? d.orderNo : '',
+        unitLevelNum: d.oneNo && d.twoNo && d.orderNo ? d.oneNo + '-' + d.twoNo + '-' + d.orderNo : '',
+        administrator: ''
+      }
+      this.stepObjC = {
+        LEC: {
+          L: d.l ? d.l : '0.1',
+          E: d.e ? d.e : '0.5',
+          C: d.c ? d.c : '1',
+          D: d.d ? d.d : '0.05',
+          riskLevel: d.riskLevel ? d.riskLevel : 'E/5级，低风险'
+        },
+        LS: {
+          L: d.l ? d.l : '1',
+          S: d.e ? d.e : '1',
+          R: d.d ? d.d : '1',
+          riskLevel: d.riskLevel ? d.riskLevel : 'E/5级，低风险'
+        },
+        managerLevel: d.controlLevel ? d.controlLevel : '',
+        manager: d.controlPer ? d.controlPer : ''
+      }
+      this.stepObjD = {
+        controlMeasure: d.mustCs ? d.mustCs : '',
+        standard: d.csStand ? d.csStand : '',
+        technicalMeasures: d.technology ? d.technology : '',
+        managerMeasures: d.bmp ? d.bmp : '',
+        educationMeasures: d.train ? d.train : '',
+        protectMeasures: d.individual ? d.individual : '',
+        emergencyMeasures: d.emergency ? d.emergency : ''
+      }
       this.showDialog = true
+    },
+    // 更新风险辨识步骤
+    updateDescribe (data, step) {
+      let vm = this
+      vm.pageLoading = true
+      let stepData = {
+        id: vm.currentData.id
+      }
+      let postData = Object.assign(data, stepData)
+      console.log(postData)
+      updateDescribe(postData, step).then(res => {
+        if (res.code === 200) {
+
+        }
+        vm.pageLoading = false
+      })
     },
     handleClick (tab, event) {
       console.log(tab, event)
     },
     toStepTwo () {
-      // 先
-      // 前往第二页
-      this.activeStep = 'step-2'
+      let vm = this
+      vm.saveStepOne()
+      vm.doneStep = 2
+      vm.activeStep = 'step-2'
     },
     saveStepOne () {
-      // this.dialogLoading = true
-      // ajax
+      let vm = this
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+        let saveData = {
+          oneName: vm.stepObjA.pointA,
+          twoName: vm.stepObjA.pointB,
+          riskName: vm.stepObjA.pointC,
+          project: vm.stepObjA.identifierRange,
+          work: vm.stepObjA.workStep,
+          riskSourceType: vm.stepObjA.riskType,
+          factor: vm.stepObjA.riskReason ? vm.stepObjA.riskReason.join('/') : '',
+          riskType: vm.stepObjA.riskPointType,
+          ram: vm.stepObjA.identifierWay
+        }
+        vm.updateDescribe(saveData, '1')
+      } else {
+        vm.$message({
+          message: '所有信息均为必填项',
+          type: 'warning'
+        })
+      }
     },
     changeStepOne () {
-      // this.dialogLoading = true
-      // ajax
+      let vm = this
+      vm.saveStepOne()
+      // 提交后，更新表格
+      let data = {
+        riskId: vm.currentTreeData.riskId,
+        level: vm.currentTreeData.level,
+        treeLevel: vm.currentTreeData.treeLevel
+      }
+      vm.getRiskTable(data)
+      vm.showDialog = false
     },
     closeDialog () {
       this.showDialog = false
     },
-    changeStepTwo () {},
-    saveStepTwo () {},
+    changeStepTwo () {
+      let vm = this
+      vm.saveStepTwo()
+      // 提交后，更新表格
+      let data = {
+        riskId: vm.currentTreeData.riskId,
+        level: vm.currentTreeData.level,
+        treeLevel: vm.currentTreeData.treeLevel
+      }
+      vm.getRiskTable(data)
+      vm.showDialog = false
+    },
+    saveStepTwo () {
+      let vm = this
+      if (true) {
+        let saveData = {
+          deptId: vm.stepObjB.administrator
+        }
+        vm.updateDescribe(saveData, '2')
+      } else {
+        vm.$message({
+          message: '所有信息均为必填项',
+          type: 'warning'
+        })
+      }
+    },
     toStepThree () {
-      this.activeStep = 'step-3'
+      let vm = this
+      vm.saveStepTwo()
+      vm.doneStep = 3
+      vm.activeStep = 'step-3'
     },
     changeLevelNum () {
       this.stepObjB.unitLevelNum = `${this.stepObjB.levelNumA}-${this.stepObjB.levelNumB}-${this.stepObjB.levelNumC}`
@@ -671,15 +803,15 @@ export default {
     },
     matchLEC_D () {
       if (this.stepObjC.LEC.D > 320) {
-        this.stepObjC.LEC.riskLevel = `A/1级 重大风险`
+        this.stepObjC.LEC.riskLevel = `A/1级，重大风险`
       } else if (this.stepObjC.LEC.D > 160 && this.stepObjC.LEC.D <= 320) {
-        this.stepObjC.LEC.riskLevel = `B/2级 较大风险`
+        this.stepObjC.LEC.riskLevel = `B/2级，较大风险`
       } else if (this.stepObjC.LEC.D > 70 && this.stepObjC.LEC.D <= 160) {
-        this.stepObjC.LEC.riskLevel = `C/3级 一般风险`
+        this.stepObjC.LEC.riskLevel = `C/3级，一般风险`
       } else if (this.stepObjC.LEC.D > 20 && this.stepObjC.LEC.D <= 70) {
-        this.stepObjC.LEC.riskLevel = `D/4级 低风险`
+        this.stepObjC.LEC.riskLevel = `D/4级，低风险`
       } else if (this.stepObjC.LEC.D <= 20) {
-        this.stepObjC.LEC.riskLevel = `E/5级 低风险`
+        this.stepObjC.LEC.riskLevel = `E/5级，低风险`
       }
     },
     changeLS () {
@@ -688,25 +820,110 @@ export default {
     },
     matchLS_R () {
       if (this.stepObjC.LS.R >= 20) {
-        this.stepObjC.LS.riskLevel = `A/1级 重大风险`
+        this.stepObjC.LS.riskLevel = `A/1级，重大风险`
       } else if (this.stepObjC.LS.R >= 15 && this.stepObjC.LS.R < 20) {
-        this.stepObjC.LS.riskLevel = `B/2级 较大风险`
+        this.stepObjC.LS.riskLevel = `B/2级，较大风险`
       } else if (this.stepObjC.LS.R >= 9 && this.stepObjC.LS.R < 15) {
-        this.stepObjC.LS.riskLevel = `C/3级 一般风险`
+        this.stepObjC.LS.riskLevel = `C/3级，一般风险`
       } else if (this.stepObjC.LS.R >= 4 && this.stepObjC.LS.R < 9) {
-        this.stepObjC.LS.riskLevel = `D/4级 低风险`
+        this.stepObjC.LS.riskLevel = `D/4级，低风险`
       } else if (this.stepObjC.LS.R < 4) {
-        this.stepObjC.LS.riskLevel = `E/5级 低风险`
+        this.stepObjC.LS.riskLevel = `E/5级，低风险`
       }
     },
-    changeStepThree () {},
-    saveStepThree () {},
-    toStepFour () {
-      this.activeStep = 'step-4'
+    changeStepThree () {
+      let vm = this
+      vm.saveStepThree()
+      // 提交后，更新表格
+      let data = {
+        riskId: vm.currentTreeData.riskId,
+        level: vm.currentTreeData.level,
+        treeLevel: vm.currentTreeData.treeLevel
+      }
+      vm.getRiskTable(data)
+      vm.showDialog = false
     },
-    changeStepFour () {},
-    saveStepFour () {},
-    finish () {},
+    saveStepThree () {
+      let vm = this
+      if (vm.stepObjC.managerLevel && vm.stepObjC.manager) {
+        let saveData = {}
+        if (vm.currentData.ram === 'LEC') {
+          saveData = {
+            l: vm.stepObjC.LEC.L,
+            e: vm.stepObjC.LEC.E,
+            c: vm.stepObjC.LEC.C,
+            d: vm.stepObjC.LEC.D,
+            controlLevel: vm.stepObjC.managerLevel,
+            controlPer: vm.stepObjC.manager
+          }
+        } else {
+          saveData = {
+            l: vm.stepObjC.LS.L,
+            e: vm.stepObjC.LS.S,
+            d: vm.stepObjC.LS.R,
+            controlLevel: vm.stepObjC.managerLevel,
+            controlPer: vm.stepObjC.manager
+          }
+        }
+        vm.updateDescribe(saveData, '3')
+      } else {
+        vm.$message({
+          message: '所有信息均为必填项',
+          type: 'warning'
+        })
+      }
+    },
+    toStepFour () {
+      let vm = this
+      vm.saveStepThree()
+      vm.doneStep = 4
+      vm.activeStep = 'step-4'
+    },
+    changeStepFour () {
+      let vm = this
+      vm.saveStepFour()
+      // 提交后，更新表格
+      let data = {
+        riskId: vm.currentTreeData.riskId,
+        level: vm.currentTreeData.level,
+        treeLevel: vm.currentTreeData.treeLevel
+      }
+      vm.getRiskTable(data)
+      vm.showDialog = false
+    },
+    saveStepFour () {
+      let vm = this
+      if (vm.stepObjD.controlMeasure && vm.stepObjD.standard && vm.stepObjD.technicalMeasures && vm.stepObjD.managerMeasures && vm.stepObjD.educationMeasures && vm.stepObjD.protectMeasures && vm.stepObjD.emergencyMeasures) {
+        let saveData = {
+          mustCs: vm.stepObjD.controlMeasure,
+          csStand: vm.stepObjD.standard,
+          technology: vm.stepObjD.technicalMeasures,
+          bmp: vm.stepObjD.managerMeasures,
+          train: vm.stepObjD.educationMeasures,
+          individual: vm.stepObjD.protectMeasures,
+          emergency: vm.stepObjD.emergencyMeasures
+        }
+        vm.updateDescribe(saveData, '4')
+      } else {
+        vm.$message({
+          message: '所有信息均为必填项',
+          type: 'warning'
+        })
+      }
+    },
+    finish () {
+      let vm = this
+      vm.saveStepFour().then(res => {
+        // 提交后，更新表格
+        let data = {
+          riskId: vm.currentTreeData.riskId,
+          level: vm.currentTreeData.level,
+          treeLevel: vm.currentTreeData.treeLevel
+        }
+        vm.getRiskTable(data)
+        vm.showDialog = false
+      })
+    },
     addTreeNode (data) {
       console.log(data)
       let vm = this
