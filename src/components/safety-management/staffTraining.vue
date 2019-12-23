@@ -529,7 +529,6 @@ export default {
   created () {
     this.getPlanDeptTree(true)
     this.getContentTable()
-    this.getRecordTable()
   },
   methods: {
     openLoading () {
@@ -582,6 +581,7 @@ export default {
             this.triggerAid = this.organizationTree[0].deptId
             this.triggerCid = this.organizationTree[0].deptId
             this.getPlanTable()
+            this.getRecordTable()
           }
         } else {
           this.organizationTree = []
@@ -781,6 +781,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '@/utils/css/style.scss';
 .inner-page-container{
   height: 100%;
   .el-header{

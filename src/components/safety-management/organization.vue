@@ -24,6 +24,7 @@
               <div class="container-box">
                 <organigram :organigram-data="orgTreeData"
                             :selector="userSelector"
+                            :loading="dialogLoading"
                             @submitForm="editDeptInfo">
                 </organigram>
               </div>
@@ -228,7 +229,8 @@ export default {
       dutyVisible: false,
       dutyPostData: '',
       dutyPostId: '',
-      updating: false
+      updating: false,
+      dialogLoading: false
     }
   },
   created () {
@@ -384,8 +386,12 @@ export default {
     },
     // 编辑树形结构图中员工的个人信息
     editDeptInfo (data) {
+      this.dialogLoading = true
       editDeptInfo(data).then((res) => {
-        if (res.code === 200) {}
+        if (res.code === 200) {
+          this.handleNodeClick(this.triggerOrgId)
+        }
+        this.dialogLoading = false
       })
     },
     // 获取领导小组的tree
@@ -472,6 +478,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  @import '@/utils/css/style.scss';
   .inner-page-container{
     height: 100%;
     .el-header{
