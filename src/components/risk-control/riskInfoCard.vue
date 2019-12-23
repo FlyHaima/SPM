@@ -242,7 +242,6 @@ export default {
           }
         })
       })
-      console.log(vm.imgPathSelRiskResult)
     },
     // 选择器change事件 - 异常状况应急处置
     selChangeEmergency (data) {

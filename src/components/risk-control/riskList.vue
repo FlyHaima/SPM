@@ -58,7 +58,7 @@
                   width="180">
                 </el-table-column>
                 <el-table-column
-                  prop="threeName"
+                  prop="riskName"
                   label="风险点名称"
                   width="180">
                 </el-table-column>
@@ -112,7 +112,7 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">风险级别</div>
                     <div class="custom-td-value">
-                      {{riskList.riskLevel}}
+                      {{riskList.accessLevel}}
                     </div>
                   </div>
                   <div class="custom-tr">

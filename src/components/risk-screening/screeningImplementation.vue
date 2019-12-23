@@ -61,44 +61,29 @@
                   style="width: 100%"
                   align="center">
                   <el-table-column
-                    prop="name"
+                    prop=" "
                     label="检查名称"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理时间"
+                    label="检查人员"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理结果"
+                    label="检查时间"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="进度"
+                    label="检查结果"
                     align="center">
-                     <template slot-scope="scope">
-                      <table-step
-                        :step-data="stepData"
-                        :active="scope.row.progress"
-                      >
-                      </table-step>
-                    </template>
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="治理过程"
-                    width="120"
+                    label="附件"
                     align="center">
-                    <template slot-scope="scope">
-                      <a
-                        href="javascript:;"
-                        class="color-primary"
-                        @click="detailsHandle(scope.row)">详情
-                      </a>
-                    </template>
                   </el-table-column>
                 </el-table>
               </div>
@@ -162,44 +147,29 @@
                   style="width: 100%"
                   align="center">
                   <el-table-column
-                    prop="name"
+                    prop=" "
                     label="检查名称"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理时间"
+                    label="检查人员"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理结果"
+                    label="检查时间"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="进度"
+                    label="检查结果"
                     align="center">
-                     <template slot-scope="scope">
-                      <table-step
-                        :step-data="stepData"
-                        :active="scope.row.progress"
-                      >
-                      </table-step>
-                    </template>
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="治理过程"
-                    width="120"
+                    label="附件"
                     align="center">
-                    <template slot-scope="scope">
-                      <a
-                        href="javascript:;"
-                        class="color-primary"
-                        @click="detailsHandle(scope.row)">详情
-                      </a>
-                    </template>
                   </el-table-column>
                 </el-table>
               </div>
@@ -208,39 +178,22 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
-    <dialog-details
-      :dialogVisible = "dialogDetailsVisible"
-      @on-dialog-change = "changeDetailsDialog"
-    ></dialog-details>
-    <dialog-review
-      :dialogVisible = "dialogReviewVisible"
-      @on-dialog-change = "changeReviewDialog"
-    ></dialog-review>
   </el-container>
 </template>
 <script>
 import BreadCrumb from '@/components/Breadcrumb/Breadcrumb'
-import TableStep from '@/components/step/stepCustom'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import TreeList from '@/components/tree-diagram/treeList'
 import axios from '@/api/axios'
-import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
-import DialogReview from '@/components/risk-screening/screening-review/reviewDialog'
 export default {
-  name: 'screeningReview',
+  name: 'screeningImplementation',
   data () {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
       pageLoading: false,
-      dialogDetailsVisible: false, // 详情弹框显示开关
-      dialogReviewVisible: false, // 复核弹框显示开关
       isOrgTree: true, // 是否是组织结构树
       organizationTree: [], // 组织机构
-      tableData: [
-        {
-          name: '1'
-        }
-      ],
+      tableData: [],
       listMenuData: [
         {
           id: '1',
@@ -264,53 +217,21 @@ export default {
         // position: '',
         // responsibility: ''
       }, // 编辑机构数据
-      formInline: {},
-      stepData: [
-        {
-          label: 'p',
-          value: 1
-        },
-        {
-          label: 'd',
-          value: 2
-        },
-        {
-          label: 'c',
-          value: 3
-        },
-        {
-          label: 'a',
-          value: 4
-        }
-      ]
+      formInline: {}
     }
   },
   components: {
     BreadCrumb, // 面包屑
     TreeList, // 计划清单菜单
-    TreeReadOnly, // 风险单元树菜单
-    DialogDetails,
-    DialogReview,
-    TableStep
+    TreeReadOnly // 风险单元树菜单
   },
   created () {
     this.fetchOrgTreeData()
   },
   methods: {
-    reviewHandle (item) {
-      this.dialogReviewVisible = true
-    },
-    changeReviewDialog (val) {
-      this.dialogReviewVisible = val
-    },
-    detailsHandle (item) {
-      this.dialogDetailsVisible = true
-    },
-    changeDetailsDialog (val) {
-      this.dialogDetailsVisible = val
-    },
     // tab切换处理
     tabClickHandle (tab, event) {
+      console.log(tab.index)
       if (tab.index === 0) {
         this.isOrgTree = true
       } else {
@@ -322,6 +243,7 @@ export default {
 
     },
     submitForm () {
+      console.log(this.listDate)
     },
     // 获取组织机构树数据
     fetchOrgTreeData () {

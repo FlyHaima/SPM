@@ -9,16 +9,21 @@
     <div class="tree-title">
       <i class="double-line-icon"></i>
       {{treeName}}
-      <div class="tree-search">
+      <div v-show="searchVisible" class="tree-search">
         <el-input
           size="mini"
           placeholder="输入关键字进行过滤"
           v-model="filterText">
         </el-input>
       </div>
-      <div class="slide-btns">
+      <div v-show="shrinkVisible" class="slide-btns">
         <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
         <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
+      </div>
+      <div v-show="editOrgVisible" class="slide-btns">
+        <el-button
+          type="text"
+          @click="eiditOrgHandle()">编辑机构</el-button>
       </div>
     </div>
     <div class="tree-box">
@@ -70,7 +75,19 @@ export default {
     showBtns: {
       type: Boolean,
       default: false
-    }
+    },
+    searchVisible: {
+      type: Boolean,
+      default: false
+    }, // 搜索工具显示开关
+    shrinkVisible: {
+      type: Boolean,
+      default: false
+    }, // 展开收缩显示开关
+    editOrgVisible: {
+      type: Boolean,
+      default: false
+    } // 编辑机构按钮显示开关
   },
   data () {
     return {
@@ -202,6 +219,10 @@ export default {
       }).catch(() => {
         // after cancel, do nothing
       })
+    },
+    // 编辑机构
+    eiditOrgHandle () {
+      this.$emit('eidit-org')
     }
   },
   watch: {

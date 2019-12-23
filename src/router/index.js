@@ -97,21 +97,24 @@ const RiskCompareChart = resolve => require.ensure([], () => resolve(riskCompare
 // 风险分级管控表
 const riskControlList = require('@/components/risk-control/riskControlList.vue')
 const RiskControlList = resolve => require.ensure([], () => resolve(riskControlList), 'pagelist')
-// 排查清单
-const screeningList = require('@/components/risk-screening/screeningList.vue')
-const ScreeningList = resolve => require.ensure([], () => resolve(screeningList), 'pagelist')
 // 排查计划
 const screeningPlan = require('@/components/risk-screening/screeningPlan.vue')
 const ScreeningPlan = resolve => require.ensure([], () => resolve(screeningPlan), 'pagelist')
-// 排查周期
-const screeningCycle = require('@/components/risk-screening/screeningCycle.vue')
-const ScreeningCycle = resolve => require.ensure([], () => resolve(screeningCycle), 'pagelist')
-// 隐患排查
-const riskScreening = require('@/components/risk-screening/riskScreening.vue')
-const RiskScreening = resolve => require.ensure([], () => resolve(riskScreening), 'pagelist')
+// 排查实施
+const screeningImplementation = require('@/components/risk-screening/screeningImplementation.vue')
+const ScreeningImplementation = resolve => require.ensure([], () => resolve(screeningImplementation), 'pagelist')
+// 排查复核
+const screeningReview = require('@/components/risk-screening/screeningReview.vue')
+const ScreeningReview = resolve => require.ensure([], () => resolve(screeningReview), 'pagelist')
 // 隐患治理
 const riskManagement = require('@/components/risk-screening/riskManagement.vue')
 const RiskManagement = resolve => require.ensure([], () => resolve(riskManagement), 'pagelist')
+// 治理台账
+const governanceParameter = require('@/components/risk-screening/governanceParameter.vue')
+const GovernanceParameter = resolve => require.ensure([], () => resolve(governanceParameter), 'pagelist')
+// 完成记录
+const finishRecords = require('@/components/risk-screening/finishRecords.vue')
+const FinishRecords = resolve => require.ensure([], () => resolve(finishRecords), 'pagelist')
 // 用户管理
 const userManagement = require('@/components/config-management/userManagement.vue')
 const UserManagement = resolve => require.ensure([], () => resolve(userManagement), 'pagelist')
@@ -325,34 +328,40 @@ const routes = [
         component: RiskControlList
       },
       {
-        path: '/screeningList',
-        name: 'screeningList',
-        title: '排查清单',
-        component: ScreeningList
-      },
-      {
         path: '/screeningPlan',
         name: 'screeningPlan',
         title: '排查计划',
         component: ScreeningPlan
       },
       {
-        path: '/screeningCycle',
-        name: 'screeningCycle',
-        title: '排查周期',
-        component: ScreeningCycle
+        path: '/screeningImplementation',
+        name: 'screeningImplementation',
+        title: '排查实施',
+        component: ScreeningImplementation
       },
       {
-        path: '/riskScreening',
-        name: 'riskScreening',
-        title: '隐患排查',
-        component: RiskScreening
+        path: '/screeningReview',
+        name: 'screeningReview',
+        title: '排查复核',
+        component: ScreeningReview
       },
       {
         path: '/riskManagement',
         name: 'riskManagement',
         title: '隐患治理',
         component: RiskManagement
+      },
+      {
+        path: '/governanceParameter',
+        name: 'governanceParameter',
+        title: '治理台账',
+        component: GovernanceParameter
+      },
+      {
+        path: '/finishRecords',
+        name: 'finishRecords',
+        title: '完成记录',
+        component: FinishRecords
       },
       {
         path: '/userManagement',

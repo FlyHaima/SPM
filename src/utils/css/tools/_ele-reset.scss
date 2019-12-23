@@ -39,7 +39,7 @@
 }
 
 // 重置弹框样式
-/deep/.el-dialog{
+.el-dialog{
   border-radius: 10px;
   .el-dialog__header{
     background: $colorPrimary;
