@@ -124,13 +124,13 @@
                     label="姓名"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.name }}</template>
+                    <template slot-scope="scope">{{ scope.row.userName }}</template>
                   </el-table-column>
                   <el-table-column
                     label="联系方式"
                     width="160"
                     align="center">
-                    <template slot-scope="scope">{{ scope.row.concatNum }}</template>
+                    <template slot-scope="scope">{{ scope.row.telephone }}</template>
                   </el-table-column>
                   <el-table-column
                     label="主要职责"
@@ -191,7 +191,7 @@ export default {
   name: 'organization',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['安全基础管理', '组织机构'],
       pageLoading: false,
       organizationTree: [],
       leaderTree: [],
@@ -230,7 +230,8 @@ export default {
       dutyPostData: '',
       dutyPostId: '',
       updating: false,
-      dialogLoading: false
+      dialogLoading: false,
+      leaderPosition: null
     }
   },
   created () {
@@ -271,7 +272,7 @@ export default {
       })
     },
     // 点击orgTree获取右侧树形数据
-    handleNodeClick (deptId) {
+    handleNodeClick (deptId, position) {
       if (this.activeName === 'tab_a') {
         this.triggerOrgId = deptId
         this.pageLoading = true
@@ -282,6 +283,7 @@ export default {
           }
         })
       } else if (this.activeName === 'tab_b') {
+        this.leaderPosition = position
         this.triggerLeaderId = deptId
         this.pageLoading = true
         this.getLeaderTable()
@@ -297,9 +299,10 @@ export default {
       let newTree = {
         id: fData.deptId,
         name: fData.deptName,
-        manager: fData.userName,
-        telNum: fData.telephone,
-        duty: fData.duty,
+        // manager: fData.userName,
+        // telNum: fData.telephone,
+        // duty: fData.duty,
+        workList: fData.workList,
         children: []
       }
       if (fData.children) {
@@ -412,7 +415,7 @@ export default {
     getLeaderTable () {
       let vm = this
       vm.pageLoading = true
-      getLeaderTabel(vm.triggerLeaderId, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
+      getLeaderTabel(vm.triggerLeaderId, vm.leaderPosition, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
         if (res.code === 200) {
           vm.leaderData = res.data
           vm.leaderPageData.total = res.total

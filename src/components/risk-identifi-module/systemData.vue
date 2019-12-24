@@ -6,7 +6,7 @@
     </el-header>
     <el-main class="inner-main-container">
       <p class="btn-p">
-        <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
+        <el-button size="medium" type="primary"><i class="el-icon-plus" style="margin-right: 5px"></i>新建</el-button>
       </p>
 
       <el-table ref="downloadTable"
@@ -22,7 +22,7 @@
           type="index">
         </el-table-column>
         <el-table-column
-          label="文件名"
+          label="所属行业"
           align="center">
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
@@ -31,7 +31,9 @@
           width="190"
           align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="download(scope.row.id)">下载</el-button>
+            <el-button type="text" @click="download(scope.row.id)">编辑</el-button>
+            <el-button type="text" @click="download(scope.row.id)">上传</el-button>
+            <el-button type="text" @click="download(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

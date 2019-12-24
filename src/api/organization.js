@@ -70,8 +70,8 @@ export function delTreeData (param) {
 }
 
 // 安全基础管理--组织机构--领导小组--获取table
-export function getLeaderTabel (deptId, pageNo, pageSize) {
-  const url = `${baseUrl}/leadUser/getList?deptId=${deptId}&pageNo=${pageNo}&pageSize=${pageSize}`
+export function getLeaderTabel (deptId, position, pageNo, pageSize) {
+  const url = `${baseUrl}/leadUser/getList?deptId=${deptId}&position=${position}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
@@ -159,6 +159,15 @@ export function releasePlan (data) {
   })
 }
 
+// 安全基础管理--全员培训--编辑计划
+export function updatePlan (data) {
+  const url = `${baseUrl}/train/updatePlan`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 安全基础管理--全员培训--计划复制
 export function copyPlan (data) {
   const url = `${baseUrl}/train/copyPlan`
@@ -225,6 +234,33 @@ export function resetSystemFile (data) {
 // 安全基础管理--基础资料--获取文件类别列表
 export function getBasicCategory () {
   const url = `${baseUrl}/basticData/getBasicCategory`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--基础资料--获取文件列表
+export function getBasicList (basicCategoryId, pageNo, pageSize) {
+  const url = `${baseUrl}/basticData/getBasicList?basicCategoryId=${basicCategoryId}&pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--基础资料--删除
+export function delBasicFile (param) {
+  const url = `${baseUrl}/basticData/delBasicFile`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--证件管理--获取证件列表
+export function getDocumentList (riskId) {
+  const url = `${baseUrl}/document/getDocumentList?risk_id=${riskId}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)

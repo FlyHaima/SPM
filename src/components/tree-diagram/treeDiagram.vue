@@ -30,7 +30,7 @@
         :data="treeData"
         :props="defaultProps"
         default-expand-all
-        node-key="deptId"
+        node-key="'deptId'"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
@@ -88,15 +88,11 @@ export default {
     },
     openAll () {
       this.openState = !this.openState
-      for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-        this.$refs.tree.store._getAllNodes()[i].expanded = true
-      }
+      this.$refs.tree.$children[0].expanded = true
     },
     closeAll () {
       this.openState = !this.openState
-      for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-        this.$refs.tree.store._getAllNodes()[i].expanded = false
-      }
+      this.$refs.tree.$children[0].expanded = false
     },
     filterNode (value, data) {
       if (!value) return true
@@ -104,8 +100,9 @@ export default {
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      console.log('节点deptID：' + data.deptId)
-      this.$emit('handleNodeClick', data.deptId)
+      // console.log('节点deptID：' + data.deptId)
+      console.log(data)
+      this.$emit('handleNodeClick', data.deptId, data.position)
     },
     addNode (node, data) {
       if (node.level > this.level) {

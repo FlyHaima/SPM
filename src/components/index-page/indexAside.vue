@@ -50,221 +50,221 @@ export default {
   data () {
     return {
       menuList: [
-        // {
-        //   name: '首页',
-        //   active: true,
-        //   url: '/dashboard'
-        // },
-        // {
-        //   name: '安全基础管理',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '组织机构',
-        //       url: '/organization',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '全员培训',
-        //       url: '/staffTraining',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '制度建设',
-        //       url: '/systemConstruction',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '基础资料',
-        //       url: '/basicData',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '风险辨识评估',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '风险辨识',
-        //       url: '/riskIdentified',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '风险单元',
-        //       url: '/riskUnit',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '评价记录',
-        //       url: '/evaluationRecord',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '系统大数据',
-        //       url: '/systemData',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '风险分级管控',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险点清单',
-        //       url: '/riskList',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '岗位风险告知卡',
-        //       url: '/riskInfoCard',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险点分级管控台账',
-        //       url: '/riskBook',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '重大安全风险',
-        //       url: '/safeRisk',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '重大安全风险公告栏',
-        //       url: '/riskBulletinBoard',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险四色图',
-        //       url: '/riskColorImage',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '作业风险比较图',
-        //       url: '/riskCompareChart',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险分级管控表',
-        //       url: '/riskControlList',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '隐患排查治理',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '排查计划',
-        //       url: '/screeningPlan',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '排查实施',
-        //       url: '/screeningImplementation',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '排查复核',
-        //       url: '/screeningReview',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '隐患治理',
-        //       url: '/riskManagement',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '治理台账',
-        //       url: '/governanceParameter',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '完成记录',
-        //       url: '/finishRecords',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '应急指挥调度',
-        //   active: false,
-        //   url: ''
-        // },
-        // {
-        //   name: '配置维护管理',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '用户管理',
-        //       url: '/userManagement',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '角色管理',
-        //       url: '/roleManagement',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '数据字典',
-        //       url: '/dataManagement',
-        //       active: false
-        //     },
-        //     // 组织结构管理 这个部分暂时不写，需求未定
-        //     // {
-        //     //   fname: '配置维护管理',
-        //     //   name: '组织结构管理',
-        //     //   url: '/',
-        //     //   active: false
-        //     // },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '日志',
-        //       url: '/log',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '新闻维护',
-        //       url: '/newsManage',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '绩效考核',
-        //       url: '/performanceAssessment',
-        //       active: false
-        //     }
-        //   ]
-        // }
+        {
+          name: '首页',
+          active: true,
+          url: '/dashboard'
+        },
+        {
+          name: '安全基础管理',
+          active: false,
+          list: [
+            {
+              fname: '安全基础管理',
+              name: '组织机构',
+              url: '/organization',
+              active: false
+            },
+            {
+              fname: '安全基础管理',
+              name: '全员培训',
+              url: '/staffTraining',
+              active: false
+            },
+            {
+              fname: '安全基础管理',
+              name: '制度建设',
+              url: '/systemConstruction',
+              active: false
+            },
+            {
+              fname: '安全基础管理',
+              name: '基础资料',
+              url: '/basicData',
+              active: false
+            },
+            {
+              fname: '安全基础管理',
+              name: '证件管理',
+              url: '/certificateManage',
+              active: false
+            }
+          ]
+        },
+        {
+          name: '风险辨识评估',
+          active: false,
+          list: [
+            {
+              fname: '风险辨识评估',
+              name: '风险辨识',
+              url: '/riskIdentified',
+              active: false
+            },
+            {
+              fname: '风险辨识评估',
+              name: '风险单元',
+              url: '/riskUnit',
+              active: false
+            },
+            {
+              fname: '风险辨识评估',
+              name: '评价记录',
+              url: '/evaluationRecord',
+              active: false
+            },
+            {
+              fname: '风险辨识评估',
+              name: '系统大数据',
+              url: '/systemData',
+              active: false
+            }
+          ]
+        },
+        {
+          name: '风险分级管控',
+          active: false,
+          list: [
+            {
+              fname: '风险分级管控',
+              name: '风险点清单',
+              url: '/riskList',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '岗位风险告知卡',
+              url: '/riskInfoCard',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '风险点分级管控台账',
+              url: '/riskBook',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '重大安全风险',
+              url: '/safeRisk',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '重大安全风险公告栏',
+              url: '/riskBulletinBoard',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '风险四色图',
+              url: '/riskColorImage',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '作业风险比较图',
+              url: '/riskCompareChart',
+              active: false
+            },
+            {
+              fname: '风险分级管控',
+              name: '风险分级管控表',
+              url: '/riskControlList',
+              active: false
+            }
+          ]
+        },
+        {
+          name: '隐患排查治理',
+          active: false,
+          list: [
+            {
+              fname: '隐患排查治理',
+              name: '排查清单',
+              url: '/screeningList',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '排查计划',
+              url: '/screeningPlan',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '排查周期',
+              url: '/screeningCycle',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '隐患排查',
+              url: '/riskScreening',
+              active: false
+            },
+            {
+              fname: '隐患排查治理',
+              name: '隐患治理',
+              url: '/riskManagement',
+              active: false
+            }
+          ]
+        },
+        {
+          name: '应急指挥调度',
+          active: false,
+          url: ''
+        },
+        {
+          name: '配置维护管理',
+          active: false,
+          list: [
+            {
+              fname: '配置维护管理',
+              name: '用户管理',
+              url: '/userManagement',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '角色管理',
+              url: '/roleManagement',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '数据字典',
+              url: '/dataManagement',
+              active: false
+            },
+            // 组织结构管理 这个部分暂时不写，需求未定
+            // {
+            //   fname: '配置维护管理',
+            //   name: '组织结构管理',
+            //   url: '/',
+            //   active: false
+            // },
+            {
+              fname: '配置维护管理',
+              name: '日志',
+              url: '/log',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '新闻维护',
+              url: '/newsManage',
+              active: false
+            },
+            {
+              fname: '配置维护管理',
+              name: '绩效考核',
+              url: '/performanceAssessment',
+              active: false
+            }
+          ]
+        }
       ],
       linkUrl: '' // 应急指挥调度跳转链接
     }
@@ -276,7 +276,8 @@ export default {
   },
   created () {
     this.initURL()
-    this.initMenuList()
+    // 暂时注掉，后期再放开该方法
+    // this.initMenuList()
     // menuList参数的active属性是前台自添加, 原始请求下来的数据是没有active的
     // let returenMenu = [
     //   {
@@ -636,6 +637,11 @@ export default {
               &.icon13{
                 background: url('../../assets/img/aside-icon00-3.png') no-repeat;
                 background-size: 16px 17px;
+                background-position: center center;
+              }
+              &.icon14{
+                background: url('../../assets/img/aside-icon00-4.png') no-repeat;
+                background-size: 14px 17px;
                 background-position: center center;
               }
               &.icon20{

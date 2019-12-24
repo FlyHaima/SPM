@@ -7,9 +7,11 @@
 const baseUrl = 'http://58.155.61.34:8033/spm'
 
 // 设置七牛云服务器路径
-const uploadQiniuAdr = 'http://pvj74fw2h.bkt.clouddn.com/'
+const uploadQiniuAdr = 'http://upload-z1.qiniu.com'
+const fileQiniuAddr = 'http://file.hljdmkj.com/'
 
 export default {
   baseUrl,
-  uploadQiniuAdr
+  uploadQiniuAdr,
+  fileQiniuAddr
 }
