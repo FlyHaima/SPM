@@ -607,7 +607,6 @@ export default {
           this.organizationTree = res.data
         }
         if (create) {
-          console.log(res.data)
           let data = {
             riskId: res.data[0].riskId,
             level: '1',
@@ -621,7 +620,6 @@ export default {
     getRiskTable (data) {
       let vm = this
       vm.currentTreeData = data
-      // console.log(vm.currentTreeData)
       vm.pageLoading = true
       let riskId = data.riskId
       getDescribeList(riskId).then(res => {
@@ -641,14 +639,13 @@ export default {
       this.multipleSelection = val
     },
     openDialog (d) {
-      console.log(d)
       this.currentData = d
-      if (d.speed === '0') {
-        this.activeStep = 'step-1'
+      if (d.speed === '4') {
+        this.activeStep = 'step-4'
       } else {
-        this.activeStep = 'step-' + d.speed
+        this.activeStep = 'step-' + (d.speed * 1 + 1)
       }
-      this.doneStep = d.speed * 1
+      this.doneStep = d.speed * 1 + 1
       this.evaluationMethod = d.ram ? d.ram : 'LS'
       this.stepObjA = {
         pointA: d.oneName ? d.oneName : '',
@@ -707,10 +704,15 @@ export default {
         id: vm.currentData.id
       }
       let postData = Object.assign(data, stepData)
-      console.log(postData)
       updateDescribe(postData, step).then(res => {
         if (res.code === 200) {
-
+          // 提交后，更新表格
+          let data = {
+            riskId: vm.currentTreeData.riskId,
+            level: vm.currentTreeData.level,
+            treeLevel: vm.currentTreeData.treeLevel
+          }
+          vm.getRiskTable(data)
         }
         vm.pageLoading = false
       })
@@ -720,7 +722,7 @@ export default {
     },
     toStepTwo () {
       let vm = this
-      vm.saveStepOne()
+      if (!vm.saveStepOne()) return
       vm.doneStep = 2
       vm.activeStep = 'step-2'
     },
@@ -739,23 +741,20 @@ export default {
           ram: vm.stepObjA.identifierWay
         }
         vm.updateDescribe(saveData, '1')
+        return true
       } else {
         vm.$message({
           message: '所有信息均为必填项',
           type: 'warning'
         })
+        return false
       }
     },
     changeStepOne () {
       let vm = this
-      vm.saveStepOne()
-      // 提交后，更新表格
-      let data = {
-        riskId: vm.currentTreeData.riskId,
-        level: vm.currentTreeData.level,
-        treeLevel: vm.currentTreeData.treeLevel
+      if (!vm.saveStepOne()) {
+        return
       }
-      vm.getRiskTable(data)
       vm.showDialog = false
     },
     closeDialog () {
@@ -763,33 +762,29 @@ export default {
     },
     changeStepTwo () {
       let vm = this
-      vm.saveStepTwo()
-      // 提交后，更新表格
-      let data = {
-        riskId: vm.currentTreeData.riskId,
-        level: vm.currentTreeData.level,
-        treeLevel: vm.currentTreeData.treeLevel
-      }
-      vm.getRiskTable(data)
+      if (!vm.saveStepTwo()) return
       vm.showDialog = false
     },
     saveStepTwo () {
       let vm = this
-      if (true) {
+      let ad = 1
+      if (ad > 0) { // 暂无条件，后续补齐参数
         let saveData = {
           deptId: vm.stepObjB.administrator
         }
         vm.updateDescribe(saveData, '2')
+        return true
       } else {
         vm.$message({
           message: '所有信息均为必填项',
           type: 'warning'
         })
+        return false
       }
     },
     toStepThree () {
       let vm = this
-      vm.saveStepTwo()
+      if (!vm.saveStepTwo()) return
       vm.doneStep = 3
       vm.activeStep = 'step-3'
     },
@@ -833,14 +828,7 @@ export default {
     },
     changeStepThree () {
       let vm = this
-      vm.saveStepThree()
-      // 提交后，更新表格
-      let data = {
-        riskId: vm.currentTreeData.riskId,
-        level: vm.currentTreeData.level,
-        treeLevel: vm.currentTreeData.treeLevel
-      }
-      vm.getRiskTable(data)
+      if (!vm.saveStepThree()) return
       vm.showDialog = false
     },
     saveStepThree () {
@@ -866,29 +854,24 @@ export default {
           }
         }
         vm.updateDescribe(saveData, '3')
+        return true
       } else {
         vm.$message({
           message: '所有信息均为必填项',
           type: 'warning'
         })
+        return false
       }
     },
     toStepFour () {
       let vm = this
-      vm.saveStepThree()
+      if (!vm.saveStepThree()) return
       vm.doneStep = 4
       vm.activeStep = 'step-4'
     },
     changeStepFour () {
       let vm = this
-      vm.saveStepFour()
-      // 提交后，更新表格
-      let data = {
-        riskId: vm.currentTreeData.riskId,
-        level: vm.currentTreeData.level,
-        treeLevel: vm.currentTreeData.treeLevel
-      }
-      vm.getRiskTable(data)
+      if (!vm.saveStepFour()) return
       vm.showDialog = false
     },
     saveStepFour () {
@@ -904,28 +887,22 @@ export default {
           emergency: vm.stepObjD.emergencyMeasures
         }
         vm.updateDescribe(saveData, '4')
+        return true
       } else {
         vm.$message({
           message: '所有信息均为必填项',
           type: 'warning'
         })
+        return false
       }
     },
     finish () {
       let vm = this
-      vm.saveStepFour().then(res => {
-        // 提交后，更新表格
-        let data = {
-          riskId: vm.currentTreeData.riskId,
-          level: vm.currentTreeData.level,
-          treeLevel: vm.currentTreeData.treeLevel
-        }
-        vm.getRiskTable(data)
+      vm.saveStepFour().then((res) => {
         vm.showDialog = false
       })
     },
     addTreeNode (data) {
-      console.log(data)
       let vm = this
       vm.pageLoading = true
       vm.$prompt('请输入节点名称', '添加节点', {
@@ -1018,7 +995,6 @@ export default {
               type: 'success',
               message: '添加成功'
             })
-            console.log(vm.currentTreeData)
             let data = {
               riskId: vm.currentTreeData.riskId,
               level: vm.currentTreeData.level,
@@ -1046,7 +1022,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log(this.multipleSelection)
         let postList = []
         this.multipleSelection.forEach(item => {
           postList.push(item.id)

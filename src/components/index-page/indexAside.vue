@@ -627,6 +627,11 @@ export default {
                 background-size: 16px 17px;
                 background-position: center center;
               }
+              &.icon14{
+                background: url('../../assets/img/aside-icon00-4.png') no-repeat;
+                background-size: 14px 17px;
+                background-position: center center;
+              }
               &.icon20{
                 background: url('../../assets/img/aside-icon01-0.png') no-repeat;
                 background-size: 16px 16px;

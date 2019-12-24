@@ -163,7 +163,7 @@
                     width="45">
                   </el-table-column>
                   <el-table-column
-                    prop="s"
+                    prop="e"
                     label="S" align="center"
                     width="45">
                   </el-table-column>
@@ -267,7 +267,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';~
 .inner-page-container {
   .inner-content {
     width: 100%;

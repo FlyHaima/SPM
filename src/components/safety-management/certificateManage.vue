@@ -41,8 +41,10 @@
               label="操作"
               align="center">
               <template slot-scope="scope">
+                <el-button type="text" @click="download(scope.row.id)">上传</el-button>
+                <el-button type="text" @click="download(scope.row.id)">编辑</el-button>
                 <el-button type="text" @click="download(scope.row.id)">下载</el-button>
-                <el-button type="text" style="color: #f56c6c;" @click="delete(scope.row.id)">删除</el-button>
+                <el-button type="text" @click="delete(scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
