@@ -45,7 +45,7 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="position"
+                prop="menus"
                 label="菜单功能"
                 align="center">
               </el-table-column>
@@ -118,22 +118,33 @@
       :visible.sync="dialogRoleVisible"
       >
       <el-collapse v-model="activeNames" >
-        <el-collapse-item name="1">
+        <el-collapse-item
+          v-for="(item, index) in roleOptions"
+          :key = index
+          name="1">
           <template slot="title">
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">安全基础管理</el-checkbox>
+            <el-checkbox
+              :indeterminate="isIndeterminate"
+              v-model="item.active"
+              @change="handleCheckAllChange(item)">{{item.name}}</el-checkbox>
           </template>
-          <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+          <el-checkbox-group
+            v-model="item.checkedRoles"
+            @change="handleCheckedChildrensChange(item)">
+            <el-checkbox
+              v-for="(itemList) in item.list"
+              :label="itemList.name"
+              :key="itemList.pid">{{itemList.name}}</el-checkbox>
           </el-checkbox-group>
         </el-collapse-item>
-        <el-collapse-item name="2">
+        <!-- <el-collapse-item name="2">
           <template slot="title">
             <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">风险辨识评估</el-checkbox>
           </template>
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
             <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
           </el-checkbox-group>
-        </el-collapse-item>
+        </el-collapse-item> -->
       </el-collapse>
 
       <div slot="footer" class="dialog-footer">
@@ -153,7 +164,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
 // import qs from 'qs'
-const cityOptions = ['上海风险分级管控表', '风险分级管控表', '风险分级管控表', '风险分级管控表', '上海1', '北京1', '广州1', '深圳1', '上海', '北京', '广州', '深圳']
+// const cityOptions = ['上海风险分级管控表', '风险分级管控表', '风险分级管控表', '风险分级管控表', '上海1', '北京1', '广州1', '深圳1', '上海', '北京', '广州', '深圳']
 export default {
   name: 'userManagement',
   mixins: [Tables],
@@ -172,30 +183,44 @@ export default {
       multipleSelection: [],
       submitting: false,
       editData: '',
+      roleOptionsData: [],
       roleOptions: [], // 角色
+      checkedRoles: ['4'],
+      postDataChecked: '',
       activeNames: ['1'],
       checkAll: false,
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions,
+      // checkedCities: ['上海', '北京'],
+      // cities: cityOptions,
       isIndeterminate: true
     }
   },
   mounted () {
-    this.fetchRoleOptions()
+    // this.fetchRoleOptions()
   },
   methods: {
-    handleCheckAllChange (val) {
-      this.checkedCities = val ? cityOptions : []
+    handleCheckAllChange (item) {
+      if (item.active && item.list != null) {
+        item.list.forEach(itemChecked => {
+          item.checkedRoles.push(itemChecked.name)
+          // this.postDataChecked =
+        })
+      } else {
+        item.checkedRoles = []
+      }
       this.isIndeterminate = false
+      // this.postDataChecked
     },
-    handleCheckedCitiesChange (value) {
-      let checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    handleCheckedChildrensChange (item, value) {
+      // console.log(value)
+      let checkedCount = item.checkedRoles.length
+      item.active = checkedCount === item.list.length
+      this.isIndeterminate = checkedCount >= 0 && checkedCount < item.list.length
+      console.log(this.roleOptions)
     },
     // 分配角色
     editRole (row) {
       this.dialogRoleVisible = true
+      this.fetchRoleOptions(row)
     },
     // 添加事件
     addHandle () {
@@ -214,13 +239,18 @@ export default {
       this.initForm(this.editData)
     },
     // 获取角色数据
-    fetchRoleOptions () {
+    fetchRoleOptions (row) {
       this.submitting = true
       axios
-        .get('/user/getRoleSelect')
+        .get('role/getRoleMenus', {
+          roleId: row.roleId
+        })
         .then((res) => {
           if (res.data.code === 200) {
-            this.roleOptions = res.data.roleList
+            this.roleOptions = res.data.data
+            this.roleOptions.forEach(item => {
+              this.checkedRoles = item.checkedRoles
+            })
           }
         })
         .finally(() => {

@@ -31,6 +31,9 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 30px;
+  .el-form--inline .el-form-item{
+    margin-bottom: 0px;
+  }
   &.is-flex-end{
     justify-content: flex-end;
   }

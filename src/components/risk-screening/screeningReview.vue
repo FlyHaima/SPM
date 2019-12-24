@@ -67,29 +67,27 @@
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理时间"
+                    label="最终复核人员"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理结果"
+                    label="最终复核时间"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="进度"
+                    label="最终复核意见"
                     align="center">
-                     <template slot-scope="scope">
-                      <table-step
-                        :step-data="stepData"
-                        :active="scope.row.progress"
-                      >
-                      </table-step>
-                    </template>
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="治理过程"
+                    label="附件"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="复核情况"
                     width="120"
                     align="center">
                     <template slot-scope="scope">
@@ -97,6 +95,19 @@
                         href="javascript:;"
                         class="color-primary"
                         @click="detailsHandle(scope.row)">详情
+                      </a>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="操作"
+                    width="100"
+                    align="center">
+                    <template slot-scope="scope">
+                      <a
+                        href="javascript:;"
+                        class="color-primary"
+                        @click="reviewHandle(scope.row)">复核
                       </a>
                     </template>
                   </el-table-column>
@@ -168,29 +179,27 @@
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理时间"
+                    label="最终复核人员"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="最终治理结果"
+                    label="最终复核时间"
                     align="center">
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="进度"
+                    label="最终复核意见"
                     align="center">
-                     <template slot-scope="scope">
-                      <table-step
-                        :step-data="stepData"
-                        :active="scope.row.progress"
-                      >
-                      </table-step>
-                    </template>
                   </el-table-column>
                   <el-table-column
                     prop=" "
-                    label="治理过程"
+                    label="附件"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="复核情况"
                     width="120"
                     align="center">
                     <template slot-scope="scope">
@@ -198,6 +207,19 @@
                         href="javascript:;"
                         class="color-primary"
                         @click="detailsHandle(scope.row)">详情
+                      </a>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop=" "
+                    label="操作"
+                    width="100"
+                    align="center">
+                    <template slot-scope="scope">
+                      <a
+                        href="javascript:;"
+                        class="color-primary"
+                        @click="reviewHandle(scope.row)">复核
                       </a>
                     </template>
                   </el-table-column>
@@ -220,7 +242,6 @@
 </template>
 <script>
 import BreadCrumb from '@/components/Breadcrumb/Breadcrumb'
-import TableStep from '@/components/step/stepCustom'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import TreeList from '@/components/tree-diagram/treeList'
 import axios from '@/api/axios'
@@ -264,25 +285,7 @@ export default {
         // position: '',
         // responsibility: ''
       }, // 编辑机构数据
-      formInline: {},
-      stepData: [
-        {
-          label: 'p',
-          value: 1
-        },
-        {
-          label: 'd',
-          value: 2
-        },
-        {
-          label: 'c',
-          value: 3
-        },
-        {
-          label: 'a',
-          value: 4
-        }
-      ]
+      formInline: {}
     }
   },
   components: {
@@ -290,8 +293,7 @@ export default {
     TreeList, // 计划清单菜单
     TreeReadOnly, // 风险单元树菜单
     DialogDetails,
-    DialogReview,
-    TableStep
+    DialogReview
   },
   created () {
     this.fetchOrgTreeData()

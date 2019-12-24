@@ -11,7 +11,7 @@
     <div class="tree-title">
       <i class="double-line-icon"></i>
       {{treeName}}
-      <div class="tree-search">
+      <div v-show="searchVisible" class="tree-search">
         <el-input
           size="mini"
           placeholder="输入关键字进行过滤"
@@ -19,9 +19,23 @@
         </el-input>
       </div>
       <div class="slide-btns">
-        <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button>
-        <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
-        <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
+        <el-button
+          type="text"
+          @click="openUpload"
+          v-show="hasUpload">上传</el-button>
+        <span v-show="shrinkVisible">
+          <el-button
+            type="text"
+            @click="openAll"
+            v-show="openState"
+            style="margin-left: 0;">展开</el-button>
+          <el-button
+            type="text"
+            @click="closeAll"
+            v-show="!openState"
+            style="margin-left: 0;">收起</el-button>
+        </span>
+
       </div>
     </div>
     <div class="tree-box">
@@ -38,9 +52,21 @@
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
             <span class="right-btns">
-              <i v-if="addVisible" class="el-icon-plus" title="添加节点" @click.stop="addNode(node, data)"></i>
-              <i v-if="editVisible" class="el-icon-edit" title="修改节点" @click.stop="edit(node, data)"></i>
-              <i v-if="delVisible" class="el-icon-delete" title="删除节点"  @click.stop="remove(node, data)"></i>
+              <i
+                v-show="addVisible"
+                class="el-icon-plus"
+                title="添加节点"
+                @click.stop="addNode(node, data)"></i>
+              <i
+                v-show="editVisible"
+                class="el-icon-edit"
+                title="修改节点"
+                @click.stop="edit(node, data)"></i>
+              <i
+                v-show="delVisible"
+                class="el-icon-delete"
+                title="删除节点"
+                @click.stop="remove(node, data)"></i>
             </span>
           </span>
       </el-tree>
@@ -64,7 +90,23 @@ export default {
       type: Boolean,
       default: false
     },
-    showBtns: {
+    searchVisible: {
+      type: Boolean,
+      default: false
+    },
+    addVisible: {
+      type: Boolean,
+      default: false
+    },
+    editVisible: {
+      type: Boolean,
+      default: false
+    },
+    delVisible: {
+      type: Boolean,
+      default: false
+    },
+    shrinkVisible: {
       type: Boolean,
       default: false
     }

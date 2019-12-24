@@ -4,6 +4,7 @@ import base from '@/api/baseUrl'
 let baseUrl = base.baseUrl
 // let cancel = null
 // const CancelToken = axios.CancelToken
+axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 axios.defaults.baseURL = baseUrl
 // 默认导出这个对象
@@ -22,12 +23,13 @@ export default {
       })
     })
   },
-  post (url, data, type) {
+  post (url, data, headers, type) {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
         url,
-        data
+        data,
+        headers: headers
         // cancelToken: new CancelToken ((c) => {
         //   cancel = c
         // })

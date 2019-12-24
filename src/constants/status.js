@@ -71,3 +71,17 @@ export const USE_INDUSTRY = [
   use,
   unuse
 ]
+
+// 排查种类弹窗，是否显示操作按钮
+export const show = {text: '显示', label: 'true', value: true}
+export const hidden = {text: '隐藏', label: 'false', value: false}
+
+export const VISIBLE_SWITCH_LIST = [
+  show,
+  hidden
+]
+
+export const VISIBLE_SWITCH = {
+  show,
+  hidden
+}

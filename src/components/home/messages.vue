@@ -387,7 +387,7 @@ export default {
         tabType: this.tabType
       }
       axios
-        .post('msg/del', qs.stringify(sendData))
+        .delete('msg/del', sendData)
         .then((res) => {
           if (res.data.code === 200) {
             this.$notify.success('删除成功')

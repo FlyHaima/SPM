@@ -111,10 +111,10 @@
 </template>
 
 <script>
+import qs from 'qs'
+import axios from '@/api/axios'
 import Tables from '@/mixins/Tables'
 import VueUeditorWrap from 'vue-ueditor-wrap'
-import axios from '@/api/axios'
-import qs from 'qs'
 import { NEWS_TYPE_LIST } from '@/constants/status'
 import { NewsTypeFilter } from '@/filters/status'
 export default {
@@ -126,7 +126,7 @@ export default {
       typeOptions: NEWS_TYPE_LIST,
       dialogAddVisible: false,
       editData: '',
-      tables: { // 新闻列表数据
+      tables: {
         api: 'news/getNewsList',
         auto: true
       }, // 新闻列表数据
@@ -256,7 +256,7 @@ export default {
         id: row.id
       }
       axios
-        .post('news/delNews', qs.stringify(sendData))
+        .post('news/delNews', qs.stringify(sendData), { 'content-type': 'application/x-www-form-urlencoded' })
         .then((res) => {
           if (res.data.code === 200) {
             this.$notify.success('删除成功')

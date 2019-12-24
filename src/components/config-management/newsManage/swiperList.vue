@@ -270,7 +270,7 @@ export default {
         id: row.id
       }
       axios
-        .post('news/delNewsPic', qs.stringify(sendData))
+        .post('news/delNewsPic', qs.stringify(sendData), { 'content-type': 'application/x-www-form-urlencoded' })
         .then((res) => {
           if (res.data.code === 200) {
             this.$notify.success('删除成功')

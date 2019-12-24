@@ -369,7 +369,7 @@ export default {
       }
       let stateLabel = row.state === '1' ? '禁用' : '启用'
       axios
-        .post('user/updateState', qs.stringify(sendData))
+        .post('user/updateState', qs.stringify(sendData), { 'content-type': 'application/x-www-form-urlencoded' })
         .then((res) => {
           if (res.data.code === 200) {
             this.$notify.success(stateLabel + '成功')

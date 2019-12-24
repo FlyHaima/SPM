@@ -276,6 +276,8 @@ export default {
   },
   created () {
     this.initURL()
+    // 暂时注掉，后期再放开该方法
+    // this.initMenuList()
     // menuList参数的active属性是前台自添加, 原始请求下来的数据是没有active的
     // let returenMenu = [
     //   {
@@ -370,6 +372,16 @@ export default {
     // }
   },
   methods: {
+    // 初始化菜单
+    initMenuList () {
+      axios
+        .get('ontroller/getMenuLists')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.menuList = res.data.menuList
+          }
+        })
+    },
     // 初始化应急指挥调度url
     initURL () {
       let dmsfbsf = window.localStorage.getItem('TOKEN_KEY')
