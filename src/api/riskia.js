@@ -95,3 +95,39 @@ export function updateDescribe (data, step) {
     return Promise.resolve(res.data)
   })
 }
+
+// 风险辨识评估--系统大数据--获取数据列表
+export function getBdataList (pageNo, pageSize) {
+  const url = `${baseUrl}/bigData/getLists?pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 风险辨识评估--系统大数据--新增
+export function addBdata (data) {
+  const url = `${baseUrl}/bigData/add`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 风险辨识评估--系统大数据--修改
+export function updataBdata (data) {
+  const url = `${baseUrl}/bigData/update`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 风险辨识评估--系统大数据--删除
+export function delBdata (param) {
+  const url = `${baseUrl}/bigData/del`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

@@ -19,7 +19,7 @@
           <el-tabs type="border-card" v-model="activeName" @tab-click="changeTab">
             <el-tab-pane label="作业活动类" name="作业活动">
               <p class="btn-p">
-                <a class="export-btn" @click="openExportDialogA"><i class></i>导出</a>
+                <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
               </p>
               <div class="table-box">
                 <el-table
@@ -110,7 +110,7 @@
             </el-tab-pane>
             <el-tab-pane label="设备设施类" name="设备设施">
               <p class="btn-p">
-                <a class="export-btn" @click="openExportDialogB"><i class></i>导出</a>
+                <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
               </p>
               <div class="table-box">
                 <el-table
@@ -205,6 +205,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import {getRiskTree, getRiskView} from '@/api/riskia'
+import base from '@/api/baseUrl'
 
 export default {
   name: 'evaluationRecord',
@@ -229,8 +230,12 @@ export default {
     closeLoading () {
       this.pageLoading = false
     },
-    openExportDialogA () {},
-    openExportDialogB () {},
+    exportTable () {
+      let vm = this
+      let baseUrl = base.baseUrl
+      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}`
+      location.href = `${hrefUrl}&attname=${vm.activeName}.xls`
+    },
     getRiskTree (create) {
       this.pageLoading = true
       getRiskTree().then((res) => {

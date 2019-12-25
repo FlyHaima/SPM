@@ -18,7 +18,7 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
+              <a class="export-btn" :href="`${base}`"><i class></i>导出</a>
             </p>
             <div class="table-box">
               <el-table
@@ -74,6 +74,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import {getRiskTree, getRiskUnit} from '@/api/riskia'
+import base from '@/api/baseUrl'
 
 export default {
   name: 'riskUnit',
@@ -96,7 +97,6 @@ export default {
     closeLoading () {
       this.pageLoading = false
     },
-    openExportDialog () {},
     getRiskTree (create) {
       this.pageLoading = true
       getRiskTree().then((res) => {
