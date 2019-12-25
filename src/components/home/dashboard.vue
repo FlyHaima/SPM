@@ -32,45 +32,13 @@
                 <i class="entrance-btn-icon"></i>
               </div>
               <div class="entrance-menu">
-                <div class="entrance-menu-item">
+                <div
+                  v-for=" (item, index) in enterData"
+                  :key = index
+                  @click="turnToPage(item.url)"
+                  class="entrance-menu-item">
                   <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">企业风险清单</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">重大安全风险</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">重大安全风险公告</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">岗位风险告知卡</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">风险四色图</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">作业风险比较图</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">风险点分级管控台账</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">排查实施</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">治理台账</div>
-                </div>
-                <div class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
-                  <div class="entrance-menu-txt">隐患分级</div>
+                  <div class="entrance-menu-txt">{{item.name}}</div>
                 </div>
               </div>
             </div>
@@ -85,7 +53,7 @@
                   <a
                     href="javascript:;"
                     @click=" goMorePage() "
-                    class="info-link-txt">更多</a>
+                    class="info-link-txt">更多</div>
                 </div> -->
               </div>
               <div class="info-content">
@@ -303,7 +271,8 @@ export default {
       page: {
         pageNo: 1,
         pageSize: 10 // limit
-      }
+      },
+      enterData: [] // 入口链接数据
     }
   },
   filters: {
@@ -322,10 +291,28 @@ export default {
     gauge
   },
   created () {
+    this.fetchEnterData()
     this.fetchList()
     this.fetchChartData()
   },
   methods: {
+    turnToPage (url) {
+      this.$router.push(url)
+    },
+    // 获取入口链接数据
+    fetchEnterData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('index/getTwoMenuLists')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.enterData = res.data.data
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
     // 获取chart的数据
     fetchChartData () {
       let vm = this

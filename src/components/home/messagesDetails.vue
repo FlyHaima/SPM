@@ -46,7 +46,7 @@
           </video>
           <div
             v-if="item.fileType === 'word'"
-            @click.prevent="downLoadFile(item.filePath)"
+            @click.prevent="downLoadFile(item)"
             class="attachment-word-list"
             v-loading= "submitting">
             <i class="icon-word"></i>
@@ -87,7 +87,8 @@ export default {
   methods: {
     // 下载文件
     downLoadFile (item) {
-      window.location.href = item
+      console.log(item)
+      window.location.href = `${item.filePath}?attname=${item.fileName}`
     },
     // 在线预览word文件
     openDoc (data) {

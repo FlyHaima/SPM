@@ -11,7 +11,7 @@
         <div class="btn hard-disk"><i></i>本机硬盘</div>
       </li>
       <li>
-        <div class="btn msg-btn" @click="goMorePage()"><i></i>消息<span class="num-conner">18</span>
+        <div class="btn msg-btn" @click="goMorePage()"><i></i>消息
           <span v-if="msgNum > 0" class="num-conner">{{msgNum > 99 ? '99+' : msgNum}}</span>
         </div>
       </li>
@@ -34,8 +34,6 @@ export default {
   name: 'IndexHeader',
   data () {
     return {
-      taskNum: 110,
-      msgNum: 11,
       showTaskA: false,
       showTaskB: true,
       showTaskC: true,
@@ -44,7 +42,9 @@ export default {
   },
   computed: {
     ...mapState({
-      userName: (state) => state.userInfo.userName
+      userName: (state) => state.userInfo.userName,
+      msgNum: (state) => state.userInfo.msgNum,
+      taskNum: (state) => state.userInfo.taskNum
     })
   },
   mounted () {
