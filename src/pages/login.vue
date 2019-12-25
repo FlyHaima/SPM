@@ -4,74 +4,94 @@
     <el-row class="login-content">
       <el-col :span="16" class="login-content-left">
         <div class="logo"></div>
-        <el-tabs v-model="activeName">
-          <el-tab-pane label="新闻动态" name="first">
-            <div class="tab-content">
-              <swiper
-                :options="swiperOption"
-                ref="mySwiper"
-                class="swiper-container">
-                <!-- slides -->
-                <swiper-slide
-                  v-for="(item, index) in swiperSlides"
-                  :key="index">
-                    <img
-                      :src="item.imgSrc"
-                      class="swiper-img" />
-                    <div class="swiper-info">
-                      <div class="swiper-info-txt">{{item.imgTxt}}</div>
-                    </div>
-                </swiper-slide>
-                <!-- Optional controls -->
-                <div class="swiper-pagination"  slot="pagination"></div>
-                <div class="swiper-button-prev" slot="button-prev"></div>
-                <div class="swiper-button-next" slot="button-next"></div>
-              </swiper>
-              <ul class="list-info">
-                <li class="list-info-item">
-                  <div class="list-info-title">
-                    <span class="list-info-txt">你的安全清单并未完善，请点击这里</span>
+        <el-row>
+          <el-col :span="10">
+            <swiper
+              :options="swiperOption"
+              ref="mySwiper"
+              class="swiper-container">
+              <!-- slides -->
+              <swiper-slide
+                v-for="(item, index) in swiperSlides"
+                :key="index">
+                  <img
+                    :src="item.picUrl"
+                    class="swiper-img" />
+                  <div class="swiper-info">
+                    <div class="swiper-info-txt">{{item.picName}}</div>
                   </div>
-                  <div class="list-info-date">2017/12/20</div>
-                </li>
-                <li class="list-info-item">
-                  <div class="list-info-title">
-                    <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                  </div>
-                  <div class="list-info-date">2017/12/20</div>
-                </li>
-                <li class="list-info-item">
-                  <div class="list-info-title">
-                    <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                  </div>
-                  <div class="list-info-date">2017/12/20</div>
-                </li>
-                <li class="list-info-item">
-                  <div class="list-info-title">
-                    <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                  </div>
-                  <div class="list-info-date">2017/12/20</div>
-                </li>
-                <li class="list-info-item">
-                  <div class="list-info-title">
-                    <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                  </div>
-                  <div class="list-info-date">2017/12/20</div>
-                </li>
-                <li class="list-info-item">
-                  <div class="list-info-title">
-                    <div class="list-info-txt">你的安全清单并未完善，请点击这里你的安全清单并未完善，请点击这里</div>
-                  </div>
-                  <div class="list-info-date">2017/12/20</div>
-                </li>
-              </ul>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="政策解读" name="second">配置管理</el-tab-pane>
-          <el-tab-pane label="法律法规" name="third">角色管理</el-tab-pane>
-          <el-tab-pane label="定时安管生产事故" name="fourth">定时任务补偿</el-tab-pane>
-        </el-tabs>
-
+              </swiper-slide>
+              <!-- Optional controls -->
+              <div class="swiper-pagination"  slot="pagination"></div>
+              <div class="swiper-button-prev" slot="button-prev"></div>
+              <div class="swiper-button-next" slot="button-next"></div>
+            </swiper>
+          </el-col>
+          <el-col :span="14">
+            <el-tabs v-model="tabType" @tab-click='clickTab'>
+              <el-tab-pane label="新闻动态" name="xwdt">
+                <div class="tab-content">
+                  <ul class="list-info">
+                    <li
+                      v-for="(item, index) in newsList"
+                      :key="index"
+                      class="list-info-item">
+                      <div class="list-info-title">
+                        <span class="list-info-txt">{{item.newsName}}</span>
+                      </div>
+                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                    </li>
+                  </ul>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="政策解读" name="zcjd">
+                <div class="tab-content">
+                  <ul class="list-info">
+                    <li
+                      v-for="(item, index) in newsList"
+                      :key="index"
+                      class="list-info-item">
+                      <div class="list-info-title">
+                        <span class="list-info-txt">{{item.newsName}}</span>
+                      </div>
+                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                    </li>
+                  </ul>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="法律法规" name="flfg">
+                <div class="tab-content">
+                  <ul class="list-info">
+                    <li
+                      v-for="(item, index) in newsList"
+                      :key="index"
+                      class="list-info-item">
+                      <div class="list-info-title">
+                        <span class="list-info-txt">{{item.newsName}}</span>
+                      </div>
+                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                    </li>
+                  </ul>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="定时安管生产事故" name="aqscsg">
+                <div class="tab-content">
+                  <ul class="list-info">
+                    <li
+                      v-for="(item, index) in newsList"
+                      :key="index"
+                      class="list-info-item">
+                      <div class="list-info-title">
+                        <span class="list-info-txt">{{item.newsName}}</span>
+                      </div>
+                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                    </li>
+                  </ul>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </el-col>
+        </el-row>
       </el-col>
       <el-col :span="6" :offset="1" class="login-content-right">
         <div class="login-box">
@@ -137,7 +157,7 @@
 
 <script>
 import axios from '@/api/axios'
-
+import moment from 'moment'
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 export default {
@@ -145,7 +165,7 @@ export default {
   data () {
     return {
       submitting: false,
-      activeName: 'first',
+      tabType: 'xwdt',
       form: {
         accountName: '',
         password: ''
@@ -197,16 +217,19 @@ export default {
         //   }
         // }
       },
-      swiperSlides: [
-        {
-          imgSrc: './static/images/login/banner/banner01.jpg',
-          imgTxt: '我的骄傲，我的国！为中国女排打call'
-        },
-        {
-          imgSrc: './static/images/login/banner/banner01.jpg',
-          imgTxt: '我的骄傲，我的国！'
-        }
-      ]
+      swiperSlides: [],
+      newsList: null,
+      picList: null
+    }
+  },
+  filters: {
+    // 格式化日期格式
+    'send-time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY/MM/DD')
+      } else {
+        return null
+      }
     }
   },
   mounted () {
@@ -215,9 +238,27 @@ export default {
     //     this.swiperSlides.push(this.swiperSlides.length + 1)
     //   }
     // }, 3000)
+    this.fetchData()
     this.swiper.slideTo(3, 1000, false)
   },
   methods: {
+    // 获取新闻列表
+    fetchData () {
+      axios
+        .get('ontroller/getNewsList', {
+          tabType: this.tabType
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.newsList = res.data.newsList
+            this.swiperSlides = res.data.picList
+          }
+        })
+    },
+    // tab切换事件
+    clickTab (item) {
+      this.fetchData()
+    },
     // 提交发布消息事件
     submitForm () {
       let vm = this
@@ -274,7 +315,7 @@ export default {
 .logo{
   width: 136px;
   height: 43px;
-  margin: 36px 46px;
+  margin: 36px 46px 180px;
   background-image: url('../assets/img/login/login-logo.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -285,6 +326,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 100%;
+  min-width: 370px;
 }
 .login-box-inner{
   width: 100%;
@@ -297,7 +339,8 @@ export default {
   background-size: cover;
   color: #ffffff;
   >>>.el-tabs{
-    margin: 200px 80px;
+    // margin: 200px 80px;
+    max-width: 600px;
     .el-tabs__content{
       min-height: 20px;
     }
@@ -380,7 +423,8 @@ export default {
   justify-content: flex-end;
 }
 .form-links-item{
-  color: #333333;
+  color: #409eff;
+  text-decoration: underline;
 }
 /deep/.el-form{
   .el-form-item__error{
@@ -419,6 +463,7 @@ export default {
   width: 440px;
   height: 416px;
   position: relative;
+  z-index: 999;
   >>> .swiper-pagination{
     position: absolute;
     bottom: 0;

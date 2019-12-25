@@ -148,6 +148,9 @@
                     </el-option>
                   </el-select>
                 </div>
+                <el-form-item class="form-links">
+                  <a class="form-links-item" href="/login">登录已有账号</a>
+                </el-form-item>
                 <el-form-item>
                   <el-button
                     :loading="submitting"
@@ -434,6 +437,10 @@ export default {
 .form-links{
   display: flex;
   justify-content: flex-end;
+}
+.form-links-item{
+  color: #409eff;
+  text-decoration: underline;
 }
 .custom-form-item{
   display: flex;

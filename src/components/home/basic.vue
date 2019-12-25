@@ -26,7 +26,7 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号创建时间:</span>
-                  <span class="user-value">{{userInfo.impTime}}</span>
+                  <span class="user-value">{{userInfo.impTime | send-time-filter}}</span>
                 </li>
                  <li class="user-list-item">
                   <span class="user-label">企业名：</span>
@@ -351,7 +351,7 @@ export default {
     // 格式化日期格式
     'send-time-filter' (value) {
       if (value) {
-        return moment(value).format('YYYY-MM-DD  HH: mm: ss')
+        return moment(value).format('YYYY-MM-DD  HH: mm')
       } else {
         return null
       }

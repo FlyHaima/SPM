@@ -125,7 +125,7 @@
           <template slot="title">
             <el-checkbox
               :indeterminate="isIndeterminate"
-              v-model="item.active"
+              v-model="item.checkAll"
               @change="handleCheckAllChange(item)">{{item.name}}</el-checkbox>
           </template>
           <el-checkbox-group
@@ -137,21 +137,13 @@
               :key="itemList.pid">{{itemList.name}}</el-checkbox>
           </el-checkbox-group>
         </el-collapse-item>
-        <!-- <el-collapse-item name="2">
-          <template slot="title">
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">风险辨识评估</el-checkbox>
-          </template>
-          <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
-          </el-checkbox-group>
-        </el-collapse-item> -->
       </el-collapse>
 
       <div slot="footer" class="dialog-footer">
         <el-button
           type="primary"
           size="small"
-          @click="submitForm()">确 定</el-button>
+          @click="submitFormRole()">确 定</el-button>
         <el-button
           size="small"
           @click="dialogRoleVisible = false">取 消</el-button>
@@ -183,39 +175,129 @@ export default {
       multipleSelection: [],
       submitting: false,
       editData: '',
-      roleOptionsData: [],
       roleOptions: [], // 角色
-      checkedRoles: ['4'],
-      postDataChecked: '',
+      postDataChecked: [],
       activeNames: ['1'],
-      checkAll: false,
-      // checkedCities: ['上海', '北京'],
-      // cities: cityOptions,
-      isIndeterminate: true
+      isIndeterminate: true,
+      roleId: '',
+      menuList: [],
+      newMenuList: []
     }
   },
   mounted () {
-    // this.fetchRoleOptions()
+    this.initPage()
   },
   methods: {
+    // 页面初始化数据
+    initPage () {
+      this.initMenuList()
+    },
+    // 初始化菜单
+    initMenuList () {
+      axios
+        .get('ontroller/getMenuLists')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.menuList = res.data.menuList
+            this.newMenuList = []
+            this.menuList.forEach(item => {
+              if (!item.list) {
+                this.newMenuList.push(item.menuId)
+              } else {
+                return ''
+              }
+            })
+          }
+        })
+    },
+    // 获取角色数据
+    fetchRoleOptions (row) {
+      this.roleId = row.roleId
+      this.submitting = true
+      axios
+        .get('role/getRoleMenus', {
+          roleId: this.roleId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.roleOptions = res.data.data
+            for (let i = 0; i < this.roleOptions.length; i++) {
+              for (let j = 0; j < this.newMenuList.length; j++) {
+                if (this.roleOptions[i].menuId === this.newMenuList[j]) {
+                  this.roleOptions[i].checkAll = true
+                }
+              }
+            }
+          }
+        })
+        .finally(() => {
+          this.submitting = false
+        })
+    },
+    filterRoleOptions (fData) {
+      let newRoleOptions = this.postDataChecked
+      fData.forEach(item => {
+        if (item.checkAll === true || item.checkedRoles.length > 0) {
+          newRoleOptions.push(item.menuId)
+        }
+        if (item.list) {
+          item.list.forEach(itemList => {
+            item.checkedRoles.forEach(itemChecked => {
+              if (itemList.name === itemChecked) {
+                newRoleOptions.push(itemList.menuId)
+              }
+            })
+          })
+        }
+      })
+      return newRoleOptions
+    },
+    submitFormRole () {
+      this.postDataChecked = this.filterRoleOptions(this.roleOptions)
+      this.postDataChecked = this.postDataChecked.join(',')
+      let vm = this
+      let sendData = {
+        roleId: vm.roleId,
+        menuId: this.postDataChecked
+      }
+      axios
+        .post('role/updateMenu', sendData)
+        .then((res) => {
+          if (res.data.code === 200) {
+            vm.$notify.success('分配成功')
+            vm.dialogRoleVisible = false
+            vm.tablesFetchList()
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+          vm.submitting = false
+        })
+    },
     handleCheckAllChange (item) {
-      if (item.active && item.list != null) {
+      if (item.checkAll) {
+        item.checkAll = true
+      } else {
+        item.checkAll = false
+      }
+      item.checkedRoles = []
+      if (item.checkAll === true && item.list) {
         item.list.forEach(itemChecked => {
           item.checkedRoles.push(itemChecked.name)
-          // this.postDataChecked =
         })
       } else {
         item.checkedRoles = []
       }
       this.isIndeterminate = false
-      // this.postDataChecked
     },
-    handleCheckedChildrensChange (item, value) {
-      // console.log(value)
+    handleCheckedChildrensChange (item) {
       let checkedCount = item.checkedRoles.length
-      item.active = checkedCount === item.list.length
+      item.checkAll = checkedCount === item.list.length
       this.isIndeterminate = checkedCount >= 0 && checkedCount < item.list.length
-      console.log(this.roleOptions)
     },
     // 分配角色
     editRole (row) {
@@ -238,25 +320,7 @@ export default {
       this.editData = row.userId
       this.initForm(this.editData)
     },
-    // 获取角色数据
-    fetchRoleOptions (row) {
-      this.submitting = true
-      axios
-        .get('role/getRoleMenus', {
-          roleId: row.roleId
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.roleOptions = res.data.data
-            this.roleOptions.forEach(item => {
-              this.checkedRoles = item.checkedRoles
-            })
-          }
-        })
-        .finally(() => {
-          this.submitting = false
-        })
-    },
+
     // 编辑状态，回显数据
     initForm (data) {
       this.submitting = true
