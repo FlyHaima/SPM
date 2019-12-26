@@ -266,3 +266,12 @@ export function getDocumentList (riskId) {
     return Promise.resolve(res.data)
   })
 }
+
+// 本机硬盘
+export function getDiskFileList (type, pageNo, pageSize) {
+  const url = `${baseUrl}/train/getAllFileByType?type=${type}&pageNo=${pageNo}&pageSize=${pageSize}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
