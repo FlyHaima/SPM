@@ -258,6 +258,15 @@ export function delBasicFile (param) {
   })
 }
 
+// 安全基础管理--基础资料--添加
+export function addBasicFile (data) {
+  const url = `${baseUrl}/basticData/addBasicFile`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 安全基础管理--证件管理--获取证件列表
 export function getDocumentList (riskId) {
   const url = `${baseUrl}/document/getDocumentList?risk_id=${riskId}`

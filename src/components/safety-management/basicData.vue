@@ -19,8 +19,43 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
+              <el-button size="medium" type="primary" @click="addDate"><i class="el-icon-upload2"></i>上传</el-button>
             </p>
+
+            <el-dialog title="上传" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                       :visible.sync="dialogVisible"
+                       v-loading="dialogLoading"
+                       width="580px" :append-to-body="true">
+              <p style="margin-top: 10px; line-height: 22px;">
+                <span style="margin-right: 12px;">类型：</span>
+                <el-select v-model="addData.fileCategory">
+                  <el-option v-for="(item, index) in documentType[currentTypeId]"
+                             :key="index"
+                             :label="item"
+                             :value="item"></el-option>
+                </el-select>
+              </p>
+              <p style="margin-top: 10px; line-height: 22px;">
+                通用模板：
+              </p>
+              <el-upload
+                class="upload-demo"
+                :action="baseUrl"
+                :data="uploadData"
+                :limit="1"
+                accept=".xls"
+                :before-upload="handleBeforeUpload"
+                :on-success="handleSuccess"
+                :on-remove="handleRemove"
+                :file-list="fileList">
+                <el-button size="small" type="primary">点击上传</el-button>
+              </el-upload>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="closeDialog()">取 消</el-button>
+                <el-button type="primary" @click="confirmAdd()">确 定</el-button>
+              </span>
+            </el-dialog>
+
             <el-table border
                       stripe
                       :data="dataList"
@@ -34,12 +69,12 @@
               <el-table-column
                 label="文档类型"
                 align="center">
-                <template slot-scope="scope">{{ allTypes[scope.row.fileType] }}</template>
+                <template slot-scope="scope">{{ scope.row.category }}</template>
               </el-table-column>
               <el-table-column
                 label="类型"
                 align="center">
-                <template slot-scope="scope">{{ documentType[currentTypeId][scope.row.category] }}</template>
+                <template slot-scope="scope">{{ scope.row.fileCategory }}</template>
               </el-table-column>
               <el-table-column
                 label="时间"
@@ -50,8 +85,8 @@
                 label="操作"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button type="text" @click="download(scope.row.path)">下载</el-button>
-                  <el-button type="text" @click="deleteItem(scope.row.id)" style="color: #f56c6c;">删除</el-button>
+                  <a type="text" :href="`${scope.row.path}?attname=${scope.row.fileName}`">下载</a>
+                  <el-button type="text" @click="deleteItem(scope.row.id)" style="color: #f56c6c; margin-left: 8px;">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -75,7 +110,9 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
-import {getBasicCategory, getBasicList, delBasicFile} from '@/api/organization'
+import {getBasicCategory, getBasicList, delBasicFile, addBasicFile} from '@/api/organization'
+import base from '@/api/baseUrl'
+import {getQiNiuToken} from '@/api/upload'
 
 export default {
   name: 'basicData',
@@ -87,52 +124,38 @@ export default {
       fileTypes: [],
       currentTypeId: '1',
       dataList: [],
-      allTypes: {doc: '文本', img: '图片', video: '视频'},
-      typesA: {A: '国家安全规范', B: '行业安全规范', C: '公司内部安全规范'},
       documentType: {
-        '1': { // 相关制度
-          '1': '规章制度',
-          '2': '责任制度'
-        },
-        '2': { // 说明书、流程图
-          '1': '产品说明书',
-          '2': '操作说明书',
-          '3': '工艺流程图',
-          '4': '业务流程图',
-          '5': '施工流程图',
-          '6': '化工流程图'
-        },
-        '3': { // 规程方案
-          '1': '商业规程方案',
-          '2': '项目规程方案',
-          '3': '总体规程方案',
-          '4': '设计规程方案'
-        },
-        '4': { // 理化性质说明书
-          '1': '原料理化性质说明书',
-          '2': '产品理化性质说明书'
-        },
-        '5': { // 相关事故案例
-          '1': '特别重大事故',
-          '2': '重大事故',
-          '3': '较大事故',
-          '4': '一般事故'
-        },
-        '6': { // 平面图
-          '1': '企业平面图',
-          '2': '生产车间平面图',
-          '3': '办公区域平面图',
-          '4': '生活区域平面图'
-        }
+        '1': ['规章制度', '责任制度'], // 相关制度
+        '2': ['产品说明书', '操作说明书', '工艺流程图', '业务流程图', '施工流程图', '化工流程图'], // 说明书、流程图
+        '3': ['商业规程方案', '项目规程方案', '总体规程方案', '设计规程方案'], // 规程方案,
+        '4': ['原料理化性质说明书', '产品理化性质说明书'], // 理化性质说明书
+        '5': ['特别重大事故', '重大事故', '较大事故', '一般事故'], // 相关事故案例
+        '6': ['企业平面图', '生产车间平面图', '办公区域平面图', '生活区域平面图'] // 平面图
       },
       pageData: {
         pageSize: 10,
         pageNo: 1,
         total: 0
-      }
+      },
+      dialogVisible: false,
+      dialogLoading: false,
+      baseUrl: '',
+      fileAddress: '',
+      uploadData: {
+        token: ''
+      },
+      addData: {
+        fileCategory: '',
+        url: '',
+        fileName: '',
+        size: 0
+      },
+      fileList: []
     }
   },
   created () {
+    this.baseUrl = base.uploadQiniuAdr
+    this.fileAddress = base.fileQiniuAddr
     this.getBasicCategory(true)
   },
   methods: {
@@ -159,7 +182,6 @@ export default {
       return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
     },
     clickMenuItem (name, index) {
-      // console.log(this.fileTypes[index].typeStr)
       let vm = this
       if (vm.currentTypeId !== vm.fileTypes[index].typeStr) {
         // 当不同type，分页信息归零
@@ -211,7 +233,6 @@ export default {
         vm.pageLoading = false
       })
     },
-    download (path) {},
     deleteItem (id) {
       this.$confirm('确定移除选中项?', '删除', {
         confirmButtonText: '确定',
@@ -227,7 +248,7 @@ export default {
               message: '删除成功!'
             })
             this.pageData.pageNo = 1
-            this.getConstructionList()
+            this.getTable()
           }
         })
       }).catch(() => {
@@ -236,6 +257,73 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    addDate () {
+      let vm = this
+      vm.dialogVisible = true
+    },
+    closeDialog () {
+      this.dialogVisible = false
+      this.fileList = []
+    },
+    confirmAdd () {
+      let vm = this
+      if (!vm.addData.fileCategory) {
+        vm.$message({
+          message: '请选择类型',
+          type: 'warning'
+        })
+        return
+      } else if (vm.fileList.length === 0) {
+        vm.$message({
+          message: '文件不能为空',
+          type: 'warning'
+        })
+        return
+      }
+      vm.dialogLoading = true
+      let postData = {
+        basicCategoryId: vm.currentTypeId,
+        fileName: vm.addData.fileName,
+        fileCategory: vm.addData.fileCategory,
+        size: vm.addData.size,
+        path: vm.addData.url
+      }
+      addBasicFile(postData).then(res => {
+        vm.dialogLoading = false
+        if (res.code === 200) {
+          vm.$message({
+            type: 'success',
+            message: '添加成功'
+          })
+          vm.getTable()
+        }
+        vm.fileList = []
+        vm.addData = {
+          fileCategory: '',
+          url: '',
+          fileName: '',
+          size: 0
+        }
+      })
+      vm.dialogVisible = false
+    },
+    handleBeforeUpload (file) {
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    handleSuccess (response, file, fileList) {
+      this.fileList = fileList
+      console.log(this.fileList)
+      this.addData.url = this.fileAddress + fileList[0].response.key
+      this.addData.fileName = file.name
+      this.addData.size = fileList[0].size
+    },
+    handleRemove (file, fileList) {
+      this.addData.url = ''
+      this.addData.fileName = ''
+      this.addData.size = 0
     }
   },
   components: {BreadCrumb}
