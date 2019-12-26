@@ -18,7 +18,7 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" :href="`${base}`"><i class></i>导出</a>
+              <a class="export-btn" :href="`${baseUrl}/riskia/exportRiskUnit?id=${curentId}&attname=风险单元.xls`"><i class></i>导出</a>
             </p>
             <div class="table-box">
               <el-table
@@ -84,10 +84,13 @@ export default {
       breadcrumb: ['风险辨识评估', '风险单元'],
       organizationTree: [],
       tableData: [
-      ]
+      ],
+      baseUrl: '',
+      curentId: ''
     }
   },
   created () {
+    this.baseUrl = base.baseUrl
     this.getRiskTree(true)
   },
   methods: {
@@ -111,6 +114,7 @@ export default {
     },
     getTableData (data) {
       this.pageLoading = true
+      this.curentId = data.riskId
       getRiskUnit(data.riskId).then((res) => {
         if (res.code === 200) {
           this.tableData = res.data

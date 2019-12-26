@@ -8,7 +8,7 @@
         </div>
       </li>
       <li>
-        <div class="btn hard-disk"><i></i>本机硬盘</div>
+        <div class="btn hard-disk" @click="goHardDiskPage()"><i></i>本机硬盘</div>
       </li>
       <li>
         <div class="btn msg-btn" @click="goMorePage()"><i></i>消息
@@ -92,6 +92,10 @@ export default {
       this.$router.push({
         name: 'basic'
       })
+    },
+    // 跳转本机硬盘页面
+    goHardDiskPage () {
+      this.$router.push('hardDisk')
     }
   }
 }

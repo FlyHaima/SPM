@@ -67,6 +67,9 @@ const MessagesDetails = resolve => require.ensure([], () => resolve(messagesDeta
 // 我的待办
 const mineTodo = require('@/components/home/mineTodo.vue')
 const MineTodo = resolve => require.ensure([], () => resolve(mineTodo), 'pagelist')
+// 本机硬盘
+const hardDisk = require('@/components/home/hardDisk.vue')
+const HardDisk = resolve => require.ensure([], () => resolve(hardDisk), 'pagelist')
 // 待办详情页
 const mineTodoDetails = require('@/components/home/mineTodoDetails.vue')
 const MineTodoDetails = resolve => require.ensure([], () => resolve(mineTodoDetails), 'pagelist')
@@ -210,6 +213,16 @@ const routes = [
         },
         parent: 'IndexPage',
         component: MineTodo
+      },
+      {
+        path: '/hardDisk',
+        title: '本机硬盘',
+        name: 'hardDisk',
+        meta: {
+          access: true
+        },
+        parent: 'IndexPage',
+        component: HardDisk
       },
       {
         path: '/mineTodoDetails/:id',

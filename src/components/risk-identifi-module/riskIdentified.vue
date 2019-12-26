@@ -22,7 +22,7 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" @click="openExportDialog"><i class></i>导出</a>
+              <a class="export-btn" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&attname=风险辨识表.xls`"><i class></i>导出</a>
               <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a>
               <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
               <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
@@ -397,11 +397,13 @@ import {
   delDescribe,
   updateDescribe
 } from '@/api/riskia'
+import base from '@/api/baseUrl'
 
 export default {
   name: 'riskIdentified',
   data () {
     return {
+      baseUrl: '',
       currentTreeData: {riskId: '', level: '1', treeLevel: '1'},
       pageLoading: false,
       dialogLoading: false,
@@ -597,6 +599,7 @@ export default {
     }
   },
   created () {
+    this.baseUrl = base.baseUrl
     this.getRiskTree(true)
   },
   methods: {
@@ -1049,16 +1052,6 @@ export default {
     },
     openImportDialog () {
       // 不知道要干啥呢
-    },
-    openExportDialog () {
-      if (this.multipleSelection.length === 0) {
-        this.$message({
-          type: 'info',
-          message: '请至少选中一条'
-        })
-      } else {
-        // 执行下载
-      }
     }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
