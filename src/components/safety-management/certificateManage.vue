@@ -81,7 +81,7 @@
               align="center">
               <template slot-scope="scope">
 <!--                <el-button type="text">编辑</el-button>-->
-                <a :href="scope.row.path">下载</a>
+                <a :href="scope.row.path" style="margin-right: 8px;">下载</a>
                 <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
               </template>
             </el-table-column>

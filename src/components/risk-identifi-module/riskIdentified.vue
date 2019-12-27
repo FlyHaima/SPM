@@ -157,21 +157,21 @@
                           <p class="title">一级单元</p>
                           <p class="input-p">
                             <span class="label">{{stepObjB.levelNameA}}</span>
-                            <el-input size="medium" v-model="stepObjB.levelNumA" @input="changeLevelNum" @change="changeLevelNum"></el-input>
+                            <el-input size="medium" disabled="disabled" v-model="stepObjB.levelNumA" @input="changeLevelNum" @change="changeLevelNum"></el-input>
                           </p>
                         </div>
                         <div class="unit-item">
                           <p class="title">二级子单元</p>
                           <p class="input-p">
                             <span class="label">{{stepObjB.levelNameB}}</span>
-                            <el-input size="medium" v-model="stepObjB.levelNumB" @input="changeLevelNum" @change="changeLevelNum"></el-input>
+                            <el-input size="medium" disabled="disabled" v-model="stepObjB.levelNumB" @input="changeLevelNum" @change="changeLevelNum"></el-input>
                           </p>
                         </div>
                         <div class="unit-item">
                           <p class="title">三级子单元</p>
                           <p class="input-p">
                             <span class="label">{{stepObjB.levelNameC}}</span>
-                            <el-input size="medium" v-model="stepObjB.levelNumC" @input="changeLevelNum" @change="changeLevelNum"></el-input>
+                            <el-input size="medium" disabled="disabled" v-model="stepObjB.levelNumC" @input="changeLevelNum" @change="changeLevelNum"></el-input>
                           </p>
                         </div>
                       </div>
@@ -1152,7 +1152,7 @@ export default {
             .btn-box{
               position: absolute;
               bottom: 0px;
-              right: 0px;
+              right: 10px;
             }
           }
           &.step-2-box{
@@ -1250,6 +1250,7 @@ export default {
             .btn-box{
               margin-top: 18px;
               text-align: right;
+              padding-right: 10px;
               &.isLS{
                 margin-top: 79px;
               }
@@ -1282,7 +1283,7 @@ export default {
             .btn-box{
               position: absolute;
               bottom: 0px;
-              right: 0px;
+              right: 10px;
             }
           }
         }
