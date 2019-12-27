@@ -9,8 +9,47 @@
 
         <div class="container-box">
           <p class="btn-p">
-            <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
+            <el-button size="medium" type="primary" @click="openUpload()">
+              <i class="el-icon-upload2"></i>上传
+            </el-button>
           </p>
+
+          <el-dialog title="上传" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="dialogVisible"
+                     v-loading="dialogLoading"
+                     width="580px" :append-to-body="true">
+            <el-form ref="form" label-width="85px">
+              <el-form-item label="证件名称：">
+                <el-input v-model="addData.fileName"></el-input>
+              </el-form-item>
+              <el-form-item label="证件种类：">
+                <el-select v-model="addData.fileCategory">
+                  <el-option v-for="(item, index) in fileCategory"
+                             :key="index"
+                             :label="item"
+                             :value="item"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="上传证件：">
+                <el-upload
+                  class="upload-demo"
+                  :action="baseUrl"
+                  :data="uploadData"
+                  :limit="1"
+                  accept=".xls"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :on-remove="handleRemove"
+                  :file-list="fileList">
+                  <el-button size="small" type="primary">点击上传</el-button>
+                </el-upload>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="closeDialog()">取 消</el-button>
+              <el-button type="primary" @click="confirmAdd()">确 定</el-button>
+            </span>
+          </el-dialog>
 
           <el-table border
                     stripe
@@ -41,10 +80,9 @@
               label="操作"
               align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="download(scope.row.id)">上传</el-button>
-                <el-button type="text" @click="download(scope.row.id)">编辑</el-button>
-                <el-button type="text" @click="download(scope.row.id)">下载</el-button>
-                <el-button type="text" @click="delete(scope.row.id)">删除</el-button>
+<!--                <el-button type="text">编辑</el-button>-->
+                <a :href="scope.row.path">下载</a>
+                <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -57,7 +95,9 @@
 
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
-import {getDocumentList} from '@/api/organization'
+import {getDocumentList, delDocument, addDocument} from '@/api/organization'
+import base from '@/api/baseUrl'
+import {getQiNiuToken} from '@/api/upload'
 
 export default {
   name: 'certificateManage',
@@ -65,18 +105,27 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['安全基础管理', '证件管理'],
-      dataList: [
-        {
-          name: '企业卫生许可证',
-          type: 'A',
-          time: '2019-10-20T14:39:38.000+0000',
-          url: '****.doc',
-          id: 31231
-        }
-      ]
+      dataList: [],
+      dialogVisible: false,
+      dialogLoading: false,
+      baseUrl: '',
+      fileAddress: '',
+      uploadData: {
+        token: ''
+      },
+      addData: {
+        fileCategory: '',
+        url: '',
+        fileName: '',
+        size: 0
+      },
+      fileList: [],
+      fileCategory: ['通用型', '行业型', '认证型']
     }
   },
   created () {
+    this.baseUrl = base.uploadQiniuAdr
+    this.fileAddress = base.fileQiniuAddr
     this.getTableData()
   },
   methods: {
@@ -112,8 +161,94 @@ export default {
         this.pageLoading = false
       })
     },
-    download (id) {},
-    delete (id) {}
+    openUpload () {
+      this.dialogVisible = true
+    },
+    closeDialog () {
+      this.dialogVisible = false
+      this.fileList = []
+    },
+    confirmAdd () {
+      let vm = this
+      if (!vm.addData.fileCategory) {
+        vm.$message({
+          message: '请选择类型',
+          type: 'warning'
+        })
+        return
+      } else if (vm.fileList.length === 0) {
+        vm.$message({
+          message: '文件不能为空',
+          type: 'warning'
+        })
+        return
+      }
+      vm.dialogLoading = true
+      let postData = {
+        fileName: vm.addData.fileName,
+        fileCategory: vm.addData.fileCategory,
+        size: vm.addData.size,
+        path: vm.addData.url
+      }
+      addDocument(postData).then(res => {
+        vm.dialogLoading = false
+        if (res.code === 200) {
+          vm.$message({
+            type: 'success',
+            message: '添加成功'
+          })
+          vm.getTableData()
+        }
+        vm.fileList = []
+        vm.addData = {
+          fileCategory: '',
+          url: '',
+          fileName: '',
+          size: 0
+        }
+      })
+      vm.dialogVisible = false
+    },
+    handleBeforeUpload (file) {
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    handleSuccess (response, file, fileList) {
+      this.fileList = fileList
+      // console.log(this.fileList)
+      this.addData.url = this.fileAddress + fileList[0].response.key
+      this.addData.size = fileList[0].size
+    },
+    handleRemove (file, fileList) {
+      this.addData.url = ''
+      this.addData.size = 0
+    },
+    deleteItem (d) {
+      console.log(111)
+      this.$confirm('确定移除选中项?', '删除', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.pageLoading = true
+        let data = {id: d.id}
+        delDocument(data).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getTableData()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    }
   },
   components: {BreadCrumb}
 }

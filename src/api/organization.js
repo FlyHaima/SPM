@@ -276,6 +276,24 @@ export function getDocumentList (riskId) {
   })
 }
 
+// 安全基础管理--证件管理--上传
+export function addDocument (data) {
+  const url = `${baseUrl}/document/addDocument`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--证件管理--删除
+export function delDocument (param) {
+  const url = `${baseUrl}/document/delDocument`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 本机硬盘
 export function getDiskFileList (type, pageNo, pageSize) {
   const url = `${baseUrl}/train/getAllFileByType?type=${type}&pageNo=${pageNo}&pageSize=${pageSize}`
