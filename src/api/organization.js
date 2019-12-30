@@ -258,9 +258,45 @@ export function delBasicFile (param) {
   })
 }
 
+// 安全基础管理--基础资料--添加
+export function addBasicFile (data) {
+  const url = `${baseUrl}/basticData/addBasicFile`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 安全基础管理--证件管理--获取证件列表
 export function getDocumentList (riskId) {
   const url = `${baseUrl}/document/getDocumentList?risk_id=${riskId}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--证件管理--上传
+export function addDocument (data) {
+  const url = `${baseUrl}/document/addDocument`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 安全基础管理--证件管理--删除
+export function delDocument (param) {
+  const url = `${baseUrl}/document/delDocument`
+
+  return axios.delete(url, {params: param}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 本机硬盘
+export function getDiskFileList (type, pageNo, pageSize) {
+  const url = `${baseUrl}/train/getAllFileByType?type=${type}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
