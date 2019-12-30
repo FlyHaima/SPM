@@ -11,7 +11,7 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
-        v-loading="tables.loading">
+        v-loading="tablesLoading">
         <el-table-column
           width="50px"
           align="center">
@@ -24,7 +24,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="investType"
           label="排查种类"
           align="center">
         </el-table-column>
@@ -33,14 +33,14 @@
           align="center">
           <template slot-scope="scope">
             <el-select
-              v-model="scope.row.organization"
+              v-model="scope.row.investDept"
               multiple
               placeholder="请选择组织机构">
               <el-option
                 v-for="item in orgOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.invDeptId"
+                :label="item.invDeptName"
+                :value="item.invDeptId">
               </el-option>
             </el-select>
           </template>
@@ -50,7 +50,7 @@
           align="center">
           <template slot-scope="scope">
             <el-select
-              v-model="scope.row.cycle"
+              v-model="scope.row.investCycle"
               multiple
               placeholder="请设置周期">
               <el-option
@@ -77,19 +77,22 @@
       </el-table>
       <div class="el-pagination__wrap text-right">
         <el-pagination
+          class="text-right"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page.index"
           layout="total, prev, pager, next, jumper"
-          :current-page="tables.page.index"
-          :page-sizes="tables.page.sizes"
-          :page-size="tables.form.pageSize"
-          :total="tables.page.total"
-          @current-change="tablesHandleCurrentPage"></el-pagination>
+          :total="page.total">
+        </el-pagination>
       </div>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button
+        v-loading="submitting"
         type="primary"
         size="small"
-        @click="submitForm()">确 定</el-button>
+        @click="submitSortForm()">确 定</el-button>
       <el-button
         size="small"
         @click="show = false">取 消</el-button>
@@ -100,103 +103,140 @@
 <script>
 import qs from 'qs'
 import axios from '@/api/axios'
-import Tables from '@/mixins/Tables'
 export default {
   name: 'dialogSort',
-  mixins: [Tables],
   props: {
     dialogVisible: {
       type: Boolean,
       default: false
+    },
+    planId: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
+      submitting: false,
+      tablesLoading: false,
       show: false,
-      tableData: [
-        {
-          index: 0, // 名称的序号
-          id: '1',
-          name: '日常检查',
-          organization: ['1', '2'],
-          cycle: ['1', '2'],
-          addVisible: 'true'
-        },
-        {
-          index: 0,
-          id: '2',
-          name: '综合检查',
-          organization: ['2'],
-          cycle: ['1', '2'],
-          addVisible: 'true'
-        }
-      ],
-      tables: {
-        api: 'news/getNewsList'
+      type: '基础类排查清单',
+      page: {
+        total: 0, // 总条数
+        index: 1, // 当前页面
+        pageNo: 1,
+        pageSize: 10 // limit
       },
-      orgOptions: [
-        {
-          value: '1',
-          label: '公司'
-        }, {
-          value: '2',
-          label: '集团'
-        }, {
-          value: '3',
-          label: '分厂'
-        }, {
-          value: '4',
-          label: '车间'
-        }, {
-          value: '5',
-          label: '部门'
-        }, {
-          value: '6',
-          label: '班组'
-        }, {
-          value: '7',
-          label: '岗位'
-        }
+      tableData: [
+        // {
+        //   index: 0, // 名称的序号
+        //   id: '1',
+        //   name: '日常检查',
+        //   organization: ['1', '2'],
+        //   cycle: ['1', '2'],
+        //   addVisible: 'true'
+        // }
       ],
-      cycleOptions: [
-        {
-          value: '1',
-          label: '一年'
-        }, {
-          value: '2',
-          label: '半年'
-        }, {
-          value: '3',
-          label: '一季'
-        }, {
-          value: '4',
-          label: '一月'
-        }, {
-          value: '5',
-          label: '一周'
-        }, {
-          value: '6',
-          label: '一天'
-        }
-      ]
+      orgOptions: [], // 组织机构
+      cycleOptions: [] // 周期
     }
   },
   created () {
+    this.fetchOrgOptions()
+    this.fetchCycleOptions()
+    this.fetchSortTableData()
   },
   methods: {
+    // 保存排查种类
+    submitSortForm () {
+      let vm = this
+      let spmInvestType = this.tableData
+      let sendData = {
+        spmInvestType: spmInvestType
+      }
+      this.submitting = true
+      axios
+        .post('investType/saveInvTypePage', sendData)
+        .then((res) => {
+          if (res.data.code === 200) {
+            vm.$notify.success('提交成功')
+            vm.dialogVisible = false
+            vm.fetchSortTableData()
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+          vm.submitting = false
+        })
+    },
+    // 获取排查种类数据
+    fetchSortTableData () {
+      this.tablesLoading = true
+      axios
+        .get('investType/getInvTypePage', {
+          planId: this.planId,
+          type: this.type
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            let formatTableData = res.data.data
+            formatTableData.forEach(item => {
+              // item.addVisible = 'true'
+              if (item.investDept) {
+                item.investDept = JSON.parse(item.investDept)
+              }
+              if (item.investCycle) {
+                item.investCycle = JSON.parse(item.investCycle)
+              }
+            })
+            this.tableData = formatTableData
+          }
+        })
+        .finally(() => {
+          this.tablesLoading = false
+        })
+    },
+    // 获取组织机构options
+    fetchOrgOptions () {
+      axios
+        .get('investType/getInvDeptList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.orgOptions = res.data.data
+          }
+        })
+        .finally(() => {
+        })
+    },
+    // 获取周期设置options
+    fetchCycleOptions () {
+      axios
+        .get('investType/getInvCycleList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.cycleOptions = res.data.data
+          }
+        })
+        .finally(() => {
+        })
+    },
     // 添加talbe行
     addTableRow (index, row, rows) {
-      console.log(index)
-      console.log(row.index)
       let newLineIndex = ++row.index
-      let newLineOrg = row.name + `(${newLineIndex})`
+      let newLineOrg = row.investType + `(${newLineIndex})`
       let newLine = {
         index: newLineIndex,
-        id: row.id + `${newLineIndex}`,
-        name: newLineOrg,
-        organization: [],
-        cycle: [],
-        addVisible: 'false'
+        investTypeid: null,
+        // investTypeid: row.investTypeid + `${newLineIndex}`,
+        investType: newLineOrg,
+        investDept: '',
+        investCycle: '',
+        addVisible: 'false',
+        type: this.type
       }
       rows.splice(index + 1, 0, newLine)
       console.log(rows)
@@ -220,6 +260,16 @@ export default {
         })
         .finally(() => {
         })
+    },
+    // 切换分页数量
+    handleSizeChange (val) {
+      this.fetchSortTableData()
+    },
+    // 切换当前页页数
+    handleCurrentChange (val) {
+      this.page.index = val
+      this.page.pageNo = val
+      this.fetchSortTableData()
     }
   },
   watch: {

@@ -44,7 +44,7 @@
         :data="treeData"
         :props="defaultProps"
         default-expand-all
-        node-key="deptId"
+        node-key="invDeptId"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
@@ -116,7 +116,7 @@ export default {
       filterText: '',
       defaultProps: {
         children: 'children',
-        label: 'deptName'
+        label: 'invDeptName'
       },
       openState: false,
       level: 7,
@@ -142,8 +142,8 @@ export default {
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      console.log('节点deptID：' + data.deptId)
-      this.$emit('handleNodeClick', data.deptId)
+      console.log('节点deptID：' + data.invDeptId)
+      this.$emit('handleNodeClick', data.invDeptId)
     },
     addNode (node, data) {
       if (node.level > this.level) {
@@ -152,14 +152,14 @@ export default {
           type: 'warning'
         })
       } else {
-        this.$emit('openAppendBox', data.deptId)
+        this.$emit('openAppendBox', data.invDeptId)
       }
     },
     edit (node, data) {
-      this.$emit('editTreeData', data.deptId)
+      this.$emit('editTreeData', data.invDeptId)
     },
     remove (node, data) {
-      this.$emit('confirmRemove', data.deptId)
+      this.$emit('confirmRemove', data.invDeptId)
     }
   },
   watch: {

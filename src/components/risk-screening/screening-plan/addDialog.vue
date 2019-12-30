@@ -2,7 +2,7 @@
   <el-dialog
     title="添加"
     :visible.sync="show"
-    width="30%">
+    width="60%">
     <el-form
       :model="form"
       ref="form"

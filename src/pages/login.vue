@@ -36,9 +36,11 @@
                       v-for="(item, index) in newsList"
                       :key="index"
                       class="list-info-item">
-                      <div class="list-info-title">
+                      <a :href="item.url">
+                        <div class="list-info-title">
                         <span class="list-info-txt">{{item.newsName}}</span>
                       </div>
+                      </a>
                       <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                     </li>
                   </ul>
@@ -50,6 +52,7 @@
                     <li
                       v-for="(item, index) in newsList"
                       :key="index"
+                      @click="gotoDetailsHandle(item.url)"
                       class="list-info-item">
                       <div class="list-info-title">
                         <span class="list-info-txt">{{item.newsName}}</span>
@@ -65,6 +68,7 @@
                     <li
                       v-for="(item, index) in newsList"
                       :key="index"
+                      @click="gotoDetailsHandle(item.url)"
                       class="list-info-item">
                       <div class="list-info-title">
                         <span class="list-info-txt">{{item.newsName}}</span>
@@ -80,6 +84,7 @@
                     <li
                       v-for="(item, index) in newsList"
                       :key="index"
+                      @click="gotoDetailsHandle(item.url)"
                       class="list-info-item">
                       <div class="list-info-title">
                         <span class="list-info-txt">{{item.newsName}}</span>
@@ -117,7 +122,8 @@
                 :rules="rules"
                 status-icon
                 ref="form"
-                class="form-login">
+                class="form-login"
+                @submit.native.prevent>
                 <el-form-item prop="accountName">
                   <el-input
                     type="text"
@@ -143,6 +149,7 @@
                   <el-button
                     v-loading="submitting"
                     @click.prevent="submitForm()"
+                    native-type="submit"
                     round>登录</el-button>
                 </el-form-item>
               </el-form>
@@ -233,11 +240,6 @@ export default {
     }
   },
   mounted () {
-    // setInterval(() => {
-    //   if (this.swiperSlides.length < 10) {
-    //     this.swiperSlides.push(this.swiperSlides.length + 1)
-    //   }
-    // }, 3000)
     this.fetchData()
     this.swiper.slideTo(3, 1000, false)
   },
@@ -258,6 +260,10 @@ export default {
     // tab切换事件
     clickTab (item) {
       this.fetchData()
+    },
+    gotoDetailsHandle (url) {
+      console.log(url)
+      window.location.href = url
     },
     // 提交发布消息事件
     submitForm () {
@@ -504,6 +510,10 @@ export default {
   justify-content: space-between;
   padding: 16px 10px 16px 0;
   border-bottom: 1px dashed #dadada;
+  cursor: pointer;
+  a{
+    color: #ffffff;
+  }
 }
 .list-info-title{
 

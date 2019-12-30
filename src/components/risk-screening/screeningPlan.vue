@@ -5,14 +5,22 @@
       </bread-crumb>
     </el-header>
     <el-main class="inner-main-container">
-      <el-tabs @tab-click="tabClickHandle" type="border-card" class="height-100">
-        <el-tab-pane>
+      <el-tabs
+        v-model="type"
+        @tab-click="tabClickHandle"
+        type="border-card"
+        class="height-100">
+        <el-tab-pane label="基础管理类隐患排查清单" name="基础类排查清单">
           <span slot="label">基础管理类隐患排查清单</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
               <tree-list
+                v-if="listMenuData.length > 0"
                 :menu-name="'计划清单'"
                 :list-data = "listMenuData"
+                showEditOrgBtn
+                showAddMenuBtn
+                showOperation
                 @add-menu-handle="addMenuHandle"
                 @eidit-org-handle="eiditOrganizationHandle"
                 @menu-click-handle="menuClickHandle"
@@ -29,7 +37,7 @@
                       type=""
                       size="medium"
                       icon="el-icon-menu"
-                      @click.prevent="handleSort">
+                      @click.prevent="handleSort()">
                       排查种类</el-button>
                   </div>
                   <div class="tools-right">
@@ -89,7 +97,6 @@
                     header-align="center"
                     width="250px">
                     <template slot-scope="scope">
-                      <!-- <i v-show="scope.row" class="el-icon-bottom" title="一键填满"></i> -->
                       <el-select
                         @change="selChange($event, scope.row, tableData)"
                         v-model="scope.row.hz"
@@ -149,7 +156,7 @@
           </el-container>
         </el-tab-pane>
 
-        <el-tab-pane>
+        <el-tab-pane label="生产现场类隐患排查清单" name="现场类排查清单">
           <span slot="label">生产现场类隐患排查清单</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
@@ -177,7 +184,7 @@
                       type=""
                       size="medium"
                       icon="el-icon-menu"
-                      @click.prevent="handleSort">
+                      @click.prevent="handleSort()">
                       排查种类</el-button>
                   </div>
                   <div class="tools-right">
@@ -388,6 +395,7 @@
     ></dialog-add-danger>
     <dialog-sort
       :dialogVisible = "dialogSortVisible"
+      :planId = "currentPlanId"
       @on-dialog-change = "changeSortDialog"
     ></dialog-sort>
   </el-container>
@@ -407,7 +415,6 @@ export default {
   data () {
     return {
       breadcrumb: ['风险辨识评估', '风险划分'],
-      isPushDisabled: 'false',
       pageLoading: false,
       dialogTipsVisible: false, // 添加弹框显示开关
       dialogAddVisible: false, // 添加弹框显示开关
@@ -415,75 +422,37 @@ export default {
       dialogOrganizationVisible: false, // 组织机构弹框显示开关
       dialogSortVisible: false, // 排查种类弹框显示开关
       isOrgTree: true, // 是否是组织结构树
-      checked: false,
       organizationTree: [], // 组织机构
       riskUnitTree: [], // 风险单元机构树
       tableData: [
-        {
-          target: '安全生产目标',
-          content: '对危废品存储区域设立相应的警示标识，危废告知卡、存放标准上墙；',
-          basis: '《非煤矿矿山企业安全生产许可证实施办法》第八条（七）',
-          hz: null, // hzOptions的value
-          isPush: null, // 手动 | 自动
-          isPushDisabled: 'false' // 判断是否禁用推送按钮的标志
-        },
-        {
-          target: '安全生产目标',
-          content: '对危废品存储区域设立相应的警示标识，危废告知卡、存放标准上墙；',
-          basis: '《非煤矿矿山企业安全生产许可证实施办法》第八条（七）',
-          hz: null, // hzOptions的value
-          isPush: null, // 手动 | 自动
-          isPushDisabled: 'false' // 判断是否禁用推送按钮的标志
-        },
-        {
-          target: '安全生产目标',
-          content: '对危废品存储区域设立相应的警示标识，危废告知卡、存放标准上墙；',
-          basis: '《非煤矿矿山企业安全生产许可证实施办法》第八条（七）',
-          hz: null, // hzOptions的value
-          isPush: null, // 手动 | 自动
-          isPushDisabled: 'false' // 判断是否禁用推送按钮的标志
-        }
-      ],
-      listMenuData: [
-        {
-          id: '1',
-          name: '黑龙江阿斯顿建材集团配电室',
-          type: '1'
-        },
-        {
-          id: '2',
-          name: '黑龙江阿斯顿建材集团配电室',
-          type: '2'
-        }
-      ], // 计划清单列表数据
+        // {
+        //   target: '安全生产目标',
+        //   content: '对危废品存储区域设立相应的警示标识，危废告知卡、存放标准上墙；',
+        //   basis: '《非煤矿矿山企业安全生产许可证实施办法》第八条（七）',
+        //   hz: null, // hzOptions的value
+        //   isPush: null, // 手动 | 自动
+        //   isPushDisabled: 'false' // 判断是否禁用推送按钮的标志
+        // }
+      ], // 清单列表数据
+      listMenuData: [], // 计划清单列表数据
+      addListMenuForm: {
+        planName: '',
+        planId: ''
+      }, // 添加清单菜单项的表单
       editOrgData: {
-        deptName: '',
-        deptId: ''
-        // position: '',
-        // responsibility: ''
-      }, // 编辑机构数据
-      hzOptions: [
-        {
-          value: '1',
-          label: '日常性检查，公司，半年',
-          isFill: true // 是否一键填充tag
-        }, {
-          value: '2',
-          label: '综合性检查，公司、组织，半年',
-          isFill: false
-        }, {
-          value: '3',
-          label: '综合性检查，组织，半年',
-          isFill: true
-        }
-      ],
-      isFillSwitch: false,
-      checkList: ['自动推送', '手动推送'],
+        invDeptName: '',
+        invDeptId: ''
+      }, // 编辑机构数据的表单
+      hzOptions: [], // 排查频率选项
+      isFillSwitch: false, // 一键填充功能开关
+      checkList: ['自动推送', '手动推送'], // 筛选复选框的值
       listDate: [
         {
           value: ''
         }
-      ]
+      ],
+      currentPlanId: '', // 当前清单项的id
+      type: '基础类排查清单' // tab切换类型
     }
   },
   components: {
@@ -498,11 +467,41 @@ export default {
   created () {
     this.fetchOrgTreeData()
     this.fetchUnitTreeData()
+    this.fetchListMenuData()
+    this.fetchHzOptions()
+    this.fetchTableData()
   },
   methods: {
+    // 获取排查隐患清单列表
+    fetchTableData () {
+      axios
+        .get('basticHidden/getBasticHiddenList', {
+          planId: this.currentPlanId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tableData = res.data.data
+            console.log(this.tableData)
+          }
+        })
+    },
+    // 获取排查频率
+    fetchHzOptions () {
+      axios
+        .get('investType/getInvTypeList', {
+          planId: this.currentPlanId,
+          type: this.type
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.hzOptions = res.data.data
+            console.log(this.hzOptions)
+          }
+        })
+    },
     // tab切换处理
     tabClickHandle (tab, event) {
-      console.log(tab.index)
+      this.fetchListMenuData()
       if (tab.index === 0) {
         this.isOrgTree = true
       } else {
@@ -514,7 +513,6 @@ export default {
 
     },
     submitForm () {
-      console.log(this.listDate)
     },
     // 编辑机构
     eiditOrganizationHandle () {
@@ -522,14 +520,12 @@ export default {
     },
     // 获取组织机构树数据
     fetchOrgTreeData () {
-      let userId = sessionStorage.getItem('userId')
+      // let userId = sessionStorage.getItem('userId')
       axios
-        .get('dept/getDeptList', {
-          userId: userId
-        })
+        .get('basticHidden/getDeptList')
         .then((res) => {
           if (res.data.code === 200) {
-            this.organizationTree = res.data.data[0]
+            this.organizationTree = res.data.data
           }
         })
     },
@@ -546,16 +542,16 @@ export default {
     // 编辑组织机构树
     editOrgTreeData (fid) {
       let vm = this
-      vm.editOrgData.deptId = fid
+      vm.editOrgData.invDeptId = fid
       vm.$prompt('请修改节点名称', '编辑节点', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         inputPattern: /^.{1,12}$/, // 输入正则
         inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
       }).then(({ value }) => {
-        vm.editOrgData.deptName = value
+        vm.editOrgData.invDeptName = value
         axios
-          .post('dept/updateDept', vm.editOrgData)
+          .post('basticHidden/updateDept', vm.editOrgData)
           .then((res) => {
             if (res.data.code === 200) {
               vm.$notify.success('编辑成功')
@@ -585,9 +581,42 @@ export default {
       //     }
       //   })
     },
+    // 获取清单数据
+    fetchListMenuData () {
+      axios
+        .get('schedule/getScheduleList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.listMenuData = res.data.data
+          }
+        })
+    },
     // 创建清单
     addMenuHandle () {
-      this.openAppendBox()
+      let vm = this
+      // this.openAppendBox()
+      vm.$prompt('请输入清单名称', '添加清单', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^.{1,12}$/, // 输入正则
+        inputErrorMessage: '清单名称不能为空,且不超过12个字' // 正则验证错误提示
+      }).then(({ value }) => {
+        vm.addListMenuForm.planName = value
+        vm.addListMenuForm.planId = vm.currentPlanId
+        axios
+          .post('schedule/addSchedule', vm.addListMenuForm)
+          .then((res) => {
+            if (res.data.code === 200) {
+              vm.$notify.success('添加清单成功')
+              vm.fetchListMenuData()
+            }
+          })
+          .finally(() => {
+          })
+      }).catch(() => {
+        // after cancel
+        vm.pageLoading = false
+      })
     },
     openAppendBox () {
       this.$prompt('请输入清单名称', '添加清单', {
@@ -606,14 +635,57 @@ export default {
     // 点击菜单项
     menuClickHandle (item) {
       console.log(item)
+      this.currentPlanId = item.planId
+      this.fetchTableData()
     },
     // 编辑菜单项
     eidtMenuHandle (item) {
-      // console.log('edit')
+      let vm = this
+      this.addListMenuForm.planId = item.planId
+      // this.openAppendBox()
+      vm.$prompt('请输入修改的清单名称', '编辑清单', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^.{1,12}$/, // 输入正则
+        inputErrorMessage: '清单名称不能为空,且不超过12个字' // 正则验证错误提示
+      }).then(({ value }) => {
+        vm.addListMenuForm.planName = value
+        axios
+          .post('schedule/updateSchedule', vm.addListMenuForm)
+          .then((res) => {
+            if (res.data.code === 200) {
+              vm.$notify.success('修改清单成功')
+              vm.fetchListMenuData()
+            }
+          })
+          .finally(() => {
+          })
+      }).catch(() => {
+        // after cancel
+        vm.pageLoading = false
+      })
     },
     // 删除菜单项
     delMenuHandle (item) {
-      // console.log('del')
+      this.$confirm('是否删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .delete('schedule/delSchedule', {
+            planId: item.planId
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$notify.success('删除成功')
+              this.fetchListMenuData()
+            }
+          })
+          .finally(() => {
+          })
+      }).catch(() => {
+      })
     },
     closeLoading () {
       this.pageLoading = false
@@ -621,7 +693,6 @@ export default {
     // 排查种类
     handleSort () {
       this.dialogSortVisible = true
-      console.log(this.dialogSortVisible)
     },
     // 弹框取消操作改变现实状态
     changeSortDialog (val) {
@@ -669,52 +740,60 @@ export default {
     },
     selChange (value, row, rows) {
       let vm = this
-      // 修改推送方式
+      // 启用推送按钮
       row.isPushDisabled = 'true'
-      if (value === '1') {
-        row.isPush = '自动'
-      } else {
-        row.isPush = '手动'
-      }
+
       // 查找当前对象
       let obj = {}
       obj = vm.hzOptions.find((item) => {
         return item.value === value
       })
-      // 一键填充
-      if (obj.isFill === true) {
+      // 修改推送方式，选项中包含 ’日常性检查‘ 字符开关状态是自动，否则是手动
+      if (obj.label.indexOf('日常性检查') !== -1) {
+        row.isPush = '自动'
+      } else {
+        row.isPush = '手动'
+      }
+      // 一键填充，如果排查频率是1-1-1格式的数据，就可以一键填满，一键填充功能只能在初始时用一次
+      if (obj.fill === true) {
         rows.forEach(item => {
           item.hz = row.hz
-          item.isPush = '自动'
+          item.isPush = row.isPush
           item.isPushDisabled = 'true'
         })
+        // 启用一键填充功能
         vm.isFillSwitch = true
       }
+      // 如果启用了一键填充功能，排查频率下的fill设置false，关闭一键填充功能
       if (vm.isFillSwitch) {
         vm.hzOptions.forEach(item => {
-          item.isFill = false
+          item.fill = false
         })
       }
     },
-    // 自动推送可用状态改变
+    // 复选框的自动推送可用状态改变
     checkAutoChangeHandle (val) {
       this.tableData.forEach(item => {
         if (item.isPush === '自动') {
           if (val === false) {
+            // 禁用推送按钮
             item.isPushDisabled = 'false'
           } else {
+            // 启用推送按钮
             item.isPushDisabled = 'true'
           }
         }
       })
     },
-    // 手用状态可用改变
+    // 复选框的手动状态可用改变
     checkManualChangeHandle (val) {
       this.tableData.forEach(item => {
         if (item.isPush === '手动') {
           if (val === false) {
+            // 禁用推送按钮
             item.isPushDisabled = 'false'
           } else {
+            // 启用推送按钮
             item.isPushDisabled = 'true'
           }
         }
@@ -738,6 +817,11 @@ export default {
       //   this.num.length--
       // }
     }
+  },
+  watch: {
+    // listMenuData: function () {
+    //   this.fetchListMenuData()
+    // }
   }
 }
 </script>
