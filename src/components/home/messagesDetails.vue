@@ -87,7 +87,6 @@ export default {
   methods: {
     // 下载文件
     downLoadFile (item) {
-      console.log(item)
       window.location.href = `${item.filePath}?attname=${item.fileName}`
     },
     // 在线预览word文件

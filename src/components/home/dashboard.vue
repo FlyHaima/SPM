@@ -37,7 +37,9 @@
                   :key = index
                   @click="turnToPage(item.url)"
                   class="entrance-menu-item">
-                  <i class="entrance-menu-icon"></i>
+                  <div class="entrance-menu-icon-wrap">
+                    <i class="entrance-menu-icon"></i>
+                  </div>
                   <div class="entrance-menu-txt">{{item.name}}</div>
                 </div>
               </div>
@@ -410,73 +412,83 @@ export default {
   .entrance-menu-item{
     flex: 0 0 20%;
     text-align: center;
-    margin-bottom: 62px;
+    margin-bottom: 52px;
     font-size: 0;
     cursor: pointer;
     &:nth-child(1){
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu01.png');
+      .entrance-menu-icon-wrap{
+        background-color: #f69b27;
       }
     }
     &:nth-child(2){
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu02.png');
+      .entrance-menu-icon-wrap{
+        background-color: #ef7ead;
       }
     }
     &:nth-child(3){
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu03.png');
+      .entrance-menu-icon-wrap{
+        background-color: #62b7ed;
       }
     }
     &:nth-child(4){
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu04.png');
+      .entrance-menu-icon-wrap{
+        background-color: #7e8be4;
       }
     }
     &:nth-child(5){
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu05.png');
+      .entrance-menu-icon-wrap{
+        background-color: #2aaa91;
       }
     }
     &:nth-child(6){
-      margin-bottom: 0;
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu06.png');
+      .entrance-menu-icon-wrap{
+        background-color: #f69b27;
       }
+      margin-bottom: 0;
     }
     &:nth-child(7){
       margin-bottom: 0;
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu06.png');
+      .entrance-menu-icon-wrap{
+        background-color: #ef7ead;
       }
     }
     &:nth-child(8){
       margin-bottom: 0;
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu06.png');
+      .entrance-menu-icon-wrap{
+        background-color: #62b7ed;
       }
     }
     &:nth-child(9){
       margin-bottom: 0;
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu06.png');
+      .entrance-menu-icon-wrap{
+        background-color: #7e8be4;
       }
     }
     &:nth-child(10){
       margin-bottom: 0;
-      .entrance-menu-icon{
-        background-image: url('../../assets/img/home/icon-menu06.png');
+      .entrance-menu-icon-wrap{
+        background-color: #2aaa91;
       }
     }
   }
   .entrance-menu-icon{
     display: inline-block;
-    width: 56px;
-    height: 57px;
-    background-image: url('../../assets/img/home/icon-menu01.png');
+    width: 28px;
+    height: 25px;
+    background-image: url('../../assets/img/home/icon-menu.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     margin-bottom: 12px;
+  }
+  .entrance-menu-icon-wrap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 57px;
+    margin: 0 auto 10px;
+    background-color: #f69b27;
+    border-radius: 6px;
   }
   .entrance-menu-txt{
     font-size: 15px;

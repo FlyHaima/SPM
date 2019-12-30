@@ -1,3 +1,11 @@
+<!-- 菜单 - 计划清单（右） -->
+<!-- 说明：
+  -- 1、 showOperation ：是否显示计划清单菜单操作栏；
+  -- 2、 showAddMenuBtn ：是否显示创建清单按钮；
+  -- 3、 showEditOrgBtn ：是否显示编辑机构按钮；
+  -- 4、 showSearch ：是否显示search input；
+  -- 5、 menuName ：菜单的标题名称
+ -->
 <template>
   <div class="left-menu">
     <div class="aside-header">
@@ -9,7 +17,7 @@
           </span>
         </div>
         <div
-          v-show="searchVisible"
+          v-show="showSearch"
           class="tree-search">
           <el-input
             size="mini"
@@ -20,12 +28,12 @@
       </div>
       <div class="aside-btns">
         <a
-          v-show="editOrgVisible"
+          v-show="showEditOrgBtn"
           class="aside-btns-item"
           href="javascript:;"
           @click="eiditOrgHandle()">编辑机构</a>
         <a
-          v-show="addMenuVisible"
+          v-show="showAddMenuBtn"
           class="aside-btns-item"
           href="javascript:;"
           @click="addMenuHandle()">创建清单</a>
@@ -39,18 +47,21 @@
         v-else
         v-for="(item, index) in filterData"
         :key="index"
-        :class="{ active : currentTab === item.type }"
+        :class="{ active : currentTab === item.orderNo }"
         class="tree-list-item">
-        <div @click="menuClickHandle(item.id)" class="tree-list-name"> {{item.name}}</div>
-        <div v-if="operationSwitch" class="tree-list-operation">
+        <div
+          @click="menuClickHandle(item.planId)"
+          class="tree-list-name">
+          {{item.planName}}</div>
+        <div v-if="showOperation" class="tree-list-operation">
           <i
             class="el-icon-edit"
             title="修改菜单项"
-            @click="editMenuHandle(item.id)"></i>
+            @click="editMenuHandle(item.planId)"></i>
           <i
             class="el-icon-delete"
             title="删除菜单项"
-            @click="delMenuHandle(item.id)"></i>
+            @click="delMenuHandle(item.planId)"></i>
         </div>
       </li>
     </ul>
@@ -62,40 +73,41 @@
 export default {
   // name: '计划清单',
   props: {
-    searchVisible: {
+    showSearch: {
       type: Boolean,
       default: false
-    },
-    editOrgVisible: {
+    }, // 搜索显示开关
+    showEditOrgBtn: {
       type: Boolean,
       default: false
-    },
-    addMenuVisible: {
+    }, // 编辑组织机构按钮显示开关
+    showAddMenuBtn: {
       type: Boolean,
       default: false
-    },
+    }, // 创建清单按钮显示开关
     menuName: {
       type: String,
       default: ''
-    },
+    }, // 菜单标题
     listData: {
       type: Array,
       default: null
     }, // 计划清单列表数据
-    operationSwitch: {
+    showOperation: {
       type: Boolean,
-      default: true
+      default: false
     } // 计划清单菜单操作栏是否显示开关
   },
   data () {
     return {
-      currentTab: '1',
-      filterText: '',
-      filterData: []
+      currentTab: 1, // 菜单当前项
+      filterText: '', // 搜索关键词
+      filterData: [] // 搜索后的数据
     }
   },
-  created () {
+  mounted () {
     this.filterData = this.listData
+    // console.log(this.listData)
   },
   methods: {
     // 创建清单
@@ -109,24 +121,33 @@ export default {
     // 点击菜单项，切换右侧内容
     menuClickHandle (item) {
       this.$emit('menu-click-handle', {
-        menuId: item
+        planId: item
       })
     },
     // 编辑清单
     editMenuHandle (item) {
-      this.$emit('eidt-menu-handle', {})
+      this.$emit('eidt-menu-handle', {
+        planId: item
+      })
     },
     // 删除清单
     delMenuHandle (item) {
-      this.$emit('del-menu-handle', {})
+      this.$emit('del-menu-handle', {
+        planId: item
+      })
     }
   },
   watch: {
     filterText (val) {
-      console.log(val)
       this.filterData = this.listData.filter(
         data => !val || data.name.toLowerCase().includes(val.toLowerCase())
       )
+    },
+    listData: {
+      immediate: true,
+      handler (val) {
+        this.filterData = val
+      }
     }
   }
 }

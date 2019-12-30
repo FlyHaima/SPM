@@ -140,7 +140,6 @@ export default {
       }
     },
     append (node, data) {
-      console.log(data)
       this.openAppendBox(data)
     },
     openAppendBox (data) {

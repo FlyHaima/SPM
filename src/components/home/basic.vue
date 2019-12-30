@@ -119,7 +119,7 @@
               </div>
             </div>
           </div>
-          <div class="user-account-list-item">
+          <!-- <div class="user-account-list-item">
             <div class="user-account-left">
               <span class="user-account-label">手机绑定</span>
               <span class="user-account-value">
@@ -139,7 +139,7 @@
                 >修改</a>
               </div>
             </div>
-          </div>
+          </div> -->
           <div class="user-account-list-item">
             <div class="user-account-left">
               <span class="user-account-label">注销账号</span>
@@ -149,7 +149,7 @@
             </div>
             <div class="user-account-operation">
               <div class="user-account-operation-item">
-                <a href="javascript:;" class="operation-txt operation-txt-link">注销账号</a>
+                <div @click="logoffHandle()" class="operation-txt operation-txt-link">注销账号</div>
               </div>
             </div>
           </div>
@@ -361,6 +361,27 @@ export default {
     this.passwordForm.userId = this.userInfo.userId
   },
   methods: {
+    // 注销账号
+    logoffHandle () {
+      this.$confirm('是否注销账号？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .delete('user/del', {
+            userId: this.userInfo.userId
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.$notify.success('注销成功！')
+              window.location = '/login'
+            }
+          }).finally(() => {
+          })
+      }).catch(() => {
+      })
+    },
     // 账号状态的class集合
     classObj (data) {
       if (data === '1') {
@@ -600,6 +621,7 @@ export default {
   }
   .operation-txt-link{
     color: $colorPrimary;
+    cursor: pointer;
   }
   .form-tips{
     margin-bottom: 40px;
