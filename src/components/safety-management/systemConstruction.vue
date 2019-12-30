@@ -7,7 +7,7 @@
     <el-main class="inner-main-container">
       <div class="table-container">
         <p class="btn-p">
-          <el-button size="medium" type="primary"><i class="el-icon-upload2"></i>上传</el-button>
+          <el-button size="medium" type="primary" @click="openAdd()"><i class="el-icon-plus" style="margin-right: 6px;"></i>新增</el-button>
         </p>
         <el-table ref="leaderTable"
                  border
@@ -60,7 +60,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="'编辑'"
+    <el-dialog :title="'编辑'" v-loading="editorLoading"
                :visible.sync="showEdit"
                :width="'1290px'" :top="'20px'">
       <div class="edit-box">
@@ -80,13 +80,15 @@
           class="upload-demo"
           :action="baseUrl"
           :data="uploadData"
+          :limit="1"
+          accept=".jpg, .png"
           :before-upload="handleBeforeUpload"
           :on-preview="handlePreview"
           :on-success="handleSuccess"
           :on-remove="handleRemove"
           :file-list="imgList">
           <el-button size="small" type="primary">点击上传</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb，每次只能上传1张图片</div>
         </el-upload>
 
         <div slot="footer" class="dialog-footer" style="margin-top: 40px; text-align: right;">
@@ -101,7 +103,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import base from '@/api/baseUrl'
-import {getConstructionList, editSystemFile, deleteSystemFile, resetSystemFile} from '@/api/organization'
+import {getConstructionList, editSystemFile, deleteSystemFile, resetSystemFile, addConstruction} from '@/api/organization'
 import {getQiNiuToken} from '@/api/upload'
 
 export default {
@@ -114,6 +116,10 @@ export default {
       showPre: false,
       previewDom: '',
       showEdit: false,
+      uploadData: {
+        token: ''
+      },
+      uploadToken: '',
       editorConfig: {
         // 编辑器初始z-index
         zIndex: 3000,
@@ -124,7 +130,8 @@ export default {
         // 初始容器宽度
         initialFrameWidth: '100%',
         // 上传文件接口（这个地址是我为了方便各位体验文件上传功能搭建的临时接口，请勿在生产环境使用！！！）
-        // serverUrl: base.uploadQiniuAdr,
+        serverUrl: `${base.uploadQiniuAdr}`,
+        // serverUrl: 'http://35.201.165.105:8000/controller.php',
         // UEditor 资源文件的存放路径，如果你使用的是 vue-cli 生成的项目，通常不需要设置该选项，vue-ueditor-wrap 会自动处理常见的情况，如果需要特殊配置，参考下方的常见问题2
         UEDITOR_HOME_URL: '/static/UEditor/',
         // 工具栏
@@ -152,9 +159,8 @@ export default {
       baseUrl: '',
       fileAddress: '',
       innerVisible: false,
-      uploadData: {
-        token: ''
-      }
+      editor: null,
+      editorLoading: false
     }
   },
   created () {
@@ -163,6 +169,31 @@ export default {
     this.getConstructionList()
   },
   methods: {
+    openAdd () {
+      let vm = this
+      vm.pageLoading = true
+      this.$prompt('制度名称', '新增', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        // 添加ajax
+        let data = {
+          fileName: value
+        }
+        addConstruction(data).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '添加成功'
+            })
+            vm.getConstructionList(data)
+          }
+          vm.pageLoading = false
+        })
+      }).catch(() => {
+        vm.pageLoading = false
+      })
+    },
     getConstructionList () {
       this.pageLoading = true
       getConstructionList(this.pageData.pageNo, this.pageData.pageSize).then((res) => {
@@ -183,14 +214,18 @@ export default {
       this.previewDom = data.fileData ? data.fileData : ''
     },
     submitEdit () {
-      // this.editId
+      this.editorLoading = true
+
       let data = {
         id: this.editId,
         fileData: this.previewDom
       }
       editSystemFile(data).then((res) => {
         if (res.code === 200) {
+          this.editorLoading = false
+          this.showEdit = false
 
+          this.getConstructionList()
         }
       })
     },
@@ -247,6 +282,9 @@ export default {
     },
     handlePreview () {},
     handleSuccess (response, file, fileList) {
+      // console.log(response)
+      // console.log(file)
+      // console.log(fileList)
       this.imgList = []
       fileList.forEach(item => {
         let fItem = {
@@ -269,28 +307,28 @@ export default {
       })
     },
     handleBeforeUpload (file) {
-      // const isLt1M = file.size / 1024 / 1024 < 1
-      // if (!isLt1M) {
-      //   this.$message.error('上传头像图片大小不能超过 1MB!')
-      //   this.uploading = false
-      // }
       return getQiNiuToken().then((res) => {
         this.uploadData.token = res
       })
     },
     confirmImg () {
+      this.editor.execCommand('add-img-button')
+      this.imgList = []
+      this.innerVisible = false
     },
     addCustomButtom (editorId) {
       let vm = this
       window.UE.registerUI('add-img-button',
         function (editor, uiName) {
-        // debugger
+          // 使用全局作用域editor承接，window注册的editor
+          vm.editor = editor
           // 注册按钮执行时的 command 命令，使用命令默认就会带有回退操作
           editor.registerCommand(uiName, {
             execCommand: function () {
+              console.log('触发editor命令')
               let domHtml = ''
-              this.imgList.forEach(item => {
-                domHtml += '<img src=" + item.path +">'
+              vm.imgList.forEach(item => {
+                domHtml += '<img src="' + item.path + '">'
               })
               editor.execCommand('inserthtml', domHtml)
             }
@@ -298,19 +336,14 @@ export default {
 
           // 创建一个 button
           let btn = new window.UE.ui.Button({
-            // 按钮的名字
-            name: uiName,
-            // 提示
-            title: '添加图片',
-            // 需要添加的额外样式，可指定 icon 图标
-            cssRules: 'height: 20px !important; width: 20px !important; background-image: url(../images/icons.png); background-position: -380px 0px;',
-            // 点击时执行的命令
-            onclick: function () {
-              // 这里可以不用执行命令，做你自己的操作也可
+            name: uiName, // 按钮的名字
+            title: '添加图片', // 提示
+            cssRules: 'height: 20px !important; width: 20px !important; background-image: url(../images/icons.png); background-position: -380px 0px;', // 需要添加的额外样式，可指定 icon 图标
+            onclick: function () { // 点击时执行的命令, 这里可以不用执行命令，做你自己的操作也可
               vm.imgList = []
               vm.innerVisible = true
-              vm.confirmImg()
-              // editor.execCommand(uiName)
+              console.log(uiName)
+              // editor.execCommand('add-img-button')
             }
           })
 
