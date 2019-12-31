@@ -44,8 +44,8 @@
         <div class="body-body">
           <div class="body-header">
             <span class="label">当前位置：</span>
-            <el-select v-model="mapSelection" placeholder="请选择" size="medium">
-              <el-option v-for="(item, index) in listAA" :key="index" label="状态一" value="shanghai"></el-option>
+            <el-select v-model="mapSelection" placeholder="请选择" size="medium" @change="optionChange()">
+              <el-option v-for="(item, index) in listAA" :key="index" :label="item" :value="item"></el-option>
             </el-select>
 
             <i class="el-icon-delete" title="删除"></i>
@@ -88,11 +88,9 @@ export default {
     return {
       breadcrumb: ['风险分级管控', '风险四色图'],
       pageLoading: false,
-      listAA: [],
+      listAA: ['mapA', 'mapB', 'mapC'], // map 选项列表
       mapSelection: '',
-      layers: [
-
-      ], // 新建图层
+      layers: [], // 新建图层
       oldLayers: [
         {
           height: 170,
@@ -497,8 +495,7 @@ export default {
       vm.reshow(vm.x, vm.y)
     },
     mouseup (e) {
-      console.log('mouseup:')
-      console.log(e)
+      console.log('mouseup:', e)
 
       let vm = this
 
@@ -521,7 +518,7 @@ export default {
     },
     openMenu (e) {
       e.preventDefault()
-      console.log(e)
+      console.log('右键：', e)
     },
     leaveCanvas () {
       const c = document.getElementById('myCanvas')
@@ -531,6 +528,9 @@ export default {
     },
     enterCanvas () {
       document.onmouseup = this.mouseup()
+    },
+    optionChange () {
+      console.log('optionChange', this.mapSelection)
     }
   },
   components: {
