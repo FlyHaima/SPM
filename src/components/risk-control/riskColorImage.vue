@@ -44,8 +44,8 @@
         <div class="body-body">
           <div class="body-header">
             <span class="label">当前位置：</span>
-            <el-select v-model="mapSelection" placeholder="请选择" size="medium" @change="optionChange()">
-              <el-option v-for="(item, index) in listAA" :key="index" :label="item" :value="item"></el-option>
+            <el-select v-model="currentMap" placeholder="请选择" size="medium" @change="optionChange()">
+              <el-option v-for="(item, index) in mapLists" :key="index" :label="item" :value="item"></el-option>
             </el-select>
 
             <i class="el-icon-delete" title="删除"></i>
@@ -69,8 +69,20 @@
                     @mouseenter="enterCanvas"
                     @contextmenu="openMenu"
             >
-              Your browser does not support the HTML5 canvas tag.
+              Your browser does not support the HTML5 canvas tag.<br>
+              您所使用浏览器不支持CANVAS标签
             </canvas>
+            <div class="mouse-menu" v-show="showMenu" v-bind:style="`top: ${menuPosition.top}px; left: ${menuPosition.left}px`">
+              <template v-if="bound">
+                <div class="mouse-menu-item">绑定</div>
+                <div class="mouse-menu-item">删除</div>
+              </template>
+              <template v-else>
+                <div class="mouse-menu-item">查看</div>
+                <div class="mouse-menu-item">重新绑定</div>
+                <div class="mouse-menu-item">删除</div>
+              </template>
+            </div>
           </div>
         </div>
         <div class="body-aside"></div>
@@ -88,8 +100,8 @@ export default {
     return {
       breadcrumb: ['风险分级管控', '风险四色图'],
       pageLoading: false,
-      listAA: ['mapA', 'mapB', 'mapC'], // map 选项列表
-      mapSelection: '',
+      mapLists: ['mapA', 'mapB', 'mapC'], // map 选项列表
+      currentMap: '', // 当前所选のmap
       layers: [], // 新建图层
       oldLayers: [
         {
@@ -112,7 +124,7 @@ export default {
       y: 0,
       leftDistance: 0,
       topDistance: 0,
-      op: 0, // op操作类型 0 无操作 1 画矩形框 2 拖动矩形框
+      op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框
       scale: 1,
       type: 0,
       img: {
@@ -124,9 +136,15 @@ export default {
       minHeight: 747,
       maxWidth: 9000,
       maxHeight: 7000,
-      scaleStep: 1.05,
+      scaleStep: 1.5,
       elementWidth: 1180,
-      elementHeight: 747
+      elementHeight: 747,
+      bound: false, // 所点击的元素，是否是已绑定的
+      showMenu: true, // 显示右键菜单
+      menuPosition: {
+        top: 0,
+        left: 0
+      }
     }
   },
   mounted () {
@@ -530,7 +548,9 @@ export default {
       document.onmouseup = this.mouseup()
     },
     optionChange () {
-      console.log('optionChange', this.mapSelection)
+      console.log('optionChange', this.currentMap)
+      // then 获取新mapの画板绘制数据
+      // then 需要重新绘制画板 canvas_init()
     }
   },
   components: {
@@ -625,6 +645,25 @@ export default {
         }
       }
       .body-aside{}
+      .mouse-menu{
+        position: absolute;
+        width: 100px;
+        border: 1px solid #dbdbdb;
+        background: #fff;
+        border-radius: 4px;
+        z-index: 100001;
+        .mouse-menu-item{
+          line-height: 24px;
+          padding: 0 10px;
+          font-size: 16px;
+          border-bottom: 0.5px solid #e9ecee;
+          color: #474747;
+          cursor: pointer;
+          &:hover{
+            background: #e9ecee;
+          }
+        }
+      }
     }
   }
 
