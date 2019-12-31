@@ -140,7 +140,7 @@ export default {
       elementWidth: 1180,
       elementHeight: 747,
       bound: false, // 所点击的元素，是否是已绑定的
-      showMenu: true, // 显示右键菜单
+      showMenu: false, // 显示右键菜单
       menuPosition: {
         top: 0,
         left: 0
@@ -151,7 +151,10 @@ export default {
     this.canvas_init()
   },
   created () {
-
+    document.onclick = function () {
+      console.log('click')
+      this.showMenu = false
+    }
   },
   methods: {
     canvas_init () {
@@ -475,7 +478,7 @@ export default {
       return position
     },
     mousedown (e) {
-      console.log('mousedown:')
+      console.log('mousedown:', e)
 
       let vm = this
       const c = document.getElementById('myCanvas')
@@ -537,6 +540,10 @@ export default {
     openMenu (e) {
       e.preventDefault()
       console.log('右键：', e)
+      this.menuPosition = {
+        top: e.offsetY,
+        left: e.offsetX
+      }
     },
     leaveCanvas () {
       const c = document.getElementById('myCanvas')
@@ -659,6 +666,9 @@ export default {
           border-bottom: 0.5px solid #e9ecee;
           color: #474747;
           cursor: pointer;
+          &:last-child{
+            border-bottom: none;
+          }
           &:hover{
             background: #e9ecee;
           }
