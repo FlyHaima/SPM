@@ -204,6 +204,15 @@ export function getConstructionList (pageNo, pageSize) {
   })
 }
 
+// 安全基础管理--制度建设--新增制度
+export function addConstruction (data) {
+  const url = `${baseUrl}/construction/addConstruction`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 安全基础管理--制度建设--修改制度建设文件
 export function editSystemFile (data) {
   const url = `${baseUrl}/construction/editFile`
