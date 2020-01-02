@@ -115,6 +115,9 @@ const ScreeningReview = resolve => require.ensure([], () => resolve(screeningRev
 // 隐患治理
 const riskManagement = require('@/components/risk-screening/riskManagement.vue')
 const RiskManagement = resolve => require.ensure([], () => resolve(riskManagement), 'pagelist')
+// 治理复核
+const managementReview = require('@/components/risk-screening/managementReview.vue')
+const ManagementReview = resolve => require.ensure([], () => resolve(managementReview), 'pagelist')
 // 治理台账
 const governanceParameter = require('@/components/risk-screening/governanceParameter.vue')
 const GovernanceParameter = resolve => require.ensure([], () => resolve(governanceParameter), 'pagelist')
@@ -372,6 +375,12 @@ const routes = [
         name: 'riskManagement',
         title: '隐患治理',
         component: RiskManagement
+      },
+      {
+        path: '/managementReview',
+        name: 'managementReview',
+        title: '治理复核',
+        component: ManagementReview
       },
       {
         path: '/governanceParameter',

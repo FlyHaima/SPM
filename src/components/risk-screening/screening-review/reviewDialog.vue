@@ -2,64 +2,47 @@
   <el-dialog
     title="复核"
     :visible.sync="show"
-    width="50%">
-    <div class="details-layer">
-      <div class="details-layer-right">
-        <el-card class="box-card">
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">检查名称:</el-col>
-            <el-col :span="9">1</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">检查人员:</el-col>
-            <el-col :span="9">1</el-col>
-            <el-col class="box-item-label" :span="3">检查地点:</el-col>
-            <el-col :span="9">1</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">检查时间:</el-col>
-            <el-col :span="9">1</el-col>
-            <el-col class="box-item-label" :span="3">操作:</el-col>
-            <el-col :span="9">
-              <el-radio-group v-model="radio">
-                <el-radio :label="3">退回</el-radio>
-                <el-radio :label="6">隐患治理</el-radio>
-                <el-radio :label="9">转复核人</el-radio>
-              </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">转发人:</el-col>
-            <el-col :span="9">
-              <el-select v-model="value" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="24">隐患图片:</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col :span="24">
-              <div class="attachment-list">
-                <div
-                  class="attachment-list-item">
-                  <img
-                    class="attachment-img"
-                    src=""
-                    alt="上传的图片" />
-                </div>
-              </div>
-            </el-col>
-          </el-row>
-        </el-card>
+    width="40%">
+    <el-form :model="form" :rules="rules" ref="form" label-width="100px" class="demo-form">
+      <el-form-item label="处理方式" prop="way" >
+        <el-radio-group v-model="form.way" @change="waySelChange">
+          <el-radio label="治理"></el-radio>
+          <el-radio label="回退"></el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <div v-show="showGovernContent">
+        <el-form-item label="隐患类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择隐患类型">
+            <el-option label="一般隐患" value="normal"></el-option>
+            <el-option label="重大隐患" value="majorHazard"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="整改时间" required>
+          <el-col :span="11">
+            <el-form-item prop="date">
+              <el-date-picker
+                v-model="form.date"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="整改意见" prop="opinion">
+          <el-input
+            type="textarea"
+            v-model="form.opinion"
+            maxlength="200"
+            show-word-limit></el-input>
+        </el-form-item>
+        <el-form-item label="治理人员" prop="user">
+          <el-select v-model="form.user" placeholder="请选择治理人员">
+            <el-option label="一般隐患" value="normal"></el-option>
+            <el-option label="重大隐患" value="majorHazard"></el-option>
+          </el-select>
+        </el-form-item>
       </div>
-    </div>
+    </el-form>
 
     <div slot="footer" class="dialog-footer">
       <el-button
@@ -85,29 +68,40 @@ export default {
   data () {
     return {
       show: false,
+      showGovernContent: true, // 治理内容填写开关
       form: {
-        target: '', // 排查目标
-        content: '', // 排查内容和标准
-        basis: '' // 排查依据
+        way: '治理',
+        type: '',
+        date: '',
+        opinion: '',
+        user: ''
       },
-      radio: 3,
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value: ''
+      rules: {
+        way: [
+          { required: true, message: '请选择一种处理方式', trigger: 'change' }
+        ],
+        date: [
+          { type: 'date', required: true, message: '请选择整改时间', trigger: 'change' }
+        ],
+        user: [
+          { required: true, message: '请选择治理人员', trigger: 'change' }
+        ],
+        type: [
+          { required: true, message: '请选择隐患类型', trigger: 'change' }
+        ],
+        opinion: [
+          { required: true, message: '请填写整改意见', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    waySelChange (val) {
+      if (val === '治理') {
+        this.showGovernContent = true
+      } else {
+        this.showGovernContent = false
+      }
     }
   },
   watch: {
@@ -116,6 +110,9 @@ export default {
     },
     show (val) {
       this.$emit('on-dialog-change', val)
+    },
+    submitForm () {
+
     }
   }
 }

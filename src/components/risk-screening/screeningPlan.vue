@@ -1,3 +1,5 @@
+/* eslint-disable vue/no-dupe-keys */
+/* eslint-disable vue/no-dupe-keys */
 <template>
   <el-container class="inner-page-container" v-loading="pageLoading">
     <el-header class="inner-header">
@@ -78,19 +80,19 @@
                     :index="indexMethod">
                   </el-table-column>
                   <el-table-column
-                    prop="target"
+                    prop="investTarget"
                     label="排查目标"
                     align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="content"
+                    prop="investContent"
                     label="排查内容与排查标准"
                     header-align="center">
                   </el-table-column>
                   <el-table-column
-                    prop="basis"
+                    prop="inspectionBasic"
                     label="检查依据"
-                    header-align="center">
+                    align="center">
                   </el-table-column>
                   <el-table-column
                     label="排查频率"
@@ -99,10 +101,10 @@
                     <template slot-scope="scope">
                       <el-select
                         @change="selChange($event, scope.row, tableData)"
-                        v-model="scope.row.hz"
+                        v-model="scope.row.investigation"
                         placeholder="请选择排查频率">
                         <el-option
-                          v-for="item in hzOptions"
+                          v-for="item in investigationOptions"
                           :key="item.value"
                           :label="item.label"
                           :value="item.value"
@@ -119,18 +121,20 @@
                       align="center"
                       width="220px">
                       <template slot="header" slot-scope="scope">
-                        <el-checkbox-group
+                        <el-checkbox v-model="checkedAuto" @change="checkChangeHandle">自动推送</el-checkbox>
+                        <!-- <el-checkbox-group
                           v-model="checkList"
+                          @change="checkChangeHandle"
                           >
-                          <el-checkbox @change="checkAutoChangeHandle" label="自动推送"></el-checkbox>
-                          <el-checkbox @change="checkManualChangeHandle" label="手动推送"></el-checkbox>
-                        </el-checkbox-group>
+                          <el-checkbox label="自动推送"></el-checkbox>
+                          <el-checkbox label="手动推送"></el-checkbox>
+                        </el-checkbox-group> -->
                       </template>
                       <template slot-scope="scope">
                         <el-radio-group
                           @change="checkPushChangeHandle"
-                          :disabled="scope.row.isPushDisabled === 'false'"
-                          v-model="scope.row.isPush"
+                          :disabled="scope.row.isPushDisabled"
+                          v-model="scope.row.autoPush"
                           class="raido-group-custom" >
                           <el-radio-button label="自动"></el-radio-button>
                           <el-radio-button label="手动"></el-radio-button>
@@ -174,12 +178,12 @@
               <div class="container-box">
                 <div class="content-tools">
                   <div class="tools-left">
-                    <el-button
+                    <!-- <el-button
                       type="primary"
                       size="medium"
                       icon="el-icon-plus"
                       @click="handleAddDanger">
-                      随机隐患添加</el-button>
+                      随机隐患添加</el-button> -->
                     <el-button
                       type=""
                       size="medium"
@@ -203,7 +207,7 @@
                   </div>
                 </div>
                 <el-table
-                  :data="tableData"
+                  :data="tableDataProduct"
                   border
                   style="width: 100%"
                   align="center">
@@ -255,11 +259,11 @@
                     <template slot-scope="scope">
                       <!-- <i v-show="scope.row" class="el-icon-bottom" title="一键填满"></i> -->
                       <el-select
-                        @change="selChange($event, scope.row, tableData)"
-                        v-model="scope.row.hz"
+                        @change="selChange($event, scope.row, tableDataProduct)"
+                        v-model="scope.row.investigation"
                         placeholder="请选择排查频率">
                         <el-option
-                          v-for="item in hzOptions"
+                          v-for="item in investigationOptions"
                           :key="item.value"
                           :label="item.label"
                           :value="item.value"
@@ -286,8 +290,8 @@
                       <template slot-scope="scope">
                         <el-radio-group
                           @change="checkPushChangeHandle"
-                          :disabled="scope.row.isPushDisabled === 'false'"
-                          v-model="scope.row.isPush"
+                          :disabled="scope.row.isPushDisabled"
+                          v-model="scope.row.autoPush"
                           class="raido-group-custom" >
                           <el-radio-button label="自动"></el-radio-button>
                           <el-radio-button label="手动"></el-radio-button>
@@ -319,36 +323,38 @@
       :visible.sync="dialogTipsVisible"
       width="30%">
       <div class="dialog-content">
-        <div class="dialog-tips-content">
+        <div class="dialog-tips-content" v-if="sendPlanSwitch">
           <i class="el-icon-circle-check dialog-tips-icon"></i>
-          <div class="dialog-tips-text">清单任务计划发布完成</div>
+          <div class="dialog-tips-text">确定发布清单任务计划么？</div>
         </div>
-        <div class="dialog-tips-content">
-          <i class="el-icon-warning dialog-tips-icon"></i>
-          <div class="dialog-tips-text">当前检查清单中存在手动推送的任务，请为手动推送的隐患任务设置<span class="color-primary">推送时间</span></div>
-        </div>
-        <div
-          v-for="(item,index) in listDate"
-          :key="index"
-          ref="dateColumn"
-          class="data-colum"
-        >
-          <span class="">推送时间{{index + 1}}：</span>
-          <el-date-picker
-            v-model="item.value"
-            type="datetime"
-            placeholder="选择日期时间">
-          </el-date-picker>
-          <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
-          <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
-        </div>
-
+        <template v-else>
+          <div class="dialog-tips-content" >
+            <i class="el-icon-warning dialog-tips-icon"></i>
+            <div class="dialog-tips-text">当前检查清单中存在手动推送的任务，请为手动推送的隐患任务设置<span class="color-primary">推送时间</span></div>
+          </div>
+          <div
+            v-for="(item,index) in listDate"
+            :key="index"
+            ref="dateColumn"
+            class="data-colum"
+          >
+            <span class="data-colum-label">推送时间{{index + 1}}：</span>
+            <el-date-picker
+              v-model="item.value"
+              type="datetime"
+              placeholder="选择日期时间"
+              @change="changeDate">
+            </el-date-picker>
+            <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
+            <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
+          </div>
+        </template>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button
           type="primary"
           size="small"
-          @click="submitForm()">确 定</el-button>
+          @click="savePlanHandle()">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -387,7 +393,9 @@
     </el-dialog>
     <dialog-add
       :dialogVisible = "dialogAddVisible"
+      :planId = "currentPlanId"
       @on-dialog-change = "changeAddDialog"
+      @reload = "fetchTableData"
     ></dialog-add>
     <dialog-add-danger
       :dialogVisible = "dialogAddDangerVisible"
@@ -397,11 +405,12 @@
       :dialogVisible = "dialogSortVisible"
       :planId = "currentPlanId"
       @on-dialog-change = "changeSortDialog"
+      @reload = "fetchInvestigationOptions"
     ></dialog-sort>
   </el-container>
 </template>
 <script>
-import qs from 'qs'
+// import qs from 'qs'
 import BreadCrumb from '@/components/Breadcrumb/Breadcrumb'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import TreeList from '@/components/tree-diagram/treeList'
@@ -424,17 +433,11 @@ export default {
       isOrgTree: true, // 是否是组织结构树
       organizationTree: [], // 组织机构
       riskUnitTree: [], // 风险单元机构树
-      tableData: [
-        // {
-        //   target: '安全生产目标',
-        //   content: '对危废品存储区域设立相应的警示标识，危废告知卡、存放标准上墙；',
-        //   basis: '《非煤矿矿山企业安全生产许可证实施办法》第八条（七）',
-        //   hz: null, // hzOptions的value
-        //   isPush: null, // 手动 | 自动
-        //   isPushDisabled: 'false' // 判断是否禁用推送按钮的标志
-        // }
-      ], // 清单列表数据
+      tableData: [], // 基础类清单列表数据
+      initTableData: [], // 初始化基础类清单列表数据
+      tableDataProduct: [], // 生产类清单列表数据
       listMenuData: [], // 计划清单列表数据
+      currentMenuTab: '', // 计划清单默认选中项
       addListMenuForm: {
         planName: '',
         planId: ''
@@ -443,16 +446,18 @@ export default {
         invDeptName: '',
         invDeptId: ''
       }, // 编辑机构数据的表单
-      hzOptions: [], // 排查频率选项
+      investigationOptions: [], // 排查频率选项
       isFillSwitch: false, // 一键填充功能开关
-      checkList: ['自动推送', '手动推送'], // 筛选复选框的值
+      checkList: [], // 筛选复选框的值
       listDate: [
         {
           value: ''
         }
       ],
       currentPlanId: '', // 当前清单项的id
-      type: '基础类排查清单' // tab切换类型
+      type: '基础类排查清单', // tab切换类型
+      sendPlanSwitch: true, // 计划发布开关
+      checkedAuto: null
     }
   },
   components: {
@@ -464,14 +469,18 @@ export default {
     DialogAdd, // 添加计划弹框
     DialogAddDanger // 添加随机隐患弹框
   },
-  created () {
-    this.fetchOrgTreeData()
-    this.fetchUnitTreeData()
-    this.fetchListMenuData()
-    this.fetchHzOptions()
-    this.fetchTableData()
+  mounted () {
+    this.initPage()
   },
   methods: {
+    // 初始化页面数据
+    initPage () {
+      this.fetchTableData()
+      this.fetchListMenuData()
+      this.fetchOrgTreeData()
+      this.fetchUnitTreeData()
+      // this.fetchInvestigationOptions()
+    },
     // 获取排查隐患清单列表
     fetchTableData () {
       axios
@@ -480,13 +489,44 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.tableData = res.data.data
-            console.log(this.tableData)
+            this.initTableData = res.data.data
+            this.initTableData.forEach(item => {
+              if (item.autoPush === null) {
+                item.isPushDisabled = true
+              } else {
+                item.isPushDisabled = false
+                this.checkedAuto = true
+              }
+            })
+            console.log(this.initTableData)
+            this.tableData = this.initTableData
+          }
+        })
+    },
+    // 获取生产现场类隐患排查清单
+    fetchTableDataProduct () {
+      axios
+        .get('productHidden/getProductHiddenList', {
+          risk_id: this.currentPlanId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tableDataProduct = res.data.data
+            // this.initTableData.forEach(item => {
+            //   if (item.autoPush === null) {
+            //     item.isPushDisabled = true
+            //   } else {
+            //     item.isPushDisabled = false
+            //     this.checkedAuto = true
+            //   }
+            // })
+            // console.log(this.initTableData)
+            // this.tableData = this.initTableData
           }
         })
     },
     // 获取排查频率
-    fetchHzOptions () {
+    fetchInvestigationOptions () {
       axios
         .get('investType/getInvTypeList', {
           planId: this.currentPlanId,
@@ -494,8 +534,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.hzOptions = res.data.data
-            console.log(this.hzOptions)
+            this.investigationOptions = res.data.data
           }
         })
     },
@@ -509,8 +548,9 @@ export default {
       }
     },
     // 树节点，点击功能
-    treeClickHandle () {
-
+    treeClickHandle (item) {
+      this.currentPlanId = item.riskId
+      this.fetchTableDataProduct()
     },
     submitForm () {
     },
@@ -588,6 +628,9 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
+            this.currentPlanId = this.listMenuData[0].planId
+            this.fetchInvestigationOptions()
+            this.fetchTableData()
           }
         })
     },
@@ -706,7 +749,53 @@ export default {
     },
     // 计划发布
     handleSendMsg () {
-      this.dialogTipsVisible = true
+      let vm = this
+      vm.dialogTipsVisible = true
+      vm.tableData.forEach(item => {
+        if (item.autoPush === '手动') {
+          vm.sendPlanSwitch = false
+        } else {
+          // vm.sendPlanSwitch = false
+        }
+      })
+    },
+    filterListDate (data) {
+      let newListDate = []
+      data.forEach(item => {
+        newListDate.push(item.value)
+      })
+      return newListDate
+    },
+    savePlanHandle () {
+      let vm = this
+      vm.listDate = vm.filterListDate(vm.listDate)
+      let sendData = {
+        // spmBasicHiddenList: vm.tableData,
+        // checkTime: vm.listDate
+        list: [{
+          spmBasicHiddenList: vm.tableData,
+          checkTime: vm.listDate
+        }]
+      }
+      vm.submitting = true
+      axios
+        .post('basticHidden/planRelease', sendData)
+        .then((res) => {
+          if (res.data.code === 200) {
+            vm.$notify.success('清单任务计划发布完成')
+            vm.dialogTipsVisible = false
+            vm.fetchSortTableData()
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+          vm.submitting = false
+          vm.dialogTipsVisible = false
+        })
     },
     // 添加计划数据项
     handleAdd () {
@@ -718,15 +807,16 @@ export default {
     },
     // 删除事件
     delRowHandle (row) {
+      console.log(row)
       let sendData = {
-        id: row.id
+        id: row.basicId
       }
       axios
-        .post('news/delNews', qs.stringify(sendData))
+        .delete('basticHidden/delBasicHidden', sendData)
         .then((res) => {
           if (res.data.code === 200) {
             this.$notify.success('删除成功')
-            this.tablesFetchList()
+            this.fetchTableData()
           }
         })
         .finally(() => {
@@ -738,63 +828,85 @@ export default {
     indexMethod (index) {
       return index + 1
     },
+    // 选择排查频率
     selChange (value, row, rows) {
       let vm = this
+      console.log(rows)
       // 启用推送按钮
-      row.isPushDisabled = 'true'
+      // row.isPushDisabled = 'true'
 
       // 查找当前对象
       let obj = {}
-      obj = vm.hzOptions.find((item) => {
+      obj = vm.investigationOptions.find((item) => {
         return item.value === value
       })
       // 修改推送方式，选项中包含 ’日常性检查‘ 字符开关状态是自动，否则是手动
       if (obj.label.indexOf('日常性检查') !== -1) {
-        row.isPush = '自动'
+        row.autoPush = '自动'
       } else {
-        row.isPush = '手动'
+        row.autoPush = '手动'
       }
       // 一键填充，如果排查频率是1-1-1格式的数据，就可以一键填满，一键填充功能只能在初始时用一次
       if (obj.fill === true) {
         rows.forEach(item => {
-          item.hz = row.hz
-          item.isPush = row.isPush
-          item.isPushDisabled = 'true'
+          item.investigation = row.investigation
+          item.autoPush = row.autoPush
+          // item.isPushDisabled = 'true'
         })
         // 启用一键填充功能
         vm.isFillSwitch = true
       }
       // 如果启用了一键填充功能，排查频率下的fill设置false，关闭一键填充功能
       if (vm.isFillSwitch) {
-        vm.hzOptions.forEach(item => {
+        vm.investigationOptions.forEach(item => {
           item.fill = false
         })
       }
     },
-    // 复选框的自动推送可用状态改变
-    checkAutoChangeHandle (val) {
-      this.tableData.forEach(item => {
-        if (item.isPush === '自动') {
-          if (val === false) {
-            // 禁用推送按钮
-            item.isPushDisabled = 'false'
+    // 复选框的推送可用状态改变
+    checkChangeHandle (val) {
+      let vm = this
+      console.log(val)
+      vm.tableData.forEach(item => {
+        if (item.autoPush === '自动') {
+          if (val) {
+            item.isPushDisabled = true
           } else {
-            // 启用推送按钮
-            item.isPushDisabled = 'true'
+            item.isPushDisabled = false
           }
         }
       })
+      console.log(this.tableData)
+    },
+    // 复选框的自动推送可用状态改变
+    checkAutoChangeHandle (val) {
+      console.log(val)
+      console.log(this.tableData)
+      this.tableData.forEach(item => {
+        if (item.autoPush === '自动') {
+          if (val === false) {
+            // 禁用推送按钮
+            item.isPushDisabled = true
+          } else {
+            // 启用推送按钮
+            item.isPushDisabled = false
+          }
+        }
+      })
+      console.log(this.tableData)
     },
     // 复选框的手动状态可用改变
     checkManualChangeHandle (val) {
+      console.log(val)
+      console.log(this.tableData)
       this.tableData.forEach(item => {
-        if (item.isPush === '手动') {
+        if (item.autoPush === '手动') {
           if (val === false) {
             // 禁用推送按钮
-            item.isPushDisabled = 'false'
+            item.isPushDisabled = false
           } else {
             // 启用推送按钮
-            item.isPushDisabled = 'true'
+            item.isPushDisabled = true
           }
         }
       })
@@ -802,8 +914,17 @@ export default {
     checkPushChangeHandle () {
 
     },
+    changeDate (val) {
+      console.log(val)
+      this.listDate.forEach(item => {
+
+      })
+    },
     addDateHandle () {
-      this.listDate.push({})
+      console.log(this.listDate)
+      this.listDate.push({
+        value: ''
+      })
       // this.num.length++
       // alert('c')
       // console.log(this.$refs)
@@ -811,16 +932,47 @@ export default {
     },
     delDateHandle () {
       if (this.listDate.length > 1) {
-        this.listDate.pop({})
+        this.listDate.pop()
       }
       // if (this.num.length > 1) {
       //   this.num.length--
       // }
     }
   },
+  computed: {
+    // checkedAuto: {
+    //   get: function () {
+    //     // this.tableData.forEach(item => {
+    //     //   if (item.autoPush === '自动' && item.isPushDisabled === true) {
+    //     //     return true
+    //     //   } else {
+    //     //     return false
+    //     //   }
+    //     // })
+    //     return ''
+    //   },
+    //   set: function (value) {
+    //     this.tableData.forEach(item => {
+    //       if (item.autoPush === '自动' && value === true) {
+    //         item.isPushDisabled = true
+    //       } else {
+    //         item.isPushDisabled = false
+    //       }
+    //     })
+    //     // return value
+    //   }
+    // }
+  },
   watch: {
-    // listMenuData: function () {
-    //   this.fetchListMenuData()
+    // checkedAuto: function (val) {
+    //   this.checkChangeHandle(val)
+    // }
+    // initTableData: {
+    //   immediate: true,
+    //   handler (val) {
+    //     console.log(val)
+    //     this.tableData = val
+    //   }
     // }
   }
 }
@@ -918,6 +1070,10 @@ export default {
   +.data-colum{
     margin-top: 15px;
   }
+  .data-colum-label{
+    display: inline-block;
+    width:  85px;
+  }
   .button-add-time{
     display: inline-block;
     font-size: 24px;
@@ -928,7 +1084,7 @@ export default {
     }
   }
   >>> .el-date-editor{
-    width: 320px;
+    width: 290px;
     .el-input__inner{
       height: 30px;
       line-height: 30px;

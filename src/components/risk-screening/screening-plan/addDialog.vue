@@ -2,7 +2,7 @@
   <el-dialog
     title="添加"
     :visible.sync="show"
-    width="60%">
+    width="40%">
     <el-form
       :model="form"
       ref="form"
@@ -11,17 +11,17 @@
       label-position="top"
     >
       <el-form-item label="排查目标">
-        <el-input v-model="form.target"></el-input>
+        <el-input v-model="form.investTarget"></el-input>
       </el-form-item>
       <el-form-item label="排查内容与排查标注">
         <el-input
           type="textarea"
-          v-model="form.content"></el-input>
+          v-model="form.investContent"></el-input>
       </el-form-item>
       <el-form-item label="排查依据">
         <el-input
           type="textarea"
-          v-model="form.basis"
+          v-model="form.inspectionBasic"
           maxlength="30"
           show-word-limit></el-input>
       </el-form-item>
@@ -39,22 +39,60 @@
 </template>
 
 <script>
+import axios from '@/api/axios'
 export default {
   name: '',
   props: {
     dialogVisible: {
       type: Boolean,
       default: false
+    },
+    planId: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
+      submitting: false,
       show: false,
       form: {
-        target: '', // 排查目标
-        content: '', // 排查内容和标准
-        basis: '' // 排查依据
+        investTarget: '', // 排查目标
+        investContent: '', // 排查内容和标准
+        inspectionBasic: '', // 排查依据
+        planId: '' // 当前清单Id
       }
+    }
+  },
+  methods: {
+    submitForm () {
+      let vm = this
+      this.form.planId = this.planId
+      vm.$refs.form.validate((valid) => {
+        if (valid) {
+          vm.show = true
+          axios
+            .post('basticHidden/addBasticHidden', vm.form)
+            .then((res) => {
+              vm.submitting = true
+              if (res.data.code === 200) {
+                vm.$notify.success('添加计划成功')
+                this.$emit('reload')
+                vm.show = false
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+            .finally(() => {
+              vm.submitting = false
+            })
+        } else {
+          return false
+        }
+      })
     }
   },
   watch: {
