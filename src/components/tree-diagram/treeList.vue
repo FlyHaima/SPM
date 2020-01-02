@@ -47,10 +47,10 @@
         v-else
         v-for="(item, index) in filterData"
         :key="index"
-        :class="{ active : currentTab === item.orderNo }"
+        :class="{ active : currentTab === item.planId }"
+        @click="menuClickHandle(item.planId)"
         class="tree-list-item">
         <div
-          @click="menuClickHandle(item.planId)"
           class="tree-list-name">
           {{item.planName}}</div>
         <div v-if="showOperation" class="tree-list-operation">
@@ -100,14 +100,13 @@ export default {
   },
   data () {
     return {
-      currentTab: 1, // 菜单当前项
+      currentTab: this.listData[0].planId, // 菜单当前项, 默认数据的第一项
       filterText: '', // 搜索关键词
       filterData: [] // 搜索后的数据
     }
   },
   mounted () {
     this.filterData = this.listData
-    // console.log(this.listData)
   },
   methods: {
     // 创建清单
@@ -120,6 +119,7 @@ export default {
     },
     // 点击菜单项，切换右侧内容
     menuClickHandle (item) {
+      this.currentTab = item
       this.$emit('menu-click-handle', {
         planId: item
       })

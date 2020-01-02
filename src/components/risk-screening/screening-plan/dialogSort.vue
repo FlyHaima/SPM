@@ -150,18 +150,19 @@ export default {
     // 保存排查种类
     submitSortForm () {
       let vm = this
-      let spmInvestType = this.tableData
       let sendData = {
-        spmInvestType: spmInvestType
+        spmInvestType: vm.tableData
       }
       this.submitting = true
       axios
         .post('investType/saveInvTypePage', sendData)
         .then((res) => {
           if (res.data.code === 200) {
-            vm.$notify.success('提交成功')
-            vm.dialogVisible = false
-            vm.fetchSortTableData()
+            vm.$notify.success('排查种类更新成功')
+            // 刷新数据
+            this.$emit('reload')
+            vm.show = false
+            // vm.fetchSortTableData()
           } else {
             vm.$message({
               message: res.data.message,
@@ -171,6 +172,7 @@ export default {
         })
         .finally(() => {
           vm.submitting = false
+          vm.show = false
         })
     },
     // 获取排查种类数据
