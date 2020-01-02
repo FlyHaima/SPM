@@ -48,9 +48,9 @@
               <el-option v-for="(item, index) in mapLists" :key="index" :label="item" :value="item"></el-option>
             </el-select>
 
-            <i class="el-icon-delete" title="删除"></i>
-            <i class="el-icon-upload2" title="上传新图片"></i>
-            <i class="el-icon-plus" title="添加位置"></i>
+            <i class="el-icon-delete" title="删除" @click="deleteMap()"></i>
+            <i class="el-icon-upload2" title="上传新图片" @click="uploadNewMap()"></i>
+            <i class="el-icon-plus" title="添加位置" @click="addMap()"></i>
           </div>
           <div class="canvas-box">
             <div style="display:none;">
@@ -72,6 +72,7 @@
               Your browser does not support the HTML5 canvas tag.<br>
               您所使用浏览器不支持CANVAS标签
             </canvas>
+
             <div class="mouse-menu" v-show="showMenu" v-bind:style="`top: ${menuPosition.top}px; left: ${menuPosition.left}px`">
               <template v-if="bound">
                 <div class="mouse-menu-item">绑定</div>
@@ -151,9 +152,10 @@ export default {
     this.canvas_init()
   },
   created () {
+    let vm = this
     document.onclick = function () {
-      console.log('click')
-      this.showMenu = false
+      // console.log('click document')
+      vm.showMenu = false // 关闭自定义右键menu
     }
   },
   methods: {
@@ -478,8 +480,12 @@ export default {
       return position
     },
     mousedown (e) {
-      console.log('mousedown:', e)
-
+      if (e.button === 0) {
+        console.log('mousedown: mousedown')
+      } else {
+        console.log('mousedown: menu')
+        return
+      }
       let vm = this
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
@@ -544,6 +550,7 @@ export default {
         top: e.offsetY,
         left: e.offsetX
       }
+      this.showMenu = true
     },
     leaveCanvas () {
       const c = document.getElementById('myCanvas')
@@ -558,7 +565,35 @@ export default {
       console.log('optionChange', this.currentMap)
       // then 获取新mapの画板绘制数据
       // then 需要重新绘制画板 canvas_init()
-    }
+    },
+    addMap () {
+      let vm = this
+      vm.pageLoading = true
+      vm.$prompt('请输入位置名称', '添加位置', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        // let postData = {
+        //   riskName: value,
+        //   pId: data.pId
+        // }
+        // addRiskTree(postData).then(res => {
+        //   if (res.code === 200) {
+        //     vm.$message({
+        //       type: 'success',
+        //       message: '节点设置成功'
+        //     })
+        //     vm.getRiskTree()
+        //   }
+        //   vm.pageLoading = false
+        // })
+      }).catch(() => {
+        // after cancel
+        vm.pageLoading = false
+      })
+    },
+    uploadNewMap () {},
+    deleteMap () {}
   },
   components: {
     TreeDiagram,
