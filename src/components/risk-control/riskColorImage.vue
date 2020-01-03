@@ -79,14 +79,100 @@
                 <div class="mouse-menu-item">删除</div>
               </template>
               <template v-else>
-                <div class="mouse-menu-item">查看</div>
-                <div class="mouse-menu-item">重新绑定</div>
+                <div class="mouse-menu-item" @click="checkItem()">查看</div>
+                <div class="mouse-menu-item" @click="rebind()">重新绑定</div>
                 <div class="mouse-menu-item">删除</div>
               </template>
             </div>
           </div>
+
+          <!-- 绑定节点 -->
+          <el-dialog title="绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="bindVisible"
+                     v-loading="bindLoading"
+                     width="480px" :append-to-body="true">
+            <el-form label-width="120px">
+              <el-form-item label="区块名称：">
+                <el-select v-model="bindSelection"  placeholder="请选择" size="medium">
+                  <el-option
+                    v-for="item in bindOptions"
+                    :key="item"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="bindVisible = false">取 消</el-button>
+              <el-button type="primary" @click="confirmBind()">确 定</el-button>
+            </span>
+          </el-dialog>
+
+          <!-- 重新绑定节点 -->
+          <el-dialog title="重新绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="rebindVisible"
+                     v-loading="rebindLoading"
+                     width="480px" :append-to-body="true">
+            <el-form label-width="120px">
+              <el-form-item label="区块名称：">
+                <el-select v-model="rebindSelection"  placeholder="请选择" size="medium">
+                  <el-option
+                    v-for="item in bindOptions"
+                    :key="item"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="rebindVisible = false">取 消</el-button>
+              <el-button type="primary" @click="confirmReBind()">确 定</el-button>
+            </span>
+          </el-dialog>
+
+          <!-- 查看的侧边展示栏 -->
+          <div class="slide-temp" :class="slideOpen ? 'active' : ''">
+            <p
+              style="line-height: 30px; font-size: 24px; margin-bottom: 8px;"><i class="el-icon-circle-close" @click="slideOpen = false"></i>
+            </p>
+            <el-table ref="slideTable"
+                      border
+                      stripe
+                      :data="slideTable"
+                      tooltip-effect="dark"
+                      style="width: 100%">
+              <el-table-column
+                label="风险点名称"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.name }}</template>
+              </el-table-column>
+              <el-table-column
+                label="风险等级"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.level }}</template>
+              </el-table-column>
+              <el-table-column
+                label="主要危害因素"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.reason }}</template>
+              </el-table-column>
+              <el-table-column
+                label="管控措施"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.measures }}</template>
+              </el-table-column>
+              <el-table-column
+                label="风险点详情"
+                align="center">
+                <template slot-scope="scope">
+                  <el-button type="text" @click="checkOutDetail(scope.row.id)">详情</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
-        <div class="body-aside"></div>
       </div>
     </el-main>
   </el-container>
@@ -145,7 +231,21 @@ export default {
       menuPosition: {
         top: 0,
         left: 0
-      }
+      },
+      slideOpen: false, // 右侧滑出部分
+      slideTable: [
+        {name: '加油站A', level: '2', reason: '测试原因A', measures: '措施', id: '3717'},
+        {name: '加油站B', level: '2', reason: '测试原因A', measures: '措施', id: '3717'},
+        {name: '加油站C', level: '2', reason: '测试原因A', measures: '措施', id: '3717'}
+      ],
+      bindVisible: false,
+      bindLoading: false,
+      bindOptions: ['A', 'B', 'C'],
+      bindSelection: '', // 绑定的选项
+      rebindVisible: false,
+      rebindLoading: false,
+      rebindOptions: ['A', 'B', 'C'],
+      rebindSelection: '' // 重新绑定的选项
     }
   },
   mounted () {
@@ -156,6 +256,7 @@ export default {
     document.onclick = function () {
       // console.log('click document')
       vm.showMenu = false // 关闭自定义右键menu
+      // vm.slideOpen = false // 关闭
     }
   },
   methods: {
@@ -592,8 +693,19 @@ export default {
         vm.pageLoading = false
       })
     },
+    checkItem () {
+      let vm = this
+      vm.slideOpen = true
+    },
+    rebind () {
+      let vm = this
+      vm.rebindVisible = true
+    },
     uploadNewMap () {},
-    deleteMap () {}
+    deleteMap () {},
+    checkOutDetail () {}, // 点击查看详情
+    confirmBind () {}, // 提交绑定区域
+    confirmReBind () {} // 提交重新绑定
   },
   components: {
     TreeDiagram,
@@ -684,9 +796,24 @@ export default {
           width: 100%;
           height: 100%;
           background: #fff;
+          overflow: auto;
+        }
+        .slide-temp{
+          position: absolute;
+          top: 0;
+          right: -505px;
+          width: 500px;
+          border: 1px solid #ddd;
+          height: 100%;
+          background: #fff;
+          padding: 20px;
+          box-shadow: -1px 2px 5px #c0c4cc;
+          transition: all 0.3s ease-in;
+          &.active{
+            right: 0;
+          }
         }
       }
-      .body-aside{}
       .mouse-menu{
         position: absolute;
         width: 100px;
