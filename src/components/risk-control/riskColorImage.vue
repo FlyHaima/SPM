@@ -70,7 +70,7 @@
                     @contextmenu="openMenu"
             >
               Your browser does not support the HTML5 canvas tag.<br>
-              您所使用浏览器不支持CANVAS标签
+              您所使用浏览器不支持CANVAS标签，请使用Chrome浏览器、火狐浏览器或IE11版本以上的浏览器
             </canvas>
 
             <div class="mouse-menu" v-show="showMenu" v-bind:style="`top: ${menuPosition.top}px; left: ${menuPosition.left}px`">
@@ -254,14 +254,12 @@ export default {
   created () {
     let vm = this
     document.onclick = function () {
-      // console.log('click document')
       vm.showMenu = false // 关闭自定义右键menu
-      // vm.slideOpen = false // 关闭
     }
   },
   methods: {
     canvas_init () {
-      this.showOld()
+      this.showOld() // 初始化的时候，先把旧有数据加载遍
     },
     // 获取图片的原始尺寸
     checkImgSize (imgUrl) {
@@ -325,7 +323,7 @@ export default {
       vm.showOld()
       vm.reshow()
     },
-    saveChange () {},
+    saveChange () {}, // 保存修改
     resizeLeft (rect) {
       let vm = this
       const c = document.getElementById('myCanvas')
@@ -462,7 +460,7 @@ export default {
         vm.currentR.width = vm.currentR.x2 - vm.currentR.x1
       }
     },
-    drawImage () {
+    drawImage () { // 后期需要把后台传过来的图片宽高作为参数使用，前台读取图片的宽高有onload的顺序问题
       const canvas = document.getElementById('myCanvas')
       const ctx = canvas.getContext('2d')
 
@@ -476,7 +474,7 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
-      // debugger
+
       vm.oldLayers.forEach(item => {
         ctx.beginPath()
         ctx.rect(item.x1, item.y1, item.width, item.height)
@@ -624,7 +622,6 @@ export default {
     },
     mouseup (e) {
       console.log('mouseup:', e)
-
       let vm = this
 
       if (vm.op === 1) {
