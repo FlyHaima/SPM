@@ -74,14 +74,14 @@
             </canvas>
 
             <div class="mouse-menu" v-show="showMenu" v-bind:style="`top: ${menuPosition.top}px; left: ${menuPosition.left}px`">
-              <template v-if="bound">
-                <div class="mouse-menu-item">绑定</div>
-                <div class="mouse-menu-item">删除</div>
+              <template v-if="!bound">
+                <div class="mouse-menu-item" @click="bind()">绑定</div>
+                <div class="mouse-menu-item" @click="deleteItem()">删除</div>
               </template>
               <template v-else>
                 <div class="mouse-menu-item" @click="checkItem()">查看</div>
                 <div class="mouse-menu-item" @click="rebind()">重新绑定</div>
-                <div class="mouse-menu-item">删除</div>
+                <div class="mouse-menu-item" @click="deleteItem()">删除</div>
               </template>
             </div>
           </div>
@@ -487,7 +487,7 @@ export default {
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
     },
-    // 绘制图形（擦除后重绘or第一遍加载时绘制）
+    // 绘制图形（擦除后重绘 or 第一遍加载时绘制）
     reshow (x, y) {
       let vm = this
       let allNotIn = 1
@@ -546,13 +546,23 @@ export default {
         vm.currentR.y1 += vm.y - vm.topDistance - vm.currentR.y1
       }
     },
-    // 确定是否是在绘制的矩形中
+    // 确定是否是在绘制的矩形中 (匹配 layers)
     isPointInRect (x, y) {
       let vm = this
       let len = vm.layers.length
       for (let i = 0; i < len; i++) {
         if (vm.layers[i].x1 < x && x < vm.layers[i].x2 && vm.layers[i].y1 < y && y < vm.layers[i].y2) {
           return vm.layers[i]
+        }
+      }
+    },
+    // 匹配是否是在原有的矩形中 (匹配 oldLayers)
+    isPointInOld (x, y) {
+      let vm = this
+      let len = vm.oldLayers.length
+      for (let i = 0; i < len; i++) {
+        if (vm.oldLayers[i].x1 < x && x < vm.oldLayers[i].x2 && vm.oldLayers[i].y1 < y && y < vm.oldLayers[i].y2) {
+          return vm.oldLayers[i]
         }
       }
     },
@@ -621,7 +631,7 @@ export default {
       vm.reshow(vm.x, vm.y)
     },
     mouseup (e) {
-      console.log('mouseup:', e)
+      // console.log('mouseup:', e)
       let vm = this
 
       if (vm.op === 1) {
@@ -642,8 +652,34 @@ export default {
       vm.op = 0
     },
     openMenu (e) {
-      e.preventDefault()
       console.log('右键：', e)
+      let vm = this
+
+      debugger
+      vm.startx = e.layerX / vm.scale
+      vm.starty = e.layerY / vm.scale
+      if (vm.isPointInRect(vm.startx, vm.starty)) {
+        vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
+        vm.bound = false
+      } else if (vm.isPointInOld(vm.startx, vm.starty)) {
+        vm.currentR = vm.isPointInOld(vm.startx, vm.starty)
+        vm.bound = true
+      } else {
+        vm.currentR = null
+      }
+
+      console.log('currentR:', vm.currentR)
+
+      if (vm.currentR) {
+        vm.leftDistance = vm.startx - vm.currentR.x1
+        vm.topDistance = vm.starty - vm.currentR.y1
+      } else {
+        console.log('not in Rects')
+        return
+      }
+
+      e.preventDefault()
+
       this.menuPosition = {
         top: e.offsetY,
         left: e.offsetX
@@ -693,6 +729,39 @@ export default {
     checkItem () {
       let vm = this
       vm.slideOpen = true
+    },
+    deleteItem () {
+      let vm = this
+
+      vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // delBdata().then(res => {
+        //   if (res.code === 200) {
+        //     this.$message({
+        //       type: 'success',
+        //       message: '删除成功!'
+        //     })
+        //   } else {
+        //     this.$message({
+        //       type: 'warning',
+        //       message: '删除失败，请稍后重试'
+        //     })
+        //   }
+        //   // 重新请求，then，重新绘图
+        // })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    bind () {
+      let vm = this
+      vm.bindVisible = true
     },
     rebind () {
       let vm = this
@@ -767,6 +836,7 @@ export default {
         position: relative;
         width: 100%;
         height: 100%;
+        overflow: hidden;
         .body-header{
           position: absolute;
           top: 0;
