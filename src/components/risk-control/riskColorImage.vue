@@ -654,8 +654,6 @@ export default {
     openMenu (e) {
       console.log('右键：', e)
       let vm = this
-
-      debugger
       vm.startx = e.layerX / vm.scale
       vm.starty = e.layerY / vm.scale
       if (vm.isPointInRect(vm.startx, vm.starty)) {
