@@ -5,45 +5,112 @@
     width="40%">
     <el-form :model="form" :rules="rules" ref="form" label-width="100px" class="demo-form">
       <el-form-item label="处理方式" prop="way" >
-        <el-radio-group v-model="form.way" @change="waySelChange">
-          <el-radio label="治理"></el-radio>
-          <el-radio label="回退"></el-radio>
+        <el-radio-group v-model="form.handleType" @change="waySelChange">
+          <el-radio
+            v-for="(item, index) in listWay"
+            :key="index"
+            :label="item.value"></el-radio>
+          <!-- <el-radio label="回退"></el-radio> -->
         </el-radio-group>
       </el-form-item>
       <div v-show="showGovernContent">
-        <el-form-item label="隐患类型" prop="type">
-          <el-select v-model="form.type" placeholder="请选择隐患类型">
-            <el-option label="一般隐患" value="normal"></el-option>
-            <el-option label="重大隐患" value="majorHazard"></el-option>
+        <el-form-item label="隐患类型" prop="hiddenType">
+          <el-select size="medium" v-model="form.hiddenType" placeholder="请选择隐患类型">
+            <el-option label="一般隐患" value="一般隐患"></el-option>
+            <el-option label="重大隐患" value="重大隐患"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="整改时间" required>
           <el-col :span="11">
-            <el-form-item prop="date">
+            <el-form-item prop="rectiTime">
               <el-date-picker
-                v-model="form.date"
+                size="medium"
+                v-model="form.rectiTime"
                 type="datetime"
                 placeholder="选择日期时间">
               </el-date-picker>
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item label="整改意见" prop="opinion">
+        <el-form-item label="整改意见" prop="rectiRemark">
           <el-input
+            size="medium"
             type="textarea"
-            v-model="form.opinion"
+            v-model="form.rectiRemark"
             maxlength="200"
             show-word-limit></el-input>
         </el-form-item>
-        <el-form-item label="治理人员" prop="user">
-          <el-select v-model="form.user" placeholder="请选择治理人员">
-            <el-option label="一般隐患" value="normal"></el-option>
+        <el-form-item label="治理人员" prop="nextUserId">
+          <el-input
+            size="medium"
+            v-model="form.nextUserId"
+            :disabled="true"
+            class="input-with-select">
+            <el-button @click="selectUser()" slot="append" type="primary">选择治理人员</el-button>
+          </el-input>
+          <!-- <el-button
+          type="primary"
+          size="small"
+          @click="selectUser()">选择治理人员</el-button>
+          <el-input v-model="form.nextUserId" :disabled="true"></el-input> -->
+          <!-- <el-select v-model="form.nextUserId" placeholder="请选择治理人员">
+            <el-option
+              v-for= "(item, index) in nextUserIdOptions"
+              :key = "index"
+              label="item.label"
+              value="normal"
+              ></el-option>
             <el-option label="重大隐患" value="majorHazard"></el-option>
-          </el-select>
+          </el-select> -->
         </el-form-item>
       </div>
     </el-form>
+    <el-dialog
+      :title="'选择排查复核人'"
+      :visible.sync="showTree"
+      width="80%"
+      append-to-body>
+      <div class="select-layer" style="height: 400px">
+        <tree-diagram
+          :tree-data="workTree"
+          :tree-name="'工作小组'"
+          :has-upload="false"
+          @handleNodeClick="handleNodeClick">
+        </tree-diagram>
+        <el-table
+          ref="singleTable"
+          highlight-current-row
+          @current-change="handleCurrentChange"
+          border
+          stripe
+          :data="workData"
+          tooltip-effect="dark"
+          >
+          <el-table-column
+            label="姓名"
+            width="120"
+            align="center"
+            prop="userName">
+          </el-table-column>
+          <el-table-column
+            label="联系方式"
+            width="120"
+            align="center"
+            prop="telephone">
+          </el-table-column>
+          <el-table-column
+            label="主要职责"
+            align="center"
+            prop="duty">
+          </el-table-column>
+        </el-table>
+      </div>
 
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="confirmChooseList()">确 定</el-button>
+        <el-button @click="showTree = false">取 消</el-button>
+      </div>
+    </el-dialog>
     <div slot="footer" class="dialog-footer">
       <el-button
         type="primary"
@@ -57,62 +124,214 @@
 </template>
 
 <script>
+import axios from '@/api/axios'
+import TreeDiagram from '@/components/tree-diagram/treeDiagram'
 export default {
   name: '',
   props: {
     dialogVisible: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String,
+      default: ''
+    },
+    procInstId: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
+      submitting: false,
       show: false,
+      showTree: false,
       showGovernContent: true, // 治理内容填写开关
       form: {
-        way: '治理',
-        type: '',
-        date: '',
-        opinion: '',
-        user: ''
+        procInstId: '',
+        taskid: '',
+        handleType: '', // 处理方式
+        hiddenType: '', // 隐患类型
+        rectiTime: '', // 整改时间
+        rectiRemark: '', // 整改意见
+        nextUserId: '' // 处理人
       },
       rules: {
-        way: [
+        handleType: [
           { required: true, message: '请选择一种处理方式', trigger: 'change' }
         ],
-        date: [
+        rectiTime: [
           { type: 'date', required: true, message: '请选择整改时间', trigger: 'change' }
         ],
-        user: [
+        nextUserId: [
           { required: true, message: '请选择治理人员', trigger: 'change' }
         ],
-        type: [
+        hiddenType: [
           { required: true, message: '请选择隐患类型', trigger: 'change' }
         ],
-        opinion: [
+        rectiRemark: [
           { required: true, message: '请填写整改意见', trigger: 'blur' }
         ]
-      }
+      },
+      currentId: '', // 当前id
+      listWay: null, // 处理方式
+      nextUserIdOptions: [
+        {
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }
+      ], // 复核人列表
+      workTree: [], // 工作小组树数据
+      workData: [],
+      currentRow: null,
+      deptId: '',
+      currentProcInstId: ''
     }
   },
+  components: {
+    TreeDiagram
+  },
+  mounted () {
+    this.currentId = this.id
+    this.currentProcInstId = this.procInstId
+  },
   methods: {
+    // 初始化处理方式数据
+    initFormData () {
+      axios
+        .get('hiddenAct/initAct', {
+          taskId: this.currentId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.listWay = res.data.data[1]
+          }
+        })
+    },
+    // 获取复核人列表
+    fetchNextUser () {
+      axios
+        .get('hiddenAct/chooseDeptUser')
+        .then((res) => {
+          if (res.data.code === 200) {
+            // this.nextUserIdOptions = res.data.data
+          }
+        })
+    },
+    // 获取工作小组树数据
+    fetchWorkTreeData () {
+      axios
+        .get('hiddenAct/chooseDeptUser')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.workTree = res.data.data
+            console.log(this.workTree)
+          }
+        })
+    },
+    // 获取工作小组table数据
+    fetchWorkTableData () {
+      axios
+        .get('workUser/getList', {
+          deptId: this.deptId,
+          pageNo: 1,
+          pageSize: 1
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.workData = res.data.data
+          }
+        })
+    },
+    // 处理方式切换
     waySelChange (val) {
-      if (val === '治理') {
-        this.showGovernContent = true
-      } else {
+      if (val === '退回') {
         this.showGovernContent = false
+        // 清空表单的值
+        Object.keys(this.form).forEach(key => {
+          // this.form[key] = ''
+          this.form.hiddenType = '' // 隐患类型
+          this.form.rectiTime = '' // 整改时间
+          this.form.rectiRemark = '' // 整改意见
+          this.form.nextUserId = '' // 处理人
+        })
+      } else {
+        this.showGovernContent = true
       }
+    },
+    // 提交表单操作
+    submitForm () {
+      let vm = this
+      this.form.taskid = this.currentId
+      this.form.procInstId = this.currentProcInstId
+      vm.$refs.form.validate((valid) => {
+        if (valid) {
+          vm.show = true
+          axios
+            .post('hiddenAct/auditorAct', vm.form)
+            .then((res) => {
+              vm.submitting = true
+              if (res.data.code === 200) {
+                vm.$notify.success('排查复核提交成功！')
+                // this.$emit('reload')
+                vm.show = false
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+            .finally(() => {
+              vm.submitting = false
+            })
+        } else {
+          return false
+        }
+      })
+    },
+    selectUser () {
+      this.showTree = true
+      this.fetchWorkTreeData()
+    },
+    handleNodeClick (deptId) {
+      this.deptId = deptId
+      this.fetchWorkTableData()
+    },
+    handleCurrentChange (val) {
+      this.currentRow = val
+      console.log(this.currentRow)
+    },
+    confirmChooseList () {
+      this.form.nextUserId = this.currentRow.userName
+      this.showTree = false
     }
   },
   watch: {
+    id: {
+      immediate: true,
+      handler (val, oldVal) {
+        this.currentId = val
+        if (this.currentId) {
+          this.initFormData()
+        }
+      }
+    },
+    procInstId: {
+      immediate: true,
+      handler (val, oldVal) {
+        this.currentProcInstId = val
+      }
+    },
     dialogVisible (val) {
       this.show = val
     },
     show (val) {
       this.$emit('on-dialog-change', val)
-    },
-    submitForm () {
-
     }
   }
 }
@@ -249,5 +468,20 @@ export default {
     .level2-p-date{
       font-weight: 300;
     }
+  }
+
+  .select-layer{
+    display: flex;
+    justify-content: space-between;
+    >>> .el-table{
+      margin-left: 30px;
+      width: 360px;
+    }
+  }
+  .el-input-group__append button.el-button {
+    color: #FFF !important;
+    background-color: #409EFF !important;
+    border-color: #409EFF !important;
+    border-radius: 0 4px 4px 0;
   }
 </style>

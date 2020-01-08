@@ -104,7 +104,6 @@ export default {
   methods: {
     openUpload () {},
     uploadExcel () {
-
     },
     openAll () {
       this.openState = !this.openState

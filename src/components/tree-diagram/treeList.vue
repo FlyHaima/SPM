@@ -140,7 +140,7 @@ export default {
   watch: {
     filterText (val) {
       this.filterData = this.listData.filter(
-        data => !val || data.name.toLowerCase().includes(val.toLowerCase())
+        data => !val || data.planName.toLowerCase().includes(val.toLowerCase())
       )
     },
     listData: {
