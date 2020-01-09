@@ -1,16 +1,14 @@
 <template>
   <el-container class="inner-main-content">
     <el-aside class="inner-aside" width="408px">
-      <tree-list
-        v-if="listMenuData.length > 0"
-        :menu-name="'计划清单'"
-        :list-data = "listMenuData"
-        showSearch
-        @menu-click-handle="menuClickHandle"
-
-      ></tree-list>
+      <tree-read-only
+        :tree-name="'风险单元'"
+        :tree-data="riskUnitTree"
+        searchVisible
+        shrinkVisible
+        @tree-click-handle="treeClickHandle">
+      </tree-read-only>
     </el-aside>
-
     <el-main class="inner-content">
       <div class="container-box">
         <div class="content-tools">
@@ -117,21 +115,17 @@
     </el-main>
     <dialog-details
       :dialogVisible = "dialogDetailsVisible"
-      :id = "currentDetailsId"
       @on-dialog-change = "changeDetailsDialog"
     ></dialog-details>
     <dialog-review
-      :id = "currentReviewId"
-      :procInstId = "procInstId"
       :dialogVisible = "dialogReviewVisible"
       @on-dialog-change = "changeReviewDialog"
-      @reload = "fetchTableData"
     ></dialog-review>
   </el-container>
 </template>
 
 <script>
-import TreeList from '@/components/tree-diagram/treeList'
+import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
@@ -155,24 +149,23 @@ export default {
       },
       listMenuData: [], // 计划清单列表数据
       currentPlanId: '', // 当前清单项的id
-      tableData: [], // 基础类清单列表数据
-      queryDate: '',
-      currentDetailsId: '',
-      currentReviewId: '',
-      procInstId: ''
+      riskUnitTree: [], // 风险单元机构树
+      tableData: [], // 生产类清单列表数据
+      queryDate: ''
     }
   },
   components: {
-    TreeList, // 计划清单菜单
+    TreeReadOnly,
     DialogDetails,
     DialogReview
   },
   created () {
-    this.fetchListMenuData()
+    this.fetchUnitTreeData()
     this.fetchTableData()
   },
   methods: {
     checkQueryDate (val) {
+      console.log(val)
       if (val) {
         this.form.startTime = val[0]
         this.form.endTime = val[1]
@@ -180,24 +173,8 @@ export default {
         this.form.startTime = this.form.endTime = ''
       }
     },
-    /** 左侧清单菜单 **/
-    // 获取清单数据
-    fetchListMenuData () {
-      axios
-        .get('schedule/getScheduleList')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
-            this.fetchTableData()
-          }
-        })
-    },
     // 触发复核操作
     reviewHandle (item) {
-      console.log(item)
-      this.currentReviewId = item.taskid
-      this.procInstId = item.procInstId
       this.dialogReviewVisible = true
     },
     changeReviewDialog (val) {
@@ -205,18 +182,28 @@ export default {
     },
     // 触发详情弹框
     detailsHandle (item) {
-      this.currentDetailsId = item.hiddInstanceId
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {
       this.dialogDetailsVisible = val
     },
-    // 点击菜单项
-    menuClickHandle (item) {
-      this.currentPlanId = item.planId
+    // 树节点，点击功能
+    treeClickHandle (item) {
+      this.currentPlanId = item.riskId
       this.fetchTableData()
     },
-    /** 右侧列表内容 **/
+    // 获取风险单元树的数据
+    fetchUnitTreeData () {
+      axios
+        .get('riskia/getRiskTree')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.riskUnitTree = res.data.data
+            this.currentPlanId = this.riskUnitTree[0].riskId
+            this.fetchTableData()
+          }
+        })
+    },
     // 获取排查隐患清单列表
     fetchTableData () {
       axios
@@ -388,7 +375,6 @@ export default {
   color: #ababab;
   margin-left: 20px;
 }
-
 .table-img{
   width: 62px;
   height: 53px;

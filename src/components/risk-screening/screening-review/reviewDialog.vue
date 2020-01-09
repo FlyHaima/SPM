@@ -158,21 +158,21 @@ export default {
         nextUserId: '' // 处理人
       },
       rules: {
-        handleType: [
-          { required: true, message: '请选择一种处理方式', trigger: 'change' }
-        ],
-        rectiTime: [
-          { type: 'date', required: true, message: '请选择整改时间', trigger: 'change' }
-        ],
-        nextUserId: [
-          { required: true, message: '请选择治理人员', trigger: 'change' }
-        ],
-        hiddenType: [
-          { required: true, message: '请选择隐患类型', trigger: 'change' }
-        ],
-        rectiRemark: [
-          { required: true, message: '请填写整改意见', trigger: 'blur' }
-        ]
+        // handleType: [
+        //   { required: true, message: '请选择一种处理方式', trigger: 'change' }
+        // ],
+        // rectiTime: [
+        //   { type: 'date', required: true, message: '请选择整改时间', trigger: 'change' }
+        // ],
+        // nextUserId: [
+        //   { required: true, message: '请选择治理人员', trigger: 'change' }
+        // ],
+        // hiddenType: [
+        //   { required: true, message: '请选择隐患类型', trigger: 'change' }
+        // ],
+        // rectiRemark: [
+        //   { required: true, message: '请填写整改意见', trigger: 'blur' }
+        // ]
       },
       currentId: '', // 当前id
       listWay: null, // 处理方式
@@ -277,7 +277,7 @@ export default {
               vm.submitting = true
               if (res.data.code === 200) {
                 vm.$notify.success('排查复核提交成功！')
-                // this.$emit('reload')
+                this.$emit('reload')
                 vm.show = false
               } else {
                 vm.$message({

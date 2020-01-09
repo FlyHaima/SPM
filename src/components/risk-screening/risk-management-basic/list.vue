@@ -23,7 +23,7 @@
               <el-form-item label="检查名称">
                 <el-input v-model="form.checkName" placeholder="请输入检查名称"></el-input>
               </el-form-item>
-              <el-form-item label="检查日期">
+              <el-form-item label="最终治理时间">
                 <el-date-picker
                   v-model="queryDate"
                   @change="checkQueryDate"
@@ -63,32 +63,29 @@
           </el-table-column>
           <el-table-column
             prop="hiddenType"
-            label="隐患类型"
+            label="最终治理时间"
             align="center">
           </el-table-column>
           <el-table-column
             prop="checkByUser"
-            label="复核人"
+            label="最终治理结果"
             align="center">
           </el-table-column>
           <el-table-column
             prop="checkByTime"
-            label="复核时间"
+            label="进度"
             align="center">
-          </el-table-column>
-          <el-table-column
-            prop="rectiTime"
-            label="整改时间"
-            align="center">
-          </el-table-column>
-          <el-table-column
-            prop="rectiRemark"
-            label="整改意见"
-            align="center">
+            <template slot-scope="scope">
+              <table-step
+                :step-data="stepData"
+                :active="scope.row.progress"
+              >
+              </table-step>
+            </template>
           </el-table-column>
           <el-table-column
             prop=" "
-            label="复核情况"
+            label="治理情况"
             width="120"
             align="center">
             <template slot-scope="scope">
@@ -96,19 +93,6 @@
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
-              </a>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop=" "
-            label="操作"
-            width="100"
-            align="center">
-            <template slot-scope="scope">
-              <a
-                href="javascript:;"
-                class="color-primary"
-                @click="reviewHandle(scope.row)">复核
               </a>
             </template>
           </el-table-column>
@@ -120,22 +104,15 @@
       :id = "currentDetailsId"
       @on-dialog-change = "changeDetailsDialog"
     ></dialog-details>
-    <dialog-review
-      :id = "currentReviewId"
-      :procInstId = "procInstId"
-      :dialogVisible = "dialogReviewVisible"
-      @on-dialog-change = "changeReviewDialog"
-      @reload = "fetchTableData"
-    ></dialog-review>
   </el-container>
 </template>
 
 <script>
 import TreeList from '@/components/tree-diagram/treeList'
+import TableStep from '@/components/step/stepCustom'
 import axios from '@/api/axios'
 import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
-import DialogReview from '@/components/risk-screening/screening-review/reviewDialog'
 export default {
   name: 'list',
   props: {
@@ -147,7 +124,6 @@ export default {
   data () {
     return {
       dialogDetailsVisible: false, // 详情弹框显示开关
-      dialogReviewVisible: false, // 复核弹框显示开关
       form: {
         checkName: '',
         startTime: '',
@@ -158,14 +134,30 @@ export default {
       tableData: [], // 基础类清单列表数据
       queryDate: '',
       currentDetailsId: '',
-      currentReviewId: '',
-      procInstId: ''
+      stepData: [
+        {
+          label: 'p',
+          value: 1
+        },
+        {
+          label: 'd',
+          value: 2
+        },
+        {
+          label: 'c',
+          value: 3
+        },
+        {
+          label: 'a',
+          value: 4
+        }
+      ]
     }
   },
   components: {
     TreeList, // 计划清单菜单
-    DialogDetails,
-    DialogReview
+    TableStep,
+    DialogDetails
   },
   created () {
     this.fetchListMenuData()
@@ -193,16 +185,6 @@ export default {
           }
         })
     },
-    // 触发复核操作
-    reviewHandle (item) {
-      console.log(item)
-      this.currentReviewId = item.taskid
-      this.procInstId = item.procInstId
-      this.dialogReviewVisible = true
-    },
-    changeReviewDialog (val) {
-      this.dialogReviewVisible = val
-    },
     // 触发详情弹框
     detailsHandle (item) {
       this.currentDetailsId = item.hiddInstanceId
@@ -220,7 +202,7 @@ export default {
     // 获取排查隐患清单列表
     fetchTableData () {
       axios
-        .get('hiddenAct/dImpleList', {
+        .get('hiddenAct/cImpleList', {
           checkName: this.form.checkName,
           investType: this.type,
           startTime: this.form.startTime,
