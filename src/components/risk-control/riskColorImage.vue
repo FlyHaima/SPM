@@ -330,7 +330,7 @@ export default {
         } else {
           vm.$message({
             type: 'warning',
-            message: '数据失败，请稍后重试'
+            message: '数据失败， 请稍后重试'
           })
         }
         vm.pageLoading = false
