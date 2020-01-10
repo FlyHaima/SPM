@@ -45,7 +45,7 @@
           <div class="body-header">
             <span class="label">当前位置：</span>
             <el-select v-model="currentMap" placeholder="请选择" size="medium" @change="optionChange()">
-              <el-option v-for="(item, index) in mapLists" :key="index" :label="item" :value="item"></el-option>
+              <el-option v-for="(item, index) in mapLists" :key="index" :label="item.label" :value="item.value"></el-option>
             </el-select>
 
             <i class="el-icon-delete" title="删除" @click="deleteMap()"></i>
@@ -53,14 +53,25 @@
             <i class="el-icon-plus" title="添加位置" @click="addMap()"></i>
           </div>
           <div class="canvas-box">
-            <div style="display:none;">
+            <div style="display:none;" v-if="mapLists.length > 0 && currentImage.url !== ''">
               <img id="source"
-                   :src="img.url"
-                   :width="img.width"
-                   :height="img.height">
+                   :src="currentImage.url"
+                   :width="currentImage.width"
+                   :height="currentImage.height">
             </div>
-            <canvas id="myCanvas"
-                    :width="img.width" :height="img.height"
+
+            <!-- 暂无地图，需要上传新地图 -->
+            <div v-if="currentMap !== '' && currentImage.url == ''" class="up-new-map">
+              <el-button size="medium" type="primary" @click="uploadNewMap()"><i class="el-icon-upload2"></i> 上传新图片</el-button>
+            </div>
+
+            <!-- 暂无地图，需要新建新地图 -->
+            <div v-if="mapLists.length === 0" class="up-new-map">
+              <el-button size="medium" type="primary" @click="addMap()"><i class="el-icon-plus"></i> 添加位置</el-button>
+            </div>
+
+            <canvas id="myCanvas" v-else
+                    :width="currentImage.width" :height="currentImage.height"
                     style="background-color: #fff;"
                     @mousedown="mousedown"
                     @mousemove="mousemove"
@@ -89,16 +100,15 @@
           <!-- 绑定节点 -->
           <el-dialog title="绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
                      :visible.sync="bindVisible"
-                     v-loading="bindLoading"
                      width="480px" :append-to-body="true">
             <el-form label-width="120px">
               <el-form-item label="区块名称：">
                 <el-select v-model="bindSelection"  placeholder="请选择" size="medium">
                   <el-option
                     v-for="item in bindOptions"
-                    :key="item"
-                    :label="item"
-                    :value="item">
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -112,16 +122,15 @@
           <!-- 重新绑定节点 -->
           <el-dialog title="重新绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
                      :visible.sync="rebindVisible"
-                     v-loading="rebindLoading"
                      width="480px" :append-to-body="true">
             <el-form label-width="120px">
               <el-form-item label="区块名称：">
                 <el-select v-model="rebindSelection"  placeholder="请选择" size="medium">
                   <el-option
                     v-for="item in bindOptions"
-                    :key="item"
-                    :label="item"
-                    :value="item">
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -129,6 +138,37 @@
             <span slot="footer" class="dialog-footer">
               <el-button @click="rebindVisible = false">取 消</el-button>
               <el-button type="primary" @click="confirmReBind()">确 定</el-button>
+            </span>
+          </el-dialog>
+
+          <!-- 上传弹窗 -->
+          <el-dialog title="上传" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="uploadVisible"
+                     v-loading="uploadLoading"
+                     width="580px" :append-to-body="true">
+            <el-form
+              ref="messageForm"
+              label-width="100px"
+              label-position="right">
+              <el-form-item label="上传图片">
+                <el-upload
+                  class="upload-demo"
+                  :action="baseUrl"
+                  :data="uploadData"
+                  :limit="1"
+                  accept=".png, .jpg"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :on-remove="handleRemove"
+                  :file-list="fileList">
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <div slot="tip" class="el-upload__tip">只能上传.jpg，.png格式的图片</div>
+                </el-upload>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="uploadVisible = false">取 消</el-button>
+              <el-button type="primary" @click="confirmUpload()">确 定</el-button>
             </span>
           </el-dialog>
 
@@ -180,27 +220,46 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import {
+  getPlaceSelector,
+  getRiskSelector,
+  addPlace,
+  bindLayer,
+  getLayer,
+  delMap,
+  delPoint,
+  uploadPic
+} from '@/api/riskControl'
+import base from '@/api/baseUrl'
+import {getQiNiuToken} from '@/api/upload'
 
 export default {
   name: 'riskColorImage',
   data () {
     return {
       breadcrumb: ['风险分级管控', '风险四色图'],
+      baseUrl: '',
+      fileAddress: '',
+      uploadData: {
+        token: ''
+      },
+      fileList: [],
+      uploadImageUrl: '',
       pageLoading: false,
-      mapLists: ['mapA', 'mapB', 'mapC'], // map 选项列表
+      mapLists: [], // map 选项列表
       currentMap: '', // 当前所选のmap
       layers: [], // 新建图层
       oldLayers: [
-        {
-          height: 170,
-          level: 2,
-          type: 0,
-          width: 110,
-          x1: 182,
-          x2: 544,
-          y1: 109,
-          y2: 383
-        }
+        // {
+        //   height: 170,
+        //   level: 2,
+        //   type: 0,
+        //   width: 110,
+        //   x1: 182,
+        //   x2: 544,
+        //   y1: 109,
+        //   y2: 383
+        // }
       ], // 之前存在的图层
       fillStyles: ['#a3a3a3', '#4680ff', '#fffb09', '#ff9309', '#d13a38'],
       currentR: null, // 当前点击的矩形{obj}
@@ -214,10 +273,10 @@ export default {
       op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框
       scale: 1,
       type: 0,
-      img: {
-        url: 'https://yyb.gtimg.com/aiplat/page/product/visionimgidy/img/demo6-16a47e5d31.jpg?max_age=31536000',
-        width: 399,
-        height: 600
+      currentImage: {
+        url: 'http://file.hljdmkj.com/FvNgq_wvW45xIVqkCZOzb9GaFjbd',
+        width: 1387,
+        height: 951
       },
       minWidth: 1180,
       minHeight: 747,
@@ -239,26 +298,86 @@ export default {
         {name: '加油站C', level: '2', reason: '测试原因A', measures: '措施', id: '3717'}
       ],
       bindVisible: false,
-      bindLoading: false,
-      bindOptions: ['A', 'B', 'C'],
+      bindOptions: [],
       bindSelection: '', // 绑定的选项
       rebindVisible: false,
-      rebindLoading: false,
-      rebindOptions: ['A', 'B', 'C'],
-      rebindSelection: '' // 重新绑定的选项
+      rebindSelection: '', // 重新绑定的选项
+      uploadVisible: false,
+      uploadLoading: false
     }
   },
   mounted () {
-    this.canvas_init()
+    // this.canvas_init()
   },
   created () {
     let vm = this
+    vm.baseUrl = base.uploadQiniuAdr
+    vm.fileAddress = base.fileQiniuAddr
     document.onclick = function () {
       vm.showMenu = false // 关闭自定义右键menu
     }
+    vm.getRiskSelector()
+    vm.getPlaceSelector(0) // 初始化时，获取map列表
   },
   methods: {
-    canvas_init () {
+    // 获取风险点选项列表，绑定和重新绑定是一个方法
+    getRiskSelector () {
+      let vm = this
+      vm.pageLoading = true
+      getRiskSelector().then(res => {
+        if (res.code === 200) {
+          vm.bindOptions = res.data
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '数据失败，请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
+    // 获取所有的map；0：初始化；1：添加后更新map；2：删除后更新map
+    getPlaceSelector (type) {
+      let vm = this
+      vm.pageLoading = true
+      getPlaceSelector().then(res => {
+        if (res.code === 200) {
+          vm.mapLists = res.data
+          if (type === 0) {
+            vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
+            vm.getOldLayers()
+          } else if (type === 1) {
+            vm.currentMap = vm.mapLists[vm.mapLists.length - 1].value
+            vm.getOldLayers()
+          } else if (type === 2) {
+            vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
+            vm.getOldLayers()
+          }
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '数据失败，请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
+    getOldLayers () { // 获取当前map下原有记录的layers，顺便重绘
+      let vm = this
+      vm.pageLoading = true
+      if (vm.currentMap) {
+        getLayer(vm.currentMap).then(res => {
+          if (res.code === 200) {
+            vm.oldLayers = res.data
+            vm.currentImage.url = res.map.backgroundUrl
+            vm.showOld()
+          } else {
+          }
+          vm.pageLoading = false
+        })
+      }
+    },
+    canvas_init () { // 初始化，以及初始化时的判断
       this.showOld() // 初始化的时候，先把旧有数据加载遍
     },
     // 获取图片的原始尺寸
@@ -272,7 +391,8 @@ export default {
         newW = newImg.width
         newH = newImg.height
       }
-      return [newW, newH]
+      this.currentImage.width = newW
+      this.currentImage.height = newH
     },
     zoomUp () {
       let vm = this
@@ -282,7 +402,7 @@ export default {
       if (c.width <= vm.maxWidth && c.height <= vm.maxHeight) {
         c.width *= vm.scaleStep
         c.height *= vm.scaleStep
-        vm.scale = c.height / vm.img.height
+        vm.scale = c.height / vm.currentImage.height
         ctx.scale(vm.scale, vm.scale)
         c.style.backgroundSize = `${c.width}px ${c.height}px`
         vm.showOld()
@@ -295,10 +415,10 @@ export default {
       const ctx = c.getContext('2d')
 
       // debugger
-      if (c.width >= vm.img.width && c.height >= vm.img.height) {
+      if (c.width >= vm.currentImage.width && c.height >= vm.currentImage.height) {
         c.width /= vm.scaleStep
         c.height /= vm.scaleStep
-        vm.scale = c.height / vm.img.height
+        vm.scale = c.height / vm.currentImage.height
         ctx.scale(vm.scale, vm.scale)
         c.style.backgroundSize = `${c.width}px ${c.height}px`
         vm.showOld()
@@ -323,7 +443,21 @@ export default {
       vm.showOld()
       vm.reshow()
     },
-    saveChange () {}, // 保存修改
+    saveChange () { // 保存修改
+      let vm = this
+      let allLayers = vm.oldLayers.concat(vm.layers)
+      let postD = {
+        id: vm.currentMap,
+        layers: allLayers
+      }
+      bindLayer(postD).then(res => {
+        if (res.code === 200) {
+          console.log(res.data)
+        } else {
+
+        }
+      })
+    },
     resizeLeft (rect) {
       let vm = this
       const c = document.getElementById('myCanvas')
@@ -464,9 +598,11 @@ export default {
       const canvas = document.getElementById('myCanvas')
       const ctx = canvas.getContext('2d')
 
-      let image = document.getElementById('source')
-
-      ctx.drawImage(image, 0, 0, 399, 600)
+      if (this.currentImage.url) {
+        // this.checkImgSize(this.currentImage.url)
+        let image = document.getElementById('source')
+        ctx.drawImage(image, 0, 0, this.currentImage.width, this.currentImage.height)
+      }
     },
     // 绘制原有图形，包括背景图
     showOld () {
@@ -609,8 +745,8 @@ export default {
       ctx.strokeRect(vm.x, vm.y, 0, 0)
       ctx.strokeStyle = '#0000ff'
       vm.flag = 1
-      console.log(vm.currentR)
-      console.log(vm.layers)
+      // console.log(vm.currentR)
+      // console.log(vm.layers)
     },
     mousemove (e) {
       let vm = this
@@ -641,7 +777,9 @@ export default {
           x2: vm.x,
           y2: vm.y,
           type: vm.type,
-          level: 0
+          level: 0,
+          bindId: '', // 绑定的点的id
+          picid: vm.currentMap // 绑定的map的id
         }))
       } else if (vm.op >= 3) {
         vm.fixPosition(vm.currentR)
@@ -705,23 +843,56 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({value}) => {
-        // let postData = {
-        //   riskName: value,
-        //   pId: data.pId
-        // }
-        // addRiskTree(postData).then(res => {
-        //   if (res.code === 200) {
-        //     vm.$message({
-        //       type: 'success',
-        //       message: '节点设置成功'
-        //     })
-        //     vm.getRiskTree()
-        //   }
-        //   vm.pageLoading = false
-        // })
+        let postData = {
+          name: value
+        }
+        addPlace(postData).then(res => {
+          if (res.code === 200) {
+            vm.$message({
+              type: 'success',
+              message: '节点添加成功'
+            })
+            vm.getPlaceSelector(1) // 更新map列表
+            // 再初始化其他的绘图元素
+          }
+          vm.pageLoading = false
+        })
       }).catch(() => {
         // after cancel
         vm.pageLoading = false
+      })
+    },
+    deleteMap () {
+      let vm = this
+      vm.$confirm('此操作将永久删除该地图和相关节点信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let postD = {
+          id: vm.currentMap
+        }
+        delMap(postD).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            vm.getPlaceSelector(2) // 更新map列表
+            // 再初始化其他的绘图元素
+          } else {
+            this.$message({
+              type: 'warning',
+              message: '删除失败，请稍后重试'
+            })
+          }
+          // 重新请求，then，重新绘图
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     checkItem () {
@@ -729,33 +900,36 @@ export default {
       vm.slideOpen = true
     },
     deleteItem () {
-      let vm = this
+      // let vm = this
 
-      vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // delBdata().then(res => {
-        //   if (res.code === 200) {
-        //     this.$message({
-        //       type: 'success',
-        //       message: '删除成功!'
-        //     })
-        //   } else {
-        //     this.$message({
-        //       type: 'warning',
-        //       message: '删除失败，请稍后重试'
-        //     })
-        //   }
-        //   // 重新请求，then，重新绘图
-        // })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
+      // vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   let postD = {
+      //     id: vm.currentMap
+      //   }
+      //   delMap(postD).then(res => {
+      //     if (res.code === 200) {
+      //       this.$message({
+      //         type: 'success',
+      //         message: '删除成功!'
+      //       })
+      //     } else {
+      //       this.$message({
+      //         type: 'warning',
+      //         message: '删除失败，请稍后重试'
+      //       })
+      //     }
+      //     // 重新请求，then，重新绘图
+      //   })
+      // }).catch(() => {
+      //   this.$message({
+      //     type: 'info',
+      //     message: '已取消删除'
+      //   })
+      // })
     },
     bind () {
       let vm = this
@@ -765,11 +939,83 @@ export default {
       let vm = this
       vm.rebindVisible = true
     },
-    uploadNewMap () {},
-    deleteMap () {},
+    uploadNewMap () {
+      this.uploadVisible = true
+    },
     checkOutDetail () {}, // 点击查看详情
-    confirmBind () {}, // 提交绑定区域
-    confirmReBind () {} // 提交重新绑定
+    confirmBind () { // 提交绑定区域
+      let vm = this
+      vm.layers.forEach(item => {
+        if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
+          item.bindId = vm.bindSelection
+        }
+      })
+      vm.bindVisible = false
+    },
+    confirmReBind () { // 提交重新绑定
+      let vm = this
+      vm.oldLayers.forEach(item => {
+        if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
+          item.bindId = vm.rebindSelection
+        }
+      })
+      vm.rebindVisible = false
+    },
+    handleBeforeUpload (file) {
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    handleSuccess (response, file, fileList) {
+      let vm = this
+      vm.fileList = fileList
+      vm.uploadImageUrl = vm.fileAddress + fileList[0].response.key
+      console.log(vm.uploadImageUrl)
+      async function boo () {
+        let img = new Image()
+        img.src = vm.uploadImageUrl
+        return img
+      }
+      boo().then(res => {
+        console.log('宽为：' + res.width + ',高为：' + res.height)
+      })
+    },
+    handleRemove (file, fileList) {
+      this.uploadImageUrl = ''
+    },
+    confirmUpload () {
+      let vm = this
+      vm.uploadLoading = true
+      if (!vm.uploadImageUrl) {
+        vm.$message({
+          message: '请上传图片',
+          type: 'warning'
+        })
+        return
+      }
+      let postD = {
+        backgroundUrl: vm.uploadImageUrl,
+        id: vm.currentMap
+      }
+      uploadPic(postD).then(res => {
+        if (res.code === 200) {
+          vm.$message({
+            type: 'success',
+            message: '添加成功'
+          })
+          vm.getOldLayers() // 重新获取数据，再重新绘制
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '添加失败，请稍后重试'
+          })
+        }
+        vm.fileList = []
+        vm.uploadImageUrl = ''
+      })
+      vm.uploadLoading = false
+      vm.uploadVisible = false
+    }
   },
   components: {
     TreeDiagram,
@@ -862,6 +1108,12 @@ export default {
           height: 100%;
           background: #fff;
           overflow: auto;
+          .up-new-map{
+            position: absolute;
+            top: 35%;
+            width: 100%;
+            text-align: center;
+          }
         }
         .slide-temp{
           position: absolute;
@@ -903,6 +1155,4 @@ export default {
       }
     }
   }
-
-  /deep/.inner-main-container{}
 </style>
