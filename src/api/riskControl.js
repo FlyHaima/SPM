@@ -77,3 +77,12 @@ export function uploadPic (data) {
     return Promise.resolve(res.data)
   })
 }
+
+// 风险分级管控--风险四色图--查看风险点详情
+export function checkItemDetail (bindId) {
+  const url = `${baseUrl}/fourColor/getDescribelist?bindId=${bindId}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

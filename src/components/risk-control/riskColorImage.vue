@@ -108,7 +108,7 @@
                     v-for="item in bindOptions"
                     :key="item.value"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -130,7 +130,7 @@
                     v-for="item in bindOptions"
                     :key="item.value"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -173,7 +173,7 @@
           </el-dialog>
 
           <!-- 查看的侧边展示栏 -->
-          <div class="slide-temp" :class="slideOpen ? 'active' : ''">
+          <div class="slide-temp" :class="slideOpen ? 'active' : ''" v-loading="slidLoading">
             <p
               style="line-height: 30px; font-size: 24px; margin-bottom: 8px;"><i class="el-icon-circle-close" @click="slideOpen = false"></i>
             </p>
@@ -186,22 +186,29 @@
               <el-table-column
                 label="风险点名称"
                 align="center">
-                <template slot-scope="scope">{{ scope.row.name }}</template>
+                <template slot-scope="scope">{{ scope.row.riskSourceName }}</template>
               </el-table-column>
               <el-table-column
                 label="风险等级"
                 align="center">
-                <template slot-scope="scope">{{ scope.row.level }}</template>
+                <template slot-scope="scope">
+                  <el-tag
+                    size="mini"
+                    effect="dark"
+                    :class="classObj(scope.row.riskLevelCode)">
+                    {{ scope.row.riskLevel}}
+                  </el-tag>
+                </template>
               </el-table-column>
               <el-table-column
                 label="主要危害因素"
                 align="center">
-                <template slot-scope="scope">{{ scope.row.reason }}</template>
+                <template slot-scope="scope">{{ scope.row.factor }}</template>
               </el-table-column>
               <el-table-column
                 label="管控措施"
                 align="center">
-                <template slot-scope="scope">{{ scope.row.measures }}</template>
+                <template slot-scope="scope">{{ scope.row.technology + ';' + scope.row.bmp + ';' + scope.row.train + ';' + scope.row.individual + ';' + scope.row.emergency }}</template>
               </el-table-column>
               <el-table-column
                 label="风险点详情"
@@ -228,7 +235,8 @@ import {
   getLayer,
   delMap,
   delPoint,
-  uploadPic
+  uploadPic,
+  checkItemDetail
 } from '@/api/riskControl'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
@@ -261,7 +269,7 @@ export default {
         //   y2: 383
         // }
       ], // 之前存在的图层
-      fillStyles: ['#a3a3a3', '#4680ff', '#fffb09', '#ff9309', '#d13a38'],
+      fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
       starty: 0, // 起始y坐标
@@ -292,18 +300,16 @@ export default {
         left: 0
       },
       slideOpen: false, // 右侧滑出部分
-      slideTable: [
-        {name: '加油站A', level: '2', reason: '测试原因A', measures: '措施', id: '3717'},
-        {name: '加油站B', level: '2', reason: '测试原因A', measures: '措施', id: '3717'},
-        {name: '加油站C', level: '2', reason: '测试原因A', measures: '措施', id: '3717'}
-      ],
+      slideTable: [],
       bindVisible: false,
       bindOptions: [],
-      bindSelection: '', // 绑定的选项
+      bindSelection: null, // 绑定的选项
       rebindVisible: false,
-      rebindSelection: '', // 重新绑定的选项
+      rebindSelection: null, // 重新绑定的选项
       uploadVisible: false,
-      uploadLoading: false
+      uploadLoading: false,
+      slidLoading: false,
+      starshMenu: null // 暂存右键的值
     }
   },
   mounted () {
@@ -372,6 +378,10 @@ export default {
             vm.currentImage.url = res.map.backgroundUrl
             vm.showOld()
           } else {
+            vm.$message({
+              type: 'warning',
+              message: '获取数据失败，请稍后重试'
+            })
           }
           vm.pageLoading = false
         })
@@ -445,6 +455,7 @@ export default {
     },
     saveChange () { // 保存修改
       let vm = this
+      vm.pageLoading = true
       let allLayers = vm.oldLayers.concat(vm.layers)
       let postD = {
         id: vm.currentMap,
@@ -453,9 +464,15 @@ export default {
       bindLayer(postD).then(res => {
         if (res.code === 200) {
           console.log(res.data)
+          vm.layers = [] // 因为修改的layers以及保存了，再次加载时，作为oldLayers加载，故layers清空
+          vm.getOldLayers()
         } else {
-
+          vm.$message({
+            type: 'warning',
+            message: '保存失败，请稍后重试'
+          })
         }
+        vm.pageLoading = false
       })
     },
     resizeLeft (rect) {
@@ -790,23 +807,24 @@ export default {
       vm.op = 0
     },
     openMenu (e) {
-      console.log('右键：', e)
+      // console.log('右键：', e)
       let vm = this
       vm.startx = e.layerX / vm.scale
       vm.starty = e.layerY / vm.scale
+
       if (vm.isPointInRect(vm.startx, vm.starty)) {
         vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
+        vm.starshMenu = vm.currentR
         vm.bound = false
       } else if (vm.isPointInOld(vm.startx, vm.starty)) {
         vm.currentR = vm.isPointInOld(vm.startx, vm.starty)
+        vm.starshMenu = vm.currentR
         vm.bound = true
       } else {
         vm.currentR = null
       }
-
-      console.log('currentR:', vm.currentR)
-
       if (vm.currentR) {
+        console.log('currentR', vm.currentR)
         vm.leftDistance = vm.startx - vm.currentR.x1
         vm.topDistance = vm.starty - vm.currentR.y1
       } else {
@@ -897,39 +915,75 @@ export default {
     },
     checkItem () {
       let vm = this
+      vm.slidLoading = true
       vm.slideOpen = true
+      checkItemDetail(vm.starshMenu.bindId).then(res => {
+        if (res.code === 200) {
+          vm.slideTable = res.data
+          vm.slidLoading = false
+        } else {
+          vm.slidLoading = false
+          vm.slideOpen = false
+          vm.$message({
+            type: 'warning',
+            message: '数据获取失败，请稍后重试'
+          })
+        }
+      })
     },
     deleteItem () {
-      // let vm = this
+      let vm = this
 
-      // vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   let postD = {
-      //     id: vm.currentMap
-      //   }
-      //   delMap(postD).then(res => {
-      //     if (res.code === 200) {
-      //       this.$message({
-      //         type: 'success',
-      //         message: '删除成功!'
-      //       })
-      //     } else {
-      //       this.$message({
-      //         type: 'warning',
-      //         message: '删除失败，请稍后重试'
-      //       })
-      //     }
-      //     // 重新请求，then，重新绘图
-      //   })
-      // }).catch(() => {
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已取消删除'
-      //   })
-      // })
+      vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // console.log(vm.currentR, vm.bound)
+        if (vm.bound) { // 是odlData，需要请求后台，删除该点
+          let postD = {
+            id: vm.currentR.id
+          }
+          delPoint(postD).then(res => {
+            if (res.code === 200) {
+              vm.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            } else {
+              vm.$message({
+                type: 'warning',
+                message: '删除失败，请稍后重试'
+              })
+            }
+            // 重新请求，then，重新绘图
+            vm.getOldLayers()
+          })
+        } else { // 直接在本地删除即可，只需在最后保存阶段前从layers里删除
+          for (let i = 0; i < vm.layers.length; i++) {
+            if (vm.layers[i].x1 === vm.starshMenu.x1 && vm.layers[i].y1 === vm.starshMenu.y1) {
+              vm.layers.splice(i, 1)
+            }
+          }
+          vm.reshow()
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    classObj (data) {
+      if (data === '4') {
+        return 'tag-low'
+      } else if (data === '3') {
+        return 'tag-normal'
+      } else if (data === '2') {
+        return 'tag-warning'
+      } else if (data === '1') {
+        return 'tag-danger'
+      }
     },
     bind () {
       let vm = this
@@ -945,9 +999,11 @@ export default {
     checkOutDetail () {}, // 点击查看详情
     confirmBind () { // 提交绑定区域
       let vm = this
+      console.log(vm.currentR)
       vm.layers.forEach(item => {
         if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
-          item.bindId = vm.bindSelection
+          item.bindId = vm.bindSelection.value
+          item.level = vm.bindSelection.level
         }
       })
       vm.bindVisible = false
@@ -956,7 +1012,8 @@ export default {
       let vm = this
       vm.oldLayers.forEach(item => {
         if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
-          item.bindId = vm.rebindSelection
+          item.bindId = vm.rebindSelection.value
+          item.level = vm.rebindSelection.level
         }
       })
       vm.rebindVisible = false
