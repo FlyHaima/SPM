@@ -61,7 +61,7 @@
             </div>
 
             <!-- 暂无地图，需要上传新地图 -->
-            <div v-if="currentMap !== '' && currentImage.url == ''" class="up-new-map">
+            <div v-if="currentMap && !currentImage.url" class="up-new-map">
               <el-button size="medium" type="primary" @click="uploadNewMap()"><i class="el-icon-upload2"></i> 上传新图片</el-button>
             </div>
 
@@ -172,7 +172,7 @@
             </span>
           </el-dialog>
 
-          <!-- 查看的侧边展示栏  -->
+          <!-- 查看的侧边展示栏 -->
           <div class="slide-temp" :class="slideOpen ? 'active' : ''" v-loading="slidLoading">
             <p
               style="line-height: 30px; font-size: 24px; margin-bottom: 8px;"><i class="el-icon-circle-close" @click="slideOpen = false"></i>
@@ -440,7 +440,7 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
       vm.layers.pop()
-      ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.showOld()
       vm.reshow()
     },
@@ -449,7 +449,7 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
       vm.layers = []
-      ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.showOld()
       vm.reshow()
     },
@@ -775,7 +775,7 @@ export default {
       ctx.save()
       ctx.setLineDash([5])
       c.style.cursor = 'default'
-      ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       if (vm.flag && vm.op === 1) {
         ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
       }
@@ -850,9 +850,13 @@ export default {
       document.onmouseup = this.mouseup()
     },
     optionChange () {
-      console.log('optionChange', this.currentMap)
-      // then 获取新mapの画板绘制数据
-      // then 需要重新绘制画板 canvas_init()
+      let vm = this
+      const c = document.getElementById('myCanvas')
+      const ctx = c.getContext('2d')
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.getOldLayers()
+      vm.layers = []
+      vm.showOld()
     },
     addMap () {
       let vm = this
@@ -870,6 +874,9 @@ export default {
               type: 'success',
               message: '节点添加成功'
             })
+            const c = document.getElementById('myCanvas')
+            const ctx = c.getContext('2d')
+            ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
             vm.getPlaceSelector(1) // 更新map列表
             // 再初始化其他的绘图元素
           }
