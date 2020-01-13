@@ -236,7 +236,8 @@ import {
   delMap,
   delPoint,
   uploadPic,
-  checkItemDetail
+  checkItemDetail,
+  getImageSize
 } from '@/api/riskControl'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
@@ -257,18 +258,7 @@ export default {
       mapLists: [], // map 选项列表
       currentMap: '', // 当前所选のmap
       layers: [], // 新建图层
-      oldLayers: [
-        // {
-        //   height: 170,
-        //   level: 2,
-        //   type: 0,
-        //   width: 110,
-        //   x1: 182,
-        //   x2: 544,
-        //   y1: 109,
-        //   y2: 383
-        // }
-      ], // 之前存在的图层
+      oldLayers: [], // 之前存在的图层
       fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
@@ -282,9 +272,9 @@ export default {
       scale: 1,
       type: 0,
       currentImage: {
-        url: 'http://file.hljdmkj.com/FvNgq_wvW45xIVqkCZOzb9GaFjbd',
-        width: 1387,
-        height: 951
+        url: '',
+        width: 0,
+        height: 0
       },
       minWidth: 1180,
       minHeight: 747,
@@ -376,6 +366,15 @@ export default {
           if (res.code === 200) {
             vm.oldLayers = res.data
             vm.currentImage.url = res.map.backgroundUrl
+            if (vm.currentImage.url) {
+              getImageSize(vm.currentImage.url).then(res => {
+                vm.currentImage.width = res.width
+                vm.currentImage.height = res.height
+              })
+            } else {
+              vm.currentImage.width = 0
+              vm.currentImage.height = 0
+            }
             vm.showOld()
           } else {
             vm.$message({
@@ -389,20 +388,6 @@ export default {
     },
     canvas_init () { // 初始化，以及初始化时的判断
       this.showOld() // 初始化的时候，先把旧有数据加载遍
-    },
-    // 获取图片的原始尺寸
-    checkImgSize (imgUrl) {
-      let newImg = new Image()
-      newImg.src = imgUrl
-      let newW = 0
-      let newH = 0
-      newImg.onload = function () {
-        // onload 耗费时间由网络而定
-        newW = newImg.width
-        newH = newImg.height
-      }
-      this.currentImage.width = newW
-      this.currentImage.height = newH
     },
     zoomUp () {
       let vm = this
@@ -457,13 +442,14 @@ export default {
       let vm = this
       vm.pageLoading = true
       let allLayers = vm.oldLayers.concat(vm.layers)
+
       let postD = {
         id: vm.currentMap,
         layers: allLayers
       }
       bindLayer(postD).then(res => {
         if (res.code === 200) {
-          console.log(res.data)
+          // console.log(res.data)
           vm.layers = [] // 因为修改的layers以及保存了，再次加载时，作为oldLayers加载，故layers清空
           vm.getOldLayers()
         } else {
@@ -614,11 +600,12 @@ export default {
     drawImage () { // 后期需要把后台传过来的图片宽高作为参数使用，前台读取图片的宽高有onload的顺序问题
       const canvas = document.getElementById('myCanvas')
       const ctx = canvas.getContext('2d')
-
-      if (this.currentImage.url) {
-        // this.checkImgSize(this.currentImage.url)
-        let image = document.getElementById('source')
-        ctx.drawImage(image, 0, 0, this.currentImage.width, this.currentImage.height)
+      let vm = this
+      if (vm.currentImage.url) {
+        let img = new Image()
+        img.src = vm.currentImage.url
+        // console.log('draw', vm.currentImage.width, vm.currentImage.height)
+        ctx.drawImage(img, 0, 0, vm.currentImage.width, vm.currentImage.height)
       }
     },
     // 绘制原有图形，包括背景图
@@ -762,8 +749,6 @@ export default {
       ctx.strokeRect(vm.x, vm.y, 0, 0)
       ctx.strokeStyle = '#0000ff'
       vm.flag = 1
-      // console.log(vm.currentR)
-      // console.log(vm.layers)
     },
     mousemove (e) {
       let vm = this
@@ -1005,7 +990,6 @@ export default {
     checkOutDetail () {}, // 点击查看详情
     confirmBind () { // 提交绑定区域
       let vm = this
-      console.log(vm.currentR)
       vm.layers.forEach(item => {
         if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
           item.bindId = vm.bindSelection.value
@@ -1033,15 +1017,6 @@ export default {
       let vm = this
       vm.fileList = fileList
       vm.uploadImageUrl = vm.fileAddress + fileList[0].response.key
-      console.log(vm.uploadImageUrl)
-      async function boo () {
-        let img = new Image()
-        img.src = vm.uploadImageUrl
-        return img
-      }
-      boo().then(res => {
-        console.log('宽为：' + res.width + ',高为：' + res.height)
-      })
     },
     handleRemove (file, fileList) {
       this.uploadImageUrl = ''

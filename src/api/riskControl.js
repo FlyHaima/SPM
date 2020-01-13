@@ -86,3 +86,12 @@ export function checkItemDetail (bindId) {
     return Promise.resolve(res.data)
   })
 }
+
+// 获取图片尺寸，通过七牛云接口
+export function getImageSize (imageUrl) {
+  const url = `${imageUrl}?imageInfo`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

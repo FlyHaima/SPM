@@ -1,0 +1,19 @@
+
+@charset "utf-8";
+@import "./_themecolor"; /*引入配置*/
+
+@mixin header_bg($color){ /*通过该函数设置主题颜色，后期方便统一管理；*/
+  background-color:$color;
+  [data-theme="theme-0"] & {
+    background-color:$header-background-theme0;
+  }
+  [data-theme="theme-1"] & {
+    background-color:$header-background-theme0;
+  }
+  [data-theme="theme-2"] & {
+    background-color:$header-background-theme0;
+  }
+  [data-theme="theme-3"] & {
+    background-color:$header-background-theme0;
+  }
+}

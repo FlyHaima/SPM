@@ -15,8 +15,14 @@
           <span v-if="msgNum > 0" class="num-conner">{{msgNum > 99 ? '99+' : msgNum}}</span>
         </div>
       </li>
-      <li>
+      <li class="skin-li">
         <div class="btn skin-btn"><i></i>皮肤</div>
+        <ul class="theme-select">
+          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`theme-${index}`)">
+            <i class="theme-i" :style="{ background: `${item.color}`}"></i>
+            {{item.name}}
+          </li>
+        </ul>
       </li>
       <li>
         <div class="btn user-name-btn" @click="goUserPage()"><i></i>{{userName}}</div>
@@ -37,7 +43,26 @@ export default {
       showTaskA: false,
       showTaskB: true,
       showTaskC: true,
-      showTaskD: true
+      showTaskD: true,
+      themes: [
+        {
+          color: '#1a6fba',
+          name: '海军蓝'
+        },
+        {
+          color: '#232c37',
+          name: '静谧黑'
+        },
+        {
+          color: '#db4d6d',
+          name: '温馨粉'
+        },
+        {
+          color: '#86c166',
+          name: '森林绿'
+        }
+      ],
+      backgroundColorTheme: '$header-background-theme1'
     }
   },
   computed: {
@@ -50,6 +75,22 @@ export default {
   mounted () {
   },
   methods: {
+    changeTheme (theme) {
+      switch (theme) {
+        case 'theme-0':
+          console.log(0)
+          break
+        case 'theme-1':
+          console.log(1)
+          break
+        case 'theme-2':
+          console.log(2)
+          break
+        case 'theme-3':
+          console.log(3)
+      }
+      window.document.documentElement.setAttribute('data-theme', theme)
+    },
     quitHandle () {
       let vm = this
       axios
@@ -108,15 +149,17 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  background: $bgHeader;
+  // background: $bg_color;
+  // @include header_bg(#{backgroundColorTheme});
+  @include header_bg($header-background-theme0);
   text-align: right;
   .logo{
     position: absolute;
-    top: 0;
-    left: 36px;
-    width: 268px;
-    height: 80px;
-    /*background: url() no-repeat;*/
+    top: 16px;
+    left: 47px;
+    width: 136px;
+    height: 43px;
+    background: url(../../assets/img/AGT-logo.png) no-repeat;
     vertical-align: middle;
     background-position: center center;
   }
@@ -216,6 +259,40 @@ export default {
             background-size: contain;
             width: 27px;
             height: 33px;
+          }
+        }
+      }
+      &.skin-li{
+        .theme-select{
+          display: none;
+        }
+        &:hover{
+          .theme-select{
+            display: block;
+          }
+        }
+      }
+      .theme-select{
+        position: absolute;
+        background: #fff;
+        border: 1px solid #ddd;
+        color: #505050;
+        font-size: 14px;
+        z-index: 9999;
+        top: 38px;
+        left: -2px;
+        .themes{
+          width: 90px;
+          padding: 0 12px;
+          line-height: 24px;
+          &:hover{
+            background: #ddd;
+          }
+          .theme-i{
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-right: 6px;
           }
         }
       }
