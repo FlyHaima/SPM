@@ -878,7 +878,6 @@ export default {
             const ctx = c.getContext('2d')
             ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
             vm.getPlaceSelector(1) // 更新map列表
-            // 再初始化其他的绘图元素
           }
           vm.pageLoading = false
         })
