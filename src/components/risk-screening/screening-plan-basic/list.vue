@@ -1,5 +1,5 @@
 <template>
-  <el-container class="inner-main-content">
+  <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-list
         v-if="listMenuData.length > 0"
@@ -41,16 +41,28 @@
               icon="el-icon-plus"
               @click="handleAdd">
               添加</el-button>
-            <el-button
-              type="warning"
-              size="medium"
-              icon="el-icon-upload2">
-              导入</el-button>
+            <el-upload
+              class="tools-item"
+              accept=".xls"
+              :action='uploadUrl()'
+              :before-upload="handleBeforeUpload"
+              :on-success="handleSuccess"
+              :on-error="handleError"
+              :file-list="fileList"
+              :show-file-list="false">
+              <el-button
+                type="warning"
+                size="medium"
+                icon="el-icon-upload2"
+                v-loading="uploading"
+                class="button-custom">
+                导入</el-button>
+            </el-upload>
             <el-button
               type="success"
               size="medium"
               icon="el-icon-download"
-              @click="exportEexcel">
+              @click="exportEexcelHandel">
               导出</el-button>
           </div>
         </div>
@@ -58,7 +70,8 @@
           :data="tableData"
           border
           style="width: 100%"
-          align="center">
+          align="center"
+          v-loading="tablesLoading">
           <el-table-column
             type="index"
             label="序号"
@@ -145,13 +158,13 @@
     <el-dialog
       title="提示"
       :visible.sync="dialogTipsVisible"
-      width="30%">
+      width="35%">
       <div class="dialog-content">
         <div class="dialog-tips-content" v-if="sendPlanSwitch">
           <i class="el-icon-circle-check dialog-tips-icon"></i>
           <div class="dialog-tips-text">确定发布清单任务计划么？</div>
         </div>
-        <template v-else>
+        <div v-else>
           <div class="dialog-tips-content" >
             <i class="el-icon-warning dialog-tips-icon"></i>
             <div class="dialog-tips-text">当前检查清单中存在手动推送的任务，请为手动推送的隐患任务设置<span class="color-primary">推送时间</span></div>
@@ -172,10 +185,11 @@
             <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
             <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
           </div>
-        </template>
+        </div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button
+          v-loading="submitting"
           type="primary"
           size="small"
           @click="savePlanHandle()">确 定</el-button>
@@ -220,11 +234,13 @@
 </template>
 
 <script>
+import moment from 'moment'
 import TreeList from '@/components/tree-diagram/treeList'
 import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import axios from '@/api/axios'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import DialogAdd from '@/components/risk-screening/screening-plan/addDialog'
+import exportExcel from '@/api/exportExcel'
 export default {
   name: 'list',
   props: {
@@ -235,13 +251,15 @@ export default {
   },
   data () {
     return {
+      pageLoading: false,
+      tablesLoading: false,
+      submitting: false,
       sendPlanSwitch: true, // 计划发布开关
       btnDisabledProductSend: false, // 计划发布可用开关
       dialogTipsVisible: false, // 添加弹框显示开关
       dialogAddVisible: false, // 添加弹框显示开关
       dialogOrganizationVisible: false, // 组织机构弹框显示开关
       dialogSortVisible: false, // 排查种类弹框显示开关
-      // isOrgTree: true, // 是否是组织结构树
       organizationTree: [], // 组织机构
       editOrgData: {
         invDeptName: '',
@@ -256,12 +274,17 @@ export default {
       tableData: [], // 基础类清单列表数据
       listDate: [
         {
-          value: ''
+          value: Date.parse(moment().format('YYYY-MM-DD'))
         }
       ],
       checkedAuto: null,
       checkedManual: null,
-      investigationOptions: [] // 排查频率选项
+      investigationOptions: [], // 排查频率选项
+      uploading: false, // 导入loading
+      // uploadData: {
+      //   riskId: ''
+      // }, // 上传数据
+      fileList: [] // 导入列表
     }
   },
   components: {
@@ -271,16 +294,38 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
-    console.log(this.type)
+    // this.list[0].vaule = Date.parse(this.moment().format('YYYY-MM-DD'))
+    // console.log(this.list[0].vaule)
     this.fetchListMenuData()
     this.fetchOrgTreeData()
-    // this.fetchTableData()
-    // console.log(this.currentPlanId)
   },
   methods: {
+    // 导入接口地址
+    uploadUrl () {
+      const baseUrl = 'http://192.168.137.33:8033/spm'
+      return baseUrl + '/basticHidden/importBasticHidden'
+    },
+    // 导入
+    handleBeforeUpload (file) {
+      this.uploading = true
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.uploading = false
+      this.fetchTableData()
+    },
+    // 导入失败
+    handleError (file, fileList) {
+    },
+    // 导出excel
+    exportEexcelHandel () {
+      exportExcel(`basticHidden/exportBasticHidden`)
+    },
     /** 左侧清单菜单 **/
     // 获取清单数据
     fetchListMenuData () {
+      this.pageLoading = true
       axios
         .get('schedule/getScheduleList')
         .then((res) => {
@@ -291,6 +336,9 @@ export default {
             this.fetchInvestigationOptions()
             this.fetchTableData()
           }
+        })
+        .finally(() => {
+          this.pageLoading = false
         })
     },
     // 创建清单
@@ -437,6 +485,7 @@ export default {
     /** 右侧列表内容 **/
     // 获取排查隐患清单列表
     fetchTableData () {
+      this.tablesLoading = true
       axios
         .get('basticHidden/getBasticHiddenList', {
           planId: this.currentPlanId
@@ -458,6 +507,9 @@ export default {
 
             this.btnDisabledProductSend = this.tableData.length > 0
           }
+        })
+        .finally(() => {
+          this.tablesLoading = false
         })
     },
     // 获取排查频率
@@ -489,8 +541,6 @@ export default {
         .finally(() => {
         })
     },
-    // 导出excel
-    exportEexcel () {},
     // 添加计划数据项
     handleAdd () {
       this.dialogAddVisible = true
@@ -565,8 +615,6 @@ export default {
       let vm = this
       vm.listDate = vm.filterListDate(vm.listDate)
       let sendData = {
-        // spmBasicHiddenList: vm.tableData,
-        // checkTime: vm.listDate
         list: [{
           spmBasicHiddenList: vm.tableData,
           checkTime: vm.listDate
@@ -579,7 +627,7 @@ export default {
           if (res.data.code === 200) {
             vm.$notify.success('清单任务计划发布完成')
             vm.dialogTipsVisible = false
-            vm.fetchSortTableData()
+            vm.fetchTableData()
           } else {
             vm.$message({
               message: res.data.message,
@@ -647,15 +695,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/utils/css/style.scss';
-/deep/.tree-diagram {
-  margin: 0 auto;
-  .tree-box{
-    background: #f7f9fc;
-  }
-  .el-tree {
-    background: #f7f9fc;
-  }
-}
 /deep/.el-select{
   .el-input__inner{
     border: 0;

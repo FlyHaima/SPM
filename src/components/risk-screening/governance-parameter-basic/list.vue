@@ -7,7 +7,6 @@
         :list-data = "listMenuData"
         showSearch
         @menu-click-handle="menuClickHandle"
-
       ></tree-list>
     </el-aside>
 
@@ -23,7 +22,7 @@
               <el-form-item label="检查名称">
                 <el-input v-model="form.checkName" placeholder="请输入检查名称"></el-input>
               </el-form-item>
-              <el-form-item label="检查日期">
+              <el-form-item label="检查时间">
                 <el-date-picker
                   v-model="queryDate"
                   @change="checkQueryDate"
@@ -63,9 +62,36 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="checkUser"
+            label="检查人"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="checkTime"
+            label="检查时间"
+            align="center"
+            width="115">
+          </el-table-column>
+          <el-table-column
+            prop="content"
+            label="检查内容"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="isHidden"
+            label="是否符合"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="hiddenDesc"
+            label="隐患描述"
+            align="center">
+          </el-table-column>
+          <el-table-column
             prop="hiddenType"
             label="隐患类型"
-            align="center">
+            align="center"
+            width="100">
           </el-table-column>
           <el-table-column
             prop="checkByUser"
@@ -75,12 +101,8 @@
           <el-table-column
             prop="checkByTime"
             label="复核时间"
-            align="center">
-          </el-table-column>
-          <el-table-column
-            prop="rectiTime"
-            label="整改时间"
-            align="center">
+            align="center"
+            width="115">
           </el-table-column>
           <el-table-column
             prop="rectiRemark"
@@ -88,8 +110,46 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop=" "
-            label="复核情况"
+            prop="goverUser"
+            label="治理人"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="goverTime"
+            label="治理时间"
+            align="center"
+            width="115">
+          </el-table-column>
+          <el-table-column
+            prop="goverReviUser"
+            label="治理复核人"
+            align="center"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="goverReviTime"
+            label="治理复核时间"
+            align="center"
+            width="115">
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="进度"
+            align="center"
+            width="200">
+            <template slot-scope="scope">
+              <span v-if="scope.row.actState === '完成'">{{scope.row.actState}}</span>
+              <table-step
+                v-else
+                :step-data="stepData"
+                :active="scope.row.actState"
+              >
+              </table-step>
+            </template>
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="治理完成情况"
             width="120"
             align="center">
             <template slot-scope="scope">
@@ -97,19 +157,6 @@
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
-              </a>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop=" "
-            label="操作"
-            width="100"
-            align="center">
-            <template slot-scope="scope">
-              <a
-                href="javascript:;"
-                class="color-primary"
-                @click="reviewHandle(scope.row)">复核
               </a>
             </template>
           </el-table-column>
@@ -121,23 +168,16 @@
       :id = "currentDetailsId"
       @on-dialog-change = "changeDetailsDialog"
     ></dialog-details>
-    <dialog-review
-      :postData = "postReviewData"
-      :dialogVisible = "dialogReviewVisible"
-      @on-dialog-change = "changeReviewDialog"
-      @reload = "fetchTableData"
-    ></dialog-review>
   </el-container>
 </template>
 
 <script>
 import TreeList from '@/components/tree-diagram/treeList'
+import TableStep from '@/components/step/stepCustom'
 import axios from '@/api/axios'
 import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
-import DialogReview from '@/components/risk-screening/screening-review/reviewDialog'
 import exportExcel from '@/api/exportExcel'
-import { mapState } from 'vuex'
 export default {
   name: 'list',
   props: {
@@ -151,7 +191,6 @@ export default {
       pageLoading: false,
       tablesLoading: false,
       dialogDetailsVisible: false, // 详情弹框显示开关
-      dialogReviewVisible: false, // 复核弹框显示开关
       form: {
         checkName: '',
         startTime: '',
@@ -160,27 +199,42 @@ export default {
       listMenuData: [], // 计划清单列表数据
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
-      queryDate: '', // 查询日期
+      queryDate: '',
       currentDetailsId: '',
-      postReviewData: null // 复核时传的对象
+      stepData: [
+        {
+          label: 'p',
+          value: 1
+        },
+        {
+          label: 'd',
+          value: 2
+        },
+        {
+          label: 'c',
+          value: 3
+        },
+        {
+          label: 'a',
+          value: 4
+        }
+      ]
     }
   },
   components: {
     TreeList, // 计划清单菜单
     DialogDetails,
-    DialogReview
+    TableStep
   },
-  computed: { // vuex 参数引入
-    ...mapState({
-      // 获取用户信息
-      userInfo: (state) => state.userInfo
-    })
-  },
-  mounted () {
+  created () {
     this.fetchListMenuData()
     this.fetchTableData()
   },
   methods: {
+    // 导出excel
+    exportEexcelHandel () {
+      exportExcel(`/hiddenAct/exportRecordCompletionpc`)
+    },
     checkQueryDate (val) {
       if (val) {
         this.form.startTime = val[0]
@@ -206,17 +260,9 @@ export default {
           this.pageLoading = false
         })
     },
-    // 触发复核操作
-    reviewHandle (item) {
-      this.postReviewData = item
-      this.dialogReviewVisible = true
-    },
-    changeReviewDialog (val) {
-      this.dialogReviewVisible = val
-    },
     // 触发详情弹框
     detailsHandle (item) {
-      this.currentDetailsId = item.hiddInstanceId
+      this.currentDetailsId = item.procInstId
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {
@@ -232,7 +278,7 @@ export default {
     fetchTableData () {
       this.tablesLoading = true
       axios
-        .get('hiddenAct/dImpleList', {
+        .get('hiddenAct/manageLedgersList', {
           checkName: this.form.checkName,
           investType: this.type,
           startTime: this.form.startTime,
@@ -243,24 +289,42 @@ export default {
           if (res.data.code === 200) {
             this.formatTableData = res.data.data
             this.formatTableData.forEach(item => {
-              // 格式化复核时间
+              // 治理复核时间
+              if (item.goverReviTime) {
+                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
+              } else {
+                item.goverReviTime = ''
+              }
+              // 检查时间
+              if (item.checkTime) {
+                item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')
+              } else {
+                item.checkTime = ''
+              }
+              // 复核时间
               if (item.checkByTime) {
                 item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
               } else {
                 item.checkByTime = ''
               }
-              // 格式化整改时间
-              if (item.rectiTime) {
-                item.rectiTime = moment(item.rectiTime).format('YYYY-MM-DD  HH: mm: ss')
+              // 治理时间
+              if (item.goverTime) {
+                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
               } else {
-                item.rectiTime = ''
+                item.goverTime = ''
+              }
+              // 治理复核时间
+              if (item.goverReviTime) {
+                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
+              } else {
+                item.goverReviTime = ''
               }
             })
             this.tableData = this.formatTableData
           }
         })
         .finally(() => {
-          this.tablesLoading = false
+          this.tables.tablesLoading = false
         })
     },
     // 查询table，表单提交响应事件
@@ -268,32 +332,13 @@ export default {
       this.fetchTableData()
     },
     // 导出excel
-    exportEexcelHandel () {
-      exportExcel(`hiddenAct/exportdImpleList`,
-        'userId=' + this.userInfo.userId + '&' +
-        'leftId=' + this.currentPlanId + '&' +
-        'investType=' + this.type + '&' +
-        'checkName=' + this.form.checkName + '&' +
-        'startTime=' + this.form.startTime + '&' +
-        'endTime=' + this.form.endTime)
-    }
+    exportEexcel () {}
   }
-  // watch: {
-  //   currentPlanId: {
-  //     immediate: true,
-  //     handler (val, oldVal) {
-  //       console.log(val)
-  //       this.currentPlanId = val
-  //       this.fetchTableData(val)
-  //     }
-  //   }
-  // }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '@/utils/css/style.scss';
-
 .table-img{
   width: 62px;
   height: 53px;

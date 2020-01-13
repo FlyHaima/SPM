@@ -1,5 +1,5 @@
 <template>
-  <el-container class="inner-main-content">
+  <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
         :tree-name="'风险单元'"
@@ -45,11 +45,12 @@
               type="success"
               size="medium"
               icon="el-icon-download"
-              @click="exportEexcel">
+              @click="exportEexcelHandel">
               导出</el-button>
           </div>
         </div>
         <el-table
+          v-loading = "tablesLoading"
           :data="tableData"
           border
           style="width: 100%"
@@ -115,11 +116,14 @@
     </el-main>
     <dialog-details
       :dialogVisible = "dialogDetailsVisible"
+      :id = "currentDetailsId"
       @on-dialog-change = "changeDetailsDialog"
     ></dialog-details>
     <dialog-review
+      :postData = "postReviewData"
       :dialogVisible = "dialogReviewVisible"
       @on-dialog-change = "changeReviewDialog"
+      @reload = "fetchTableData"
     ></dialog-review>
   </el-container>
 </template>
@@ -130,6 +134,7 @@ import axios from '@/api/axios'
 import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
 import DialogReview from '@/components/risk-screening/screening-review/reviewDialog'
+import exportExcel from '@/api/exportExcel'
 export default {
   name: 'list',
   props: {
@@ -140,6 +145,8 @@ export default {
   },
   data () {
     return {
+      pageLoading: false,
+      tablesLoading: false,
       dialogDetailsVisible: false, // 详情弹框显示开关
       dialogReviewVisible: false, // 复核弹框显示开关
       form: {
@@ -151,7 +158,9 @@ export default {
       currentPlanId: '', // 当前清单项的id
       riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
-      queryDate: ''
+      queryDate: '',
+      currentDetailsId: '',
+      postReviewData: null // 复核时传的对象
     }
   },
   components: {
@@ -175,6 +184,7 @@ export default {
     },
     // 触发复核操作
     reviewHandle (item) {
+      this.postReviewData = item
       this.dialogReviewVisible = true
     },
     changeReviewDialog (val) {
@@ -182,6 +192,7 @@ export default {
     },
     // 触发详情弹框
     detailsHandle (item) {
+      this.currentDetailsId = item.hiddInstanceId
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {
@@ -194,6 +205,7 @@ export default {
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
+      this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
@@ -203,9 +215,13 @@ export default {
             this.fetchTableData()
           }
         })
+        .finally(() => {
+          this.pageLoading = false
+        })
     },
     // 获取排查隐患清单列表
     fetchTableData () {
+      this.tablesLoading = true
       axios
         .get('hiddenAct/dImpleList', {
           checkName: this.form.checkName,
@@ -234,147 +250,25 @@ export default {
             this.tableData = this.formatTableData
           }
         })
+        .finally(() => {
+          this.tablesLoading = false
+        })
     },
     // 查询table，表单提交响应事件
     tableSearchHandler () {
       this.fetchTableData()
     },
     // 导出excel
-    exportEexcel () {}
+    exportEexcelHandel () {
+      exportExcel(`/hiddenAct/exportdImpleListpc`)
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '@/utils/css/style.scss';
-/deep/.tree-diagram {
-  margin: 0 auto;
-  .tree-box{
-    background: #f7f9fc;
-  }
-  .el-tree {
-    background: #f7f9fc;
-  }
-}
-/deep/.el-select{
-  .el-input__inner{
-    border: 0;
-    background: transparent;
-    height: 30px;
-    line-height: 30px;
-  }
-  .el-input__icon{
-    line-height: 30px;
-  }
-}
-/deep/.el-icon-bottom{
-  display: inline-block;
-  border: 1px solid #333333;
-  padding: 2px;
-  border-radius: 50%;
-  &:hover{
-    color: $colorPrimary;
-    border-color: $colorPrimary;
-  }
-}
 
-.raido-group-custom{
-  background: #ffffff;
-   margin: 10px 0;
-  >>> .el-radio-button__inner{
-    padding: 5px 3px;
-    width: 51px;
-    height: 26px;
-    font-size: 14px;
-    color: #9e9e9e;
-    font-weight: 400;
-    // text-indent: -999px;
-  }
-  >>> .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-
-  }
-  >>> .el-radio-button__orig-radio:disabled:checked+.el-radio-button__inner{
-    background: #ababab !important;
-    border-color: #ababab !important;
-    box-shadow: -1px 0 0 0 #ababab !important;
-  }
-  >>> .el-radio-button:first-child {
-      .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-        background: $colorPrimary;
-        color: #ffffff;
-      }
-        .el-radio-button__inner{
-          border-radius:  19px 0 0 19px;
-        }
-      }
-  >>> .el-radio-button:last-child {
-        .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-          background: #f56c6c;
-          border-color: #f56c6c;
-          color: #ffffff;
-          box-shadow: -1px 0 0 0 #f56c6c;
-        }
-        .el-radio-button__inner{
-          border-radius:  0px 19px 19px 0px;
-
-        }
-      }
-}
-.data-colum{
-  margin: 40px auto 0;
-  +.data-colum{
-    margin-top: 15px;
-  }
-  .data-colum-label{
-    display: inline-block;
-    width:  85px;
-  }
-  .button-add-time{
-    display: inline-block;
-    font-size: 24px;
-    vertical-align: top;
-    line-height: 32px;
-    &:hover{
-      color: $colorPrimary;
-    }
-  }
-  >>> .el-date-editor{
-    width: 280px;
-    .el-input__inner{
-      height: 30px;
-      line-height: 30px;
-    }
-    .el-input__icon{
-      line-height: 30px;
-    }
-  }
-}
-.dialog-content{
-  margin: 0 20px;
-}
-.dialog-tips-content{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.dialog-tips-icon{
-  width: 46px;
-  height: 46px;
-  font-size: 46px;
-  &.el-icon-warning{
-    color: #ff4848;
-  }
-  &.el-icon-circle-check{
-    color: $colorPrimary;
-  }
-}
-.dialog-tips-text{
-  max-width: 448px;
-  font-size: 16px;
-  line-height: 30px;
-  color: #ababab;
-  margin-left: 20px;
-}
 .table-img{
   width: 62px;
   height: 53px;

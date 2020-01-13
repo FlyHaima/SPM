@@ -1,5 +1,5 @@
 <template>
-  <el-container class="inner-main-content">
+  <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
         :tree-name="'风险单元'"
@@ -39,11 +39,13 @@
               <el-button
               type="success"
               size="medium"
-              icon="el-icon-download">
+              icon="el-icon-download"
+              @click="exportEexcelHandel">
               导出</el-button>
           </div>
         </div>
         <el-table
+          v-loading="tablesLoading"
           :data="tableData"
           border
           style="width: 100%"
@@ -189,6 +191,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button
+          v-loading="submitting"
           type="primary"
           size="small"
           @click="savePlanHandle()">确 定</el-button>
@@ -230,6 +233,7 @@ import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import axios from '@/api/axios'
+import exportExcel from '@/api/exportExcel'
 export default {
   name: 'list',
   props: {
@@ -240,6 +244,9 @@ export default {
   },
   data () {
     return {
+      pageLoading: false,
+      submitting: false,
+      tablesLoading: false,
       sendPlanSwitch: true, // 计划发布开关
       btnDisabledProductSend: false, // 计划发布可用开关
       dialogTipsVisible: false, // 添加弹框显示开关
@@ -270,12 +277,15 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
-    console.log(this.type)
     this.fetchUnitTreeData()
     this.fetchOrgTreeData()
     this.fetchTableData()
   },
   methods: {
+    // 导出excel
+    exportEexcelHandel () {
+      exportExcel(`productHidden/exportProductHidden`)
+    },
     // 树节点，点击功能
     treeClickHandle (item) {
       this.currentPlanId = item.riskId
@@ -288,10 +298,12 @@ export default {
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
+      this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
+            this.pageLoading = false
             this.riskUnitTree = res.data.data
             this.currentPlanId = this.riskUnitTree[0].riskId
             this.fetchInvestigationOptions()
@@ -306,6 +318,7 @@ export default {
           risk_id: this.currentPlanId
         })
         .then((res) => {
+          this.tablesLoading = true
           if (res.data.code === 200) {
             // let initTableData = []
             this.initTableData = res.data.data
@@ -321,6 +334,9 @@ export default {
             this.tableData = this.initTableData
             this.btnDisabledProductSend = this.tableData.length > 0
           }
+        })
+        .finally(() => {
+          this.tablesLoading = false
         })
     },
     // 添加随机隐患
@@ -363,27 +379,8 @@ export default {
             }
           })
       }).catch(() => {
-        // after cancel
-        this.pageLoading = false
       })
-      // axios
-      //   .post('dept/updateDept')
-      //   .then((res) => {
-      //     if (res.data.code === 200) {
-      //       vm.$notify.success('修改成功')
-      //       vm.fetchOrgTreeData()
-      //     } else {
-      //       vm.$message({
-      //         message: res.data.message,
-      //         type: 'warning'
-      //       })
-      //     }
-      //   })
     },
-    // 编辑机构
-    // eiditOrganizationHandle () {
-    //   this.dialogOrganizationVisible = true
-    // }
     // 获取排查频率
     fetchInvestigationOptions () {
       axios
@@ -575,15 +572,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/utils/css/style.scss';
-/deep/.tree-diagram {
-  margin: 0 auto;
-  .tree-box{
-    background: #f7f9fc;
-  }
-  .el-tree {
-    background: #f7f9fc;
-  }
-}
 /deep/.el-select{
   .el-input__inner{
     border: 0;

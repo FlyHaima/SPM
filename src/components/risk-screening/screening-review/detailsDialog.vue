@@ -108,8 +108,7 @@ export default {
     fetchDetailsData () {
       axios
         .get('hiddenAct/impleDetail', {
-          // businessKey: this.currentId
-          businessKey: 11
+          businessKey: this.currentId
         })
         .then((res) => {
           if (res.data.code === 200) {

@@ -1,5 +1,5 @@
 <template>
-  <el-container class="inner-main-content">
+  <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
         :tree-name="'风险单元'"
@@ -21,7 +21,7 @@
               <el-form-item label="检查名称">
                 <el-input v-model="form.checkName" placeholder="请输入检查名称"></el-input>
               </el-form-item>
-              <el-form-item label="检查日期">
+              <el-form-item label="最终治理时间">
                 <el-date-picker
                   v-model="queryDate"
                   @change="checkQueryDate"
@@ -45,11 +45,12 @@
               type="success"
               size="medium"
               icon="el-icon-download"
-              @click="exportEexcel">
+              @click="exportEexcelHandel">
               导出</el-button>
           </div>
         </div>
         <el-table
+          v-loading="tablesLoading"
           :data="tableData"
           border
           style="width: 100%"
@@ -60,33 +61,29 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop="hiddenType"
-            label="隐患类型"
+            prop="goverTime"
+            label="整改间"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="checkByUser"
-            label="复核人"
+            prop="goverUser"
+            label="整改人"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="checkByTime"
-            label="复核时间"
+            label="整改图片"
+            align="center">
+            <template slot-scope="scope">
+              <img class="table-img" :src="scope.row.rectiPhoto" title="img"/>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="rectiRecord"
+            label="整改记录"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="rectiTime"
-            label="整改时间"
-            align="center">
-          </el-table-column>
-          <el-table-column
-            prop="rectiRemark"
-            label="整改意见"
-            align="center">
-          </el-table-column>
-          <el-table-column
-            prop=" "
-            label="复核情况"
+            label="治理情况"
             width="120"
             align="center">
             <template slot-scope="scope">
@@ -97,30 +94,14 @@
               </a>
             </template>
           </el-table-column>
-          <el-table-column
-            prop=" "
-            label="操作"
-            width="100"
-            align="center">
-            <template slot-scope="scope">
-              <a
-                href="javascript:;"
-                class="color-primary"
-                @click="reviewHandle(scope.row)">复核
-              </a>
-            </template>
-          </el-table-column>
         </el-table>
       </div>
     </el-main>
     <dialog-details
       :dialogVisible = "dialogDetailsVisible"
+      :id = "currentDetailsId"
       @on-dialog-change = "changeDetailsDialog"
     ></dialog-details>
-    <dialog-review
-      :dialogVisible = "dialogReviewVisible"
-      @on-dialog-change = "changeReviewDialog"
-    ></dialog-review>
   </el-container>
 </template>
 
@@ -129,7 +110,7 @@ import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
-import DialogReview from '@/components/risk-screening/screening-review/reviewDialog'
+import exportExcel from '@/api/exportExcel'
 export default {
   name: 'list',
   props: {
@@ -140,8 +121,9 @@ export default {
   },
   data () {
     return {
+      pageLoading: false,
+      tablesLoading: false,
       dialogDetailsVisible: false, // 详情弹框显示开关
-      dialogReviewVisible: false, // 复核弹框显示开关
       form: {
         checkName: '',
         startTime: '',
@@ -151,19 +133,23 @@ export default {
       currentPlanId: '', // 当前清单项的id
       riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
-      queryDate: ''
+      queryDate: '',
+      currentDetailsId: ''
     }
   },
   components: {
     TreeReadOnly,
-    DialogDetails,
-    DialogReview
+    DialogDetails
   },
   created () {
     this.fetchUnitTreeData()
     this.fetchTableData()
   },
   methods: {
+    // 导出excel
+    exportEexcelHandel () {
+      exportExcel(`/hiddenAct/exportRecordCompletionpc`)
+    },
     checkQueryDate (val) {
       console.log(val)
       if (val) {
@@ -173,15 +159,9 @@ export default {
         this.form.startTime = this.form.endTime = ''
       }
     },
-    // 触发复核操作
-    reviewHandle (item) {
-      this.dialogReviewVisible = true
-    },
-    changeReviewDialog (val) {
-      this.dialogReviewVisible = val
-    },
     // 触发详情弹框
     detailsHandle (item) {
+      this.currentDetailsId = item.procInstId
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {
@@ -194,6 +174,7 @@ export default {
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
+      this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
@@ -203,9 +184,13 @@ export default {
             this.fetchTableData()
           }
         })
+        .finally(() => {
+          this.pageLoading = false
+        })
     },
     // 获取排查隐患清单列表
     fetchTableData () {
+      this.tablesLoading = true
       axios
         .get('hiddenAct/dImpleList', {
           checkName: this.form.checkName,
@@ -218,163 +203,31 @@ export default {
           if (res.data.code === 200) {
             this.formatTableData = res.data.data
             this.formatTableData.forEach(item => {
-              // 格式化复核时间
-              if (item.checkByTime) {
-                item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
+              // 整改时间
+              if (item.goverTime) {
+                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
               } else {
-                item.checkByTime = ''
-              }
-              // 格式化整改时间
-              if (item.rectiTime) {
-                item.rectiTime = moment(item.rectiTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.rectiTime = ''
+                item.goverTime = ''
               }
             })
             this.tableData = this.formatTableData
           }
         })
+        .finally(() => {
+          this.tablesLoading = false
+        })
     },
     // 查询table，表单提交响应事件
     tableSearchHandler () {
       this.fetchTableData()
-    },
-    // 导出excel
-    exportEexcel () {}
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '@/utils/css/style.scss';
-/deep/.tree-diagram {
-  margin: 0 auto;
-  .tree-box{
-    background: #f7f9fc;
-  }
-  .el-tree {
-    background: #f7f9fc;
-  }
-}
-/deep/.el-select{
-  .el-input__inner{
-    border: 0;
-    background: transparent;
-    height: 30px;
-    line-height: 30px;
-  }
-  .el-input__icon{
-    line-height: 30px;
-  }
-}
-/deep/.el-icon-bottom{
-  display: inline-block;
-  border: 1px solid #333333;
-  padding: 2px;
-  border-radius: 50%;
-  &:hover{
-    color: $colorPrimary;
-    border-color: $colorPrimary;
-  }
-}
 
-.raido-group-custom{
-  background: #ffffff;
-   margin: 10px 0;
-  >>> .el-radio-button__inner{
-    padding: 5px 3px;
-    width: 51px;
-    height: 26px;
-    font-size: 14px;
-    color: #9e9e9e;
-    font-weight: 400;
-    // text-indent: -999px;
-  }
-  >>> .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-
-  }
-  >>> .el-radio-button__orig-radio:disabled:checked+.el-radio-button__inner{
-    background: #ababab !important;
-    border-color: #ababab !important;
-    box-shadow: -1px 0 0 0 #ababab !important;
-  }
-  >>> .el-radio-button:first-child {
-      .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-        background: $colorPrimary;
-        color: #ffffff;
-      }
-        .el-radio-button__inner{
-          border-radius:  19px 0 0 19px;
-        }
-      }
-  >>> .el-radio-button:last-child {
-        .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-          background: #f56c6c;
-          border-color: #f56c6c;
-          color: #ffffff;
-          box-shadow: -1px 0 0 0 #f56c6c;
-        }
-        .el-radio-button__inner{
-          border-radius:  0px 19px 19px 0px;
-
-        }
-      }
-}
-.data-colum{
-  margin: 40px auto 0;
-  +.data-colum{
-    margin-top: 15px;
-  }
-  .data-colum-label{
-    display: inline-block;
-    width:  85px;
-  }
-  .button-add-time{
-    display: inline-block;
-    font-size: 24px;
-    vertical-align: top;
-    line-height: 32px;
-    &:hover{
-      color: $colorPrimary;
-    }
-  }
-  >>> .el-date-editor{
-    width: 280px;
-    .el-input__inner{
-      height: 30px;
-      line-height: 30px;
-    }
-    .el-input__icon{
-      line-height: 30px;
-    }
-  }
-}
-.dialog-content{
-  margin: 0 20px;
-}
-.dialog-tips-content{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.dialog-tips-icon{
-  width: 46px;
-  height: 46px;
-  font-size: 46px;
-  &.el-icon-warning{
-    color: #ff4848;
-  }
-  &.el-icon-circle-check{
-    color: $colorPrimary;
-  }
-}
-.dialog-tips-text{
-  max-width: 448px;
-  font-size: 16px;
-  line-height: 30px;
-  color: #ababab;
-  margin-left: 20px;
-}
 .table-img{
   width: 62px;
   height: 53px;
