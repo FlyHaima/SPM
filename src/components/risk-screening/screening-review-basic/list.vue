@@ -278,16 +278,6 @@ export default {
         'endTime=' + this.form.endTime)
     }
   }
-  // watch: {
-  //   currentPlanId: {
-  //     immediate: true,
-  //     handler (val, oldVal) {
-  //       console.log(val)
-  //       this.currentPlanId = val
-  //       this.fetchTableData(val)
-  //     }
-  //   }
-  // }
 }
 </script>
 

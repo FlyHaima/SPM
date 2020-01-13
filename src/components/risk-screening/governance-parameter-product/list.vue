@@ -177,6 +177,7 @@ import axios from '@/api/axios'
 import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
 import exportExcel from '@/api/exportExcel'
+import { mapState } from 'vuex'
 export default {
   name: 'list',
   props: {
@@ -231,10 +232,6 @@ export default {
     this.fetchTableData()
   },
   methods: {
-    // 导出excel
-    exportEexcelHandel () {
-      exportExcel(`/hiddenAct/exportRecordCompletionpc`)
-    },
     checkQueryDate (val) {
       if (val) {
         this.form.startTime = val[0]
@@ -330,7 +327,21 @@ export default {
       this.fetchTableData()
     },
     // 导出excel
-    exportEexcel () {}
+    exportEexcelHandel () {
+      exportExcel(`hiddenAct/exportManageLedgers`,
+        'userId=' + this.userInfo.userId + '&' +
+        'leftId=' + this.currentPlanId + '&' +
+        'investType=' + this.type + '&' +
+        'checkName=' + this.form.checkName + '&' +
+        'startTime=' + this.form.startTime + '&' +
+        'endTime=' + this.form.endTime)
+    }
+  },
+  computed: { // vuex 参数引入
+    ...mapState({
+      // 获取用户信息
+      userInfo: (state) => state.userInfo
+    })
   }
 }
 </script>

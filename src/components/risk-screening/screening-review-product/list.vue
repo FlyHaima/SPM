@@ -135,6 +135,7 @@ import moment from 'moment'
 import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
 import DialogReview from '@/components/risk-screening/screening-review/reviewDialog'
 import exportExcel from '@/api/exportExcel'
+import { mapState } from 'vuex'
 export default {
   name: 'list',
   props: {
@@ -258,10 +259,23 @@ export default {
     tableSearchHandler () {
       this.fetchTableData()
     },
+
     // 导出excel
     exportEexcelHandel () {
-      exportExcel(`/hiddenAct/exportdImpleListpc`)
+      exportExcel(`hiddenAct/exportdImpleList`,
+        'userId=' + this.userInfo.userId + '&' +
+        'leftId=' + this.currentPlanId + '&' +
+        'investType=' + this.type + '&' +
+        'checkName=' + this.form.checkName + '&' +
+        'startTime=' + this.form.startTime + '&' +
+        'endTime=' + this.form.endTime)
     }
+  },
+  computed: { // vuex 参数引入
+    ...mapState({
+      // 获取用户信息
+      userInfo: (state) => state.userInfo
+    })
   }
 }
 </script>

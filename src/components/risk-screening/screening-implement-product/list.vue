@@ -92,6 +92,7 @@
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
+import { mapState } from 'vuex'
 export default {
   name: 'list',
   props: {
@@ -125,10 +126,6 @@ export default {
     this.fetchTableData()
   },
   methods: {
-    // 导出excel
-    exportEexcelHandel () {
-      exportExcel(`/hiddenAct/exportRecordCompletionpc`)
-    },
     // 选择时间事件
     checkQueryDate (val) {
       if (val) {
@@ -182,7 +179,24 @@ export default {
     // 查询table，表单提交响应事件
     tableSearchHandler () {
       this.fetchTableData()
+    },
+
+    // 导出excel
+    exportEexcelHandel () {
+      exportExcel(`hiddenAct/exportpImpleList`,
+        'userId=' + this.userInfo.userId + '&' +
+        'leftId=' + this.currentPlanId + '&' +
+        'investType=' + this.type + '&' +
+        'checkName=' + this.form.checkName + '&' +
+        'startTime=' + this.form.startTime + '&' +
+        'endTime=' + this.form.endTime)
     }
+  },
+  computed: { // vuex 参数引入
+    ...mapState({
+      // 获取用户信息
+      userInfo: (state) => state.userInfo
+    })
   }
 }
 </script>
