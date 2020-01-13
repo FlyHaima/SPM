@@ -172,7 +172,7 @@
             </span>
           </el-dialog>
 
-          <!-- 查看的侧边展示栏 -->
+          <!-- 查看的侧边展示栏  -->
           <div class="slide-temp" :class="slideOpen ? 'active' : ''" v-loading="slidLoading">
             <p
               style="line-height: 30px; font-size: 24px; margin-bottom: 8px;"><i class="el-icon-circle-close" @click="slideOpen = false"></i>
