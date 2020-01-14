@@ -410,8 +410,6 @@ export default {
         .finally(() => {
         })
     },
-    // 导出excel
-    exportEexcel () {},
     // 添加计划数据项
     handleAdd () {
       this.dialogAddVisible = true

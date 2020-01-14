@@ -2,7 +2,8 @@
   <el-dialog
     title="详情"
     :visible.sync="show"
-    width="55%">
+    width="55%"
+    append-to-body>
     <div class="details-layer">
       <div class="details-layer-left">
         <div class="progress-bar">
