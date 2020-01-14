@@ -294,8 +294,6 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
-    // this.list[0].vaule = Date.parse(this.moment().format('YYYY-MM-DD'))
-    // console.log(this.list[0].vaule)
     this.fetchListMenuData()
     this.fetchOrgTreeData()
   },
@@ -332,7 +330,6 @@ export default {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
             this.currentPlanId = this.listMenuData[0].planId
-            console.log(this.currentPlanId)
             this.fetchInvestigationOptions()
             this.fetchTableData()
           }
@@ -663,7 +660,6 @@ export default {
     // 复选框的推送可用状态改变
     autoCheckChangeHandle (val) {
       let vm = this
-      console.log(val)
       vm.tableData.forEach(item => {
         if (item.autoPush === '自动') {
           if (val) {

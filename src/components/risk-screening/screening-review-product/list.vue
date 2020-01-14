@@ -175,7 +175,6 @@ export default {
   },
   methods: {
     checkQueryDate (val) {
-      console.log(val)
       if (val) {
         this.form.startTime = val[0]
         this.form.endTime = val[1]

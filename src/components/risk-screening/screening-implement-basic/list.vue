@@ -146,7 +146,6 @@ export default {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
             this.currentPlanId = this.listMenuData[0].planId
-            console.log(this.currentPlanId)
             this.fetchTableData()
           }
         })

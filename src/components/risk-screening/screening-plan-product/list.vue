@@ -75,6 +75,19 @@
             </el-table-column>
           </el-table-column>
           <el-table-column
+            label="风险等级"
+            width="100"
+            align="center">
+            <template slot-scope="scope">
+              <el-tag
+                size="mini"
+                effect="dark"
+                :class="classObj(scope.row)">
+                {{ scope.row.riskLevel}}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
             prop="checkContent"
             label="检查内容"
             align="center">
@@ -282,6 +295,18 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // tag的class集合
+    classObj (data) {
+      if (data.riskLevel === '低风险') {
+        return 'tag-low'
+      } else if (data.riskLevel === '一般风险') {
+        return 'tag-normal'
+      } else if (data.riskLevel === '较大风险') {
+        return 'tag-warning'
+      } else if (data.riskLevel === '重大风险') {
+        return 'tag-danger'
+      }
+    },
     // 导出excel
     exportEexcelHandel () {
       exportExcel(`productHidden/exportProductHidden`)
@@ -532,12 +557,9 @@ export default {
     // 复选框的推送可用状态改变
     autoCheckChangeHandle (val) {
       let vm = this
-      console.log(val)
       vm.tableData.forEach(item => {
-        console.log(item.autoPush)
         if (item.autoPush === '自动') {
           if (val) {
-            console.log(item.isPushDisabled)
             item.isPushDisabled = false
           } else {
             item.isPushDisabled = true
@@ -547,15 +569,11 @@ export default {
     },
     manualCheckChangeHandle (val) {
       let vm = this
-      console.log(val)
       vm.tableData.forEach(item => {
-        console.log(item.autoPush)
         if (item.autoPush === '手动') {
           if (val) {
-            console.log(item.isPushDisabled)
             item.isPushDisabled = false
           } else {
-            console.log(item.isPushDisabled)
             item.isPushDisabled = true
           }
         }

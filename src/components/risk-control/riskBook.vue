@@ -28,7 +28,8 @@
                 type="index"
                 :index="tablesDefineIndex"
                 label="风险序号"
-                width="40">
+                width="80"
+                align="center">
               </el-table-column>
               <el-table-column
                 label="风险点位置"
@@ -98,20 +99,20 @@
                 </el-table-column>
                 <el-table-column
                   prop="userName"
-                  label="责任人"
+                  label="管控人"
                   width="140"
                   align="center">
                 </el-table-column>
               </el-table-column>
               <el-table-column
                 prop="riskSourceName"
-                label="隐患检查事项"
-                header-align="center">
+                label="危险源名称"
+                align="center">
               </el-table-column>
               <el-table-column
                 prop="bmp"
                 label="风险管控措施"
-                header-align="center">
+                align="center">
               </el-table-column>
               <el-table-column
                 prop="rate"
@@ -121,7 +122,7 @@
             </el-table>
             <div class="el-pagination__wrap text-right">
               <el-pagination
-                layout="total, sizes, prev, pager, next, jumper"
+                layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
                 :page-size="tables.form.pageSize"
@@ -138,7 +139,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import exportExcel from '@/api/exportExcel'
-
+import axios from 'axios'
 export default {
   name: 'riskBook',
   mixins: [Tables],
@@ -146,11 +147,64 @@ export default {
     return {
       breadcrumb: ['风险分级管控', '风险点分级管控台账'],
       tables: {
-        api: 'riskLevel/getRiskTz'
+        api: 'riskLevel/getRiskTz',
+        form: {
+          pageNo: 1,
+          pageSize: 10
+        },
+        page: {
+          total: 0, // 共多少条
+          index: 1, // 当前页数
+          sizes: [10, 20, 50] // 分页集合
+        }
       }
     }
   },
+  created () {
+    this.tablesFetchList()
+  },
   methods: {
+    tablesFetchList () {
+      this.tables.loading = true
+      return axios
+        .get(this.tables.api, {
+          params: this.tables.form
+        })
+        .then(res => {
+          if (res.data.code === 200) {
+            this.tables.page.total = res.data.total
+            this.tables.data = res.data.data
+            this.tables.data.forEach(item => {
+              let newBmp = ''
+              if (item.technology) {
+                newBmp = item.technology
+              }
+              if (item.bmp) {
+                newBmp += '/' + item.bmp
+              }
+              if (item.train) {
+                newBmp += '/' + item.train
+              }
+              if (item.individual) {
+                newBmp += '/' + item.individual
+              }
+              if (item.emergency) {
+                newBmp += '/' + item.emergency
+              }
+              if (item.newCs) {
+                newBmp += '/' + item.newCs
+              }
+              if (item.mustCs) {
+                newBmp += '/' + item.mustCs
+              }
+              item.bmp = newBmp
+            })
+          }
+        })
+        .finally(() => {
+          this.tables.loading = false
+        })
+    },
     // 导出excel
     exportExcelHandel () {
       exportExcel(`riskLevel/exportTz`)

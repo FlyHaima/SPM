@@ -201,7 +201,6 @@ export default {
           if (res.data.code === 200) {
             this.detailsData = res.data.data.spmHiddenInstanceHis
             this.listStepData = res.data.data
-            console.log(this.listStepData)
           }
         })
     }

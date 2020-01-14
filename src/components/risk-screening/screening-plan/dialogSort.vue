@@ -151,7 +151,6 @@ export default {
   },
   mounted () {
     this.currentPlanId = this.planId
-    console.log(this.planId)
     this.fetchOrgOptions()
     this.fetchCycleOptions()
     // this.fetchSortTableData(this.currentPlanId)
@@ -252,7 +251,6 @@ export default {
         type: this.type
       }
       rows.splice(index + 1, 0, newLine)
-      console.log(rows)
     },
     // 删除talbe行
     delTableRow (index, rows) {
