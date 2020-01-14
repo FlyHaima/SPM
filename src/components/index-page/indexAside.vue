@@ -581,15 +581,15 @@ export default {
         }
       }
       .menu-items{
-        border-top: 1px solid $borderAsideSubMenu;
-        background: #1779a4;
+        @include menu_top_active($secmenu-active-theme0);
+        @include secmenu_bg($sec-menu-theme0);
         li{
           line-height: 50px;
           color: #fff;
-          background: $bgAsideSubMenu;
+          @include secmenu_bg($sec-menu-theme0);
           cursor: pointer;
           &:hover{
-            background: $bgAsideSubMenuHover;
+            @include secmenu_active_bg($secmenu-active-theme0);
             a{
               color: #fff;
             }
@@ -601,7 +601,7 @@ export default {
             padding-left: 96px;
             width: 100%;
             height: 100%;
-            color: $colorAsideSubMenu;
+            @include secmenu_font($secmenu-font-theme0);
             .icon-box{
               position: absolute;
               top: 12.5px;
@@ -613,7 +613,7 @@ export default {
             }
             .icon{
               position: absolute;
-              filter: drop-shadow(24px 0 $colorAsideSubMenu);
+              @include secmenu_icon_bg($secmenu-font-theme0);
               top: 0;
               left: -24px;
               width: 24px;
@@ -751,20 +751,20 @@ export default {
               }
             }
             &.active{
-              color: #fff;
-              background: $bgAsideSubMenuHover;
+              @include secmenu_active_font($secmenu-active-font-theme0);
+              @include secmenu_active_bg($secmenu-active-theme0);
               .icon{
-                filter: drop-shadow(24px 0 $colorAsideSubMenu);
+                // filter: drop-shadow(24px 0 $colorAsideSubMenu);
+                @include secmenu_active_icon($secmenu-active-font-theme0);
                 overflow: hidden;
-                left: 0;
               }
             }
             &:hover{
-              color: #fff;
+              @include secmenu_active_font($secmenu-active-font-theme0);
               .icon{
-                filter: drop-shadow(24px 0 $colorAsideSubMenu);
+                // filter: drop-shadow(24px 0 $colorAsideSubMenu);
+                @include secmenu_active_icon($secmenu-active-font-theme0);
                 overflow: hidden;
-                left: 0;
               }
             }
           }
