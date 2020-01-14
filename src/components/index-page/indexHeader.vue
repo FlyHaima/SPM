@@ -18,7 +18,7 @@
       <li class="skin-li">
         <div class="btn skin-btn"><i></i>皮肤</div>
         <ul class="theme-select">
-          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`theme-${index}`)">
+          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index}`)">
             <i class="theme-i" :style="{ background: `${item.color}`}"></i>
             {{item.name}}
           </li>
@@ -77,19 +77,19 @@ export default {
   methods: {
     changeTheme (theme) {
       switch (theme) {
-        case 'theme-0':
+        case 0:
           console.log(0)
           break
-        case 'theme-1':
+        case 1:
           console.log(1)
           break
-        case 'theme-2':
+        case 2:
           console.log(2)
           break
-        case 'theme-3':
+        case 3:
           console.log(3)
       }
-      window.document.documentElement.setAttribute('data-theme', theme)
+      window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
     },
     quitHandle () {
       let vm = this
@@ -149,8 +149,6 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  // background: $bg_color;
-  // @include header_bg(#{backgroundColorTheme});
   @include header_bg($header-background-theme0);
   text-align: right;
   .logo{

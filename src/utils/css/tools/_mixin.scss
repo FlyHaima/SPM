@@ -2,18 +2,89 @@
 @charset "utf-8";
 @import "./_themecolor"; /*引入配置*/
 
-@mixin header_bg($color){ /*通过该函数设置主题颜色，后期方便统一管理；*/
+ /*设置主题颜色函数*/
+
+//  header 的 background
+@mixin header_bg($color){
   background-color:$color;
-  [data-theme="theme-0"] & {
+  [data-theme="theme0"] & {
     background-color:$header-background-theme0;
   }
-  [data-theme="theme-1"] & {
-    background-color:$header-background-theme0;
+  [data-theme="theme1"] & {
+    background-color:$header-background-theme1;
   }
-  [data-theme="theme-2"] & {
-    background-color:$header-background-theme0;
+  [data-theme="theme2"] & {
+    background-color:$header-background-theme2;
   }
-  [data-theme="theme-3"] & {
-    background-color:$header-background-theme0;
+  [data-theme="theme3"] & {
+    background-color:$header-background-theme3;
+  }
+}
+
+// menu 的 background
+@mixin menu_bg($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$menu-background-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$menu-background-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$menu-background-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$menu-background-theme3;
+  }
+}
+
+// menu active 的 background
+@mixin menu_active($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$menu-active-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$menu-active-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$menu-active-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$menu-active-theme3;
+  }
+}
+
+// menu active 的 border-top
+@mixin menu_top_active($color){
+  border-top: 1px solid $color;
+  [data-theme="theme0"] & {
+    border-top: 1px solid $secmenu-active-theme0;
+  }
+  [data-theme="theme1"] & {
+    border-top: 1px solid $secmenu-active-theme1;
+  }
+  [data-theme="theme2"] & {
+    border-top: 1px solid $secmenu-active-theme2;
+  }
+  [data-theme="theme3"] & {
+    border-top: 1px solid $secmenu-active-theme3;
+  }
+}
+
+// 二级菜单 的 背景颜色
+@mixin secmenu_bg($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$sec-menu-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$sec-menu-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$sec-menu-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$sec-menu-theme3;
   }
 }

@@ -456,7 +456,7 @@ export default {
   width: 100%;
   min-height: 100%;
   position: relative;
-  background: $bgAside;
+  @include menu_bg($menu-background-theme0);
   .aside-menu{
     width: 100%;
     .aside-menu-item{
@@ -545,8 +545,8 @@ export default {
           left: 22px;
         }
         &:hover{
-          background: $bgAsideMenuHover;
-          border-top: 1px solid $borderAsideMenu;
+          @include menu_active($menu-active-theme0);
+          @include menu_top_active($secmenu-active-theme0);
           line-height: 69px;
           i{
             top: 20px;
@@ -564,8 +564,8 @@ export default {
           transform: rotate(90deg);
         }
         &.active{
-          background: $bgAsideMenuHover;
-          border-top: 1px solid $borderAsideMenu;
+          @include menu_active($menu-active-theme0);
+          @include menu_top_active($secmenu-active-theme0);
           line-height: 69px;
           i{
             top: 20px;

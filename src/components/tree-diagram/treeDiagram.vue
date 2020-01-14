@@ -19,7 +19,17 @@
         </el-input>
       </div>
       <div class="slide-btns">
-        <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button>
+        <!-- <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button> -->
+        <el-upload accept=".xls" style="display: inline-block"
+                  :action="`${baseUrl}/dept/importDept`"
+                  :data="uploadData"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :on-error="handleError"
+                  :file-list="fileList"
+                  :show-file-list="false">
+          <el-button type="text">上传</el-button>
+        </el-upload>
         <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
         <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
       </div>
@@ -49,6 +59,8 @@
 </template>
 
 <script>
+import base from '@/api/baseUrl'
+
 export default {
   name: 'treeDiagram',
   props: {
@@ -78,13 +90,29 @@ export default {
       },
       openState: false,
       level: 7,
-      addBro: false
+      addBro: false,
+      uploadData: {
+        riskId: ''
+      },
+      baseUrl: '',
+      fileList: []
     }
   },
+  created () {
+    this.baseUrl = base.baseUrl
+  },
   methods: {
-    openUpload () {},
-    uploadExcel () {
-
+    handleBeforeUpload (file) {
+      this.uploading = true
+      this.$emit('open-loading')
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.$emit('close-loading')
+    },
+    // 导入失败
+    handleError (file, fileList) {
     },
     openAll () {
       this.openState = !this.openState
