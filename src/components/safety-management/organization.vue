@@ -46,8 +46,17 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p">
-                  <a class="export-btn"><i class></i>导出</a>
-                  <a class="import-btn"><i></i>导入</a>
+                  <a class="export-btn" target="_blank" :href="`${baseUrl}/leadUser/exportGroup`"><i class></i>导出</a>
+                  <el-upload accept=".xls" class="import-btn"
+                            :action="`${baseUrl}/leadUser/importGroup`"
+                            :data="uploadData"
+                            :before-upload="handleBeforeUpload"
+                            :on-success="handleSuccess"
+                            :on-error="handleError"
+                            :file-list="fileList"
+                            :show-file-list="false">
+                    <a><i></i>导入</a>
+                  </el-upload>
                 </p>
                 <el-table ref="leaderTable"
                           border
@@ -111,8 +120,17 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p">
-                  <a class="export-btn"><i class></i>导出</a>
-                  <a class="import-btn"><i></i>导入</a>
+                  <a class="export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup`"><i class></i>导出</a>
+                  <el-upload accept=".xls" class="import-btn"
+                            :action="`${baseUrl}/workUser/importGroup`"
+                            :data="uploadData"
+                            :before-upload="handleBeforeUpload"
+                            :on-success="handleSuccess"
+                            :on-error="handleError"
+                            :file-list="fileList"
+                            :show-file-list="false">
+                    <a><i></i>导入</a>
+                  </el-upload>
                 </p>
                 <el-table ref="leaderTable"
                           border
@@ -184,8 +202,19 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
 import Organigram from '../organigram/organigram'
-import {getOrgTree, getTreeDept, addTreeData, editTreeData, delTreeData, editDeptInfo, getLeaderTree, getLeaderTabel, getWorkerTabel, updateGroup} from '@/api/organization'
+import {getOrgTree,
+  getTreeDept,
+  addTreeData,
+  editTreeData,
+  delTreeData,
+  editDeptInfo,
+  getLeaderTree,
+  getLeaderTabel,
+  getWorkerTabel,
+  updateGroup
+} from '@/api/organization'
 import {mapState} from 'vuex'
+import base from '@/api/baseUrl'
 
 export default {
   name: 'organization',
@@ -231,10 +260,16 @@ export default {
       dutyPostId: '',
       updating: false,
       dialogLoading: false,
-      leaderPosition: null
+      leaderPosition: null,
+      baseUrl: '',
+      fileList: [],
+      uploadData: {
+        riskId: ''
+      }
     }
   },
   created () {
+    this.baseUrl = base.baseUrl
     this.getOrgTree(true)
     this.getLeaderTree(true)
   },
@@ -246,6 +281,23 @@ export default {
     })
   },
   methods: {
+    exportLeader () {
+      exportLeader().then(res => {
+        console.log(res)
+      })
+    },
+    handleBeforeUpload (file) {
+      this.uploading = true
+      this.openLoading()
+    },
+    // 导入成功
+    handleSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.closeLoading()
+    },
+    // 导入失败
+    handleError (file, fileList) {
+    },
     openLoading () {
       this.pageLoading = true
     },
@@ -540,7 +592,8 @@ export default {
         .btn-p{
           height: 36px;
           line-height: 36px;
-          &>a{
+          .import-btn,
+          .export-btn{
             float: right;
             width: 83px;
             height: 36px;
@@ -548,17 +601,19 @@ export default {
             font-size: 16px;
             text-align: center;
             margin-left: 28px;
+            cursor: pointer;
+            a{
+              color: #fff;
+            }
+          }
+          .import-btn{
+            background: #e6a23c;
             i{
               margin-right: 8px;
               display: inline-block;
               width: 15px;
               height: 36px;
               vertical-align: top;
-            }
-          }
-          .import-btn{
-            background: #e6a23c;
-            i{
               background-size: 15px 13px;
               background: url("../../assets/img/import-icon.png") no-repeat center;
             }
@@ -566,6 +621,11 @@ export default {
           .export-btn{
             background: #67c23a;
             i{
+              margin-right: 8px;
+              display: inline-block;
+              width: 15px;
+              height: 36px;
+              vertical-align: top;
               background-size: 14px 14px;
               background: url("../../assets/img/export-icon.png") no-repeat center;
             }
