@@ -281,11 +281,6 @@ export default {
     })
   },
   methods: {
-    exportLeader () {
-      exportLeader().then(res => {
-        console.log(res)
-      })
-    },
     handleBeforeUpload (file) {
       this.uploading = true
       this.openLoading()
