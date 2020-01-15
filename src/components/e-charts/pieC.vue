@@ -103,7 +103,7 @@ export default {
             },
             // 重新映射数据
             encode: {
-              itemName: 'name',
+              itemName: 'label',
               value: 'value'
             }
           }
@@ -121,9 +121,9 @@ export default {
     }
   },
   watch: {
-    // chartList () { // 添加数据监听，父组件传值重绘图表
-    //   this.setEchart()
-    // }
+    returnData () { // 添加数据监听，父组件传值重绘图表
+      this.setEchart()
+    }
   }
 }
 </script>

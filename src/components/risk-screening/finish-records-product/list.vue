@@ -328,7 +328,7 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
-      exportExcel(`hiddenAct/exportManageLedgers`,
+      exportExcel(`hiddenAct/exportRecordCompletion`,
         'userId=' + this.userInfo.userId + '&' +
         'leftId=' + this.currentPlanId + '&' +
         'investType=' + this.type + '&' +
