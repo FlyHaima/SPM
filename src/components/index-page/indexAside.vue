@@ -706,17 +706,17 @@ export default {
               }
               &.icon40{
                 background: url('../../assets/img/aside-icon03-0.png') no-repeat;
-                background-size: 17px 17px;
+                background-size: 16px 16px;
                 background-position: center center;
               }
               &.icon41{
                 background: url('../../assets/img/aside-icon03-1.png') no-repeat;
-                background-size: 16px 16px;
+                background-size: 17px 16px;
                 background-position: center center;
               }
               &.icon42{
                 background: url('../../assets/img/aside-icon03-2.png') no-repeat;
-                background-size: 17px 15px;
+                background-size: 16px 16px;
                 background-position: center center;
               }
               &.icon43{
@@ -727,6 +727,16 @@ export default {
               &.icon44{
                 background: url('../../assets/img/aside-icon03-4.png') no-repeat;
                 background-size: 15px 17px;
+                background-position: center center;
+              }
+              &.icon45{
+                background: url('../../assets/img/aside-icon03-5.png') no-repeat;
+                background-size: 17px 17px;
+                background-position: center center;
+              }
+              &.icon46{
+                background: url('../../assets/img/aside-icon03-6.png') no-repeat;
+                background-size: 19px 17px;
                 background-position: center center;
               }
               &.icon60{
@@ -747,6 +757,16 @@ export default {
               &.icon63{
                 background: url('../../assets/img/aside-icon06-3.png') no-repeat;
                 background-size: 16px 18px;
+                background-position: center center;
+              }
+              &.icon64{
+                background: url('../../assets/img/aside-icon06-4.png') no-repeat;
+                background-size: 21px 17px;
+                background-position: center center;
+              }
+              &.icon65{
+                background: url('../../assets/img/aside-icon06-5.png') no-repeat;
+                background-size: 15px 17px;
                 background-position: center center;
               }
             }
