@@ -1,7 +1,7 @@
 /* 全局重置 elementUI scss */
 
 // 重置 table
-/deep/.el-table {
+.el-table {
   td{
     padding: 4px;
   }
@@ -12,7 +12,10 @@
 }
 
 // 重置 pagination
-/deep/.el-pagination{
+.el-pagination{
+  el-pager li:not(.disabled).active{
+    border: none;
+  }
   button, span:not([class*=suffix]){
     height: 32px;
     line-height: 32px;
@@ -60,9 +63,9 @@
 }
 
 // 重置form
-/deep/.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
+.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
   margin-bottom: 30px;
 }
-/deep/.el-input__prefix, .el-input__suffix{
+.el-input__prefix, .el-input__suffix{
   color: $colorGreen;
 }

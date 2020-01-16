@@ -451,7 +451,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/tools/_variables.scss';
+@import '@/utils/css/tools/_mixin.scss';
 .index-aside{
   width: 100%;
   min-height: 100%;

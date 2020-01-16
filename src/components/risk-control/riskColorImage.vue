@@ -1063,8 +1063,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '@/utils/css/style.scss';
-
+@import '@/utils/css/tools/_variables.scss';
   .inner-page-container{
     .body-box{
       padding-left: 100px;
