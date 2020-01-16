@@ -37,12 +37,12 @@
   &.is-flex-end{
     justify-content: flex-end;
   }
-  >>>.el-button{
+  .el-button{
     border-radius: 0;
     padding: 10px 15px;
   }
-  >>>.el-icon-upload2,
-  >>>.el-icon-download{
+  .el-icon-upload2,
+  .el-icon-download{
     width: 14px;
     height: 14px;
     vertical-align: top;
@@ -53,10 +53,10 @@
       content: none;
     }
   }
-  >>>.el-icon-upload2{
+  .el-icon-upload2{
     background-image: url(/static/images/icon-import.png);
   }
-  >>>.el-icon-download{
+  .el-icon-download{
     background-image: url(/static/images/icon-export.png);
   }
 
@@ -245,7 +245,7 @@
 }
 
 // 重构tabs样式
-/deep/.el-tabs--border-card{
+.el-tabs--border-card{
   position: relative;
   border-color: #eeeeee;
   height: 100%;
@@ -275,7 +275,7 @@
 }
 
 
-/deep/.el-tag{
+.el-tag{
   &.tag-low{
     background: $colorLow;
     border-color: $colorLow;

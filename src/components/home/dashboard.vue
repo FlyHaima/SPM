@@ -193,14 +193,7 @@ export default {
   data () {
     return {
       pageLoading: false,
-      gaugeData: [
-        {
-          value: 20, // 分值
-          value1: 30, // 上报风险发生率
-          value2: 40, // 排查风险发生率
-          name: '一般' // 风险等级
-        }
-      ], // 仪表盘数据
+      gaugeData: [], // 仪表盘数据
       pieOptions: [
         {
           title: '全员参与率',
@@ -394,8 +387,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  // @import '../../utils/css/style.scss';
-  $colorPrimary: #409eff;
+  @import '@/utils/css/tools/_variables.scss';
   .view-box{
     background: #ffffff;
   }

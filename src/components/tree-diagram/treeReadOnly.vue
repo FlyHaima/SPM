@@ -187,7 +187,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
+@import '@/utils/css/tools/_variables.scss';
   /deep/.tree-diagram{
   width: 400px;
   height: 100%;

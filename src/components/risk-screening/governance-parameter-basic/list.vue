@@ -142,7 +142,7 @@
               <table-step
                 v-else
                 :step-data="stepData"
-                :active="scope.row.actState"
+                :active="scope.row.actState * 1"
               >
               </table-step>
             </template>
@@ -350,7 +350,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';
 .table-img{
   width: 62px;
   height: 53px;

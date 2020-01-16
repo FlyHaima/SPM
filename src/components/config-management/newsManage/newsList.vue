@@ -60,6 +60,7 @@
     </el-table>
     <div class="el-pagination__wrap text-right">
       <el-pagination
+        background
         layout="total, prev, pager, next, jumper"
         :current-page="tables.page.index"
         :page-sizes="tables.page.sizes"
@@ -278,7 +279,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '@/utils/css/style.scss';
 .talbe-links-del{
   margin-left: 20px;
 }

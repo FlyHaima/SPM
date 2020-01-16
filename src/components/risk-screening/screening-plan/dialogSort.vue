@@ -302,7 +302,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';
+@import '@/utils/css/tools/_variables.scss';
 /deep/.el-icon-circle-plus-outline{
   margin-top: 2px;
   font-size: 20px;

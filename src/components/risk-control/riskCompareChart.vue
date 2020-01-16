@@ -78,7 +78,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '@/utils/css/style.scss';
+@import '@/utils/css/tools/_variables.scss';
 .container-box{
   padding: 20px 25px;
 }
