@@ -154,7 +154,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  @import '@/utils/css/style.scss';
+  @import '@/utils/css/tools/_variables.scss';
   .inner-page-container {
     height: 100%;
     .el-header {

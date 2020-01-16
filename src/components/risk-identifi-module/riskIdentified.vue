@@ -1059,7 +1059,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '@/utils/css/style.scss';
+@import '@/utils/css/tools/_variables.scss';
 .inner-page-container{
   .inner-content{
     width: 100%;
@@ -1114,7 +1114,7 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 445px;
+        height: 490px;
         .step-box{
           width: 100%;
           height: 100%;

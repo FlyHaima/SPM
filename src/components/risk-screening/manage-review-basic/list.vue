@@ -240,7 +240,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';
 .table-img{
   width: 62px;
   height: 53px;

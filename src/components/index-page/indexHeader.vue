@@ -143,8 +143,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../../utils/css/style.scss';
-
+@import '@/utils/css/tools/_mixin.scss';
+@import '@/utils/css/tools/_variables.scss';
 .index-header{
   width: 100%;
   height: 100%;

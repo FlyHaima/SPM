@@ -690,7 +690,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';
+@import '@/utils/css/tools/_variables.scss';
 /deep/.el-select{
   .el-input__inner{
     border: 0;

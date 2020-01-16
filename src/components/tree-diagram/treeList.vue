@@ -154,8 +154,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';
-
+@import '@/utils/css/tools/_variables.scss';
 .left-menu{
   background: #ffffff;
   position: relative;
