@@ -59,7 +59,9 @@
                 </div> -->
               </div>
               <div class="info-content">
-                <gauge class="gauge">
+                <gauge
+                  class="gauge"
+                  :chart-data="gaugeData">
                   <div class="gauge-tabs-box">
                     <el-tabs class="gauge-tabs" type="border-card">
                       <el-tab-pane class="gauge-tab-pane" label="重大风险">
@@ -139,7 +141,7 @@
                            {{item.tipsText}}
                          </p>
                          <p class="pie-tips-item">
-                           75% = 300/400
+                           {{item.participationRate}}%
                          </p>
                        </div>
                        </pie-c>
@@ -191,20 +193,20 @@ export default {
   data () {
     return {
       pageLoading: false,
+      gaugeData: [
+        {
+          value: 20, // 分值
+          value1: 30, // 上报风险发生率
+          value2: 40, // 排查风险发生率
+          name: '一般' // 风险等级
+        }
+      ], // 仪表盘数据
       pieOptions: [
         {
           title: '全员参与率',
           tipsText: '全员参与率 = 已参与人数/总人数',
-          pieData: [
-            {
-              'value': 41.1,
-              'name': '已参与'
-            },
-            {
-              'value': 86.5,
-              'name': '未参与'
-            }
-          ], // 图形数据
+          participationRate: 0,
+          pieData: [], // 图形数据
           colorList: [
             '#0d6ce5',
             '#3bebc4'
@@ -212,17 +214,9 @@ export default {
         }, // 图形颜色集合
         {
           title: '隐患发生率',
-          tipsText: '全员参与率 = 已参与人数/总人数',
-          pieData: [
-            {
-              'value': 41.1,
-              'name': '已参与'
-            },
-            {
-              'value': 86.5,
-              'name': '未参与'
-            }
-          ],
+          tipsText: '隐患发生率 = 已参与人数/总人数',
+          participationRate: 0,
+          pieData: [],
           colorList: [
             '#0d6ce5',
             '#3bebc4'
@@ -230,41 +224,26 @@ export default {
         },
         {
           title: '隐患符合率',
-          tipsText: '全员参与率 = 已参与人数/总人数',
-          pieData: [
-            {
-              'value': 41.1,
-              'name': '已参与'
-            },
-            {
-              'value': 86.5,
-              'name': '未参与'
-            }
-          ],
+          tipsText: '隐患符合率 = 已参与人数/总人数',
+          participationRate: 0,
+          pieData: [],
           colorList: [
             '#0d6ce5',
             '#3bebc4'
           ]
         },
         {
-          title: '隐患符合率',
-          tipsText: '全员参与率 = 已参与人数/总人数',
-          pieData: [
-            {
-              'value': 24.1,
-              'name': '已上报'
-            },
-            {
-              'value': 55.2,
-              'name': '未上报'
-            }
-          ],
+          title: '隐患整改率',
+          tipsText: '隐患整改率 = 已参与人数/总人数',
+          participationRate: 0,
+          pieData: [],
           colorList: [
             '#0d6ce5',
             '#3bebc4'
           ]
         }
       ], // 图饼设置项
+      pieData: [],
       chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
       pieHeight: '200px', // 饼图高度
@@ -293,11 +272,57 @@ export default {
     gauge
   },
   created () {
+    this.fetchPieData()
+    // this.initPieOptions()
     this.fetchEnterData()
     this.fetchList()
     this.fetchChartData()
+    this.fetchGaugeData()
   },
   methods: {
+    // 初始化安全指数分析数据
+    initPieOptions () {
+      for (let i = 0; i < this.pieOptions.length; i++) {
+        for (let j = 0; j < this.pieData.length; j++) {
+          if (i === j) {
+            this.pieOptions[i].pieData = this.pieData[j]
+            this.pieOptions[i].participationRate = Math.round(
+              (this.pieData[j][0].value /
+              (this.pieData[j][0].value +
+              this.pieData[j][1].value)) * 100)
+          }
+        }
+      }
+    },
+    // 获取安全指数分析数据
+    fetchPieData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('safeAnalysis/safetyAnalysis')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.pieData = res.data.data
+            this.initPieOptions()
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
+    // 获取安全指数分析数据
+    fetchGaugeData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('safeAnalysis/dashboard')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.gaugeData = res.data.data
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
     turnToPage (url) {
       this.$router.push(url)
     },

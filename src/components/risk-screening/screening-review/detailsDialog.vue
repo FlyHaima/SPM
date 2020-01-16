@@ -2,70 +2,146 @@
   <el-dialog
     title="详情"
     :visible.sync="show"
-    width="70%">
+    width="55%"
+    append-to-body>
     <div class="details-layer">
       <div class="details-layer-left">
         <div class="progress-bar">
-          <div class="progress-bar-level1">
+          <div
+            v-for="(item, index) in listStepData"
+            :key = index
+            class="progress-bar-level1">
             <div class="progress-bar-level1-content">
-              <div class="level1-title">排查情况</div>
+              <div class="level1-title">{{item.flowState}}</div>
             </div>
             <div class="progress-bar-level2">
-              <div class="level2-p level2-p-date">2019-11-14 10:28:18</div>
-              <div class="level2-p">复查人员：柔荑花</div>
-              <div class="level2-p">整改要求：限期整改</div>
+              <div class="level2-p level2-p-date">{{item.flowTime | date-filter}}</div>
+              <el-card
+                class="box-card"
+                v-if="item.flowState === '排查实施'">
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">检查名称:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.checkName}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">检查人:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.checkUser}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">检查时间:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.checkTime | date-filter}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="24">隐患图片:</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col :span="24">
+                    <div class="attachment-list">
+                      <div
+                        v-for = "(itemImg, index) in item.hiddenPhoto"
+                        :key = index
+                        class="attachment-list-item">
+                        <img
+                          class="attachment-img"
+                          src="itemImg"
+                          alt="上传的图片" />
+                      </div>
+                    </div>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-card
+                class="box-card"
+                v-if="item.flowState === '排查复核'">
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">排查复核人:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.checkByUser}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">隐患类型:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.hiddenType}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">整改时间:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.rectiTime | date-filter}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">整改意见:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.rectiRemark}}</el-col>
+                </el-row>
+              </el-card>
+              <el-card
+                class="box-card"
+                v-if="item.flowState === '隐患治理'">
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">整改人:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.goverUser}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">整改时间:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.goverTime | date-filter}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">整改记录:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.rectiRecord}}</el-col>
+                </el-row>
+                 <el-row class="item">
+                  <el-col class="box-item-label" :span="24">整改图片:</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col :span="24">
+                    <div class="attachment-list">
+                      <div
+                        v-for = "(itemImg, index) in item.rectiPhoto"
+                        :key = index
+                        class="attachment-list-item">
+                        <img
+                          class="attachment-img"
+                          src="itemImg"
+                          alt="上传的图片" />
+                      </div>
+                    </div>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-card
+                class="box-card"
+                v-if="item.flowState === '治理复核'">
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">治理复核人:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.goverReviUser}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">治理复核时间:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.goverReviTime | date-filter}}</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">治理复核记录:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.goverReviRecord}}</el-col>
+                </el-row>
+                 <el-row class="item">
+                  <el-col class="box-item-label" :span="24">治理复核图片:</el-col>
+                </el-row>
+                <el-row class="item">
+                  <el-col :span="24">
+                    <div class="attachment-list">
+                      <div
+                        v-for = "(itemImg, index) in item.goverReviPhoto"
+                        :key = index
+                        class="attachment-list-item">
+                        <img
+                          class="attachment-img"
+                          src="itemImg"
+                          alt="上传的图片" />
+                      </div>
+                    </div>
+                  </el-col>
+                </el-row>
+              </el-card>
             </div>
-            <div class="progress-bar-level2">
-              <div class="level2-p level2-p-date">2019-11-14 10:28:18</div>
-              <div class="level2-p">复查人员：柔荑花</div>
-              <div class="level2-p">整改要求：限期整改</div>
-            </div>
-          </div>
-          <div class="progress-bar-level1">
-            <div class="progress-bar-level1-content">
-              <div class="level1-title">排查情况</div>
-            </div>
-            <div class="progress-bar-level2">
-              <div class="level2-p level2-p-date">2019-11-14 10:28:18</div>
-              <div class="level2-p">复查人员：柔荑花</div>
-              <div class="level2-p">整改要求：限期整改</div>
-            </div>
+
           </div>
         </div>
-      </div>
-      <div class="details-layer-right">
-        <el-card class="box-card">
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">检查名称:</el-col>
-            <el-col :span="9">1</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">检查人员:</el-col>
-            <el-col :span="9">1</el-col>
-            <el-col class="box-item-label" :span="3">检查地点:</el-col>
-            <el-col :span="9">1</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="3">检查时间:</el-col>
-            <el-col :span="9">1</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col class="box-item-label" :span="24">隐患图片:</el-col>
-          </el-row>
-          <el-row class="item">
-            <el-col :span="24">
-              <div class="attachment-list">
-                <div
-                  class="attachment-list-item">
-                  <img
-                    class="attachment-img"
-                    src=""
-                    alt="上传的图片" />
-                </div>
-              </div>
-            </el-col>
-          </el-row>
-        </el-card>
       </div>
     </div>
 
@@ -73,34 +149,70 @@
       <el-button
         type="primary"
         size="small"
-        @click="submitForm()">确 定</el-button>
-      <el-button
-        size="small"
-        @click="show = false">取 消</el-button>
+        @click="show = false">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
+import axios from '@/api/axios'
+import moment from 'moment'
 export default {
   name: '',
   props: {
     dialogVisible: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
       show: false,
-      form: {
-        target: '', // 排查目标
-        content: '', // 排查内容和标准
-        basis: '' // 排查依据
+      detailsData: null,
+      listStepData: null,
+      currentId: ''
+    }
+  },
+  filters: {
+    // 格式化日期格式
+    'date-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD  HH: mm: ss')
+      } else {
+        return null
       }
     }
   },
+  mounted () {
+    this.currentId = this.id
+    this.fetchDetailsData()
+  },
+  methods: {
+    fetchDetailsData () {
+      axios
+        .get('hiddenAct/impleDetail', {
+          businessKey: this.currentId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.detailsData = res.data.data.spmHiddenInstanceHis
+            this.listStepData = res.data.data
+          }
+        })
+    }
+  },
   watch: {
+    id: {
+      immediate: true,
+      handler (val, oldVal) {
+        this.currentId = val
+        this.fetchDetailsData(val)
+      }
+    },
     dialogVisible (val) {
       this.show = val
     },
@@ -114,7 +226,10 @@ export default {
 <style lang="scss" scoped>
 @import '@/utils/css/style.scss';
   .box-card {
-    margin: 0 30px;
+    margin-top: 20px;
+    +.box-card {
+      margin-top: 20px;
+    }
     .item{
       padding: 8px 0;
     }
@@ -146,14 +261,13 @@ export default {
     background: pink;
   }
   .details-layer{
-    display: flex;
+    // display: flex;
   }
   .details-layer-left{
-    flex: 0 0 300px;
-    border-right: 1px solid $colorBorder;
+    // flex: 0 0 300px;
     padding-left: 46px;
-    max-height: 686px;
-    overflow-y: scroll;
+    // max-height: 686px;
+    // overflow-y: scroll;
   }
   .details-layer-right{
     flex: 1;
@@ -163,11 +277,14 @@ export default {
   .progress-bar{
     // border-left: 2px solid $colorPrimary;
     // padding-left: 34px;
+    // .box-card{
+    //   border-left: 2px solid $colorPrimary;
+    // }
   }
   .progress-bar-level1{
     + .progress-bar-level1{
       .progress-bar-level1-content{
-        padding-top: 75px;
+        padding-top: 45px;
       }
     }
     .progress-bar-level1-content{

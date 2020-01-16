@@ -108,14 +108,14 @@
             <div class="login-form-box">
               <div class="login-form-header">
                 <div class="login-form-title">欢迎使用系统</div>
-                <el-select v-model="value" placeholder="请选择身份">
+                <!-- <el-select v-model="value" placeholder="请选择身份">
                   <el-option
                     v-for="item in options"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
                   </el-option>
-                </el-select>
+                </el-select> -->
               </div>
               <el-form
                 :model="form"

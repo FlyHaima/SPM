@@ -45,16 +45,14 @@
 <script>
 export default {
   name: 'gauge',
+  props: {
+    chartData: {
+      type: Array,
+      default: null
+    }
+  },
   data () {
     return {
-      chartData: [
-        {
-          value: 20,
-          value1: 30,
-          value2: 40,
-          name: '一般'
-        }
-      ],
       chartDialogVisible: false
     }
   },
@@ -179,12 +177,12 @@ export default {
         myChart.resize()
       }
     }
+  },
+  watch: {
+    chartData () { // 添加数据监听，父组件传值重绘图表
+      this.setEchart()
+    }
   }
-  // watch: {
-  //   // chartList () { // 添加数据监听，父组件传值重绘图表
-  //   //   this.setEchart()
-  //   // }
-  // }
 }
 </script>
 

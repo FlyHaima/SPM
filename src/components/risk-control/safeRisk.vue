@@ -121,7 +121,7 @@
             </el-table>
             <div class="el-pagination__wrap text-right">
               <el-pagination
-                layout="total, sizes, prev, pager, next, jumper"
+                layout="total, prev, pager, next, jumper"
                 :current-page="tables.page.index"
                 :page-sizes="tables.page.sizes"
                 :page-size="tables.form.pageSize"

@@ -70,9 +70,6 @@ const MineTodo = resolve => require.ensure([], () => resolve(mineTodo), 'pagelis
 // 本机硬盘
 const hardDisk = require('@/components/home/hardDisk.vue')
 const HardDisk = resolve => require.ensure([], () => resolve(hardDisk), 'pagelist')
-// 待办详情页
-const mineTodoDetails = require('@/components/home/mineTodoDetails.vue')
-const MineTodoDetails = resolve => require.ensure([], () => resolve(mineTodoDetails), 'pagelist')
 // 用户基本信息
 const basic = require('@/components/home/basic.vue')
 const Basic = resolve => require.ensure([], () => resolve(basic), 'pagelist')
@@ -226,16 +223,6 @@ const routes = [
         },
         parent: 'IndexPage',
         component: HardDisk
-      },
-      {
-        path: '/mineTodoDetails/:id',
-        title: '待办详情页',
-        name: 'mineTodoDetails',
-        meta: {
-          access: true
-        },
-        parent: 'IndexPage',
-        component: MineTodoDetails
       },
       {
         path: '/organigram',
