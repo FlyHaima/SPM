@@ -1,0 +1,217 @@
+<template>
+  <el-container class="inner-main-content" v-loading="pageLoading">
+    <el-aside class="inner-aside" width="408px">
+      <tree-list
+        v-if="listMenuData.length > 0"
+        :menu-name="'计划清单'"
+        :list-data = "listMenuData"
+        showSearch
+        @menu-click-handle="menuClickHandle"
+
+      ></tree-list>
+    </el-aside>
+
+    <el-main class="inner-content">
+      <div class="container-box">
+        <div class="content-tools">
+          <div class="tools-left">
+            <el-form
+              size="medium"
+              :inline="true"
+              :model="form"
+              class="demo-form-inline">
+              <el-form-item label="检查名称">
+                <el-input v-model="form.checkName" placeholder="请输入检查名称"></el-input>
+              </el-form-item>
+              <el-form-item label="检查日期">
+                <el-date-picker
+                  v-model="queryDate"
+                  @change="checkQueryDate"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item>
+                <el-button
+                  type="primary"
+                  icon="el-icon-search"
+                  @click="tableSearchHandler">查询</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div class="tools-right">
+            <el-button
+              type="success"
+              size="medium"
+              icon="el-icon-download"
+              @click="exportEexcelHandel">
+              导出</el-button>
+          </div>
+        </div>
+        <el-table
+          v-loadding="tablesLoading"
+          :data="tableData"
+          border
+          style="width: 100%"
+          align="center">
+          <el-table-column
+            prop="checkName"
+            label="检查名称"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="checkUser"
+            label="检查人员"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="checkTime"
+            label="检查时间"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="hiddenDesc"
+            label="隐患描述"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            label="附件"
+            align="center">
+            <template slot-scope="scope">
+              <img class="table-img" :src="scope.row.hiddenPhoto" title="img"/>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-main>
+  </el-container>
+</template>
+
+<script>
+import TreeList from '@/components/tree-diagram/treeList'
+import axios from '@/api/axios'
+import moment from 'moment'
+import exportExcel from '@/api/exportExcel'
+import { mapState } from 'vuex'
+export default {
+  name: 'list',
+  props: {
+    type: {
+      type: String,
+      default: ''
+    }
+  },
+  data () {
+    return {
+      pageLoading: false,
+      submmiting: false,
+      form: {
+        checkName: '',
+        startTime: '',
+        endTime: ''
+      },
+      listMenuData: [], // 计划清单列表数据
+      currentPlanId: '', // 当前清单项的id
+      tableData: [], // 基础类清单列表数据
+      queryDate: '' // 查询时间段
+    }
+  },
+  components: {
+    TreeList // 计划清单菜单
+  },
+  created () {
+    this.fetchListMenuData()
+    this.fetchTableData()
+  },
+  methods: {
+    // 选择时间事件
+    checkQueryDate (val) {
+      if (val) {
+        this.form.startTime = val[0]
+        this.form.endTime = val[1]
+      } else {
+        this.form.startTime = this.form.endTime = ''
+      }
+    },
+    /** 左侧清单菜单 **/
+    // 获取清单数据
+    fetchListMenuData () {
+      this.pageLoading = true
+      axios
+        .get('schedule/getScheduleList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.listMenuData = res.data.data
+            this.currentPlanId = this.listMenuData[0].planId
+            this.fetchTableData()
+          }
+        })
+        .finally(() => {
+          this.pageLoading = false
+        })
+    },
+    // 点击菜单项
+    menuClickHandle (item) {
+      this.currentPlanId = item.planId
+      this.fetchTableData()
+    },
+    /** 右侧列表内容 **/
+    // 获取排查隐患清单列表
+    fetchTableData () {
+      this.tablesLoading = true
+      axios
+        .get('hiddenAct/pImpleList', {
+          checkName: this.form.checkName,
+          investType: this.type,
+          startTime: this.form.startTime,
+          endTime: this.form.endTime,
+          leftId: this.currentPlanId
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            // let formatTableData = []
+            this.formatTableData = res.data.data
+            this.formatTableData.forEach(item => {
+              item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')
+            })
+            this.tableData = this.formatTableData
+          }
+        })
+        .finally(() => {
+          this.tablesLoading = false
+        })
+    },
+    // 查询table，表单提交响应事件
+    tableSearchHandler () {
+      this.fetchTableData()
+    },
+    // 导出excel
+    exportEexcelHandel () {
+      exportExcel(`hiddenAct/exportpImpleList`,
+        'userId=' + this.userInfo.userId + '&' +
+        'leftId=' + this.currentPlanId + '&' +
+        'investType=' + this.type + '&' +
+        'checkName=' + this.form.checkName + '&' +
+        'startTime=' + this.form.startTime + '&' +
+        'endTime=' + this.form.endTime)
+    }
+  },
+  computed: { // vuex 参数引入
+    ...mapState({
+      // 获取用户信息
+      userInfo: (state) => state.userInfo
+    })
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import '@/utils/css/style.scss';
+.table-img{
+  width: 62px;
+  height: 53px;
+}
+</style>

@@ -78,11 +78,11 @@ export default {
     //   }
     // },
     // 表单submit 事件响应
-    // tableSearchHandler () {
-    //   this.tables.form.offset = 0
-    //   this.tables.page.index = 1
-    //   this.tablesFetchList()
-    // },
+    tableSearchHandler () {
+      this.tables.form.offset = 0
+      this.tables.page.index = 1
+      this.tablesFetchList()
+    },
     // tablesSortChangeHandler ({
     //   column,
     //   prop,

@@ -11,7 +11,6 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
-                v-if="!tableVisible"
                 class="tools-item"
                 type="success"
                 size="medium"
@@ -39,22 +38,22 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="position"
-                label="日期"
+                prop="checkTime"
+                label="属期"
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="accountName"
+                prop="done"
                 label="排查率"
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="role"
+                prop="total"
                 label="次数"
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="telephone"
+                prop="money"
                 label="每次奖励金额"
                 align="center">
               </el-table-column>
@@ -93,27 +92,24 @@
     </el-main>
     <el-dialog
       :visible.sync="dialogAddVisible"
+      width="30%"
+      title="编辑"
       >
-      <div slot="title">
-        {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '新增' }}
-      </div>
       <el-form
         :model= "form"
         ref= "form"
-        :rules= "rules"
         size= "mini"
         label-width= "100px"
         label-position= "right"
         @submit.native.prevent= "submitForm"
         v-loading= "submitting"
-        width="400"
       >
         <el-form-item
           label="每次奖励金额"
           prop="userName">
           <el-input
-            v-model.trim="form.userName"
-            placeholder="请输入姓名"
+            v-model.trim="form.money"
+            placeholder="请输入金额"
             maxlength="25"
             autocomplete></el-input>
         </el-form-item>
@@ -130,43 +126,11 @@
           @click="dialogAddVisible = false">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      title="详情"
-      :visible.sync="dialogDetailVisible"
-      >
-      <el-card class="box-card">
-        <el-row class="item">
-          <el-col class="box-item-label" :span="3">检查名称:</el-col>
-          <el-col :span="9">1</el-col>
-        </el-row>
-        <el-row class="item">
-          <el-col class="box-item-label" :span="3">上报人员:</el-col>
-          <el-col :span="9">1</el-col>
-          <el-col class="box-item-label" :span="3">隐患地点:</el-col>
-          <el-col :span="9">1</el-col>
-        </el-row>
-        <el-row class="item">
-          <el-col class="box-item-label" :span="3">上报时间:</el-col>
-          <el-col :span="9">1</el-col>
-        </el-row>
-        <el-row class="item">
-          <el-col class="box-item-label" :span="24">现场图片:</el-col>
-        </el-row>
-        <el-row class="item">
-          <el-col :span="24">
-            <div class="attachment-list">
-              <div
-                class="attachment-list-item">
-                <img
-                  class="attachment-img"
-                  src=""
-                  alt="上传的图片" />
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </el-card>
-    </el-dialog>
+    <dialog-detail
+      :dialogVisible = "dialogDetailVisible"
+      :data="postDetailData"
+      @on-dialog-change = "changeDetialDialog"
+    ></dialog-detail>
   </el-container>
 </template>
 <script>
@@ -174,6 +138,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
+import DialogDetail from '@/components/config-management/performance-assessment/dialogDetail'
 
 export default {
   name: 'userManagement',
@@ -182,78 +147,58 @@ export default {
     return {
       breadcrumb: ['配置维护管理', '绩效考核'],
       tables: {
-        api: 'user/getUserList'
+        api: 'performance/performanceList',
+        auto: true
       },
       dialogDetailVisible: false, // 详情弹框开关
       dialogAddVisible: false, // 添加用户弹框开关
       form: {
-        userName: '' // 每次奖励金额
+        checkTime: '',
+        checkUser: '',
+        money: '' // 每次奖励金额
       },
       submitting: false,
-      editData: ''
+      editData: '',
+      postDetailData: null
     }
+  },
+  mounted () {
   },
   methods: {
     // 导出excel
     exportEexcelHandel () {
-      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.riskId)
+      exportExcel(`performance/exportPerformance`)
     },
     // 详情弹框显示
     detaileHandle (row) {
       this.dialogDetailVisible = true
+      this.postDetailData = row
+    },
+    changeDetialDialog (val) {
+      this.dialogDetailVisible = val
     },
     // 编辑
     editHandle (row) {
       this.dialogAddVisible = true
-      this.editData = row.userId
-      this.initForm(this.editData)
-    },
-    // 编辑状态，回显数据
-    initForm (data) {
-      this.submitting = true
-      if (data) {
-        axios
-          .get('user/getUser', {
-            userId: data
-          })
-          .then((res) => {
-            if (res.data.code === 200) {
-              this.form = res.data.data
-            }
-          })
-          .finally(() => {
-            this.submitting = false
-          })
-      }
+      this.form.money = row.money
+      this.form.checkTime = row.checkTime
+      this.form.checkUser = row.checkUser
     },
     // form表单提交事件
     submitForm () {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          if (this.editData) {
-            this.saveForm('update', '编辑')
-          } else {
-            this.saveForm('add', '添加')
-          }
-        } else {
-          return false
-        }
-      })
-    },
-    saveForm (post, tip) {
       let vm = this
       vm
-        .$confirm(`确定【${tip}】该用户吗？`, '提示', {
+        .$confirm(`确定修改金额吗？`, '提示', {
           type: 'warning'
         })
         .then(() => {
           vm.submitting = true
           axios
-            .post(`user/${post}User`, vm.form)
+            .post(`performance/updatePerformance`, vm.form)
             .then((res) => {
               vm.submitting = true
               if (res.data.code === 200) {
-                vm.$notify.success(tip + '成功')
+                vm.$notify.success('修改成功')
                 vm.dialogAddVisible = false
                 vm.tablesFetchList()
               } else {
@@ -271,7 +216,8 @@ export default {
     }
   },
   components: {
-    BreadCrumb
+    BreadCrumb,
+    DialogDetail
   }
 }
 </script>

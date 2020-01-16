@@ -28,6 +28,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button
+        v-loading="submitting"
         type="primary"
         size="small"
         @click="submitForm()">确 定</el-button>

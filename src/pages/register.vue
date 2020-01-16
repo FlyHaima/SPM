@@ -1,6 +1,6 @@
 <!-- 登陆页面 -->
 <template>
-  <div class="wrap login-wrap">
+  <div class="wrap login-wrap" v-loading="pageLoading">
     <el-row class="login-content">
       <el-col :span="16" class="login-content-left">
         <div class="logo"></div>
@@ -227,6 +227,7 @@ export default {
       }
     }
     return {
+      pageLoading: false,
       submitting: false,
       tabType: 'xwdt',
       form: {
@@ -313,12 +314,14 @@ export default {
   methods: {
     // 获取新闻列表
     fetchData () {
+      this.pageLoading = true
       axios
         .get('ontroller/getNewsList', {
           tabType: this.tabType
         })
         .then((res) => {
           if (res.data.code === 200) {
+            this.pageLoading = false
             this.newsList = res.data.newsList
             this.swiperSlides = res.data.picList
           }
@@ -332,15 +335,15 @@ export default {
       console.log(url)
       window.location.href = url
     },
-    // 提交发布消息事件
+    // 注册事件
     submitForm () {
       let vm = this
+      vm.pageLoading = true
       vm.$refs.form.validate((valid) => {
         if (valid) {
           axios
             .post('registerController/register', vm.form)
             .then((res) => {
-              vm.submitting = true
               if (res.data.code === 200) {
                 vm.$notify.success('注册成功')
                 window.location = '/login'
@@ -352,7 +355,7 @@ export default {
               }
             })
             .finally(() => {
-              vm.submitting = false
+              vm.pageLoading = false
             })
         } else {
           return false

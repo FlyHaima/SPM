@@ -113,6 +113,14 @@ export default {
     planId: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: ''
+    },
+    isProductData: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -120,7 +128,7 @@ export default {
       submitting: false,
       tablesLoading: false,
       show: false,
-      type: '基础类排查清单',
+      currentPlanId: '',
       page: {
         total: 0, // 总条数
         index: 1, // 当前页面
@@ -141,46 +149,20 @@ export default {
       cycleOptions: [] // 周期
     }
   },
-  created () {
+  mounted () {
+    this.currentPlanId = this.planId
     this.fetchOrgOptions()
     this.fetchCycleOptions()
-    this.fetchSortTableData()
+    // this.fetchSortTableData(this.currentPlanId)
   },
   methods: {
-    // 保存排查种类
-    submitSortForm () {
-      let vm = this
-      let sendData = {
-        spmInvestType: vm.tableData
-      }
-      this.submitting = true
-      axios
-        .post('investType/saveInvTypePage', sendData)
-        .then((res) => {
-          if (res.data.code === 200) {
-            vm.$notify.success('排查种类更新成功')
-            // 刷新数据
-            this.$emit('reload')
-            vm.show = false
-            // vm.fetchSortTableData()
-          } else {
-            vm.$message({
-              message: res.data.message,
-              type: 'warning'
-            })
-          }
-        })
-        .finally(() => {
-          vm.submitting = false
-          vm.show = false
-        })
-    },
     // 获取排查种类数据
-    fetchSortTableData () {
+    fetchSortTableData (val) {
       this.tablesLoading = true
+      this.currentPlanId = val
       axios
         .get('investType/getInvTypePage', {
-          planId: this.planId,
+          // planId: this.currentPlanId,
           type: this.type
         })
         .then((res) => {
@@ -226,6 +208,34 @@ export default {
         .finally(() => {
         })
     },
+    // 保存排查种类
+    submitSortForm () {
+      let vm = this
+      let sendData = {
+        basicId: this.currentPlanId,
+        spmInvestType: vm.tableData
+      }
+      this.submitting = true
+      axios
+        .post('investType/saveInvTypePage', sendData)
+        .then((res) => {
+          if (res.data.code === 200) {
+            vm.$notify.success('排查种类更新成功')
+            // 刷新数据
+            this.$emit('reload')
+            vm.show = false
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+          vm.submitting = false
+          vm.show = false
+        })
+    },
     // 添加talbe行
     addTableRow (index, row, rows) {
       let newLineIndex = ++row.index
@@ -241,7 +251,6 @@ export default {
         type: this.type
       }
       rows.splice(index + 1, 0, newLine)
-      console.log(rows)
     },
     // 删除talbe行
     delTableRow (index, rows) {
@@ -265,16 +274,23 @@ export default {
     },
     // 切换分页数量
     handleSizeChange (val) {
-      this.fetchSortTableData()
+      this.fetchSortTableData(this.currentPlanId)
     },
     // 切换当前页页数
     handleCurrentChange (val) {
       this.page.index = val
       this.page.pageNo = val
-      this.fetchSortTableData()
+      this.fetchSortTableData(this.currentPlanId)
     }
   },
   watch: {
+    planId: {
+      immediate: true,
+      handler (val, oldVal) {
+        this.currentPlanId = val
+        this.fetchSortTableData(val)
+      }
+    },
     dialogVisible (val) {
       this.show = val
     },
