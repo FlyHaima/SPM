@@ -68,15 +68,25 @@
                         <div class="custom-table gauge-table">
                           <div class="custom-theader">
                             <div class="custom-tr is-flex">
-                              <div class="custom-th-label">点：30%</div>
-                              <div class="custom-th-label">线：30%</div>
-                              <div class="custom-th-label">面：30%</div>
+                              <div class="custom-th-label">点：{{tabaleHeaderData1.dot}}%</div>
+                              <div class="custom-th-label">线：{{tabaleHeaderData1.line}}%</div>
+                              <div class="custom-th-label">面：{{tabaleHeaderData1.surface}}%</div>
                             </div>
                           </div>
                           <div
                             class="custom-tbody">
                             <div class="custom-tr is-flex">
-                              <div class="custom-td-value">
+                              <div
+                                v-for="(item, index) in tableData1"
+                                :key=index
+                                class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">{{item.value}}个</el-tag>
+                              </div>
+                              <!-- <div class="custom-td-value">
                                 <el-tag
                                   class="tag-danger"
                                   type="danger"
@@ -89,22 +99,90 @@
                                   type="danger"
                                   effect="dark"
                                   size="mini">标签五</el-tag>
-                              </div>
-                              <div class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">标签五</el-tag>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
 
                         </div>
                       </el-tab-pane>
-                      <el-tab-pane label="较大风险">低风险</el-tab-pane>
-                      <el-tab-pane label="一般风险">低风险</el-tab-pane>
-                      <el-tab-pane label="低风险">低风险</el-tab-pane>
+                      <el-tab-pane label="较大风险">
+                        <div class="custom-table gauge-table">
+                          <div class="custom-theader">
+                            <div class="custom-tr is-flex">
+                              <div class="custom-th-label">点：{{tabaleHeaderData2.dot}}%</div>
+                              <div class="custom-th-label">线：{{tabaleHeaderData2.line}}%</div>
+                              <div class="custom-th-label">面：{{tabaleHeaderData2.surface}}%</div>
+                            </div>
+                          </div>
+                          <div
+                            class="custom-tbody">
+                            <div class="custom-tr is-flex">
+                              <div
+                                v-for="(item, index) in tableData2"
+                                :key=index
+                                class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">{{item.value}}个</el-tag>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-tab-pane>
+                      <el-tab-pane label="一般风险">
+                        <div class="custom-table gauge-table">
+                          <div class="custom-theader">
+                            <div class="custom-tr is-flex">
+                              <div class="custom-th-label">点：{{tabaleHeaderData3.dot}}%</div>
+                              <div class="custom-th-label">线：{{tabaleHeaderData3.line}}%</div>
+                              <div class="custom-th-label">面：{{tabaleHeaderData3.surface}}%</div>
+                            </div>
+                          </div>
+                          <div
+                            class="custom-tbody">
+                            <div class="custom-tr is-flex">
+                              <div
+                                v-for="(item, index) in tableData3"
+                                :key=index
+                                class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">{{item.value}}个</el-tag>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-tab-pane>
+                      <el-tab-pane label="低风险">
+                        <div class="custom-table gauge-table">
+                          <div class="custom-theader">
+                            <div class="custom-tr is-flex">
+                              <div class="custom-th-label">点：{{tabaleHeaderData4.dot}}%</div>
+                              <div class="custom-th-label">线：{{tabaleHeaderData4.line}}%</div>
+                              <div class="custom-th-label">面：{{tabaleHeaderData4.surface}}%</div>
+                            </div>
+                          </div>
+                          <div
+                            class="custom-tbody">
+                            <div class="custom-tr is-flex">
+                              <div
+                                v-for="(item, index) in tableData4"
+                                :key=index
+                                class="custom-td-value">
+                                <el-tag
+                                  class="tag-danger"
+                                  type="danger"
+                                  effect="dark"
+                                  size="mini">{{item.value}}个</el-tag>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-tab-pane>
                     </el-tabs>
                   </div>
                 </gauge>
@@ -172,7 +250,6 @@
                     </div>
                   </el-col>
                 </el-row>
-
               </div>
             </div>
           </el-col>
@@ -246,7 +323,15 @@ export default {
         pageNo: 1,
         pageSize: 10 // limit
       },
-      enterData: [] // 入口链接数据
+      enterData: [], // 入口链接数据
+      tabaleHeaderData1: {},
+      tabaleHeaderData2: {},
+      tabaleHeaderData3: {},
+      tabaleHeaderData4: {},
+      tableData1: [], // 风险动态数据
+      tableData2: [],
+      tableData3: [],
+      tableData4: []
     }
   },
   filters: {
@@ -266,13 +351,34 @@ export default {
   },
   created () {
     this.fetchPieData()
-    // this.initPieOptions()
     this.fetchEnterData()
     this.fetchList()
     this.fetchChartData()
     this.fetchGaugeData()
+    this.fetchTableData()
   },
   methods: {
+    // 获取安全指数分析数据
+    fetchTableData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('safeAnalysis/pointLineSurface')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tableData1 = res.data.data1.tableData
+            this.tableData2 = res.data.data2.tableData
+            this.tableData3 = res.data.data3.tableData
+            this.tableData4 = res.data.data4.tableData
+            this.tabaleHeaderData1 = res.data.data1.tabaleHeaderData
+            this.tabaleHeaderData2 = res.data.data2.tabaleHeaderData
+            this.tabaleHeaderData3 = res.data.data3.tabaleHeaderData
+            this.tabaleHeaderData4 = res.data.data4.tabaleHeaderData
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
     // 初始化安全指数分析数据
     initPieOptions () {
       for (let i = 0; i < this.pieOptions.length; i++) {
@@ -632,7 +738,7 @@ export default {
     color: #ff1616;
   }
   .gauge-table{
-    width: 300px;
+    width: 280px;
     background: #ffffff;
     border-color: transparent;
     .custom-th-label{
@@ -647,7 +753,7 @@ export default {
   }
   .gauge-tabs {
     position: relative;
-    right: -20px;
+    right: -15px;
   }
   .gauge-tabs-box{
     position: absolute;
@@ -661,12 +767,17 @@ export default {
     >>>.el-tabs--border-card{
       min-height: 131px;
     }
+    >>>.el-tabs__nav{
+      height: 30px;
+      line-height: 26px;
+    }
     >>>.el-tabs__item{
       padding: 0 8px;
       height: 30px;
       line-height: 26px;
       border-top: 3px solid transparent;
       font-weight: 400;
+      font-size: 14px;
       &.is-active{
         border-top-color: #409eff;
       }

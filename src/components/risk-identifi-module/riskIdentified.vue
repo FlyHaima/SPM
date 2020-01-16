@@ -1114,7 +1114,7 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 445px;
+        height: 490px;
         .step-box{
           width: 100%;
           height: 100%;
