@@ -66,16 +66,16 @@
               align="center">
               <template slot-scope="scope">{{ scope.row.documentType }}</template>
             </el-table-column>
-            <el-table-column
-              label="证件有效截止日期"
-              align="center">
-              <template slot-scope="scope">{{ formatTime(scope.row.expiryDate) }}</template>
-            </el-table-column>
-            <el-table-column
-              label="登录ID"
-              align="center">
-              <template slot-scope="scope">{{ scope.row.id }}</template>
-            </el-table-column>
+<!--            <el-table-column-->
+<!--              label="证件有效截止日期"-->
+<!--              align="center">-->
+<!--              <template slot-scope="scope">{{ formatTime(scope.row.expiryDate) }}</template>-->
+<!--            </el-table-column>-->
+<!--            <el-table-column-->
+<!--              label="登录ID"-->
+<!--              align="center">-->
+<!--              <template slot-scope="scope">{{ scope.row.id }}</template>-->
+<!--            </el-table-column>-->
             <el-table-column
               label="操作"
               align="center">
@@ -186,7 +186,7 @@ export default {
       vm.dialogLoading = true
       let postData = {
         fileName: vm.addData.fileName,
-        fileCategory: vm.addData.fileCategory,
+        documentType: vm.addData.fileCategory,
         size: vm.addData.size,
         path: vm.addData.url
       }

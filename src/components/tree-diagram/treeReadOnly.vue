@@ -45,7 +45,10 @@
               <i :class="classObj(data)"></i>
               {{ node.label }}
             </span>
-            <span class="right-btns" v-if="data.riskLevelCode != null && showBtns">
+            <span class="right-btns" v-if="data.treeLevel == '4' && showBtns">
+              <i class="el-icon-plus" title="添加下级子节点" @click.stop="() =>appendChild(node, data)"></i>
+            </span>
+            <span class="right-btns" v-if="data.treeLevel == '5' && showBtns">
               <i class="el-icon-plus" title="添加节点" @click.stop="() =>append(node, data)"></i>
               <i class="el-icon-edit" title="修改节点" @click.stop="() =>edit(node, data)"></i>
               <i class="el-icon-delete" title="删除节点"  @click.stop="() =>remove(node, data)"></i>
@@ -140,6 +143,11 @@ export default {
     },
     append (node, data) {
       this.openAppendBox(data)
+    },
+    appendChild (node, data) { // 向子节点添加节点
+      this.$emit('tree-add-item', {
+        pId: data.riskId
+      })
     },
     openAppendBox (data) {
       this.$emit('tree-add-item', {

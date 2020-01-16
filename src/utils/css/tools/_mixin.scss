@@ -1,0 +1,175 @@
+
+@charset "utf-8";
+@import "./_themecolor"; /*引入配置*/
+
+ /*设置主题颜色函数*/
+
+//  header 的 background
+@mixin header_bg($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$header-background-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$header-background-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$header-background-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$header-background-theme3;
+  }
+}
+
+// menu 的 background
+@mixin menu_bg($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$menu-background-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$menu-background-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$menu-background-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$menu-background-theme3;
+  }
+}
+
+// menu active 的 background
+@mixin menu_active($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$menu-active-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$menu-active-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$menu-active-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$menu-active-theme3;
+  }
+}
+
+// menu active 的 border-top
+@mixin menu_top_active($color){
+  border-top: 1px solid $color;
+  [data-theme="theme0"] & {
+    border-top: 1px solid $secmenu-active-theme0;
+  }
+  [data-theme="theme1"] & {
+    border-top: 1px solid $secmenu-active-theme1;
+  }
+  [data-theme="theme2"] & {
+    border-top: 1px solid $secmenu-active-theme2;
+  }
+  [data-theme="theme3"] & {
+    border-top: 1px solid $secmenu-active-theme3;
+  }
+}
+
+// 二级菜单 的 背景颜色
+@mixin secmenu_bg($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$sec-menu-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$sec-menu-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$sec-menu-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$sec-menu-theme3;
+  }
+}
+
+// 二级菜单 font-color
+@mixin secmenu_font($color){
+  color:$color;
+  [data-theme="theme0"] & {
+    color:$secmenu-font-theme0;
+  }
+  [data-theme="theme1"] & {
+    color:$secmenu-font-theme1;
+  }
+  [data-theme="theme2"] & {
+    color:$secmenu-font-theme2;
+  }
+  [data-theme="theme3"] & {
+    color:$secmenu-font-theme3;
+  }
+}
+
+// 二级菜单 ACTIVE 背景
+@mixin secmenu_active_bg($color){
+  background-color:$color;
+  [data-theme="theme0"] & {
+    background-color:$secmenu-active-theme0;
+  }
+  [data-theme="theme1"] & {
+    background-color:$secmenu-active-theme1;
+  }
+  [data-theme="theme2"] & {
+    background-color:$secmenu-active-theme2;
+  }
+  [data-theme="theme3"] & {
+    background-color:$secmenu-active-theme3;
+  }
+}
+
+// 二级菜单 ACTIVE font-color
+@mixin secmenu_active_font($color){
+  color:$color;
+  [data-theme="theme0"] & {
+    color:$secmenu-active-font-theme0;
+  }
+  [data-theme="theme1"] & {
+    color:$secmenu-active-font-theme1;
+  }
+  [data-theme="theme2"] & {
+    color:$secmenu-active-font-theme2;
+  }
+  [data-theme="theme3"] & {
+    color:$secmenu-active-font-theme3;
+  }
+}
+
+// 二级菜单 filter 图标 镜像 背景颜色
+@mixin secmenu_icon_bg($color){
+  filter: drop-shadow(24px 0 $color);
+  [data-theme="theme0"] & {
+    filter: drop-shadow(24px 0 $secmenu-font-theme0);
+  }
+  [data-theme="theme1"] & {
+    filter: drop-shadow(24px 0 $secmenu-font-theme1);
+  }
+  [data-theme="theme2"] & {
+    filter: drop-shadow(24px 0 $secmenu-font-theme2);
+  }
+  [data-theme="theme3"] & {
+    filter: drop-shadow(24px 0 $secmenu-font-theme3);
+  }
+}
+
+// 二级菜单 filter 图标 ACTIVE 镜像 背景颜色
+@mixin secmenu_active_icon($color){
+  filter: drop-shadow(24px 0 $color);
+  [data-theme="theme0"] & {
+    filter: drop-shadow(24px 0 $secmenu-active-font-theme0);
+  }
+  [data-theme="theme1"] & {
+    filter: drop-shadow(24px 0 $secmenu-active-font-theme1);
+  }
+  [data-theme="theme2"] & {
+    filter: drop-shadow(24px 0 $secmenu-active-font-theme2);
+  }
+  [data-theme="theme3"] & {
+    filter: drop-shadow(24px 0 $secmenu-active-font-theme3);
+  }
+}

@@ -45,22 +45,33 @@
           <div class="body-header">
             <span class="label">当前位置：</span>
             <el-select v-model="currentMap" placeholder="请选择" size="medium" @change="optionChange()">
-              <el-option v-for="(item, index) in mapLists" :key="index" :label="item" :value="item"></el-option>
+              <el-option v-for="(item, index) in mapLists" :key="index" :label="item.label" :value="item.value"></el-option>
             </el-select>
 
-            <i class="el-icon-delete" title="删除"></i>
-            <i class="el-icon-upload2" title="上传新图片"></i>
-            <i class="el-icon-plus" title="添加位置"></i>
+            <i class="el-icon-delete" title="删除" @click="deleteMap()"></i>
+            <i class="el-icon-upload2" title="上传新图片" @click="uploadNewMap()"></i>
+            <i class="el-icon-plus" title="添加位置" @click="addMap()"></i>
           </div>
           <div class="canvas-box">
-            <div style="display:none;">
+            <div style="display:none;" v-if="mapLists.length > 0 && currentImage.url !== ''">
               <img id="source"
-                   :src="img.url"
-                   :width="img.width"
-                   :height="img.height">
+                   :src="currentImage.url"
+                   :width="currentImage.width"
+                   :height="currentImage.height">
             </div>
-            <canvas id="myCanvas"
-                    :width="img.width" :height="img.height"
+
+            <!-- 暂无地图，需要上传新地图 -->
+            <div v-if="currentMap && !currentImage.url" class="up-new-map">
+              <el-button size="medium" type="primary" @click="uploadNewMap()"><i class="el-icon-upload2"></i> 上传新图片</el-button>
+            </div>
+
+            <!-- 暂无地图，需要新建新地图 -->
+            <div v-if="mapLists.length === 0" class="up-new-map">
+              <el-button size="medium" type="primary" @click="addMap()"><i class="el-icon-plus"></i> 添加位置</el-button>
+            </div>
+
+            <canvas id="myCanvas" v-else
+                    :width="currentImage.width" :height="currentImage.height"
                     style="background-color: #fff;"
                     @mousedown="mousedown"
                     @mousemove="mousemove"
@@ -70,22 +81,145 @@
                     @contextmenu="openMenu"
             >
               Your browser does not support the HTML5 canvas tag.<br>
-              您所使用浏览器不支持CANVAS标签
+              您所使用浏览器不支持CANVAS标签，请使用Chrome浏览器、火狐浏览器或IE11版本以上的浏览器
             </canvas>
+
             <div class="mouse-menu" v-show="showMenu" v-bind:style="`top: ${menuPosition.top}px; left: ${menuPosition.left}px`">
-              <template v-if="bound">
-                <div class="mouse-menu-item">绑定</div>
-                <div class="mouse-menu-item">删除</div>
+              <template v-if="!bound">
+                <div class="mouse-menu-item" @click="bind()">绑定</div>
+                <div class="mouse-menu-item" @click="deleteItem()">删除</div>
               </template>
               <template v-else>
-                <div class="mouse-menu-item">查看</div>
-                <div class="mouse-menu-item">重新绑定</div>
-                <div class="mouse-menu-item">删除</div>
+                <div class="mouse-menu-item" @click="checkItem()">查看</div>
+                <div class="mouse-menu-item" @click="rebind()">重新绑定</div>
+                <div class="mouse-menu-item" @click="deleteItem()">删除</div>
               </template>
             </div>
           </div>
+
+          <!-- 绑定节点 -->
+          <el-dialog title="绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="bindVisible"
+                     width="480px" :append-to-body="true">
+            <el-form label-width="120px">
+              <el-form-item label="区块名称：">
+                <el-select v-model="bindSelection"  placeholder="请选择" size="medium">
+                  <el-option
+                    v-for="item in bindOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="bindVisible = false">取 消</el-button>
+              <el-button type="primary" @click="confirmBind()">确 定</el-button>
+            </span>
+          </el-dialog>
+
+          <!-- 重新绑定节点 -->
+          <el-dialog title="重新绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="rebindVisible"
+                     width="480px" :append-to-body="true">
+            <el-form label-width="120px">
+              <el-form-item label="区块名称：">
+                <el-select v-model="rebindSelection"  placeholder="请选择" size="medium">
+                  <el-option
+                    v-for="item in bindOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="rebindVisible = false">取 消</el-button>
+              <el-button type="primary" @click="confirmReBind()">确 定</el-button>
+            </span>
+          </el-dialog>
+
+          <!-- 上传弹窗 -->
+          <el-dialog title="上传" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+                     :visible.sync="uploadVisible"
+                     v-loading="uploadLoading"
+                     width="580px" :append-to-body="true">
+            <el-form
+              ref="messageForm"
+              label-width="100px"
+              label-position="right">
+              <el-form-item label="上传图片">
+                <el-upload
+                  class="upload-demo"
+                  :action="baseUrl"
+                  :data="uploadData"
+                  :limit="1"
+                  accept=".png, .jpg"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :on-remove="handleRemove"
+                  :file-list="fileList">
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <div slot="tip" class="el-upload__tip">只能上传.jpg，.png格式的图片</div>
+                </el-upload>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="uploadVisible = false">取 消</el-button>
+              <el-button type="primary" @click="confirmUpload()">确 定</el-button>
+            </span>
+          </el-dialog>
+
+          <!-- 查看的侧边展示栏 -->
+          <div class="slide-temp" :class="slideOpen ? 'active' : ''" v-loading="slidLoading">
+            <p
+              style="line-height: 30px; font-size: 24px; margin-bottom: 8px;"><i class="el-icon-circle-close" @click="slideOpen = false"></i>
+            </p>
+            <el-table ref="slideTable"
+                      border
+                      stripe
+                      :data="slideTable"
+                      tooltip-effect="dark"
+                      style="width: 100%">
+              <el-table-column
+                label="风险点名称"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.riskSourceName }}</template>
+              </el-table-column>
+              <el-table-column
+                label="风险等级"
+                align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    size="mini"
+                    effect="dark"
+                    :class="classObj(scope.row.riskLevelCode)">
+                    {{ scope.row.riskLevel}}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="主要危害因素"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.factor }}</template>
+              </el-table-column>
+              <el-table-column
+                label="管控措施"
+                align="center">
+                <template slot-scope="scope">{{ scope.row.technology + ';' + scope.row.bmp + ';' + scope.row.train + ';' + scope.row.individual + ';' + scope.row.emergency }}</template>
+              </el-table-column>
+              <el-table-column
+                label="风险点详情"
+                align="center">
+                <template slot-scope="scope">
+                  <el-button type="text" @click="checkOutDetail(scope.row.id)">详情</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
-        <div class="body-aside"></div>
       </div>
     </el-main>
   </el-container>
@@ -93,29 +227,39 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeDiagram from '../tree-diagram/treeDiagram'
+import {
+  getPlaceSelector,
+  getRiskSelector,
+  addPlace,
+  bindLayer,
+  getLayer,
+  delMap,
+  delPoint,
+  uploadPic,
+  checkItemDetail,
+  getImageSize
+} from '@/api/riskControl'
+import base from '@/api/baseUrl'
+import {getQiNiuToken} from '@/api/upload'
 
 export default {
   name: 'riskColorImage',
   data () {
     return {
       breadcrumb: ['风险分级管控', '风险四色图'],
+      baseUrl: '',
+      fileAddress: '',
+      uploadData: {
+        token: ''
+      },
+      fileList: [],
+      uploadImageUrl: '',
       pageLoading: false,
-      mapLists: ['mapA', 'mapB', 'mapC'], // map 选项列表
+      mapLists: [], // map 选项列表
       currentMap: '', // 当前所选のmap
       layers: [], // 新建图层
-      oldLayers: [
-        {
-          height: 170,
-          level: 2,
-          type: 0,
-          width: 110,
-          x1: 182,
-          x2: 544,
-          y1: 109,
-          y2: 383
-        }
-      ], // 之前存在的图层
-      fillStyles: ['#a3a3a3', '#4680ff', '#fffb09', '#ff9309', '#d13a38'],
+      oldLayers: [], // 之前存在的图层
+      fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
       starty: 0, // 起始y坐标
@@ -127,10 +271,10 @@ export default {
       op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框
       scale: 1,
       type: 0,
-      img: {
-        url: 'https://yyb.gtimg.com/aiplat/page/product/visionimgidy/img/demo6-16a47e5d31.jpg?max_age=31536000',
-        width: 399,
-        height: 600
+      currentImage: {
+        url: '',
+        width: 0,
+        height: 0
       },
       minWidth: 1180,
       minHeight: 747,
@@ -144,34 +288,106 @@ export default {
       menuPosition: {
         top: 0,
         left: 0
-      }
+      },
+      slideOpen: false, // 右侧滑出部分
+      slideTable: [],
+      bindVisible: false,
+      bindOptions: [],
+      bindSelection: null, // 绑定的选项
+      rebindVisible: false,
+      rebindSelection: null, // 重新绑定的选项
+      uploadVisible: false,
+      uploadLoading: false,
+      slidLoading: false,
+      starshMenu: null // 暂存右键的值
     }
   },
   mounted () {
-    this.canvas_init()
+    // this.canvas_init()
   },
   created () {
+    let vm = this
+    vm.baseUrl = base.uploadQiniuAdr
+    vm.fileAddress = base.fileQiniuAddr
     document.onclick = function () {
-      console.log('click')
-      this.showMenu = false
+      vm.showMenu = false // 关闭自定义右键menu
     }
+    vm.getRiskSelector()
+    vm.getPlaceSelector(0) // 初始化时，获取map列表
   },
   methods: {
-    canvas_init () {
-      this.showOld()
+    // 获取风险点选项列表，绑定和重新绑定是一个方法
+    getRiskSelector () {
+      let vm = this
+      vm.pageLoading = true
+      getRiskSelector().then(res => {
+        if (res.code === 200) {
+          vm.bindOptions = res.data
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '数据失败， 请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
     },
-    // 获取图片的原始尺寸
-    checkImgSize (imgUrl) {
-      let newImg = new Image()
-      newImg.src = imgUrl
-      let newW = 0
-      let newH = 0
-      newImg.onload = function () {
-        // onload 耗费时间由网络而定
-        newW = newImg.width
-        newH = newImg.height
+    // 获取所有的map；0：初始化；1：添加后更新map；2：删除后更新map
+    getPlaceSelector (type) {
+      let vm = this
+      vm.pageLoading = true
+      getPlaceSelector().then(res => {
+        if (res.code === 200) {
+          vm.mapLists = res.data
+          if (type === 0) {
+            vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
+            vm.getOldLayers()
+          } else if (type === 1) {
+            vm.currentMap = vm.mapLists[vm.mapLists.length - 1].value
+            vm.getOldLayers()
+          } else if (type === 2) {
+            vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
+            vm.getOldLayers()
+          }
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '数据失败，请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
+    getOldLayers () { // 获取当前map下原有记录的layers，顺便重绘
+      let vm = this
+      vm.pageLoading = true
+      if (vm.currentMap) {
+        getLayer(vm.currentMap).then(res => {
+          if (res.code === 200) {
+            vm.oldLayers = res.data
+            vm.currentImage.url = res.map.backgroundUrl
+            if (vm.currentImage.url) {
+              getImageSize(vm.currentImage.url).then(res => {
+                vm.currentImage.width = res.width
+                vm.currentImage.height = res.height
+              })
+            } else {
+              vm.currentImage.width = 0
+              vm.currentImage.height = 0
+            }
+            vm.showOld()
+          } else {
+            vm.$message({
+              type: 'warning',
+              message: '获取数据失败，请稍后重试'
+            })
+          }
+          vm.pageLoading = false
+        })
       }
-      return [newW, newH]
+    },
+    canvas_init () { // 初始化，以及初始化时的判断
+      this.showOld() // 初始化的时候，先把旧有数据加载遍
     },
     zoomUp () {
       let vm = this
@@ -181,7 +397,7 @@ export default {
       if (c.width <= vm.maxWidth && c.height <= vm.maxHeight) {
         c.width *= vm.scaleStep
         c.height *= vm.scaleStep
-        vm.scale = c.height / vm.img.height
+        vm.scale = c.height / vm.currentImage.height
         ctx.scale(vm.scale, vm.scale)
         c.style.backgroundSize = `${c.width}px ${c.height}px`
         vm.showOld()
@@ -194,10 +410,10 @@ export default {
       const ctx = c.getContext('2d')
 
       // debugger
-      if (c.width >= vm.img.width && c.height >= vm.img.height) {
+      if (c.width >= vm.currentImage.width && c.height >= vm.currentImage.height) {
         c.width /= vm.scaleStep
         c.height /= vm.scaleStep
-        vm.scale = c.height / vm.img.height
+        vm.scale = c.height / vm.currentImage.height
         ctx.scale(vm.scale, vm.scale)
         c.style.backgroundSize = `${c.width}px ${c.height}px`
         vm.showOld()
@@ -209,7 +425,7 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
       vm.layers.pop()
-      ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.showOld()
       vm.reshow()
     },
@@ -218,11 +434,33 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
       vm.layers = []
-      ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.showOld()
       vm.reshow()
     },
-    saveChange () {},
+    saveChange () { // 保存修改
+      let vm = this
+      vm.pageLoading = true
+      let allLayers = vm.oldLayers.concat(vm.layers)
+
+      let postD = {
+        id: vm.currentMap,
+        layers: allLayers
+      }
+      bindLayer(postD).then(res => {
+        if (res.code === 200) {
+          // console.log(res.data)
+          vm.layers = [] // 因为修改的layers以及保存了，再次加载时，作为oldLayers加载，故layers清空
+          vm.getOldLayers()
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '保存失败，请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
     resizeLeft (rect) {
       let vm = this
       const c = document.getElementById('myCanvas')
@@ -359,13 +597,16 @@ export default {
         vm.currentR.width = vm.currentR.x2 - vm.currentR.x1
       }
     },
-    drawImage () {
+    drawImage () { // 后期需要把后台传过来的图片宽高作为参数使用，前台读取图片的宽高有onload的顺序问题
       const canvas = document.getElementById('myCanvas')
       const ctx = canvas.getContext('2d')
-
-      let image = document.getElementById('source')
-
-      ctx.drawImage(image, 0, 0, 399, 600)
+      let vm = this
+      if (vm.currentImage.url) {
+        let img = new Image()
+        img.src = vm.currentImage.url
+        // console.log('draw', vm.currentImage.width, vm.currentImage.height)
+        ctx.drawImage(img, 0, 0, vm.currentImage.width, vm.currentImage.height)
+      }
     },
     // 绘制原有图形，包括背景图
     showOld () {
@@ -373,7 +614,7 @@ export default {
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
-      // debugger
+
       vm.oldLayers.forEach(item => {
         ctx.beginPath()
         ctx.rect(item.x1, item.y1, item.width, item.height)
@@ -386,7 +627,7 @@ export default {
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
     },
-    // 绘制图形（擦除后重绘or第一遍加载时绘制）
+    // 绘制图形（擦除后重绘 or 第一遍加载时绘制）
     reshow (x, y) {
       let vm = this
       let allNotIn = 1
@@ -445,13 +686,23 @@ export default {
         vm.currentR.y1 += vm.y - vm.topDistance - vm.currentR.y1
       }
     },
-    // 确定是否是在绘制的矩形中
+    // 确定是否是在绘制的矩形中 (匹配 layers)
     isPointInRect (x, y) {
       let vm = this
       let len = vm.layers.length
       for (let i = 0; i < len; i++) {
         if (vm.layers[i].x1 < x && x < vm.layers[i].x2 && vm.layers[i].y1 < y && y < vm.layers[i].y2) {
           return vm.layers[i]
+        }
+      }
+    },
+    // 匹配是否是在原有的矩形中 (匹配 oldLayers)
+    isPointInOld (x, y) {
+      let vm = this
+      let len = vm.oldLayers.length
+      for (let i = 0; i < len; i++) {
+        if (vm.oldLayers[i].x1 < x && x < vm.oldLayers[i].x2 && vm.oldLayers[i].y1 < y && y < vm.oldLayers[i].y2) {
+          return vm.oldLayers[i]
         }
       }
     },
@@ -478,8 +729,12 @@ export default {
       return position
     },
     mousedown (e) {
-      console.log('mousedown:', e)
-
+      if (e.button === 0) {
+        console.log('mousedown: mousedown')
+      } else {
+        console.log('mousedown: menu')
+        return
+      }
       let vm = this
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
@@ -494,8 +749,6 @@ export default {
       ctx.strokeRect(vm.x, vm.y, 0, 0)
       ctx.strokeStyle = '#0000ff'
       vm.flag = 1
-      console.log(vm.currentR)
-      console.log(vm.layers)
     },
     mousemove (e) {
       let vm = this
@@ -507,7 +760,7 @@ export default {
       ctx.save()
       ctx.setLineDash([5])
       c.style.cursor = 'default'
-      ctx.clearRect(0, 0, vm.elementWidth, vm.elementHeight)
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       if (vm.flag && vm.op === 1) {
         ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
       }
@@ -516,8 +769,7 @@ export default {
       vm.reshow(vm.x, vm.y)
     },
     mouseup (e) {
-      console.log('mouseup:', e)
-
+      // console.log('mouseup:', e)
       let vm = this
 
       if (vm.op === 1) {
@@ -527,7 +779,9 @@ export default {
           x2: vm.x,
           y2: vm.y,
           type: vm.type,
-          level: 0
+          level: 0,
+          bindId: '', // 绑定的点的id
+          picid: vm.currentMap // 绑定的map的id
         }))
       } else if (vm.op >= 3) {
         vm.fixPosition(vm.currentR)
@@ -538,12 +792,38 @@ export default {
       vm.op = 0
     },
     openMenu (e) {
+      // console.log('右键：', e)
+      let vm = this
+      vm.startx = e.layerX / vm.scale
+      vm.starty = e.layerY / vm.scale
+
+      if (vm.isPointInRect(vm.startx, vm.starty)) {
+        vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
+        vm.starshMenu = vm.currentR
+        vm.bound = false
+      } else if (vm.isPointInOld(vm.startx, vm.starty)) {
+        vm.currentR = vm.isPointInOld(vm.startx, vm.starty)
+        vm.starshMenu = vm.currentR
+        vm.bound = true
+      } else {
+        vm.currentR = null
+      }
+      if (vm.currentR) {
+        console.log('currentR', vm.currentR)
+        vm.leftDistance = vm.startx - vm.currentR.x1
+        vm.topDistance = vm.starty - vm.currentR.y1
+      } else {
+        console.log('not in Rects')
+        return
+      }
+
       e.preventDefault()
-      console.log('右键：', e)
+
       this.menuPosition = {
         top: e.offsetY,
         left: e.offsetX
       }
+      this.showMenu = true
     },
     leaveCanvas () {
       const c = document.getElementById('myCanvas')
@@ -555,9 +835,224 @@ export default {
       document.onmouseup = this.mouseup()
     },
     optionChange () {
-      console.log('optionChange', this.currentMap)
-      // then 获取新mapの画板绘制数据
-      // then 需要重新绘制画板 canvas_init()
+      let vm = this
+      const c = document.getElementById('myCanvas')
+      const ctx = c.getContext('2d')
+      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.getOldLayers()
+      vm.layers = []
+      vm.showOld()
+    },
+    addMap () {
+      let vm = this
+      vm.pageLoading = true
+      vm.$prompt('请输入位置名称', '添加位置', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        let postData = {
+          name: value
+        }
+        addPlace(postData).then(res => {
+          if (res.code === 200) {
+            vm.$message({
+              type: 'success',
+              message: '节点添加成功'
+            })
+            const c = document.getElementById('myCanvas')
+            const ctx = c.getContext('2d')
+            ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+            vm.getPlaceSelector(1) // 更新map列表
+          }
+          vm.pageLoading = false
+        })
+      }).catch(() => {
+        // after cancel
+        vm.pageLoading = false
+      })
+    },
+    deleteMap () {
+      let vm = this
+      vm.$confirm('此操作将永久删除该地图和相关节点信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let postD = {
+          id: vm.currentMap
+        }
+        delMap(postD).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            vm.getPlaceSelector(2) // 更新map列表
+            // 再初始化其他的绘图元素
+          } else {
+            this.$message({
+              type: 'warning',
+              message: '删除失败，请稍后重试'
+            })
+          }
+          // 重新请求，then，重新绘图
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    checkItem () {
+      let vm = this
+      vm.slidLoading = true
+      vm.slideOpen = true
+      checkItemDetail(vm.starshMenu.bindId).then(res => {
+        if (res.code === 200) {
+          vm.slideTable = res.data
+          vm.slidLoading = false
+        } else {
+          vm.slidLoading = false
+          vm.slideOpen = false
+          vm.$message({
+            type: 'warning',
+            message: '数据获取失败，请稍后重试'
+          })
+        }
+      })
+    },
+    deleteItem () {
+      let vm = this
+
+      vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // console.log(vm.currentR, vm.bound)
+        if (vm.bound) { // 是odlData，需要请求后台，删除该点
+          let postD = {
+            id: vm.currentR.id
+          }
+          delPoint(postD).then(res => {
+            if (res.code === 200) {
+              vm.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            } else {
+              vm.$message({
+                type: 'warning',
+                message: '删除失败，请稍后重试'
+              })
+            }
+            // 重新请求，then，重新绘图
+            vm.getOldLayers()
+          })
+        } else { // 直接在本地删除即可，只需在最后保存阶段前从layers里删除
+          for (let i = 0; i < vm.layers.length; i++) {
+            if (vm.layers[i].x1 === vm.starshMenu.x1 && vm.layers[i].y1 === vm.starshMenu.y1) {
+              vm.layers.splice(i, 1)
+            }
+          }
+          vm.reshow()
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    classObj (data) {
+      if (data === '4') {
+        return 'tag-low'
+      } else if (data === '3') {
+        return 'tag-normal'
+      } else if (data === '2') {
+        return 'tag-warning'
+      } else if (data === '1') {
+        return 'tag-danger'
+      }
+    },
+    bind () {
+      let vm = this
+      vm.bindVisible = true
+    },
+    rebind () {
+      let vm = this
+      vm.rebindVisible = true
+    },
+    uploadNewMap () {
+      this.uploadVisible = true
+    },
+    checkOutDetail () {}, // 点击查看详情
+    confirmBind () { // 提交绑定区域
+      let vm = this
+      vm.layers.forEach(item => {
+        if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
+          item.bindId = vm.bindSelection.value
+          item.level = vm.bindSelection.level
+        }
+      })
+      vm.bindVisible = false
+    },
+    confirmReBind () { // 提交重新绑定
+      let vm = this
+      vm.oldLayers.forEach(item => {
+        if (item.x1 === vm.currentR.x1 && item.y1 === vm.currentR.y1) {
+          item.bindId = vm.rebindSelection.value
+          item.level = vm.rebindSelection.level
+        }
+      })
+      vm.rebindVisible = false
+    },
+    handleBeforeUpload (file) {
+      return getQiNiuToken().then((res) => {
+        this.uploadData.token = res
+      })
+    },
+    handleSuccess (response, file, fileList) {
+      let vm = this
+      vm.fileList = fileList
+      vm.uploadImageUrl = vm.fileAddress + fileList[0].response.key
+    },
+    handleRemove (file, fileList) {
+      this.uploadImageUrl = ''
+    },
+    confirmUpload () {
+      let vm = this
+      vm.uploadLoading = true
+      if (!vm.uploadImageUrl) {
+        vm.$message({
+          message: '请上传图片',
+          type: 'warning'
+        })
+        return
+      }
+      let postD = {
+        backgroundUrl: vm.uploadImageUrl,
+        id: vm.currentMap
+      }
+      uploadPic(postD).then(res => {
+        if (res.code === 200) {
+          vm.$message({
+            type: 'success',
+            message: '添加成功'
+          })
+          vm.getOldLayers() // 重新获取数据，再重新绘制
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '添加失败，请稍后重试'
+          })
+        }
+        vm.fileList = []
+        vm.uploadImageUrl = ''
+      })
+      vm.uploadLoading = false
+      vm.uploadVisible = false
     }
   },
   components: {
@@ -623,6 +1118,7 @@ export default {
         position: relative;
         width: 100%;
         height: 100%;
+        overflow: hidden;
         .body-header{
           position: absolute;
           top: 0;
@@ -649,9 +1145,30 @@ export default {
           width: 100%;
           height: 100%;
           background: #fff;
+          overflow: auto;
+          .up-new-map{
+            position: absolute;
+            top: 35%;
+            width: 100%;
+            text-align: center;
+          }
+        }
+        .slide-temp{
+          position: absolute;
+          top: 0;
+          right: -505px;
+          width: 500px;
+          border: 1px solid #ddd;
+          height: 100%;
+          background: #fff;
+          padding: 20px;
+          box-shadow: -1px 2px 5px #c0c4cc;
+          transition: all 0.3s ease-in;
+          &.active{
+            right: 0;
+          }
         }
       }
-      .body-aside{}
       .mouse-menu{
         position: absolute;
         width: 100px;
@@ -676,6 +1193,4 @@ export default {
       }
     }
   }
-
-  /deep/.inner-main-container{}
 </style>
