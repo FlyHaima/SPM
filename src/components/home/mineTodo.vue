@@ -78,7 +78,6 @@
 <script>
 import axios from '@/api/axios'
 import moment from 'moment'
-import { mapState } from 'vuex'
 
 export default {
   name: 'messages',
@@ -118,12 +117,13 @@ export default {
   },
   methods: {
     fetchList () {
+      let userId = sessionStorage.getItem('userId')
       if (this.tabType === '1') {
         axios
           .get('flowAct/todoList', {
             pageNo: this.page.pageNo,
             pageSize: this.page.pageSize,
-            userId: this.userInfo.userId
+            userId: userId
           })
           .then((res) => {
             if (res.data.code === 200) {
@@ -137,7 +137,7 @@ export default {
           .get('flowAct/doneList', {
             pageNo: this.page.pageNo,
             pageSize: this.page.pageSize,
-            userId: this.userInfo.userId
+            userId: userId
           })
           .then((res) => {
             if (res.data.code === 200) {
@@ -183,13 +183,6 @@ export default {
         })
       }
     }
-  },
-  computed: {
-    ...mapState({
-      userInfo: (state) => state.userInfo
-    })
-  },
-  watch: {
   }
 }
 </script>

@@ -68,8 +68,8 @@ export default {
   computed: {
     ...mapState({
       userName: (state) => state.userInfo.userName,
-      msgNum: (state) => state.userInfo.msgNum,
-      taskNum: (state) => state.userInfo.taskNum
+      msgNum: (state) => state.msgNum,
+      taskNum: (state) => state.taskNum
     })
   },
   mounted () {

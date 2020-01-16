@@ -102,7 +102,7 @@
   <el-dialog
     title="发布消息"
     :visible.sync="dialogFormMessageVisible"
-    :width="'1000px'"
+    :width="'800px'"
     :show-close="false">
     <div class="form-modal">
       <el-form
@@ -222,9 +222,7 @@
 <script>
 import treeTransfer from '../tree-diagram/treeTransfer'
 import axios from '@/api/axios'
-import qs from 'qs'
 import moment from 'moment'
-import { mapState } from 'vuex'
 
 export default {
   name: 'messages',
@@ -301,16 +299,12 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapState({
-      userInfo: (state) => state.userInfo
-    })
-  },
   created () {
     let vm = this
+    let userName = sessionStorage.getItem('userName')
     // 从路由上存取当前页面的tabType
     vm.tabType = vm.$route.query.tabType
-    vm.messageForm.userName = vm.userInfo.userName
+    vm.messageForm.userName = userName
     vm.fetchList()
     vm.fetchTreeData()
     vm.fetchInfoTypeOptions()
@@ -364,7 +358,7 @@ export default {
         type: 'warning'
       }).then(() => {
         axios
-          .post('msg/delBatch', qs.stringify(sendData))
+          .post('msg/delBatch', sendData)
           .then((res) => {
             console.log(res.data.code)
             if (res.data.code === 200) {
@@ -413,7 +407,7 @@ export default {
         type: 'warning'
       }).then(() => {
         axios
-          .post('/msg/signRead', qs.stringify(sendData))
+          .post('/msg/signRead', sendData)
           .then((res) => {
             if (res.data.code === 200) {
               this.$notify.success('标记成功')
@@ -429,6 +423,9 @@ export default {
     },
     // 跳转信息详情页面的点击事件
     goDetailsPage (item) {
+      // 跳转页面刷新导航消息的数量显示
+      this.$store.dispatch('BASE_INFO_SET')
+      // 路由跳转详情页面
       this.$router.push({
         name: 'messagesDetails',
         params: {
@@ -538,7 +535,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/utils/css/style.scss';
+  @import '@/utils/css/tools/_variables.scss';
   .message-wrap{
     width: 100%;
     height: 100%;
