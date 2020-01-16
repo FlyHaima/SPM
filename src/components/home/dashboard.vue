@@ -277,6 +277,7 @@ export default {
     this.fetchEnterData()
     this.fetchList()
     this.fetchChartData()
+    this.fetchGaugeData()
   },
   methods: {
     // 初始化安全指数分析数据
@@ -303,6 +304,20 @@ export default {
           if (res.data.code === 200) {
             this.pieData = res.data.data
             this.initPieOptions()
+          }
+        }).finally(() => {
+          this.pageLoading = false
+        })
+    },
+    // 获取安全指数分析数据
+    fetchGaugeData () {
+      let vm = this
+      vm.pageLoading = true
+      axios
+        .get('safeAnalysis/dashboard')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.gaugeData = res.data.data
           }
         }).finally(() => {
           this.pageLoading = false
