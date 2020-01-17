@@ -153,6 +153,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            class="text-right"
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="page.index"
+            layout="total, prev, pager, next, jumper"
+            :total="page.total">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <el-dialog
@@ -284,7 +295,13 @@ export default {
       // uploadData: {
       //   riskId: ''
       // }, // 上传数据
-      fileList: [] // 导入列表
+      fileList: [], // 导入列表
+      page: {
+        total: 0, // 总条数
+        index: 1, // 当前页面
+        pageNo: 1,
+        pageSize: 10 // limit
+      }
     }
   },
   components: {
@@ -294,10 +311,21 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
+    // this.listDate.value = Date.parse(moment().format('YYYY-MM-DD'))
     this.fetchListMenuData()
     this.fetchOrgTreeData()
   },
   methods: {
+    // 切换分页数量
+    handleSizeChange (val) {
+      this.fetchTableData()
+    },
+    // 切换当前页页数
+    handleCurrentChange (val) {
+      this.page.index = val
+      this.page.pageNo = val
+      this.fetchTableData()
+    },
     // 导入接口地址
     uploadUrl () {
       const baseUrl = 'http://192.168.137.33:8033/spm'
@@ -485,7 +513,8 @@ export default {
       this.tablesLoading = true
       axios
         .get('basticHidden/getBasticHiddenList', {
-          planId: this.currentPlanId
+          planId: this.currentPlanId,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -610,11 +639,11 @@ export default {
     },
     savePlanHandle () {
       let vm = this
-      vm.listDate = vm.filterListDate(vm.listDate)
+      let listDate = vm.filterListDate(vm.listDate)
       let sendData = {
         list: [{
           spmBasicHiddenList: vm.tableData,
-          checkTime: vm.listDate
+          checkTime: listDate
         }]
       }
       vm.submitting = true

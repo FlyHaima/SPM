@@ -168,6 +168,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            class="text-right"
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="page.index"
+            layout="total, prev, pager, next, jumper"
+            :total="page.total">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <el-dialog
@@ -281,7 +292,13 @@ export default {
       ],
       checkedAuto: null,
       checkedManual: null,
-      investigationOptions: [] // 排查频率选项
+      investigationOptions: [], // 排查频率选项
+      page: {
+        total: 0, // 总条数
+        index: 1, // 当前页面
+        pageNo: 1,
+        pageSize: 10 // limit
+      }
     }
   },
   components: {
@@ -295,6 +312,16 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 切换分页数量
+    handleSizeChange (val) {
+      this.fetchTableData()
+    },
+    // 切换当前页页数
+    handleCurrentChange (val) {
+      this.page.index = val
+      this.page.pageNo = val
+      this.fetchTableData()
+    },
     // tag的class集合
     classObj (data) {
       if (data.riskLevel === '低风险') {
@@ -340,7 +367,8 @@ export default {
     fetchTableData () {
       axios
         .get('productHidden/getProductHiddenList', {
-          risk_id: this.currentPlanId
+          risk_id: this.currentPlanId,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           this.tablesLoading = true
