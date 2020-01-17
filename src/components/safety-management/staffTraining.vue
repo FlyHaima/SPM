@@ -339,7 +339,7 @@
                     <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.planPerId)">开始学习</el-button>
                     <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planPerId)">结束学习</el-button>
                     <span v-else type="text" style="margin-right: 10px; color: #909399;">结束学习</span>
-                    <el-button type="text" @click="downloadFile(scope.row.downloadLink)">附件</el-button>
+                    <el-button type="text" @click="getPlanFileList(scope.row.planId)">附件</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -524,7 +524,7 @@
                   <ul class="download-list">
                     <li v-for="(item, index) in recordDetail.downList" :key="index">
                       {{item.name}}
-                      <a @click="downloadItem(item.path)">下载</a>
+                      <a target="_blank" :href="`${item.path}?attname=${item.name}`">下载</a>
                     </li>
                   </ul>
                 </el-collapse-item>
@@ -552,7 +552,8 @@ import {
   copyPlan,
   getTrainStatistic,
   startLearn,
-  endLearn
+  endLearn,
+  getPlanFileList
 } from '@/api/organization'
 import {getQiNiuToken} from '@/api/upload'
 
@@ -1027,7 +1028,6 @@ export default {
         }
       })
     },
-    downloadFile (files) {},
     checkDetail (id) {
       this.pageLoading = true
       // get data, then, showDetailLog
@@ -1060,7 +1060,26 @@ export default {
       })
       this.pageLoading = false
     },
-    downloadItem (url) {}
+    getPlanFileList (planId) {
+      let vm = this
+      getPlanFileList(planId).then(res => {
+        vm.pageLoading = true
+        if (res.code === 200) {
+          res.data.forEach(item => {
+            vm.downLoadFile(item)
+          })
+        } else {
+          vm.$message({
+            message: '获取下载列表失败，请稍后重试',
+            type: 'warning'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
+    downLoadFile (item) {
+      window.location.href = `${item.path}?attname=${item.name}`
+    }
   },
   components: {TreeDiagram, BreadCrumb}
 }

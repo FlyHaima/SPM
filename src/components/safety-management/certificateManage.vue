@@ -36,7 +36,6 @@
                   :action="baseUrl"
                   :data="uploadData"
                   :limit="1"
-                  accept=".xls"
                   :before-upload="handleBeforeUpload"
                   :on-success="handleSuccess"
                   :on-remove="handleRemove"
@@ -80,8 +79,7 @@
               label="操作"
               align="center">
               <template slot-scope="scope">
-<!--                <el-button type="text">编辑</el-button>-->
-                <a :href="scope.row.path" style="margin-right: 8px;">下载</a>
+                <a target="_blank" :href="`${scope.row.path}?attname=${scope.row.documentName}`" style="margin-right: 8px;">下载</a>
                 <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
               </template>
             </el-table-column>
@@ -216,9 +214,10 @@ export default {
     },
     handleSuccess (response, file, fileList) {
       this.fileList = fileList
-      // console.log(this.fileList)
+      console.log(this.fileList)
       this.addData.url = this.fileAddress + fileList[0].response.key
       this.addData.size = fileList[0].size
+      this.addData.fileName = fileList[0].name
     },
     handleRemove (file, fileList) {
       this.addData.url = ''

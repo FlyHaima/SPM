@@ -180,8 +180,8 @@
           prop="userName">
           <el-input
             v-model.trim="form.userName"
-            placeholder="请输入姓名"
-            maxlength="25"
+            placeholder="请输入姓名(不可输入数字)"
+            maxlength="15"
             autocomplete></el-input>
         </el-form-item>
         <el-form-item
