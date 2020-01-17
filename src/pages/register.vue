@@ -338,12 +338,12 @@ export default {
     // 注册事件
     submitForm () {
       let vm = this
-      vm.pageLoading = true
       vm.$refs.form.validate((valid) => {
         if (valid) {
           axios
             .post('registerController/register', vm.form)
             .then((res) => {
+              vm.pageLoading = true
               if (res.data.code === 200) {
                 vm.$notify.success('注册成功')
                 window.location = '/login'
