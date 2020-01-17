@@ -311,6 +311,7 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
+    // this.listDate.value = Date.parse(moment().format('YYYY-MM-DD'))
     this.fetchListMenuData()
     this.fetchOrgTreeData()
   },
@@ -638,11 +639,11 @@ export default {
     },
     savePlanHandle () {
       let vm = this
-      vm.listDate = vm.filterListDate(vm.listDate)
+      let listDate = vm.filterListDate(vm.listDate)
       let sendData = {
         list: [{
           spmBasicHiddenList: vm.tableData,
-          checkTime: vm.listDate
+          checkTime: listDate
         }]
       }
       vm.submitting = true
