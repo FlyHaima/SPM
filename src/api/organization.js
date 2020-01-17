@@ -311,3 +311,12 @@ export function getDiskFileList (type, pageNo, pageSize) {
     return Promise.resolve(res.data)
   })
 }
+
+// 安全基础管理--培训内容--获取下载列表
+export function getPlanFileList (planId) {
+  const url = `${baseUrl}/train/getFile?planId=${planId}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

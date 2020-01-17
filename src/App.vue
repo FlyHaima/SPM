@@ -27,7 +27,7 @@ export default {
   created () {
     let that = this
     // 设置请求超时时间,30s
-    axios.defaults.timeout = 30000
+    axios.defaults.timeout = 20000 // 设置20s 的请求超时时间限制
 
     // 拦截request, 设置全局请求为ajax请求
     axios.interceptors.request.use((config) => {
@@ -41,6 +41,8 @@ export default {
       return config
     }, (error) => {
       console.log(error)
+      console.log('overtime')
+      this.reload()
       return Promise.reject(error)
     })
 
