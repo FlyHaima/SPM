@@ -859,10 +859,11 @@ export default {
               type: 'success',
               message: '节点添加成功'
             })
+            vm.getPlaceSelector(1) // 更新map列表
             const c = document.getElementById('myCanvas')
             const ctx = c.getContext('2d')
             ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-            vm.getPlaceSelector(1) // 更新map列表
+            vm.getOldLayers() // 重绘
           }
           vm.pageLoading = false
         })
