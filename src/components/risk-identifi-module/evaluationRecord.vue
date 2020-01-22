@@ -233,7 +233,8 @@ export default {
     exportTable () {
       let vm = this
       let baseUrl = base.baseUrl
-      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}`
+      let localToken = sessionStorage.getItem('TOKEN_KEY')
+      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}`
       location.href = `${hrefUrl}&attname=${vm.activeName}.xls`
     },
     getRiskTree (create) {

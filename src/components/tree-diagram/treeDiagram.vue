@@ -19,8 +19,7 @@
         </el-input>
       </div>
       <div class="slide-btns">
-        <!-- <el-button type="text" @click="openUpload" v-show="hasUpload">上传</el-button> -->
-        <el-upload accept=".xls" style="display: inline-block"
+        <el-upload accept=".xls" style="display: inline-block" v-show="hasUpload"
                   :action="`${baseUrl}/dept/importDept`"
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
@@ -92,7 +91,7 @@ export default {
       level: 7,
       addBro: false,
       uploadData: {
-        riskId: ''
+        token: ''
       },
       baseUrl: '',
       fileList: []
@@ -100,6 +99,7 @@ export default {
   },
   created () {
     this.baseUrl = base.baseUrl
+    this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
   },
   methods: {
     handleBeforeUpload (file) {
