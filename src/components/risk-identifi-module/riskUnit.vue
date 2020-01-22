@@ -18,7 +18,7 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" :href="`${baseUrl}/riskia/exportRiskUnit?id=${curentId}&attname=风险单元.xls`"><i class></i>导出</a>
+              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskUnit?id=${curentId}&token=${localToken}&attname=风险单元.xls`"><i class></i>导出</a>
             </p>
             <div class="table-box">
               <el-table
@@ -86,10 +86,12 @@ export default {
       tableData: [
       ],
       baseUrl: '',
-      curentId: ''
+      curentId: '',
+      localToken: ''
     }
   },
   created () {
+    this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
   },

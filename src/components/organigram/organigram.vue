@@ -511,9 +511,6 @@ export default {
     border-radius: 10px;
     padding: 20px 10px;
   }
-  .list-organization{
-
-  }
   .list-organization-item{
     display: flex;
     flex-wrap: wrap;
@@ -551,4 +548,3 @@ export default {
   }
 
 </style>
-

@@ -22,7 +22,7 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&attname=风险辨识表.xls`"><i class></i>导出</a>
+              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&token=${localToken}&attname=风险辨识表.xls`"><i class></i>导出</a>
               <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a>
               <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
               <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
@@ -595,10 +595,12 @@ export default {
         protectMeasures: '',
         emergencyMeasures: ''
       },
-      currentData: {}
+      currentData: {},
+      localToken: ''
     }
   },
   created () {
+    this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
   },
