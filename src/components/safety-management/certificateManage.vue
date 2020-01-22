@@ -20,7 +20,7 @@
                      width="580px" :append-to-body="true">
             <el-form ref="form" label-width="85px">
               <el-form-item label="证件名称：">
-                <el-input v-model="addData.fileName"></el-input>
+                <el-input v-model="addData.documentName"></el-input>
               </el-form-item>
               <el-form-item label="证件种类：">
                 <el-select v-model="addData.fileCategory">
@@ -112,6 +112,7 @@ export default {
         token: ''
       },
       addData: {
+        documentName: '',
         fileCategory: '',
         url: '',
         fileName: '',
@@ -183,10 +184,11 @@ export default {
       }
       vm.dialogLoading = true
       let postData = {
-        fileName: vm.addData.fileName,
+        documentName: vm.addData.documentName,
         documentType: vm.addData.fileCategory,
         size: vm.addData.size,
-        path: vm.addData.url
+        path: vm.addData.url,
+        fileName: vm.addData.fileName
       }
       addDocument(postData).then(res => {
         vm.dialogLoading = false
@@ -199,6 +201,7 @@ export default {
         }
         vm.fileList = []
         vm.addData = {
+          documentName: '',
           fileCategory: '',
           url: '',
           fileName: '',
@@ -214,7 +217,6 @@ export default {
     },
     handleSuccess (response, file, fileList) {
       this.fileList = fileList
-      console.log(this.fileList)
       this.addData.url = this.fileAddress + fileList[0].response.key
       this.addData.size = fileList[0].size
       this.addData.fileName = fileList[0].name
