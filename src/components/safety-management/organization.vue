@@ -264,11 +264,12 @@ export default {
       baseUrl: '',
       fileList: [],
       uploadData: {
-        riskId: ''
+        token: ''
       }
     }
   },
   created () {
+    this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
     this.getOrgTree(true)
     this.getLeaderTree(true)
