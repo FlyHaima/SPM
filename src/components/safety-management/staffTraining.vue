@@ -311,12 +311,12 @@
                 <el-table-column
                   label="实际开始时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.actStartTime) }}</template>
+                  <template slot-scope="scope">{{ scope.row.actStartTime ? formatTime(scope.row.actStartTime) : '--' }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际结束时间"
                   align="center">
-                  <template slot-scope="scope">{{ formatTime(scope.row.actEndTime) }}</template>
+                  <template slot-scope="scope">{{ scope.row.actEndTime ? formatTime(scope.row.actEndTime) : '--' }}</template>
                 </el-table-column>
                 <el-table-column
                   label="课时"
