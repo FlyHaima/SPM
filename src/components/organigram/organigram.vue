@@ -284,7 +284,10 @@ export default {
                     worker = list[0].userId.split(',')
                     text = '<span style="font-weight: 600;">管理人员：</span>'
                     worker.forEach((item) => {
-                      text += '<br/>' + vm.findItem(item).userName + '&nbsp;&nbsp;' + vm.findItem(item).telephone
+                      let itemObj = vm.findItem(item)
+                      let userName = itemObj.userName ? itemObj.userName : ''
+                      let telephone = itemObj.telephone ? itemObj.telephone : ''
+                      text += '<br/>' + userName + '&nbsp;&nbsp;' + telephone
                     })
                     text += '<br/><span style="font-weight: 600;">主要职责：</span>' + list[0].duty
                   } else {
@@ -303,7 +306,6 @@ export default {
                       if (item.userId) {
                         let ids = item.userId.split(',')
                         ids.forEach((eachItem) => {
-                          console.log(vm.findItem(eachItem))
                           managerA.push(vm.findItem(eachItem))
                         })
                       }
@@ -421,6 +423,11 @@ export default {
       for(let i=0; i<this.selector.length; i++){
         if (this.selector[i].userId == id) {
           return this.selector[i]
+        } else {
+          return {
+            userName: '未实名',
+            telephone: '暂无电话'
+          }
         }
       }
     },

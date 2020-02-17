@@ -34,25 +34,30 @@
               size="medium"
               icon="el-icon-s-promotion"
               @click="handleSendMsg"
-              >
-              计划发布</el-button>
-              <el-button
+              >计划发布</el-button>
+            <el-button
               type="success"
               size="medium"
               icon="el-icon-download"
-              @click="exportEexcelHandel">
-              导出</el-button>
+              @click="exportEexcelHandel"
+              >导出</el-button>
+            <el-button
+              type="primary"
+              size="medium"
+              icon="el-icon-document-copy"
+              @click="copy">
+              复制</el-button>
           </div>
         </div>
         <el-table
           v-loading="tablesLoading"
           :data="tableData"
           border
+          @selection-change="handleSelectionChange"
           style="width: 100%"
           align="center">
           <el-table-column
-            type="index"
-            label="序号"
+            type="selection" align="center"
             width="50">
           </el-table-column>
           <el-table-column
@@ -133,7 +138,7 @@
             <el-table-column
               align="center"
               width="220px">
-              <template slot="header" slot-scope="scope">
+              <template slot="header">
                 <el-checkbox
                   v-model="checkedAuto"
                   @change="autoCheckChangeHandle">
@@ -164,6 +169,11 @@
                 href="javascript:;"
                 class="color-danger talbe-links-del"
                 @click.prevent="delRowHandle(scope.row)">删除
+              </a>
+              <a
+                href="javascript:;"
+                class="talbe-links-del" style="margin-left: 5px;"
+                @click.prevent="editItem(scope.row)">编辑
               </a>
             </template>
           </el-table-column>
@@ -258,6 +268,7 @@ import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
+import {copyProductHidden} from '@/api/screeningPlan'
 export default {
   name: 'list',
   props: {
@@ -298,7 +309,8 @@ export default {
         index: 1, // 当前页面
         pageNo: 1,
         pageSize: 10 // limit
-      }
+      },
+      multipleSelection: []
     }
   },
   components: {
@@ -609,6 +621,42 @@ export default {
     },
     checkPushChangeHandle () {
 
+    },
+    editItem (row) {},
+    copy () {
+      let vm = this
+      if (vm.multipleSelection.length === 0) {
+        vm.$message({
+          message: '复制选项不能为空，请至少选择一个',
+          type: 'warning'
+        })
+        return
+      }
+      console.log(vm.multipleSelection)
+      vm.pageLoading = true
+      let ids = []
+      vm.multipleSelection.forEach(item => {
+        ids.push(item.id)
+      })
+      let postD = {
+        riskId: vm.currentPlanId,
+        id: ids.join(',')
+      }
+      copyProductHidden(postD).then((res) => {
+        if (res.code === 200) {
+          vm.fetchTableData()
+          vm.pageLoading = false
+        } else {
+          vm.pageLoading = false
+          vm.$message({
+            message: '请求发生错误，请稍后重试',
+            type: 'warning'
+          })
+        }
+      })
+    },
+    handleSelectionChange (val) {
+      this.multipleSelection = val
     }
   }
 }
@@ -650,9 +698,9 @@ export default {
     font-weight: 400;
     // text-indent: -999px;
   }
-  >>> .el-radio-button__orig-radio:checked+.el-radio-button__inner{
+  // >>> .el-radio-button__orig-radio:checked+.el-radio-button__inner{
 
-  }
+  // }
   >>> .el-radio-button__orig-radio:disabled:checked+.el-radio-button__inner{
     background: #ababab !important;
     border-color: #ababab !important;
