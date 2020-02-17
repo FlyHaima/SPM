@@ -64,19 +64,25 @@
               icon="el-icon-download"
               @click="exportEexcelHandel">
               导出</el-button>
+            <el-button
+              type="primary"
+              size="medium"
+              icon="el-icon-document-copy"
+              @click="copy">
+              复制</el-button>
           </div>
         </div>
+
         <el-table
           :data="tableData"
           border
           style="width: 100%"
           align="center"
+          @selection-change="handleSelectionChange"
           v-loading="tablesLoading">
           <el-table-column
-            type="index"
-            label="序号"
-            width="50"
-            :index="indexMethod">
+            type="selection" align="center"
+            width="50">
           </el-table-column>
           <el-table-column
             prop="investTarget"
@@ -118,7 +124,7 @@
             <el-table-column
               align="center"
               width="220px">
-              <template slot="header" slot-scope="scope">
+              <template slot="header">
                 <el-checkbox
                 v-model="checkedAuto"
                 @change="autoCheckChangeHandle">
@@ -149,6 +155,11 @@
                 href="javascript:;"
                 class="color-danger talbe-links-del"
                 @click.prevent="delRowHandle(scope.row)">删除
+              </a>
+              <a
+                href="javascript:;"
+                class="talbe-links-del" style="margin-left: 5px;"
+                @click.prevent="editItem(scope.row)">编辑
               </a>
             </template>
           </el-table-column>
@@ -214,7 +225,7 @@
         <template>
           <tree-organization
             :tree-name="'组织机构'"
-            :tree-data= "organizationTree"
+            :tree-data="organizationTree"
             editVisible
             @editTreeData="editOrgTreeData"
           ></tree-organization>
@@ -228,19 +239,56 @@
       </div>
     </el-dialog>
     <dialog-add
-      :dialogVisible = "dialogAddVisible"
-      :planId = "currentPlanId"
-      @on-dialog-change = "changeAddDialog"
-      @reload = "fetchTableData"
+      :dialogVisible="dialogAddVisible"
+      :planId="currentPlanId"
+      @on-dialog-change="changeAddDialog"
+      @reload="fetchTableData"
     ></dialog-add>
     <dialog-sort
       v-if='currentPlanId'
-      :dialogVisible = "dialogSortVisible"
-      :planId = "currentPlanId"
-      :type = "type"
-      @on-dialog-change = "changeSortDialog"
-      @reload = "fetchInvestigationOptions"
+      :dialogVisible="dialogSortVisible"
+      :planId="currentPlanId"
+      :type="type"
+      @on-dialog-change="changeSortDialog"
+      @reload="fetchInvestigationOptions"
     ></dialog-sort>
+    <el-dialog
+      title="编辑"
+      :visible.sync="dialogEditVisible"
+      width="40%">
+      <el-form
+        :model="editFormVal"
+        size="mini"
+        label-width="100px"
+        label-position="top"
+      >
+        <el-form-item label="排查目标">
+          <el-input v-model="editFormVal.investTarget"></el-input>
+        </el-form-item>
+        <el-form-item label="排查内容与排查标注">
+          <el-input
+            type="textarea"
+            v-model="editFormVal.investContent"></el-input>
+        </el-form-item>
+        <el-form-item label="排查依据">
+          <el-input
+            type="textarea"
+            v-model="editFormVal.inspectionBasic"
+            maxlength="30"
+            show-word-limit></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          v-loading="confirmEditing"
+          type="primary"
+          size="small"
+          @click="confirmEdit()">确 定</el-button>
+        <el-button
+          size="small"
+          @click="closeEditConfirm()">取 消</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -252,6 +300,7 @@ import axios from '@/api/axios'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import DialogAdd from '@/components/risk-screening/screening-plan/addDialog'
 import exportExcel from '@/api/exportExcel'
+import {copyBasticHidden, updateBasicHidden} from '@/api/screeningPlan'
 export default {
   name: 'list',
   props: {
@@ -301,7 +350,11 @@ export default {
         index: 1, // 当前页面
         pageNo: 1,
         pageSize: 10 // limit
-      }
+      },
+      multipleSelection: [], // 选中的列表
+      dialogEditVisible: false, // 编辑窗口显示
+      editFormVal: {},
+      confirmEditing: false
     }
   },
   components: {
@@ -713,6 +766,73 @@ export default {
     },
     checkPushChangeHandle () {
 
+    },
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    },
+    copy () {
+      let vm = this
+      if (vm.multipleSelection.length === 0) {
+        vm.$message({
+          message: '复制选项不能为空，请至少选择一个',
+          type: 'warning'
+        })
+        return
+      }
+      vm.pageLoading = true
+      let ids = []
+      vm.multipleSelection.forEach(item => {
+        ids.push(item.basicId)
+      })
+      let postD = {
+        leftId: vm.currentPlanId,
+        basicId: ids.join(',')
+      }
+      copyBasticHidden(postD).then((res) => {
+        if (res.code === 200) {
+          vm.fetchListMenuData()
+          vm.pageLoading = false
+        } else {
+          vm.pageLoading = false
+          vm.$message({
+            message: '请求发生错误，请稍后重试',
+            type: 'warning'
+          })
+        }
+      })
+    },
+    editItem (row) {
+      let vm = this
+      vm.editFormVal = row
+      vm.dialogEditVisible = true
+    },
+    closeEditConfirm () {
+      let vm = this
+      vm.editFormVal = {}
+      vm.dialogEditVisible = false
+    },
+    confirmEdit () {
+      let vm = this
+      vm.confirmEditing = true
+      let postD = {
+        basicId: vm.editFormVal.basicId,
+        investTarget: vm.editFormVal.investTarget,
+        investContent: vm.editFormVal.investContent,
+        planId: vm.editFormVal.planId
+      }
+      updateBasicHidden(postD).then((res) => {
+        if (res.code === 200) {
+          vm.fetchListMenuData()
+          vm.confirmEditing = false
+          vm.dialogEditVisible = false
+        } else {
+          vm.confirmEditing = false
+          vm.$message({
+            message: '请求发生错误，请稍后重试',
+            type: 'warning'
+          })
+        }
+      })
     }
   }
 }
@@ -754,9 +874,9 @@ export default {
     font-weight: 400;
     // text-indent: -999px;
   }
-  >>> .el-radio-button__orig-radio:checked+.el-radio-button__inner{
+  // >>> .el-radio-button__orig-radio:checked+.el-radio-button__inner{
 
-  }
+  // }
   >>> .el-radio-button__orig-radio:disabled:checked+.el-radio-button__inner{
     background: #ababab !important;
     border-color: #ababab !important;

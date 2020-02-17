@@ -205,6 +205,12 @@
                     width="47" align="center">
                   </el-table-column>
                   <el-table-column
+                    label="组织名称"
+                    width="140"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.deptName }}</template>
+                  </el-table-column>
+                  <el-table-column
                     label="课程名称"
                     width="180"
                     align="center">
@@ -252,7 +258,7 @@
                     <template slot-scope="scope">{{ scope.row.creater }}</template>
                   </el-table-column>
                   <el-table-column
-                    label="操作"
+                    label="操作" width="110"
                     align="center">
                     <template slot-scope="scope">
                       <el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button>
