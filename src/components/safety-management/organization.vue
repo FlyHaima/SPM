@@ -16,7 +16,8 @@
                             @handleNodeClick="handleNodeClick"
                             @openAppendBox="addTreeData"
                             @editTreeData="editTreeData"
-                            @confirmRemove="confirmRemove">
+                            @confirmRemove="confirmRemove"
+                            @refreshing="refreshing">
               </tree-diagram>
             </el-aside>
 
@@ -530,6 +531,9 @@ export default {
         }
         this.updating = false
       })
+    },
+    refreshing () {
+      this.getOrgTree(true)
     }
   },
   components: {
