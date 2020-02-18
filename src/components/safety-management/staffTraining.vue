@@ -89,7 +89,7 @@
                       <div class="inner-item">
                         <p class="title">总课时(小时)</p>
                         <p class="val-p">
-                          <el-input size="medium" v-model="addPlanData.hourRequire"></el-input>
+                          <el-input size="medium" type="number" v-model="addPlanData.hourRequire"></el-input>
                         </p>
                       </div>
                     </div>

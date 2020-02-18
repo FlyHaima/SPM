@@ -109,10 +109,13 @@ export default {
     // 导入成功
     handleSuccess (response, file, fileList) {
       this.$notify.success('导入成功')
+      this.$emit('refreshing')
       this.$emit('close-loading')
     },
     // 导入失败
     handleError (file, fileList) {
+      this.$notify.error('导入失败，请稍后重试')
+      this.$emit('close-loading')
     },
     openAll () {
       this.openState = !this.openState

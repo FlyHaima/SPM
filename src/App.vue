@@ -59,21 +59,26 @@ export default {
         switch (err.response.status) {
           case 400:
             err.message = '请求错误'
-            console.log('400')
+            console.log('Bad Request')
             break
           case 404:
             err.message = 'not found'
-            console.log('not found')
+            console.log('Not Found')
             break
           case 408:
             err.message = '请求超时'
-            console.log('overtime')
+            console.log('Request Timeout')
             that.isTimeOut = true
+            break
+          case 500:
+            err.message = '服务器错误'
+            that.isTimeOut = true
+            console.log('Internal Server Error')
             break
           case 504:
             err.message = '网关超时'
             that.isTimeOut = true
-            console.log('overtime')
+            console.log('Gateway Timeout')
             break
           default:
             err.message = '网络错误'
