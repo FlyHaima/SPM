@@ -293,7 +293,7 @@ export default {
     let regexaccountName = new RegExp(/^[A-Za-z0-9_]\w{1,25}$/)
     // 校验手机号码
     var phoneValidator = (rule, value, callback) => {
-      if (!regexPhone.test(value|| value.length !== 11)) {
+      if (!regexPhone.test(value || value.length !== 11)) {
         callback(new Error('手机号码格式不正确，请输入11位数字符号！'))
       } else {
         callback()
@@ -334,9 +334,9 @@ export default {
           { validator: accountNameValidator, trigger: 'blur' }
         ],
         telephone: [
-          { 
-            validator: phoneValidator, 
-            trigger: 'blur' 
+          {
+            validator: phoneValidator,
+            trigger: 'blur'
           },
           {
             type: 'number',
