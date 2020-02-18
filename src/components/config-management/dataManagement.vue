@@ -221,10 +221,10 @@ export default {
       },
       rules: {
         content: [
-          { required: true, message: '请输入名称', trigger: 'blur' },
+          {required: true, message: '请输入名称', trigger: 'blur'}
         ],
         code: [
-          { required: true, message: '请输入代码', trigger: 'blur' },
+          {required: true, message: '请输入代码', trigger: 'blur'}
         ]
       },
       currentRow: null
@@ -301,13 +301,14 @@ export default {
     },
     // form表单提交事件
     submitForm () {
-       this.$refs.form.validate((valid) => {
+      this.$refs.form.validate((valid) => {
         if (valid) {
-           this.$confirm('确定添加数据?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
+          this.$confirm('确定添加数据?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+            .then(() => {
               this.submitting = true
               axios
                 .post('dic/add', this.tables.form)
@@ -329,12 +330,11 @@ export default {
                   this.dialogAddVisible = false
                   this.submitting = false
                 })
-            }) 
+            })
         } else {
           return false
         }
       })
-     
     },
     closeLoading () {
       this.pageLoading = false

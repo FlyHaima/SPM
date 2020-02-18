@@ -252,6 +252,45 @@
           @click="dialogOrganizationVisible = false">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      title="编辑"
+      :visible.sync="dialogEditVisible"
+      width="40%">
+      <el-form
+        :model="editFormVal"
+        size="mini"
+        label-width="100px"
+        label-position="top"
+      >
+        <el-form-item label="检查内容">
+          <el-input v-model="editFormVal.checkContent"></el-input>
+        </el-form-item>
+        <el-form-item label="是否符合">
+          <el-input v-model="editFormVal.isAccord"></el-input>
+        </el-form-item>
+        <el-form-item label="存在问题">
+          <el-input
+            type="textarea"
+            v-model="editFormVal.existProblem"
+            show-word-limit></el-input>
+        </el-form-item>
+        <el-form-item label="整改措施">
+          <el-input
+            type="textarea"
+            v-model="editFormVal.measure"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          v-loading="confirmEditing"
+          type="primary"
+          size="small"
+          @click="confirmEdit()">确 定</el-button>
+        <el-button
+          size="small"
+          @click="closeEditConfirm()">取 消</el-button>
+      </div>
+    </el-dialog>
     <dialog-sort
       :dialogVisible = "dialogSortVisible"
       :planId = "currentPlanId"
@@ -268,7 +307,7 @@ import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
-import {copyProductHidden} from '@/api/screeningPlan'
+import {copyProductHidden, updateProductHidden} from '@/api/screeningPlan'
 export default {
   name: 'list',
   props: {
@@ -310,7 +349,10 @@ export default {
         pageNo: 1,
         pageSize: 10 // limit
       },
-      multipleSelection: []
+      multipleSelection: [],
+      dialogEditVisible: false,
+      editFormVal: {},
+      confirmEditing: false
     }
   },
   components: {
@@ -321,7 +363,6 @@ export default {
   created () {
     this.fetchUnitTreeData()
     this.fetchOrgTreeData()
-    this.fetchTableData()
   },
   methods: {
     // 切换分页数量
@@ -361,29 +402,31 @@ export default {
       this.dialogOrganizationVisible = true
     },
     // 获取风险单元树的数据
-    fetchUnitTreeData () {
+    fetchUnitTreeData (create) {
       this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
-            this.pageLoading = false
             this.riskUnitTree = res.data.data
             this.currentPlanId = this.riskUnitTree[0].riskId
             this.fetchInvestigationOptions()
-            this.fetchTableData()
+            if (create) {
+              this.fetchTableData()
+            }
+            this.pageLoading = false
           }
         })
     },
     // 获取生产现场类隐患排查清单
     fetchTableData () {
+      this.tablesLoading = true
       axios
         .get('productHidden/getProductHiddenList', {
           risk_id: this.currentPlanId,
           pageSize: this.page.pageSize
         })
         .then((res) => {
-          this.tablesLoading = true
           if (res.data.code === 200) {
             // let initTableData = []
             this.initTableData = res.data.data
@@ -622,7 +665,6 @@ export default {
     checkPushChangeHandle () {
 
     },
-    editItem (row) {},
     copy () {
       let vm = this
       if (vm.multipleSelection.length === 0) {
@@ -657,6 +699,41 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    editItem (row) {
+      let vm = this
+      vm.editFormVal = row
+      console.log(vm.editFormVal)
+      vm.dialogEditVisible = true
+    },
+    closeEditConfirm () {
+      let vm = this
+      vm.editFormVal = {}
+      vm.dialogEditVisible = false
+    },
+    confirmEdit () {
+      let vm = this
+      vm.confirmEditing = true
+      let postD = {
+        id: vm.editFormVal.id,
+        exist_problem: vm.editFormVal.existProblem,
+        measure: vm.editFormVal.measure,
+        is_accord: vm.editFormVal.isAccord,
+        check_content: vm.editFormVal.checkContent
+      }
+      updateProductHidden(postD).then((res) => {
+        if (res.code === 200) {
+          vm.fetchTableData()
+          vm.confirmEditing = false
+          vm.dialogEditVisible = false
+        } else {
+          vm.confirmEditing = false
+          vm.$message({
+            message: '请求发生错误，请稍后重试',
+            type: 'warning'
+          })
+        }
+      })
     }
   }
 }

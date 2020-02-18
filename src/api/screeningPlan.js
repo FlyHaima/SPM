@@ -32,3 +32,12 @@ export function copyProductHidden (data) {
     return Promise.resolve(res.data)
   })
 }
+
+// 隐患排查治理--排查计划--修改现场类隐患清单
+export function updateProductHidden (data) {
+  const url = `${baseUrl}/productHidden/updateProductHidden`
+
+  return axios.post(url, JSON.stringify(data)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
