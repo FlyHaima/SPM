@@ -160,6 +160,7 @@
       </el-container>
     </el-main>
     <el-dialog
+      width="40%"
       :visible.sync="dialogAddVisible"
       >
       <div slot="title">
@@ -229,8 +230,7 @@
           label="电话:"
           prop="telephone">
           <el-input
-            type="number"
-            v-model.trim="form.telephone"
+            v-model.number="form.telephone"
             placeholder="请输入电话"
             maxlength="11"
             autocomplete></el-input>
@@ -285,7 +285,7 @@ export default {
     * 手机号码校验
     * 以1开头，第二位可能是3/4/5/7/8等的任意一个，在加上后面的\d表示数字[0-9]的9位，总共加起来11位结束
     */
-    let regexPhone = new RegExp(/^1(3|4|5|7|8)\d{9}$/)
+    let regexPhone = new RegExp(/^1[3-9]\d{9}$/)
     /*
     * 登录账号校验
     * 校验 包括英文字母、数字和下划线
@@ -293,7 +293,7 @@ export default {
     let regexaccountName = new RegExp(/^[A-Za-z0-9_]\w{1,25}$/)
     // 校验手机号码
     var phoneValidator = (rule, value, callback) => {
-      if (value && (!regexPhone.test(value) || value.length !== 11)) {
+      if (!regexPhone.test(value|| value.length !== 11)) {
         callback(new Error('手机号码格式不正确，请输入11位数字符号！'))
       } else {
         callback()
@@ -334,7 +334,16 @@ export default {
           { validator: accountNameValidator, trigger: 'blur' }
         ],
         telephone: [
-          { validator: phoneValidator, trigger: 'blur' }
+          { 
+            validator: phoneValidator, 
+            trigger: 'blur' 
+          },
+          {
+            type: 'number',
+            message: '手机号必须为数字',
+            trigger: 'blur'
+          }
+
         ]
       },
       uploading: false, // 导入loading

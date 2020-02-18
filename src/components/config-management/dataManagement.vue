@@ -100,20 +100,22 @@
       </el-container>
     </el-main>
     <el-dialog
+      width="40%"
       :visible.sync="dialogAddVisible"
       title="添加"
       >
       <el-form
         :model= "tables.form"
         ref= "form"
+        :rules= "rules"
         size= "mini"
         label-width= "100px"
         label-position= "right"
         @submit.native.prevent= "submitForm"
-        v-loading= "submitting"
       >
         <el-form-item
-          label="名称">
+          label="名称"
+          prop="content">
           <el-input
             v-model="tables.form.content"
             placeholder="请输入名称"
@@ -121,7 +123,8 @@
             autocomplete></el-input>
         </el-form-item>
         <el-form-item
-          label="代码">
+          label="代码"
+          prop="code">
           <el-input
             v-model="tables.form.code"
             placeholder="请输入代码"
@@ -151,6 +154,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      width="40%"
       :visible.sync="dialogAddGroupVisible"
       title="添加分类"
       >
@@ -161,7 +165,6 @@
         label-width= "100px"
         label-position= "right"
         @submit.native.prevent= "submitFormGroup"
-        v-loading= "submitting"
       >
         <el-form-item
           label="分类名称">
@@ -216,6 +219,14 @@ export default {
           remark: '' // 备注
         }
       },
+      rules: {
+        content: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+        ],
+        code: [
+          { required: true, message: '请输入代码', trigger: 'blur' },
+        ]
+      },
       currentRow: null
     }
   },
@@ -261,58 +272,69 @@ export default {
     },
     // form表单提交事件
     submitFormGroup () {
-      this.$confirm('确定新增分类?', '提示', {
+      let vm = this
+      vm.$confirm('确定新增分类?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.submitting = true
+        vm.submitting = true
         axios
           .post('dic/addGroup', this.formGroup)
           .then((res) => {
             if (res.data.code === 200) {
-              this.$notify.success('提交成功')
-              this.fetchTableData()
-              this.dialogAddGroupVisible = false
+              vm.$notify.success('提交成功')
+              vm.dialogAddGroupVisible = false
+              vm.submitting = false
+              vm.fetchTableData()
             } else {
-              this.$message({
+              vm.$message({
                 message: res.data.message,
                 type: 'warning'
               })
             }
           })
           .finally(() => {
-            this.submitting = false
+            vm.submitting = false
           })
       })
     },
     // form表单提交事件
     submitForm () {
-      this.$confirm('确定添加数据?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.submitting = true
-        axios
-          .post('dic/add', this.tables.form)
-          .then((res) => {
-            if (res.data.code === 200) {
-              this.$notify.success('提交成功')
-              this.fetchTableList()
-            } else {
-              this.$message({
-                message: res.data.message,
-                type: 'warning'
-              })
-            }
-          })
-          .finally(() => {
-            this.fetchTableList()
-            this.dialogAddVisible = false
-            this.submitting = false
-          })
+       this.$refs.form.validate((valid) => {
+        if (valid) {
+           this.$confirm('确定添加数据?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.submitting = true
+              axios
+                .post('dic/add', this.tables.form)
+                .then((res) => {
+                  if (res.data.code === 200) {
+                    this.dialogAddVisible = false
+                    this.submitting = false
+                    this.$notify.success('提交成功')
+                    this.tablesFetchList()
+                  } else {
+                    this.$message({
+                      message: res.data.message,
+                      type: 'warning'
+                    })
+                  }
+                })
+                .finally(() => {
+                  this.tablesFetchList()
+                  this.dialogAddVisible = false
+                  this.submitting = false
+                })
+            }) 
+        } else {
+          return false
+        }
       })
+     
     },
     closeLoading () {
       this.pageLoading = false
