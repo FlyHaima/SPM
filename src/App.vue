@@ -26,7 +26,7 @@ export default {
   },
   created () {
     let that = this
-    // 设置请求超时时间,30s
+    // 设置请求超时时间,20s
     axios.defaults.timeout = 20000 // 设置20s 的请求超时时间限制
 
     // 拦截request, 设置全局请求为ajax请求
