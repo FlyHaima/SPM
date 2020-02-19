@@ -79,7 +79,7 @@
               label="操作"
               align="center">
               <template slot-scope="scope">
-                <a target="_blank" :href="`${scope.row.path}?attname=${scope.row.documentName}`" style="margin-right: 8px;">下载</a>
+                <a target="_blank" :href="`${scope.row.path}?attname=${scope.row.documentName}.${scope.row.category}`" style="margin-right: 8px;">下载</a>
                 <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
               </template>
             </el-table-column>
