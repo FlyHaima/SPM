@@ -75,3 +75,20 @@ textarea{
   outline: none;
   resize: none;
 }
+
+// 去掉input的type为number的时候的箭头样式
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"]{
+  -moz-appearance: textfield;
+}
+// vue的scope下
+/deep/ input::-webkit-outer-spin-button,
+/deep/ input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+/deep/ input[type="number"]{
+  -moz-appearance: textfield;
+}

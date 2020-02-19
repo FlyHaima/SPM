@@ -109,10 +109,12 @@
           label="每次奖励金额"
           prop="userName">
           <el-input
+            type="number"
             v-model.trim="form.money"
             placeholder="请输入金额"
-            maxlength="25"
-            autocomplete></el-input>
+            autocomplete
+            onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
+            :max="9999999"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

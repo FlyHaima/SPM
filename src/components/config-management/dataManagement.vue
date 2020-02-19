@@ -216,9 +216,12 @@ export default {
           groupId: '',
           content: '', // 名称
           code: '', // 代码
-          remark: '' // 备注
+          remark: '', // 备注
+          pageNo: 1,
+          pageSize: 10
         }
       },
+      groupId: '',
       rules: {
         content: [
           {required: true, message: '请输入名称', trigger: 'blur'}
@@ -243,6 +246,12 @@ export default {
     // 添加事件处理
     addHandle () {
       this.dialogAddVisible = true
+      Object.keys(this.tables.form).forEach(key => {
+        // this.tables.form[key] = ''
+        this.tables.form.content = '' // 名称
+        this.tables.form.code = '' // 代码
+        this.tables.form.remark = '' // 备注
+      })
     },
     // 添加分类事件处理
     addClassifyHandle () {
@@ -267,7 +276,9 @@ export default {
     },
     // 分类列表点击事件处理
     groupClickHandle (item) {
-      this.tables.form.groupId = item.groupId
+      this.groupId = item.groupId
+      this.tables.form.groupId = this.groupId
+      this.tables.form.pageNo = 1
       this.tablesFetchList()
     },
     // form表单提交事件
@@ -310,6 +321,7 @@ export default {
           })
             .then(() => {
               this.submitting = true
+              this.tables.form.groupId = this.groupId
               axios
                 .post('dic/add', this.tables.form)
                 .then((res) => {
