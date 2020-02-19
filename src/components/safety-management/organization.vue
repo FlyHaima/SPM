@@ -441,6 +441,12 @@ export default {
               message: '删除成功!'
             })
             this.getOrgTree(true)
+          } else {
+            this.$message({
+              type: 'warning',
+              message: res.message
+            })
+            this.pageLoading = false
           }
         })
       }).catch(() => {
