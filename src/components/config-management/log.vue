@@ -248,7 +248,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
-import qs from 'qs'
+// import qs from 'qs'
 export default {
   name: 'log',
   mixins: [Tables],
@@ -281,14 +281,15 @@ export default {
         type: 'warning'
       }).then(() => {
         axios
-          .post('log/del', qs.stringify(sendData))
+          .post('log/del', sendData)
           .then((res) => {
-            console.log(res.data.code)
             if (res.data.code === 200) {
               this.$notify.success('删除成功')
               this.tables.form.pageNo = 1
               this.tables.page.index = 1
               this.tablesFetchList()
+            } else {
+              this.$notify.warning(res.data.message)
             }
           })
           .finally(() => {

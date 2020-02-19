@@ -2,7 +2,7 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-list
-        v-if="listMenuData.length > 0"
+        v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
         showEditOrgBtn
@@ -301,6 +301,7 @@ import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import DialogAdd from '@/components/risk-screening/screening-plan/addDialog'
 import exportExcel from '@/api/exportExcel'
 import {copyBasticHidden, updateBasicHidden} from '@/api/screeningPlan'
+import base from '@/api/baseUrl'
 export default {
   name: 'list',
   props: {
@@ -326,6 +327,7 @@ export default {
         invDeptId: ''
       }, // 编辑机构数据的表单
       listMenuData: [], // 计划清单列表数据
+      listMenuDataTag: false,
       addListMenuForm: {
         planName: '',
         planId: ''
@@ -381,8 +383,7 @@ export default {
     },
     // 导入接口地址
     uploadUrl () {
-      const baseUrl = 'http://192.168.137.33:8033/spm'
-      return baseUrl + '/basticHidden/importBasticHidden'
+      return base.baseUrl + '/basticHidden/importBasticHidden'
     },
     // 导入
     handleBeforeUpload (file) {
@@ -390,9 +391,13 @@ export default {
     },
     // 导入成功
     handleSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.uploading = false
-      this.fetchTableData()
+      if (response.code === 200) {
+        this.uploading = false
+        this.fetchTableData()
+        this.$notify.success('导入成功')
+      } else {
+        this.$notify.warning(response.message)
+      }
     },
     // 导入失败
     handleError (file, fileList) {
@@ -404,15 +409,17 @@ export default {
     /** 左侧清单菜单 **/
     // 获取清单数据
     fetchListMenuData () {
-      this.pageLoading = true
+      let vm = this
+      vm.pageLoading = true
       axios
         .get('schedule/getScheduleList')
         .then((res) => {
           if (res.data.code === 200) {
-            this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
-            this.fetchInvestigationOptions()
-            this.fetchTableData()
+            vm.listMenuData = res.data.data
+            vm.listMenuDataTag = true
+            vm.currentPlanId = this.listMenuData[0].planId
+            vm.fetchInvestigationOptions()
+            vm.fetchTableData()
           }
         })
         .finally(() => {
@@ -436,6 +443,8 @@ export default {
             if (res.data.code === 200) {
               vm.$notify.success('添加清单成功')
               vm.fetchListMenuData()
+            } else {
+              vm.$notify.warning(res.data.message)
             }
           })
           .finally(() => {

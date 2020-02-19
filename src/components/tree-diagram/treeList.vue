@@ -40,7 +40,9 @@
       </div>
     </div>
     <ul class="tree-list">
-      <li class="tree-list-item text-center tree-list-item-nodata" v-if="this.filterData.length === 0">
+      <li
+        class="tree-list-item text-center tree-list-item-nodata"
+        v-if="filterData.length === 0">
         暂无数据
       </li>
       <li
@@ -104,9 +106,6 @@ export default {
       filterText: '', // 搜索关键词
       filterData: [] // 搜索后的数据
     }
-  },
-  mounted () {
-    this.filterData = this.listData
   },
   methods: {
     // 创建清单
