@@ -257,6 +257,12 @@ export default {
           { required: true, message: '请输入标题', trigger: 'blur' },
           { min: 3, max: 25, message: '长度在 3 到 25 个字符', trigger: 'blur' }
         ],
+        type: [
+          { required: true, message: '请选择消息类型', trigger: 'blur' }
+        ],
+        textContent: [
+          { required: true, message: '请输入文本内容', trigger: 'blur' }
+        ],
         sendType: [
           { required: true, message: '请选择推动方式', trigger: 'change' }
         ]
