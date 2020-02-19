@@ -6,19 +6,20 @@
     <el-form
       :model="form"
       ref="form"
+      :rules="rules"
       size="mini"
       label-width="100px"
       label-position="top"
     >
-      <el-form-item label="排查目标">
+      <el-form-item label="排查目标" prop="investTarget">
         <el-input v-model="form.investTarget"></el-input>
       </el-form-item>
-      <el-form-item label="排查内容与排查标注">
+      <el-form-item label="排查内容与排查标注" prop="investContent">
         <el-input
           type="textarea"
           v-model="form.investContent"></el-input>
       </el-form-item>
-      <el-form-item label="排查依据">
+      <el-form-item label="排查依据" prop="inspectionBasic">
         <el-input
           type="textarea"
           v-model="form.inspectionBasic"
@@ -62,6 +63,29 @@ export default {
         investContent: '', // 排查内容和标准
         inspectionBasic: '', // 排查依据
         planId: '' // 当前清单Id
+      },
+      rules: {
+        investTarget: [
+          {
+            required: true,
+            message: '请输入排查目标',
+            trigger: 'blur'
+          }
+        ],
+        investContent: [
+          {
+            required: true,
+            message: '请输入排查内容与排查标注',
+            trigger: 'blur'
+          }
+        ],
+        inspectionBasic: [
+          {
+            required: true,
+            message: '请输入排查依据',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },

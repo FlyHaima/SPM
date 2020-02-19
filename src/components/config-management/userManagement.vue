@@ -26,7 +26,7 @@
                 <el-upload
                   class="tools-item"
                   accept=".xls"
-                  action="http://58.155.61.34:8033/spm/user/importUsers"
+                  :action='uploadUrl()'
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
                   :on-success="handleSuccess"
@@ -276,6 +276,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
 import qs from 'qs'
+import base from '@/api/baseUrl'
 
 export default {
   name: 'userManagement',
@@ -357,15 +358,23 @@ export default {
     this.fetchRoleOptions()
   },
   methods: {
+    // 导入接口地址
+    uploadUrl () {
+      return base.baseUrl + '/user/importUsers'
+    },
     // 导入
     handleBeforeUpload (file) {
       this.uploading = true
     },
     // 导入成功
     handleSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.uploading = false
-      this.tablesFetchList()
+      if (response.code === 200) {
+        this.uploading = false
+        this.tablesFetchList()
+        this.$notify.success('导入成功')
+      } else {
+        this.$notify.warning(response.message)
+      }
     },
     // 导入失败
     handleError (file, fileList) {

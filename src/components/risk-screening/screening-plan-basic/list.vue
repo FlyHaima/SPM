@@ -301,6 +301,7 @@ import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import DialogAdd from '@/components/risk-screening/screening-plan/addDialog'
 import exportExcel from '@/api/exportExcel'
 import {copyBasticHidden, updateBasicHidden} from '@/api/screeningPlan'
+import base from '@/api/baseUrl'
 export default {
   name: 'list',
   props: {
@@ -381,8 +382,7 @@ export default {
     },
     // 导入接口地址
     uploadUrl () {
-      const baseUrl = 'http://192.168.137.33:8033/spm'
-      return baseUrl + '/basticHidden/importBasticHidden'
+      return base.baseUrl + '/basticHidden/importBasticHidden'
     },
     // 导入
     handleBeforeUpload (file) {
@@ -390,9 +390,13 @@ export default {
     },
     // 导入成功
     handleSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.uploading = false
-      this.fetchTableData()
+      if (response.code === 200) {
+        this.uploading = false
+        this.fetchTableData()
+        this.$notify.success('导入成功')
+      } else {
+        this.$notify.warning(response.message)
+      }
     },
     // 导入失败
     handleError (file, fileList) {
