@@ -86,6 +86,7 @@
       <el-form
         :model= "form"
         ref= "form"
+        :rules="rules"
         size= "mini"
         label-width= "100px"
         label-position= "right"
@@ -94,7 +95,7 @@
       >
         <el-form-item
           label="角色名称"
-          prop="userName">
+          prop="roleName">
           <el-input
             v-model.trim="form.roleName"
             placeholder="请输入角色名称"
@@ -172,6 +173,11 @@ export default {
       radio: 1,
       form: {
         roleName: '' // 角色名称
+      },
+      rules: {
+        roleName: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ]
       },
       multipleSelection: [],
       submitting: false,
@@ -261,23 +267,29 @@ export default {
         roleId: vm.roleId,
         menuId: this.postDataChecked
       }
-      axios
-        .post('role/updateMenu', sendData)
-        .then((res) => {
-          if (res.data.code === 200) {
-            vm.$notify.success('分配成功')
-            vm.dialogRoleVisible = false
-            vm.tablesFetchList()
-          } else {
-            vm.$message({
-              message: res.data.message,
-              type: 'warning'
+      vm.$refs.form.validate((valid) => {
+        if (valid) {
+          axios
+            .post('role/updateMenu', sendData)
+            .then((res) => {
+              if (res.data.code === 200) {
+                vm.$notify.success('分配成功')
+                vm.dialogRoleVisible = false
+                vm.tablesFetchList()
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
             })
-          }
-        })
-        .finally(() => {
-          vm.submitting = false
-        })
+            .finally(() => {
+              vm.submitting = false
+            })
+        } else {
+          return false
+        }
+      })
     },
     handleCheckAllChange (item) {
       if (item.checkAll) {

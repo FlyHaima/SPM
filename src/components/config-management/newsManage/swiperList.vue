@@ -81,6 +81,7 @@
         <el-form
           :model="swiperForm"
           ref="swiperForm"
+          :rules="rules"
           label-width="100px"
           label-position="right">
           <el-form-item label="标题名称" prop="picName">
@@ -110,7 +111,7 @@
             image: image/* [所有图片类型] | image/png, image/jpeg, image/gif
             excel: application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
           -->
-          <el-form-item label="附件上传">
+          <el-form-item label="附件上传" prop="picUrl">
             <el-upload
               action="http://upload-z1.qiniu.com"
               list-type="picture-card"
@@ -160,7 +161,25 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       swiperForm: {
+        picName: '', // 标题名称
+        url: '', // 链接地址
+        orderNo: '', // 排序
+        type: '', // 显示位置
         picUrl: ''
+      },
+      rules: {
+        picName: [
+          { required: true, message: '请输入标题', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '选择显示位置', trigger: 'blur' }
+        ],
+        url: [
+          { required: true, message: '请输入链接地址', trigger: 'blur' }
+        ],
+        picUrl: [
+          { required: true, message: '请输上传图片', trigger: 'blur' }
+        ]
       },
       tableDataSwiper: [] // 轮播图列表数据
     }
@@ -205,24 +224,30 @@ export default {
         })
         .then(() => {
           vm.submitting = true
-          axios
-            .post(`news/${post}NewsPic`, vm.swiperForm)
-            .then((res) => {
-              vm.submitting = true
-              if (res.data.code === 200) {
-                vm.$notify.success(tip + '成功')
-                vm.dialogAddSwiperVisible = false
-                vm.fetchSwiperListData()
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
+          vm.$refs.swiperForm.validate((valid) => {
+            if (valid) {
+              axios
+                .post(`news/${post}NewsPic`, vm.swiperForm)
+                .then((res) => {
+                  vm.submitting = true
+                  if (res.data.code === 200) {
+                    vm.$notify.success(tip + '成功')
+                    vm.dialogAddSwiperVisible = false
+                    vm.fetchSwiperListData()
+                  } else {
+                    vm.$message({
+                      message: res.data.message,
+                      type: 'warning'
+                    })
+                  }
                 })
-              }
-            })
-            .finally(() => {
-              vm.submitting = false
-            })
+                .finally(() => {
+                  vm.submitting = false
+                })
+            } else {
+              return false
+            }
+          })
         })
         .catch(() => {})
     },

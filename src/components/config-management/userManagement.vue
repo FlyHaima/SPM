@@ -174,7 +174,6 @@
         label-width= "100px"
         label-position= "right"
         @submit.native.prevent= "submitForm"
-        v-loading= "submitting"
       >
         <el-form-item
           label="姓名:"
@@ -419,7 +418,6 @@ export default {
     },
     // 获取角色数据
     fetchRoleOptions () {
-      this.submitting = true
       axios
         .get('user/getRoleSelect')
         .then((res) => {
@@ -428,12 +426,10 @@ export default {
           }
         })
         .finally(() => {
-          this.submitting = false
         })
     },
     // 编辑状态，回显数据
     initForm (data) {
-      this.submitting = true
       if (data) {
         axios
           .get('user/getUser', {
@@ -445,7 +441,6 @@ export default {
             }
           })
           .finally(() => {
-            this.submitting = false
           })
       }
     },
@@ -454,7 +449,6 @@ export default {
       if (!this.multipleSelection.length) {
         this.$message.warning('请选择要删除的行')
       } else {
-        this.submitting = true
         let sendDAta = { userId: [] }
         this.multipleSelection.forEach(item => {
           sendDAta.userId.push(item.userId)
@@ -467,7 +461,7 @@ export default {
           axios
             .post('user/delUser', sendDAta)
             .then((res) => {
-              console.log(res.data.code)
+              this.submitting = true
               if (res.data.code === 200) {
                 this.$notify.success('删除成功')
                 this.tables.form.pageNo--
@@ -504,7 +498,6 @@ export default {
           type: 'warning'
         })
         .then(() => {
-          vm.submitting = true
           axios
             .post(`user/${post}User`, vm.form)
             .then((res) => {
@@ -524,7 +517,9 @@ export default {
               vm.submitting = false
             })
         })
-        .catch(() => {})
+        .catch(() => {
+          this.submitting = false
+        })
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
