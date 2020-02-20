@@ -146,7 +146,7 @@
           <el-upload
             class="upload-demo"
             action="http://upload-z1.qiniu.com"
-            accept="image/jpg, video/mp4, .doc"
+            accept=".jpg, .mp4, .doc"
             :data="uploadData"
             :before-upload="handleBeforeUpload"
             :on-success="handleSuccess"
@@ -580,8 +580,8 @@ export default {
     font-size: 14px;
     line-height: 14px;
     padding: 3px;
-    &.is-dot{
-    }
+    // &.is-dot{
+    // }
   }
    // icon
   .icon-clock{
@@ -706,8 +706,8 @@ export default {
       // width: 880px;
       margin: 0 auto;
     }
-    .el-input{
-      // width: 240px;
-    }
+    // .el-input{
+    //   // width: 240px;
+    // }
   }
 </style>
