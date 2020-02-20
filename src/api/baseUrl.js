@@ -6,7 +6,7 @@
 // 192.168.137.52 // MQY
 // 192.168.137.29 // 测试服务
 // http://1.62.120.34:4447/ // 测试
-const baseUrl = 'http://1.62.120.34:4448/spm'
+const baseUrl = 'http://1.62.120.34:4447/spm'
 
 // 设置七牛云服务器路径
 const uploadQiniuAdr = 'http://upload-z1.qiniu.com'
