@@ -34,11 +34,11 @@
                       :data="riskList"
                       tooltip-effect="dark"
                       style="width: 100%"
-                      @selection-change="handleSelectionChange">
-              <el-table-column
+                      >
+              <!-- <el-table-column
                 type="selection"
                 width="40" align="center">
-              </el-table-column>
+              </el-table-column> -->
               <el-table-column
                 label="危险源名称"
                 width="300"

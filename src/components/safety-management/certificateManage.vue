@@ -169,7 +169,13 @@ export default {
     },
     confirmAdd () {
       let vm = this
-      if (!vm.addData.fileCategory) {
+      if (!vm.addData.documentName) {
+        vm.$message({
+          message: '请填写文件名',
+          type: 'warning'
+        })
+        return
+      } else if (!vm.addData.fileCategory) {
         vm.$message({
           message: '请选择类型',
           type: 'warning'

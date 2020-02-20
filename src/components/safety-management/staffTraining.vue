@@ -47,11 +47,11 @@
                   <div class="plan-body">
                     <div class="dialog-inner-line">
                       <div class="inner-item">
-                        <p class="title">课程名称</p>
+                        <p class="title"><span style="color: red;">* </span>课程名称</p>
                         <p class="val-p"><el-input size="medium" v-model="addPlanData.className"></el-input></p>
                       </div>
                       <div class="inner-item">
-                        <p class="title">类别</p>
+                        <p class="title"><span style="color: red;">* </span>类别</p>
                         <p class="val-p">
                           <el-select size="medium" v-model="addPlanData.planType" style="width: 100%;">
                             <el-option
@@ -66,7 +66,7 @@
                     </div>
                     <div class="dialog-inner-line">
                       <div class="inner-item">
-                        <p class="title">开始时间</p>
+                        <p class="title"><span style="color: red;">* </span>开始时间</p>
                         <p class="val-p">
                           <el-date-picker
                             v-model="addPlanData.startTime"
@@ -76,7 +76,7 @@
                         </p>
                       </div>
                       <div class="inner-item">
-                        <p class="title">结束时间</p>
+                        <p class="title"><span style="color: red;">* </span>结束时间</p>
                         <p class="val-p">
                           <el-date-picker
                             v-model="addPlanData.endTime"
@@ -88,7 +88,7 @@
                     </div>
                     <div class="dialog-inner-line">
                       <div class="inner-item">
-                        <p class="title">总课时(小时)</p>
+                        <p class="title"><span style="color: red;">* </span>总课时(小时)</p>
                         <p class="val-p">
                           <el-input size="medium" type="number" v-model="addPlanData.hourRequire"></el-input>
                         </p>
