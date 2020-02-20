@@ -192,6 +192,26 @@
                 placeholder="请再次输入新密码"
                 clearable></el-input>
             </el-form-item>
+            <el-form-item label="手机号码：" prop="phone">
+              <el-input
+                type="text"
+                v-model="passwordForm.phone"
+                autocomplete="off"
+                placeholder="请输入手机号码"
+                :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="验证码：" prop="captcha">
+              <el-input
+                type="number"
+                v-model="passwordForm.captcha"
+                autocomplete="off"
+                placeholder="请输入验证码"
+                clearable
+                class="input-captcha"></el-input>
+                <el-button
+                  type="primary"
+                  @click="sendCodeHandle">{{codeBtnTxt}}</el-button>
+            </el-form-item>
           </el-form>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -318,6 +338,8 @@ export default {
         oldPassword: '', // 旧密码
         Password: '', // 新密码
         passwordConfirm: '', // 确认新密码
+        phone: '', // 手机号码
+        captcha: '', // 验证码
         userId: '',
         dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
       }, // 修改密码form
@@ -344,7 +366,10 @@ export default {
         captcha: [
           { validator: validateCaptcha, trigger: 'blur' }
         ]
-      } // 修改绑定手机的校验规则
+      }, // 修改绑定手机的校验规则
+      codeTime: 0,
+      codeBtnDisabled: false,
+      codeBtnTxt: '发送验证码'
     }
   },
   filters: {
@@ -358,9 +383,37 @@ export default {
     }
   },
   created () {
+    this.passwordForm.phone = this.userInfo.telephone
     this.passwordForm.userId = this.userInfo.userId
   },
   methods: {
+    // 发送验证码
+    sendCodeHandle () {
+      this.codeTime = 60
+      this.codeBtnDisabled = true
+      this.timer()
+      axios
+        .get('/sms/getUpdateMsg', {
+          phone: this.userInfo.telephone
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            // this.passwordForm.captcha = res.data.data.captcha
+          }
+        }).finally(() => {
+        })
+    },
+    timer () {
+      if (this.codeTime > 0) {
+        this.codeTime--
+        this.codeBtnTxt = this.codeTime + 's后重新获取'
+        setTimeout(this.timer, 1000)
+      } else {
+        this.codeTime = 0
+        this.codeBtnDisabled = false
+        this.codeBtnTxt = '发送验证码'
+      }
+    },
     // 注销账号
     logoffHandle () {
       this.$confirm('是否注销账号？', '提示', {

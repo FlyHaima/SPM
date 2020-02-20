@@ -18,7 +18,7 @@
             <li
               v-for="(item, index) in messageData"
               :key="index"
-              class="list-info-item list-info-item-light">
+              class="list-info-item list-info-itmeitem-light">
               <div class="list-info-title" @click="goDetailsPage(item)">
                 <span class="list-info-txt">
                   <span v-if="item.type" class="list-info-type">
@@ -69,7 +69,7 @@
                 class="list-info-item list-info-item-light">
                 <div class="list-info-title">
                   <span class="list-info-txt">
-                    <span class="list-info-type">
+                    <span v-if="item.type" class="list-info-type">
                       [{{item.type}}]
                       <i v-if="item.isRead === '0'" class="badge"></i>
                     </span>
@@ -180,7 +180,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="推送名单" v-show="messageForm.sendType === '2'">
+        <el-form-item label="推送名单" prop="sendList" v-show="messageForm.sendType === '2'">
           <el-row>
             <el-col :span="21">
               <el-input v-model="messageForm.sendList" :disabled="true"></el-input>
@@ -227,6 +227,14 @@ import moment from 'moment'
 export default {
   name: 'messages',
   data () {
+    // 校验修改的绑定手机号码
+    var validateSendType = (rule, value, callback) => {
+      if (this.messageForm.sendType === '2' && value === '') {
+        callback(new Error('请选择推送名单'))
+      } else {
+        callback()
+      }
+    }
     return {
       submitting: false,
       pageLoading: false,
@@ -258,13 +266,16 @@ export default {
           { min: 3, max: 25, message: '长度在 3 到 25 个字符', trigger: 'blur' }
         ],
         type: [
-          { required: true, message: '请选择消息类型', trigger: 'blur' }
+          { required: true, message: '请选择消息类型', trigger: 'change' }
         ],
         textContent: [
           { required: true, message: '请输入文本内容', trigger: 'blur' }
         ],
         sendType: [
           { required: true, message: '请选择推动方式', trigger: 'change' }
+        ],
+        sendList: [
+          { validator: validateSendType, trigger: 'change' }
         ]
       },
       page: {
@@ -417,6 +428,7 @@ export default {
           .then((res) => {
             if (res.data.code === 200) {
               this.$notify.success('标记成功')
+              this.$store.dispatch('BASE_INFO_SET')
               this.fetchList()
             }
           })
@@ -445,6 +457,15 @@ export default {
     // 发布消息
     handleSendMessage () {
       this.dialogFormMessageVisible = true
+      Object.keys(this.messageForm).forEach(key => {
+        // this.form[key] = ''
+        this.messageForm.title = '' // 标题
+        this.messageForm.textContent = '' // 文本内容
+        this.messageForm.fileList = '' // 附件上传
+        this.messageForm.type = '' // 消息类型
+        this.messageForm.sendType = '' // 推送方式
+        this.messageForm.sendList = '' // 推送名单列表
+      })
     },
     // 提交发布消息事件
     submitMessageForm () {
@@ -460,6 +481,7 @@ export default {
               if (res.data.code === 200) {
                 vm.$notify.success('发布成功')
                 vm.dialogFormMessageVisible = false
+                this.$store.dispatch('BASE_INFO_SET')
                 vm.fetchList()
               } else {
                 vm.$message({
