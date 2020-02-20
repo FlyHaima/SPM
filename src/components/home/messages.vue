@@ -18,7 +18,7 @@
             <li
               v-for="(item, index) in messageData"
               :key="index"
-              class="list-info-item list-info-itmeitem-light">
+              class="list-info-item list-info-item-light">
               <div class="list-info-title" @click="goDetailsPage(item)">
                 <span class="list-info-txt">
                   <span v-if="item.type" class="list-info-type">
