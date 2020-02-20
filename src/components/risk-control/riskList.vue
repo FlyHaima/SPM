@@ -23,7 +23,7 @@
                   class="tools-item"
                   v-if="importVisible"
                   accept=".xls"
-                  action="http://58.155.61.34:8033/spm/riskLevel/importRisks"
+                  :action='uploadUrl()'
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
                   :on-success="handleSuccess"
@@ -191,6 +191,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
+import base from '@/api/baseUrl'
 
 export default {
   name: 'riskList',
@@ -228,15 +229,23 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 导入接口地址
+    uploadUrl () {
+      return base.baseUrl + '/riskLevel/importRisks'
+    },
     // 导入
     handleBeforeUpload (file) {
       this.uploading = true
     },
     // 导入成功
     handleSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.uploading = false
-      this.fetchTableData()
+      if (response.code === 200) {
+        this.uploading = false
+        this.fetchTableData()
+        this.$notify.success('导入成功')
+      } else {
+        this.$notify.warning(response.message)
+      }
     },
     // 获取树的数据
     fetchTreeData () {

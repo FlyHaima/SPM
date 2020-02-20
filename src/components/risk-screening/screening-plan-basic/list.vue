@@ -203,7 +203,8 @@
               v-model="item.value"
               type="datetime"
               placeholder="选择日期时间"
-              @change="changeDate">
+              @change="changeDate"
+              :picker-options="pickerDisabled">
             </el-date-picker>
             <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
             <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
@@ -340,6 +341,12 @@ export default {
           value: Date.parse(moment().format('YYYY-MM-DD'))
         }
       ],
+      pickerDisabled: {
+        // 验证时间范围
+        disabledDate: (time) => {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      },
       checkedAuto: null,
       checkedManual: null,
       investigationOptions: [], // 排查频率选项

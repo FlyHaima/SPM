@@ -70,7 +70,7 @@
     </div>
     <el-dialog
       :visible.sync="dialogAddVisible"
-      :width="'1000px'"
+      width="50%"
       :show-close="false"
       v-loading="submitting">
       <div slot="title">
@@ -80,6 +80,7 @@
         <el-form
           :model="form"
           ref="newsForm"
+          :rules="rules"
           label-width="100px"
           label-position="right">
           <el-form-item label="文章标题" prop="newsName">
@@ -98,9 +99,9 @@
           <el-form-item label="链接地址" prop="url">
             <el-input v-model="form.url"></el-input>
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
              <vue-ueditor-wrap v-model="form.content" :config="editorConfig"></vue-ueditor-wrap>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -136,6 +137,20 @@ export default {
         typeName: '', // 分类
         content: '', // 内容
         url: '' // 链接地址
+      },
+      rules: {
+        newsName: [
+          { required: true, message: '请输入标题', trigger: 'blur' }
+        ],
+        typeName: [
+          { required: true, message: '请选择分类', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '请输入内容', trigger: 'blur' }
+        ],
+        url: [
+          { required: true, message: '请输入链接地址', trigger: 'blur' }
+        ]
       },
       editorConfig: {
         // 编辑器初始z-index
@@ -193,24 +208,30 @@ export default {
         })
         .then(() => {
           vm.submitting = true
-          axios
-            .post(`news/${post}News`, vm.form)
-            .then((res) => {
-              vm.submitting = true
-              if (res.data.code === 200) {
-                vm.$notify.success(tip + '成功')
-                vm.dialogAddVisible = false
-                vm.tablesFetchList()
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
+          vm.$refs.newsForm.validate((valid) => {
+            if (valid) {
+              axios
+                .post(`news/${post}News`, vm.form)
+                .then((res) => {
+                  vm.submitting = true
+                  if (res.data.code === 200) {
+                    vm.$notify.success(tip + '成功')
+                    vm.dialogAddVisible = false
+                    vm.tablesFetchList()
+                  } else {
+                    vm.$message({
+                      message: res.data.message,
+                      type: 'warning'
+                    })
+                  }
                 })
-              }
-            })
-            .finally(() => {
-              vm.submitting = false
-            })
+                .finally(() => {
+                  vm.submitting = false
+                })
+            } else {
+              return false
+            }
+          })
         })
         .catch(() => {})
     },
