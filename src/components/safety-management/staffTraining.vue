@@ -29,6 +29,7 @@
                     :multiple="false"
                     :limit="1"
                     :action='uploadUrl()'
+                    :headers="uploadHeader"
                     :before-upload="beforeImport"
                     :on-success="importSuccess"
                     :on-error="importError"
@@ -676,10 +677,15 @@ export default {
       },
       showEditDialog: false,
       importting: false,
-      importList: []
+      importList: [],
+      uploadHeader: {
+        token: ''
+      }
     }
   },
   created () {
+    // 设置题库上传的header 添加token
+    this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     // 设置七牛云
     this.uploadingAddress = base.uploadQiniuAdr
     this.fileAddress = base.fileQiniuAddr
@@ -918,7 +924,7 @@ export default {
       this.pageLoading = true
       copyPlan().then((res) => {
         if (res.code === 200) {
-          this.getContentTable()
+          this.getPlanTable()
         }
         this.pageLoading = false
       })

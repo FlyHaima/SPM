@@ -45,6 +45,7 @@
               class="tools-item"
               accept=".xls"
               :action='uploadUrl()'
+              :headers="uploadHeader"
               :before-upload="handleBeforeUpload"
               :on-success="handleSuccess"
               :on-error="handleError"
@@ -356,7 +357,10 @@ export default {
       multipleSelection: [], // 选中的列表
       dialogEditVisible: false, // 编辑窗口显示
       editFormVal: {},
-      confirmEditing: false
+      confirmEditing: false,
+      uploadHeader: {
+        token: ''
+      }
     }
   },
   components: {
@@ -366,6 +370,8 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
+    // 设置上传的header 添加token
+    this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     // this.listDate.value = Date.parse(moment().format('YYYY-MM-DD'))
     this.fetchListMenuData()
     this.fetchOrgTreeData()
