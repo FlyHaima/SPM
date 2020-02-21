@@ -339,6 +339,7 @@ export default {
           // {
           //   validator: phoneValidator
           // },
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
           { len: 11, message: '手机号码必须是11位', trigger: 'blur' }
         ]
       },
