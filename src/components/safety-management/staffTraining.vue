@@ -101,7 +101,7 @@
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload multiple
                                    class="upload-demo"
@@ -186,7 +186,7 @@
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload multiple
                                    class="upload-demo"

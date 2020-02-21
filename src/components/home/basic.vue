@@ -198,17 +198,19 @@
                 v-model="passwordForm.phone"
                 autocomplete="off"
                 placeholder="请输入手机号码"
-                :disabled="true"></el-input>
+                :disabled="true"
+                ></el-input>
             </el-form-item>
-            <el-form-item label="验证码：" prop="captcha">
+            <el-form-item label="验证码：" prop="code">
               <el-input
                 type="number"
-                v-model="passwordForm.captcha"
+                v-model="passwordForm.code"
                 autocomplete="off"
                 placeholder="请输入验证码"
                 clearable
                 class="input-captcha"></el-input>
                 <el-button
+                  :disabled="codeBtnDisabled"
                   type="primary"
                   @click="sendCodeHandle">{{codeBtnTxt}}</el-button>
             </el-form-item>
@@ -270,7 +272,7 @@
 <script>
 import { mapState } from 'vuex'
 import axios from '@/api/axios'
-import qs from 'qs'
+// import qs from 'qs'
 import moment from 'moment'
 import {ACCOUNT_STATUS, ZGRZ} from '@/constants/status'
 export default {
@@ -322,6 +324,8 @@ export default {
     var validateCaptcha = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入验证码'))
+      } else if (value !== this.captcha) {
+        callback(new Error('验证码输入有误'))
       } else {
         callback()
       }
@@ -339,7 +343,7 @@ export default {
         Password: '', // 新密码
         passwordConfirm: '', // 确认新密码
         phone: '', // 手机号码
-        captcha: '', // 验证码
+        code: '', // 验证码
         userId: '',
         dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
       }, // 修改密码form
@@ -350,13 +354,22 @@ export default {
       }, // 修改绑定手机
       rulesPassword: {
         oldPassword: [
+          { required: true, message: '请输入旧密码', trigger: 'blur' },
           { validator: validatePassOld, trigger: 'blur' }
         ],
         Password: [
+          { required: true, message: '请输入新密码', trigger: 'blur' },
           { validator: validatePassNew, trigger: 'blur' }
         ],
         passwordConfirm: [
+          { required: true, message: '请再一次输入密码', trigger: 'blur' },
           { validator: validatePassConfirm, trigger: 'blur' }
+        ],
+        code: [
+          { required: true,
+            message: '请输入验证码',
+            // validator: validateCaptcha,
+            trigger: 'blur' }
         ]
       }, // 修改密码的校验规则
       rulesTel: {
@@ -394,11 +407,11 @@ export default {
       this.timer()
       axios
         .get('/sms/getUpdateMsg', {
-          phone: this.userInfo.telephone
+          // phone: this.userInfo.telephone
+          phone: this.passwordForm.phone
         })
         .then((res) => {
           if (res.data.code === 200) {
-            // this.passwordForm.captcha = res.data.data.captcha
           }
         }).finally(() => {
         })
@@ -451,7 +464,7 @@ export default {
       this.$refs.passwordForm.validate((valid) => {
         if (valid) {
           axios
-            .post('user/updateUserPsw', qs.stringify(vm.passwordForm))
+            .post('user/updateUserPsw', vm.passwordForm)
             .then((res) => {
               vm.submitting = true
               if (res.data.code === 200) {
