@@ -164,7 +164,7 @@
       :visible.sync="dialogAddVisible"
       >
       <div slot="title">
-        {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '新增' }}
+        {{typeof editData !== 'undefined' && editData !== '' ? '编辑用户' : '新增用户' }}
       </div>
       <el-form
         :model= "form"
@@ -215,7 +215,7 @@
             <el-radio label="0">离职</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="角色:" >
+        <el-form-item label="角色:" prop="roleId" >
           <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
             <el-option
               v-for="(item, index) in roleOptions"
@@ -335,6 +335,9 @@ export default {
           { required: true, message: '请输入账号', trigger: 'blur' },
           { validator: accountNameValidator, trigger: 'blur' }
         ],
+        roleId: [
+          { required: true, message: '请选择角色', trigger: 'change' }
+        ],
         telephone: [
           // {
           //   validator: phoneValidator
@@ -408,7 +411,7 @@ export default {
         this.form.position = '' // 职位
         this.form.accountName = '' // 账号
         this.form.telephone = '' // 手机号码
-        this.form.roleId = '' // 角色
+        this.form.roleId = null // 角色
       })
     },
     // 编辑

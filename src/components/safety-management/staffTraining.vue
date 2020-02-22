@@ -71,7 +71,8 @@
                           <el-date-picker
                             v-model="addPlanData.startTime"
                             type="datetime"
-                            placeholder="选择日期时间">
+                            placeholder="选择日期时间"
+                            :picker-options="pickerDisabled">
                           </el-date-picker>
                         </p>
                       </div>
@@ -156,7 +157,8 @@
                           <el-date-picker
                             v-model="editData.startTime"
                             type="datetime"
-                            placeholder="选择日期时间">
+                            placeholder="选择日期时间"
+                            :picker-options="pickerDisabled">
                           </el-date-picker>
                         </p>
                       </div>
@@ -680,6 +682,12 @@ export default {
       importList: [],
       uploadHeader: {
         token: ''
+      },
+      pickerDisabled: {
+        // 验证时间范围
+        disabledDate: (time) => {
+          return time.getTime() < Date.now() - 8.64e7
+        }
       }
     }
   },

@@ -15,12 +15,14 @@ import BaseUrl from './api/baseUrl.js'
 import axios from 'axios'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.css'
+import decimal from './utils/js/validation'
 
 // 最后引入router，以实现覆盖组件内部样式的目的
 import router from './router'
 // 重置样式放到最后
 import '../static/css/style.css'
 
+Vue.use(decimal)
 axios.interceptors.request.use(
   config => {
     // 在所有请求头部添加token值

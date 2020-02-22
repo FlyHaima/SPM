@@ -227,7 +227,7 @@ export default {
   },
   created () {
     this.fetchTreeData()
-    this.fetchTableData()
+    this.fetchTableData(1)
   },
   methods: {
     // 选择器change事件 - 潜在的事故及职业危害类型
@@ -267,7 +267,7 @@ export default {
         })
     },
     // 获取table数据
-    fetchTableData () {
+    fetchTableData (treeLevel) {
       this.pageLoading = true
       let vm = this
       axios
@@ -279,7 +279,7 @@ export default {
             if (res.data.gwlist) {
               this.gwList = res.data.gwlist
             }
-            if (res.data.data.length > 1 || res.data.data.length === 0) {
+            if (treeLevel !== '5') {
               this.tableVisible = true
               this.tableData = res.data.data
             } else {
@@ -337,7 +337,7 @@ export default {
       let vm = this
       vm.riskId = data.riskId
       vm.form.riskId = data.riskId
-      vm.fetchTableData()
+      vm.fetchTableData(data.treeLevel)
     },
     closeLoading () {
       this.pageLoading = false
