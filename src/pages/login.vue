@@ -129,6 +129,7 @@
                     type="text"
                     v-model.trim="form.accountName"
                     autocomplete="off"
+                    maxlength="25"
                     placeholder="请输入用户名">
                     <i slot="prefix" class="icon-form icon-form-01"></i>
                   </el-input>
@@ -179,8 +180,7 @@ export default {
       },
       rules: {
         accountName: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 25, message: '长度在 3 到 25 个字符', trigger: 'blur' }
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }

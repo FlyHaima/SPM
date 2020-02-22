@@ -182,6 +182,7 @@ export default {
       tableVisible: false, // table显示开关
       submitting: false, // 提交数据loading开关
       riskId: '', // 风险点id
+      treeLevel: '', // 树节点等级
       form: {
         id: '',
         riskId: '',
@@ -202,7 +203,7 @@ export default {
   },
   created () {
     this.fetchTreeData()
-    this.fetchTableData()
+    this.fetchTableData(1)
   },
   methods: {
     // 获取树的数据
@@ -216,7 +217,7 @@ export default {
         })
     },
     // 获取table数据
-    fetchTableData () {
+    fetchTableData (treeLevel) {
       this.pageLoading = true
       let vm = this
       axios
@@ -225,7 +226,8 @@ export default {
           if (res.data.code === 200) {
             vm.options = res.data.selectList
             vm.imgPathColletion = res.data.picList
-            if (res.data.data.length > 1 || res.data.data.length === 0) {
+            console.log(res.data.data.length)
+            if (treeLevel !== '5') {
               vm.tableVisible = true
               vm.tableData = res.data.data
             } else {
@@ -287,7 +289,7 @@ export default {
       let vm = this
       vm.riskId = data.riskId
       vm.form.riskId = data.riskId
-      vm.fetchTableData()
+      vm.fetchTableData(data.treeLevel)
     },
     closeLoading () {
       this.pageLoading = false

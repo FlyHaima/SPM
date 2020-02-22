@@ -112,9 +112,8 @@
             type="number"
             v-model.trim="form.money"
             placeholder="请输入金额"
-            autocomplete
-            onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
-            :max="9999999"></el-input>
+            v-decimal
+            auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -168,6 +167,18 @@ export default {
   mounted () {
   },
   methods: {
+    validateMoney (key) {
+      console.log(key)
+      let inputVal = key
+      inputVal = inputVal
+        .replace(/[^\d.]/g, '')
+        // .replace(/\.{2,}/g, '.')
+        // .replace(/^(0(0)+|\.)/g, '')
+        // .replace('.', '$#$').replace(/\./g, '').replace('$#$', '.')
+        // .replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3')
+      this.form.money = inputVal
+      console.log(this.form.money)
+    },
     // 导出excel
     exportEexcelHandel () {
       exportExcel(`performance/exportPerformance`)
@@ -221,6 +232,15 @@ export default {
   components: {
     BreadCrumb,
     DialogDetail
+  },
+  watch: {
+    'form.money': function (newVal, oldVal) {
+      // 最大值
+      if (newVal > 99999) {
+        this.form.money = oldVal
+        return false
+      }
+    }
   }
 }
 </script>
