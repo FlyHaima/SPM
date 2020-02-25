@@ -27,6 +27,7 @@
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
+                  :headers="uploadHeader"
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
                   :on-success="handleSuccess"
@@ -350,10 +351,15 @@ export default {
       uploadData: {
         riskId: ''
       }, // 上传数据
-      fileList: [] // 导入列表
+      fileList: [], // 导入列表
+      uploadHeader: {
+        token: ''
+      }
     }
   },
   mounted () {
+    // 设置题库上传的header 添加token
+    this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     this.fetchRoleOptions()
   },
   methods: {
