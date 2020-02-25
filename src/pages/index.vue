@@ -64,7 +64,7 @@ export default {
     height: 100%;
   }
 .main-container{
-  height: calc(100vh - 110px);
+  // height: calc(100vh - 110px);
 }
 .main-content{
   padding: 15px 15px 0;

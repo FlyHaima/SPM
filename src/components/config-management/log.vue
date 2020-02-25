@@ -8,237 +8,225 @@
       <el-tabs type="border-card" @tab-click='clickTab' class="height-100">
         <el-tab-pane>
           <span slot="label">菜单访问日志</span>
-          <el-container class="inner-main-content">
-            <el-main class="inner-content">
-              <div class="container-box">
-                <div class="content-tools is-flex-end">
-                  <div class="tools-right">
-                    <el-button
-                      type="danger"
-                      size="medium"
-                      icon="el-icon-delete"
-                      @click.prevent="batchDeleteHandle()">
-                      清空当前页</el-button>
-                  </div>
-                </div>
-                <el-table
-                  :data="tables.data"
-                  v-loading="tables.loading"
-                  border
-                  style="width: 100%"
-                  header-align="center">
-                  <el-table-column
-                    label="序号"
-                    type="index"
-                    width="65"
-                    align="center"
-                    :index="tablesDefineIndex">
-                  </el-table-column>
-                  <el-table-column
-                    prop="logTimeStr"
-                    label="时间"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="menuName"
-                    label="菜单模块"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="ip"
-                    label="IP地址"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="loginType"
-                    label="登录端"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="userName"
-                    label="用户名称"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="methods"
-                    label="执行方法"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="description"
-                    label="操作"
-                    align="center">
-                  </el-table-column>
-                </el-table>
-                <div class="el-pagination__wrap text-right">
-                  <el-pagination
-                    background
-                    layout="total, prev, pager, next, jumper"
-                    :current-page="tables.page.index"
-                    :page-sizes="tables.page.sizes"
-                    :page-size="tables.form.pageSize"
-                    :total="tables.page.total"
-                    @current-change="tablesHandleCurrentPage"></el-pagination>
-                </div>
+          <div class="container-box">
+            <div class="content-tools is-flex-end">
+              <div class="tools-right">
+                <el-button
+                  type="danger"
+                  size="medium"
+                  icon="el-icon-delete"
+                  @click.prevent="batchDeleteHandle()">
+                  清空当前页</el-button>
               </div>
-            </el-main>
-          </el-container>
+            </div>
+            <el-table
+              :data="tables.data"
+              v-loading="tables.loading"
+              border
+              style="width: 100%"
+              header-align="center">
+              <el-table-column
+                label="序号"
+                type="index"
+                width="65"
+                align="center"
+                :index="tablesDefineIndex">
+              </el-table-column>
+              <el-table-column
+                prop="logTimeStr"
+                label="时间"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="menuName"
+                label="菜单模块"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="ip"
+                label="IP地址"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="loginType"
+                label="登录端"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="userName"
+                label="用户名称"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="methods"
+                label="执行方法"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="description"
+                label="操作"
+                align="center">
+              </el-table-column>
+            </el-table>
+            <div class="el-pagination__wrap text-right">
+              <el-pagination
+                background
+                layout="total, prev, pager, next, jumper"
+                :current-page="tables.page.index"
+                :page-sizes="tables.page.sizes"
+                :page-size="tables.form.pageSize"
+                :total="tables.page.total"
+                @current-change="tablesHandleCurrentPage"></el-pagination>
+            </div>
+          </div>
         </el-tab-pane>
         <el-tab-pane>
           <span slot="label">系统操作日志</span>
-          <el-container class="inner-main-content">
-            <el-main class="inner-content">
-              <div class="container-box">
-                <div class="content-tools is-flex-end">
-                  <div class="tools-right">
-                    <el-button
-                      type="danger"
-                      size="medium"
-                      icon="el-icon-delete"
-                       @click.prevent="batchDeleteHandle()">
-                      清空当前页</el-button>
-                  </div>
-                </div>
-                <el-table
-                  :data="tables.data"
-                  v-loading="tables.loading"
-                  border
-                  style="width: 100%"
-                  header-align="center">
-                  <el-table-column
-                    label="序号"
-                    type="index"
-                    width="55"
-                    align="center"
-                    :index="tablesDefineIndex">
-                  </el-table-column>
-                  <el-table-column
-                    prop="logTimeStr"
-                    label="时间"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="menuName"
-                    label="菜单模块"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="ip"
-                    label="IP地址"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="loginType"
-                    label="登录端"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="userName"
-                    label="用户名称"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="methods"
-                    label="执行方法"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="description"
-                    label="操作"
-                    align="center">
-                  </el-table-column>
-                </el-table>
-                <div class="el-pagination__wrap text-right">
-                  <el-pagination
-                    background
-                    layout="total, prev, pager, next, jumper"
-                    :current-page="tables.page.index"
-                    :page-sizes="tables.page.sizes"
-                    :page-size="tables.form.pageSize"
-                    :total="tables.page.total"
-                    @current-change="tablesHandleCurrentPage"></el-pagination>
-                </div>
+          <div class="container-box">
+            <div class="content-tools is-flex-end">
+              <div class="tools-right">
+                <el-button
+                  type="danger"
+                  size="medium"
+                  icon="el-icon-delete"
+                    @click.prevent="batchDeleteHandle()">
+                  清空当前页</el-button>
               </div>
-            </el-main>
-          </el-container>
+            </div>
+            <el-table
+              :data="tables.data"
+              v-loading="tables.loading"
+              border
+              style="width: 100%"
+              header-align="center">
+              <el-table-column
+                label="序号"
+                type="index"
+                width="55"
+                align="center"
+                :index="tablesDefineIndex">
+              </el-table-column>
+              <el-table-column
+                prop="logTimeStr"
+                label="时间"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="menuName"
+                label="菜单模块"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="ip"
+                label="IP地址"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="loginType"
+                label="登录端"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="userName"
+                label="用户名称"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="methods"
+                label="执行方法"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="description"
+                label="操作"
+                align="center">
+              </el-table-column>
+            </el-table>
+            <div class="el-pagination__wrap text-right">
+              <el-pagination
+                background
+                layout="total, prev, pager, next, jumper"
+                :current-page="tables.page.index"
+                :page-sizes="tables.page.sizes"
+                :page-size="tables.form.pageSize"
+                :total="tables.page.total"
+                @current-change="tablesHandleCurrentPage"></el-pagination>
+            </div>
+          </div>
         </el-tab-pane>
         <el-tab-pane>
           <span slot="label">系统错误日志</span>
-          <el-container class="inner-main-content">
-            <el-main class="inner-content">
-              <div class="container-box">
-                <div class="content-tools is-flex-end">
-                  <div class="tools-right">
-                    <el-button
-                      type="danger"
-                      size="medium"
-                      icon="el-icon-delete"
-                      @click.prevent="batchDeleteHandle()">
-                      清空当前页</el-button>
-                  </div>
-                </div>
-                <el-table
-                  :data="tables.data"
-                  v-loading="tables.loading"
-                  border
-                  style="width: 100%"
-                  header-align="center">
-                  <el-table-column
-                    label="序号"
-                    type="index"
-                    width="55"
-                    align="center"
-                    :index="tablesDefineIndex">
-                  </el-table-column>
-                  <el-table-column
-                    prop="logTimeStr"
-                    label="时间"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="menuName"
-                    label="菜单模块"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="ip"
-                    label="IP地址"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="loginType"
-                    label="登录端"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="userName"
-                    label="用户名称"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="methods"
-                    label="执行方法"
-                    align="center">
-                  </el-table-column>
-                  <el-table-column
-                    prop="errorMsg"
-                    label="错误信息"
-                    align="center">
-                  </el-table-column>
-                </el-table>
-                <div class="el-pagination__wrap text-right">
-                  <el-pagination
-                    background
-                    layout="total, prev, pager, next, jumper"
-                    :current-page="tables.page.index"
-                    :page-sizes="tables.page.sizes"
-                    :page-size="tables.form.pageSize"
-                    :total="tables.page.total"
-                    @current-change="tablesHandleCurrentPage"></el-pagination>
-                </div>
+          <div class="container-box">
+            <div class="content-tools is-flex-end">
+              <div class="tools-right">
+                <el-button
+                  type="danger"
+                  size="medium"
+                  icon="el-icon-delete"
+                  @click.prevent="batchDeleteHandle()">
+                  清空当前页</el-button>
               </div>
-            </el-main>
-          </el-container>
+            </div>
+            <el-table
+              :data="tables.data"
+              v-loading="tables.loading"
+              border
+              style="width: 100%"
+              header-align="center">
+              <el-table-column
+                label="序号"
+                type="index"
+                width="55"
+                align="center"
+                :index="tablesDefineIndex">
+              </el-table-column>
+              <el-table-column
+                prop="logTimeStr"
+                label="时间"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="menuName"
+                label="菜单模块"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="ip"
+                label="IP地址"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="loginType"
+                label="登录端"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="userName"
+                label="用户名称"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="methods"
+                label="执行方法"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="errorMsg"
+                label="错误信息"
+                align="center">
+              </el-table-column>
+            </el-table>
+            <div class="el-pagination__wrap text-right">
+              <el-pagination
+                background
+                layout="total, prev, pager, next, jumper"
+                :current-page="tables.page.index"
+                :page-sizes="tables.page.sizes"
+                :page-size="tables.form.pageSize"
+                :total="tables.page.total"
+                @current-change="tablesHandleCurrentPage"></el-pagination>
+            </div>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </el-main>

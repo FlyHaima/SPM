@@ -601,7 +601,7 @@ export default {
     .inner-content{
       width: 100%;
       height: 100%;
-      padding: 29px 22px;
+      padding: 0;
       background: #fff;
       .container-box{
         width: 100%;
