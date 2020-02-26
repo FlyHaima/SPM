@@ -1,196 +1,188 @@
 <!-- 登陆页面 -->
 <template>
   <div class="wrap login-wrap" v-loading="pageLoading">
-    <el-row class="login-content">
-      <el-col :span="16" class="login-content-left">
-        <div class="logo"></div>
-        <el-row>
-          <el-col :span="10">
-            <swiper
-              :options="swiperOption"
-              ref="mySwiper"
-              class="swiper-container">
-              <!-- slides -->
-              <swiper-slide
-                v-for="(item, index) in swiperSlides"
-                :key="index">
-                  <img
-                    :src="item.picUrl"
-                    class="swiper-img" />
-                  <div class="swiper-info">
-                    <div class="swiper-info-txt">{{item.picName}}</div>
+    <div class="login-content-left">
+      <div class="logo"></div>
+      <div class="left-container">
+        <swiper
+          :options="swiperOption"
+          ref="mySwiper"
+          class="swiper-container">
+          <swiper-slide
+            v-for="(item, index) in swiperSlides"
+            :key="index">
+              <img
+                :src="item.picUrl"
+                class="swiper-img" />
+              <div class="swiper-info">
+                <div class="swiper-info-txt">{{item.picName}}</div>
+              </div>
+          </swiper-slide>
+          <div class="swiper-pagination"  slot="pagination"></div>
+          <div class="swiper-button-prev" slot="button-prev"></div>
+          <div class="swiper-button-next" slot="button-next"></div>
+        </swiper>
+        <el-tabs v-model="tabType" @tab-click='clickTab'>
+          <el-tab-pane label="新闻动态" name="xwdt">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  class="list-info-item">
+                  <a :href="item.url">
+                    <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
                   </div>
-              </swiper-slide>
-              <!-- Optional controls -->
-              <div class="swiper-pagination"  slot="pagination"></div>
-              <div class="swiper-button-prev" slot="button-prev"></div>
-              <div class="swiper-button-next" slot="button-next"></div>
-            </swiper>
-          </el-col>
-          <el-col :span="14">
-            <el-tabs v-model="tabType" @tab-click='clickTab'>
-              <el-tab-pane label="新闻动态" name="xwdt">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      class="list-info-item">
-                      <a :href="item.url">
-                        <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      </a>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="政策解读" name="zcjd">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      @click="gotoDetailsHandle(item.url)"
-                      class="list-info-item">
-                      <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="法律法规" name="flfg">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      @click="gotoDetailsHandle(item.url)"
-                      class="list-info-item">
-                      <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="定时安管生产事故" name="aqscsg">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      @click="gotoDetailsHandle(item.url)"
-                      class="list-info-item">
-                      <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-            </el-tabs>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="6" :offset="1" class="login-content-right">
-        <div class="login-box">
-          <div class="login-box-inner">
-            <div class="login-form-box">
-              <div class="login-form-header">
-                <div class="login-form-title">注册</div>
-              </div>
-              <div class="login-form-tips">
-                <span class="login-form-tips-sign">*</span>
-                提示：此注册为企业唯一账号
-              </div>
-              <el-form
-                :model="form"
-                :rules="rules"
-                status-icon
-                ref="form"
-                @submit.native.prevent
-                class="form-login">
-                <el-form-item prop="accountName">
-                  <el-input
-                    type="text"
-                    autocomplete="off"
-                    placeholder="请输入企业社会信用代码"
-                    v-model.trim="form.accountName">
-                    <i slot="prefix" class="icon-form icon-form-03"></i>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="companyName">
-                  <el-input
-                    type="text"
-                    autocomplete="off"
-                    placeholder="请输入企业名称"
-                    v-model.trim="form.companyName">
-                    <i slot="prefix" class="icon-form icon-form-04"></i>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                  <el-input
-                    type="password"
-                    autocomplete="off"
-                    placeholder="请输入密码"
-                    v-model.trim="form.password">
-                    <i slot="prefix" class="icon-form icon-form-02"></i>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="confrimPassword">
-                  <el-input
-                    type="password"
-                    autocomplete="off"
-                    placeholder="请确认密码"
-                    v-model.trim="form.confrimPassword">
-                    <i slot="prefix" class="icon-form icon-form-02"></i>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="industryName">
-                  <el-select v-model="form.industryName" placeholder="请选择所属行业">
-                    <i slot="prefix" class="icon-form icon-form-05"></i>
-                    <el-option
-                      v-for="item in industryOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-                <div class="custom-form-item">
-                  请选择是否使用所属行业大数据
-                  <el-select v-model="form.useIndustry" placeholder="使用">
-                    <el-option
-                      v-for="item in useIndustryOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
-                    </el-option>
-                  </el-select>
-                </div>
-                <el-form-item class="form-links">
-                  <a class="form-links-item" href="/login">登录已有账号</a>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    :loading="submitting"
-                    @click="submitForm()"
-                    native-type="submit"
-                    round>注册</el-button>
-                </el-form-item>
-              </el-form>
+                  </a>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
             </div>
+          </el-tab-pane>
+          <el-tab-pane label="政策解读" name="zcjd">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  @click="gotoDetailsHandle(item.url)"
+                  class="list-info-item">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="法律法规" name="flfg">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  @click="gotoDetailsHandle(item.url)"
+                  class="list-info-item">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="定时安管生产事故" name="aqscsg">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  @click="gotoDetailsHandle(item.url)"
+                  class="list-info-item">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+    <div class="login-content-right">
+      <div class="login-box">
+      <div class="login-box-inner">
+        <div class="login-form-box">
+          <div class="login-form-header">
+            <div class="login-form-title">注册</div>
           </div>
-
+          <div class="login-form-tips">
+            <span class="login-form-tips-sign">*</span>
+            提示：此注册为企业唯一账号
+          </div>
+          <el-form
+            :model="form"
+            :rules="rules"
+            status-icon
+            ref="form"
+            @submit.native.prevent
+            class="form-login">
+            <el-form-item prop="accountName">
+              <el-input
+                type="text"
+                autocomplete="off"
+                placeholder="请输入企业社会信用代码"
+                v-model.trim="form.accountName">
+                <i slot="prefix" class="icon-form icon-form-03"></i>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="companyName">
+              <el-input
+                type="text"
+                autocomplete="off"
+                placeholder="请输入企业名称"
+                v-model.trim="form.companyName">
+                <i slot="prefix" class="icon-form icon-form-04"></i>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                type="password"
+                autocomplete="off"
+                placeholder="请输入密码"
+                v-model.trim="form.password">
+                <i slot="prefix" class="icon-form icon-form-02"></i>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="confrimPassword">
+              <el-input
+                type="password"
+                autocomplete="off"
+                placeholder="请确认密码"
+                v-model.trim="form.confrimPassword">
+                <i slot="prefix" class="icon-form icon-form-02"></i>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="industryName">
+              <el-select v-model="form.industryName" placeholder="请选择所属行业">
+                <i slot="prefix" class="icon-form icon-form-05"></i>
+                <el-option
+                  v-for="item in industryOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <div class="custom-form-item">
+              请选择是否使用所属行业大数据
+              <el-select v-model="form.useIndustry" placeholder="使用">
+                <el-option
+                  v-for="item in useIndustryOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+            <el-form-item class="form-links">
+              <a class="form-links-item" href="/login">登录已有账号</a>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                :loading="submitting"
+                @click="submitForm()"
+                native-type="submit"
+                round>注册</el-button>
+            </el-form-item>
+          </el-form>
         </div>
-      </el-col>
-    </el-row>
+      </div>
+
+    </div>
+    </div>
   </div>
 </template>
 
@@ -238,7 +230,7 @@ export default {
         useIndustry: '' // 是否使用大数据
       },
       rules: {
-        userName: [
+        accountName: [
           { required: true, message: '请输入企业社会信用代码', trigger: 'blur' },
           { min: 1, max: 18, message: '长度在 1 到 18 个字符', trigger: 'blur' }
         ],
@@ -377,21 +369,28 @@ export default {
 
 <style scoped lang="scss">
 .login-wrap{
+  display: flex;
   width: 100%;
   height: 100vh;
   overflow-y: hidden;
-  background: #ffffff;
+  background-image: url('../assets/img/login/login-bg-left.png');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .login-content{
-  height: 100vh;
+  height: 100%;
 }
 .logo{
   width: 136px;
   height: 43px;
-  margin: 36px 46px;
+  margin: 36px 46px 0;
   background-image: url('../assets/img/login/login-logo.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
+}
+.left-container{
+  display: flex;
+  margin-top: 10%;
 }
 .login-box{
   display: flex;
@@ -405,15 +404,12 @@ export default {
   width: 100%;
 }
 .login-content-left{
-  display: inline-block;
-  height: 100%;
-  background-image: url('../assets/img/login/login-bg-left.png');
-  background-repeat: no-repeat;
-  background-size: cover;
+  flex: 1;
+  padding: 0 30px;
   color: #ffffff;
   >>>.el-tabs{
-    // margin: 200px 80px;
-    max-width: 600px;
+    margin-left: 20px;
+    // max-width: 600px;
     .el-tabs__content{
       min-height: 20px;
     }
@@ -435,9 +431,11 @@ export default {
   }
 }
 .login-content-right{
-  display: inline-block;
+  flex: 0 0 400px;
   height: 100%;
   color: #333333;
+  background: #ffffff;
+  padding: 0 50px;
 }
 .login-title{
   text-align: center;
@@ -499,30 +497,21 @@ export default {
   color: #409eff;
   text-decoration: underline;
 }
-
 /deep/.el-form{
   .el-form-item__error{
     padding-left: 50px;
   }
-  .el-form-item{
-    margin-bottom: 40px;
-  }
-  .el-form-item__content{
-    .el-input{
-      .el-input__inner{
-        border-width: 0 0 1px 0;
-        border-color: #ababab;
-        border-radius: 0;
-        padding-left: 0;
-        height: 20px;
-        line-height: 20px;
-        background: transparent;
-        margin-left: 50px;
-        width: calc(100% - 50px);
-      }
-    }
-    .el-select{
-      width: 100%;
+  .el-input{
+    .el-input__inner{
+      border-width: 0 0 1px 0;
+      border-color: #ababab;
+      border-radius: 0;
+      padding-left: 0;
+      height: 20px;
+      line-height: 20px;
+      background: transparent;
+      margin-left: 50px;
+      width: calc(100% - 50px);
     }
   }
   .el-button{
@@ -545,6 +534,7 @@ export default {
   width: 440px;
   height: 416px;
   position: relative;
+  z-index: 999;
   >>> .swiper-pagination{
     position: absolute;
     bottom: 0;
@@ -576,7 +566,7 @@ export default {
 }
 .list-info{
   flex: 0 0 540px;
-  margin-left: 40px;
+  padding: 0 30px;
   height: 440px;
   overflow: hidden;
 }
