@@ -27,6 +27,7 @@
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
+                  :headers="uploadHeader"
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
                   :on-success="handleSuccess"
@@ -164,7 +165,7 @@
       :visible.sync="dialogAddVisible"
       >
       <div slot="title">
-        {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '新增' }}
+        {{typeof editData !== 'undefined' && editData !== '' ? '编辑用户' : '新增用户' }}
       </div>
       <el-form
         :model= "form"
@@ -215,7 +216,7 @@
             <el-radio label="0">离职</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="角色:" >
+        <el-form-item label="角色:" prop="roleId" >
           <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
             <el-option
               v-for="(item, index) in roleOptions"
@@ -335,10 +336,14 @@ export default {
           { required: true, message: '请输入账号', trigger: 'blur' },
           { validator: accountNameValidator, trigger: 'blur' }
         ],
+        roleId: [
+          { required: true, message: '请选择角色', trigger: 'change' }
+        ],
         telephone: [
           // {
           //   validator: phoneValidator
           // },
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
           { len: 11, message: '手机号码必须是11位', trigger: 'blur' }
         ]
       },
@@ -346,10 +351,15 @@ export default {
       uploadData: {
         riskId: ''
       }, // 上传数据
-      fileList: [] // 导入列表
+      fileList: [], // 导入列表
+      uploadHeader: {
+        token: ''
+      }
     }
   },
   mounted () {
+    // 设置题库上传的header 添加token
+    this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     this.fetchRoleOptions()
   },
   methods: {
@@ -407,7 +417,7 @@ export default {
         this.form.position = '' // 职位
         this.form.accountName = '' // 账号
         this.form.telephone = '' // 手机号码
-        this.form.roleId = '' // 角色
+        this.form.roleId = null // 角色
       })
     },
     // 编辑

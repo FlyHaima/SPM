@@ -71,7 +71,8 @@
                           <el-date-picker
                             v-model="addPlanData.startTime"
                             type="datetime"
-                            placeholder="选择日期时间">
+                            placeholder="选择日期时间"
+                            :picker-options="pickerDisabled">
                           </el-date-picker>
                         </p>
                       </div>
@@ -101,7 +102,7 @@
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload multiple
                                    class="upload-demo"
@@ -156,7 +157,8 @@
                           <el-date-picker
                             v-model="editData.startTime"
                             type="datetime"
-                            placeholder="选择日期时间">
+                            placeholder="选择日期时间"
+                            :picker-options="pickerDisabled">
                           </el-date-picker>
                         </p>
                       </div>
@@ -186,7 +188,7 @@
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件<span class="red margin-lf">*</span><span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span></p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload multiple
                                    class="upload-demo"
@@ -680,6 +682,12 @@ export default {
       importList: [],
       uploadHeader: {
         token: ''
+      },
+      pickerDisabled: {
+        // 验证时间范围
+        disabledDate: (time) => {
+          return time.getTime() < Date.now() - 8.64e7
+        }
       }
     }
   },
@@ -1134,17 +1142,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.inner-page-container{
-  height: 100%;
-  .el-header{
-    padding: 0;
-  }
-  .el-main{
-    padding: 0;
-  }
-}
+// .inner-page-container{
+//   height: 100%;
+//   .el-header{
+//     padding: 0;
+//   }
+//   .el-main{
+//     padding: 0;
+//   }
+// }
 /* el-dialog */
 /deep/.inner-main-container{
+  // padding: 0;
   .el-dialog{
     .el-dialog__body{
       padding: 0;
@@ -1279,88 +1288,85 @@ export default {
   }
 }
 /*  el-tab */
-/deep/.inner-main-container{
-  .el-tabs--border-card{
-    position: relative;
-    border-color: #eeeeee;
-  }
-  .el-tabs__nav{
-    height: 50px;
-  }
-  .el-tabs__item{
-    height: 51px;
-    line-height: 50px;
-    font-size: 16px;
-    color: #777;
-    &.is-active{
-      color: #409EFF;
-      border-top: 2px solid #409EFF;
-    }
-  }
-  .el-tabs__content{
-    height: 100%;
-    width: 100%;
-    padding: 50px 0 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    .el-tab-pane{
-      height: 100%;
-      .inner-main-content{
-        background: #f2f2f2;
-        width: 100%;
-        height: 100%;
-        &.bg-fff{
-          padding: 25px;
-          background: #fff;
-          .container-box{
-            width: 100%;
-            overflow-y: auto;
-          }
-        }
-      }
-    }
-  }
+// /deep/.inner-main-container{
+//   .el-tabs--border-card{
+//     position: relative;
+//     border-color: #eeeeee;
+//   }
+//   .el-tabs__nav{
+//     height: 50px;
+//   }
+//   .el-tabs__item{
+//     height: 51px;
+//     line-height: 50px;
+//     font-size: 16px;
+//     color: #777;
+//     &.is-active{
+//       color: #409EFF;
+//       border-top: 2px solid #409EFF;
+//     }
+//   }
+//   .el-tabs__content{
+//     height: 100%;
+//     width: 100%;
+//     padding: 50px 0 0;
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     .el-tab-pane{
+//       height: 100%;
+//       .inner-main-content{
+//         background: #f2f2f2;
+//         width: 100%;
+//         height: 100%;
+//         &.bg-fff{
+//           padding: 25px;
+//           background: #fff;
+//           .container-box{
+//             width: 100%;
+//             overflow-y: auto;
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+.container-box{
+  width: 100%;
 }
-
+.inner-content{
+  padding: 0;
+}
 .inner-page-container {
-  .inner-content {
-    width: 100%;
-    height: 100%;
-    padding: 29px 22px;
-    background: #fff;
-    .container-box {
-      .btn-p{
-        height: 36px;
-        line-height: 36px;
-        margin-bottom: 25px;
-        &>a{
-          float: right;
-          width: 108px;
-          height: 36px;
-          color: #fff;
-          font-size: 16px;
-          text-align: center;
-          margin-left: 28px;
-          i{
-            margin-right: 8px;
-          }
-        }
-        .release-btn{
-          background: #409eff;
-        }
-        .delete-btn{
-          background: #f56c6c;
-        }
-        .edit-btn{
-          background: #e6a23c;
-        }
-        .copy-btn{
-          background: #fcfcfc;
-          border: 1px solid #e1e1e1;
-          color: #707070;
-        }
+  .btn-p{
+    height: 36px;
+    line-height: 36px;
+    margin-bottom: 25px;
+    &>a{
+      float: right;
+      width: 108px;
+      height: 36px;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+      margin-left: 28px;
+      i{
+        margin-right: 8px;
       }
+    }
+    .release-btn{
+      background: #409eff;
+    }
+    .delete-btn{
+      background: #f56c6c;
+    }
+    .edit-btn{
+      background: #e6a23c;
+    }
+    .copy-btn{
+      background: #fcfcfc;
+      border: 1px solid #e1e1e1;
+      color: #707070;
     }
   }
   .pages{

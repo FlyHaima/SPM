@@ -404,8 +404,8 @@ export default {
     },
     // 导入成功
     handleSuccess (response, file, fileList) {
+      this.uploading = false
       if (response.code === 200) {
-        this.uploading = false
         this.fetchTableData()
         this.$notify.success('导入成功')
       } else {
@@ -807,7 +807,7 @@ export default {
         ids.push(item.basicId)
       })
       let postD = {
-        leftId: vm.currentPlanId,
+        planId: vm.currentPlanId,
         basicId: ids.join(',')
       }
       copyBasticHidden(postD).then((res) => {
@@ -817,7 +817,7 @@ export default {
         } else {
           vm.pageLoading = false
           vm.$message({
-            message: '请求发生错误，请稍后重试',
+            message: res.message,
             type: 'warning'
           })
         }
