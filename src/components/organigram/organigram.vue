@@ -39,7 +39,7 @@
             </el-form-item>
             <el-form-item v-show="workUsers.length > 0">
               <p v-for="(item, index) in workUsers" :key="index">
-                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone ? findItem(item).telephone : '暂无联系方式'}`}}
               </p>
             </el-form-item>
             <el-form-item label="主要责任">
@@ -68,7 +68,7 @@
             </el-form-item>
             <el-form-item v-show="leadUserA.length > 0">
               <p v-for="(item, index) in leadUserA" :key="index">
-                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone ? findItem(item).telephone : '暂无联系方式'}`}}
               </p>
             </el-form-item>
             <el-form-item label="主要责任">
@@ -95,7 +95,7 @@
             </el-form-item>
             <el-form-item v-show="leadUserB.length > 0">
               <p v-for="(item, index) in leadUserB" :key="index">
-                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone}`}}
+                {{`${findItem(item).userName}：&nbsp;&nbsp;&nbsp;&nbsp;${findItem(item).telephone ? findItem(item).telephone : '暂无联系方式'}`}}
               </p>
             </el-form-item>
             <el-form-item label="主要责任">
@@ -421,13 +421,8 @@ export default {
     // 根据id 查selector item
     findItem (id) {
       for(let i=0; i<this.selector.length; i++){
-        if (this.selector[i].userId == id) {
+        if (this.selector[i].userId === id) {
           return this.selector[i]
-        } else {
-          return {
-            userName: '未实名',
-            telephone: '暂无电话'
-          }
         }
       }
     },
