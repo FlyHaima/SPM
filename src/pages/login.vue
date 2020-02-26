@@ -1,165 +1,149 @@
 <!-- 登陆页面 -->
 <template>
   <div class="wrap login-wrap">
-    <el-row class="login-content">
-      <el-col :span="16" class="login-content-left">
-        <div class="logo"></div>
-        <el-row>
-          <el-col :span="10">
-            <swiper
-              :options="swiperOption"
-              ref="mySwiper"
-              class="swiper-container">
-              <!-- slides -->
-              <swiper-slide
-                v-for="(item, index) in swiperSlides"
-                :key="index">
-                  <img
-                    :src="item.picUrl"
-                    class="swiper-img" />
-                  <div class="swiper-info">
-                    <div class="swiper-info-txt">{{item.picName}}</div>
-                  </div>
-              </swiper-slide>
-              <!-- Optional controls -->
-              <div class="swiper-pagination"  slot="pagination"></div>
-              <div class="swiper-button-prev" slot="button-prev"></div>
-              <div class="swiper-button-next" slot="button-next"></div>
-            </swiper>
-          </el-col>
-          <el-col :span="14">
-            <el-tabs v-model="tabType" @tab-click='clickTab'>
-              <el-tab-pane label="新闻动态" name="xwdt">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      class="list-info-item">
-                      <a :href="item.url">
-                        <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      </a>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="政策解读" name="zcjd">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      @click="gotoDetailsHandle(item.url)"
-                      class="list-info-item">
-                      <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="法律法规" name="flfg">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      @click="gotoDetailsHandle(item.url)"
-                      class="list-info-item">
-                      <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="定时安管生产事故" name="aqscsg">
-                <div class="tab-content">
-                  <ul class="list-info">
-                    <li
-                      v-for="(item, index) in newsList"
-                      :key="index"
-                      @click="gotoDetailsHandle(item.url)"
-                      class="list-info-item">
-                      <div class="list-info-title">
-                        <span class="list-info-txt">{{item.newsName}}</span>
-                      </div>
-                      <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                    </li>
-                  </ul>
-                </div>
-              </el-tab-pane>
-            </el-tabs>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="6" :offset="1" class="login-content-right">
-        <div class="login-box">
-          <div class="login-box-inner">
-            <div class="login-title">
-              <div class="login-title-en">ANGUANTONG SYSTEM <span class="txt-bold">PLATFORM</span></div>
-              <div class="login-title-txt">安管通系统平台</div>
-            </div>
-            <div class="login-form-box">
-              <div class="login-form-header">
-                <div class="login-form-title">欢迎使用系统</div>
-                <!-- <el-select v-model="value" placeholder="请选择身份">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select> -->
+    <div class="login-content-left">
+      <div class="logo"></div>
+      <div class="left-container">
+        <swiper
+          :options="swiperOption"
+          ref="mySwiper"
+          class="swiper-container">
+          <swiper-slide
+            v-for="(item, index) in swiperSlides"
+            :key="index">
+              <img
+                :src="item.picUrl"
+                class="swiper-img" />
+              <div class="swiper-info">
+                <div class="swiper-info-txt">{{item.picName}}</div>
               </div>
-              <el-form
-                :model="form"
-                :rules="rules"
-                status-icon
-                ref="form"
-                class="form-login"
-                @submit.native.prevent>
-                <el-form-item prop="accountName">
-                  <el-input
-                    type="text"
-                    v-model.trim="form.accountName"
-                    autocomplete="off"
-                    maxlength="25"
-                    placeholder="请输入用户名">
-                    <i slot="prefix" class="icon-form icon-form-01"></i>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                  <el-input
-                    type="password"
-                    v-model.trim="form.password"
-                    autocomplete="off"
-                    placeholder="请输入密码">
-                    <i slot="prefix" class="icon-form icon-form-02"></i>
-                  </el-input>
-                </el-form-item>
-                <el-form-item class="form-links">
-                  <a class="form-links-item" href="/register">新用户注册</a>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    v-loading="submitting"
-                    @click.prevent="submitForm()"
-                    native-type="submit"
-                    round>登录</el-button>
-                </el-form-item>
-              </el-form>
+          </swiper-slide>
+          <div class="swiper-pagination"  slot="pagination"></div>
+          <div class="swiper-button-prev" slot="button-prev"></div>
+          <div class="swiper-button-next" slot="button-next"></div>
+        </swiper>
+        <el-tabs v-model="tabType" @tab-click='clickTab'>
+          <el-tab-pane label="新闻动态" name="xwdt">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  class="list-info-item">
+                  <a :href="item.url">
+                    <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  </a>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
             </div>
+          </el-tab-pane>
+          <el-tab-pane label="政策解读" name="zcjd">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  @click="gotoDetailsHandle(item.url)"
+                  class="list-info-item">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="法律法规" name="flfg">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  @click="gotoDetailsHandle(item.url)"
+                  class="list-info-item">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="定时安管生产事故" name="aqscsg">
+            <div class="tab-content">
+              <ul class="list-info">
+                <li
+                  v-for="(item, index) in newsList"
+                  :key="index"
+                  @click="gotoDetailsHandle(item.url)"
+                  class="list-info-item">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">{{item.newsName}}</span>
+                  </div>
+                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                </li>
+              </ul>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+    <div class="login-content-right">
+      <div class="login-box">
+        <div class="login-box-inner">
+          <div class="login-title">
+            <div class="login-title-en">ANGUANTONG SYSTEM <span class="txt-bold">PLATFORM</span></div>
+            <div class="login-title-txt">安管通系统平台</div>
           </div>
-
+          <div class="login-form-box">
+            <div class="login-form-header">
+              <div class="login-form-title">欢迎使用系统</div>
+            </div>
+            <el-form
+              :model="form"
+              :rules="rules"
+              status-icon
+              ref="form"
+              class="form-login"
+              @submit.native.prevent>
+              <el-form-item prop="accountName">
+                <el-input
+                  type="text"
+                  v-model.trim="form.accountName"
+                  autocomplete="off"
+                  maxlength="25"
+                  placeholder="请输入用户名">
+                  <i slot="prefix" class="icon-form icon-form-01"></i>
+                </el-input>
+              </el-form-item>
+              <el-form-item prop="password">
+                <el-input
+                  type="password"
+                  v-model.trim="form.password"
+                  autocomplete="off"
+                  placeholder="请输入密码">
+                  <i slot="prefix" class="icon-form icon-form-02"></i>
+                </el-input>
+              </el-form-item>
+              <el-form-item class="form-links">
+                <a class="form-links-item" href="/register">新用户注册</a>
+              </el-form-item>
+              <el-form-item>
+                <el-button
+                  v-loading="submitting"
+                  @click.prevent="submitForm()"
+                  native-type="submit"
+                  round>登录</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
         </div>
-      </el-col>
-    </el-row>
+
+      </div>
+    </div>
   </div>
 </template>
 
@@ -310,21 +294,32 @@ export default {
 
 <style scoped lang="scss">
 .login-wrap{
+  display: flex;
   width: 100%;
   height: 100vh;
   overflow-y: hidden;
-  background: #ffffff;
+  background-image: url('../assets/img/login/login-bg-left.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  // overflow-y: hidden;
+  // background: #ffffff;
 }
 .login-content{
-  height: 100vh;
+  height: 100%;
+  // height: 100vh;
 }
 .logo{
   width: 136px;
   height: 43px;
-  margin: 36px 46px 180px;
+  margin: 36px 46px 0;
   background-image: url('../assets/img/login/login-logo.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
+}
+.left-container{
+  display: flex;
+  margin-top: 10%;
+  // align-items: center;
 }
 .login-box{
   display: flex;
@@ -338,15 +333,12 @@ export default {
   width: 100%;
 }
 .login-content-left{
-  display: inline-block;
-  height: 100%;
-  background-image: url('../assets/img/login/login-bg-left.png');
-  background-repeat: no-repeat;
-  background-size: cover;
+  flex: 1;
+  padding: 0 30px;
   color: #ffffff;
   >>>.el-tabs{
-    // margin: 200px 80px;
-    max-width: 600px;
+    margin-left: 20px;
+    // max-width: 600px;
     .el-tabs__content{
       min-height: 20px;
     }
@@ -368,9 +360,11 @@ export default {
   }
 }
 .login-content-right{
-  display: inline-block;
+  flex: 0 0 400px;
   height: 100%;
   color: #333333;
+  background: #ffffff;
+  padding: 0 50px;
 }
 .login-title{
   text-align: center;
@@ -501,7 +495,7 @@ export default {
 }
 .list-info{
   flex: 0 0 540px;
-  margin-left: 40px;
+  padding: 0 30px;
   height: 440px;
   overflow: hidden;
 }

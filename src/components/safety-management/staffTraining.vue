@@ -82,7 +82,8 @@
                           <el-date-picker
                             v-model="addPlanData.endTime"
                             type="datetime"
-                            placeholder="选择日期时间">
+                            placeholder="选择日期时间"
+                            :picker-options="pickerDisabled">
                           </el-date-picker>
                         </p>
                       </div>

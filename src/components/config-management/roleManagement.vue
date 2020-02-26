@@ -242,6 +242,9 @@ export default {
         })
     },
     filterRoleOptions (fData) {
+      if (!Array.isArray(this.postDataChecked)) {
+        this.postDataChecked = this.postDataChecked.split(',')
+      }
       let newRoleOptions = this.postDataChecked
       fData.forEach(item => {
         if (item.checkAll === true || item.checkedRoles.length > 0) {
@@ -267,29 +270,24 @@ export default {
         roleId: vm.roleId,
         menuId: this.postDataChecked
       }
-      vm.$refs.form.validate((valid) => {
-        if (valid) {
-          axios
-            .post('role/updateMenu', sendData)
-            .then((res) => {
-              if (res.data.code === 200) {
-                vm.$notify.success('分配成功')
-                vm.dialogRoleVisible = false
-                vm.tablesFetchList()
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
-                })
-              }
+      axios
+        .post('role/updateMenu', sendData)
+        .then((res) => {
+          if (res.data.code === 200) {
+            vm.$notify.success('分配成功')
+            vm.dialogRoleVisible = false
+            vm.tablesFetchList()
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
             })
-            .finally(() => {
-              vm.submitting = false
-            })
-        } else {
-          return false
-        }
-      })
+          }
+        })
+        .finally(() => {
+          vm.submitting = false
+          this.postDataChecked = ''
+        })
     },
     handleCheckAllChange (item) {
       if (item.checkAll) {
