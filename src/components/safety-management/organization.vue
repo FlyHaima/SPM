@@ -208,6 +208,22 @@
         <el-button type="primary" size="small" disabled v-show="updating"><i class="el-icon-loading"></i>上传中</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog title="添加节点" :visible.sync="addTreeVisible" width="620px">
+      <el-form :model="addOrgData">
+        <el-form-item label="请输入节点名称：" :label-width="'140px'">
+          <el-input v-model="addOrgData.deptName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="节点层级：" :label-width="'140px'">
+          <el-input-number v-model="addOrgData.level" :step="1" :min="minLevel" step-strictly></el-input-number>
+        </el-form-item>
+        <p style="color: red; font-size: 13px; margin-left: 140px;">*风险辨识划分的一级单元和二级单元取的是第四级和第六级</p>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelAdd()">取 消</el-button>
+        <el-button type="primary" @click="confirmAdd()" :loading="addConfirming">确定</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -245,6 +261,7 @@ export default {
       triggerWorkId: '',
       triggerLeaderId: '',
       addOrgData: {
+        level: '',
         deptName: '',
         pId: '',
         position: '',
@@ -278,7 +295,10 @@ export default {
       fileList: [],
       uploadData: {
         token: ''
-      }
+      },
+      addTreeVisible: false,
+      minLevel: 2,
+      addConfirming: false
     }
   },
   created () {
@@ -374,29 +394,41 @@ export default {
       return newTree
     },
     // 添加orgTree的节点
-    addTreeData (fid) {
-      this.pageLoading = true
-      this.addOrgData.pId = fid
-      this.$prompt('请输入节点名称', '添加节点', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputPattern: /^.{1,12}$/, // 输入正则
-        inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
-      }).then(({ value }) => {
-        this.addOrgData.deptName = value
-        addTreeData(this.addOrgData).then((res) => {
-          if (res.code === 200) {
-            this.$message({
-              type: 'success',
-              message: '节点设置成功'
-            })
-            this.getOrgTree(true)
-          }
+    addTreeData (data) {
+      // console.log(data)
+      this.addOrgData.pId = data.deptId
+      this.addOrgData.level = data.level
+      this.minLevel = Number(data.level)
+      this.addTreeVisible = true
+    },
+    confirmAdd () {
+      let rex = /^.{1,12}$/
+      if (!rex.test(this.addOrgData.deptName)) {
+        this.$message({
+          type: 'error',
+          message: '节点名称不能为空,且不超过12个字'
         })
-      }).catch(() => {
-        // after cancel
-        this.pageLoading = false
+        return
+      }
+      this.addConfirming = true
+      addTreeData(this.addOrgData).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: 'success',
+            message: '节点设置成功'
+          })
+          this.getOrgTree(true)
+        }
+        this.addTreeVisible = false
+        this.addConfirming = false
       })
+    },
+    cancelAdd () {
+      this.addTreeVisible = false
+      this.minLevel = 2
+      this.addOrgData.pId = ''
+      this.addOrgData.deptName = ''
+      this.addOrgData.level = 2
     },
     // 编辑orgTree的节点
     editTreeData (fid) {
