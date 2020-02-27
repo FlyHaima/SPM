@@ -4,24 +4,26 @@
     <div class="login-content-left">
       <div class="logo"></div>
       <div class="left-container">
-        <swiper
-          :options="swiperOption"
-          ref="mySwiper"
-          class="swiper-container">
-          <swiper-slide
-            v-for="(item, index) in swiperSlides"
-            :key="index">
-              <img
-                :src="item.picUrl"
-                class="swiper-img" />
-              <div class="swiper-info">
-                <div class="swiper-info-txt">{{item.picName}}</div>
-              </div>
-          </swiper-slide>
-          <div class="swiper-pagination"  slot="pagination"></div>
-          <div class="swiper-button-prev" slot="button-prev"></div>
-          <div class="swiper-button-next" slot="button-next"></div>
-        </swiper>
+        <div class="swiper-wrap">
+          <swiper
+            :options="swiperOption"
+            ref="mySwiper"
+            class="swiper-container">
+            <swiper-slide
+              v-for="(item, index) in swiperSlides"
+              :key="index">
+                <img
+                  :src="item.picUrl"
+                  class="swiper-img" />
+                <div class="swiper-info">
+                  <div class="swiper-info-txt">{{item.picName}}</div>
+                </div>
+            </swiper-slide>
+            <div class="swiper-pagination"  slot="pagination"></div>
+            <div class="swiper-button-prev" slot="button-prev"></div>
+            <div class="swiper-button-next" slot="button-next"></div>
+          </swiper>
+        </div>
         <el-tabs v-model="tabType" @tab-click='clickTab'>
           <el-tab-pane label="新闻动态" name="xwdt">
             <div class="tab-content">
@@ -376,21 +378,26 @@ export default {
   background-image: url('../assets/img/login/login-bg-left.png');
   background-repeat: no-repeat;
   background-size: cover;
+  // overflow-y: hidden;
+  // background: #ffffff;
 }
 .login-content{
   height: 100%;
+  // height: 100vh;
 }
 .logo{
   width: 136px;
   height: 43px;
-  margin: 36px 46px 0;
+  margin: 36px 10px 0;
   background-image: url('../assets/img/login/login-logo.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 .left-container{
   display: flex;
-  margin-top: 10%;
+  margin: 10% 0;
+  justify-content: space-between
+  // align-items: center;
 }
 .login-box{
   display: flex;
@@ -408,6 +415,7 @@ export default {
   padding: 0 30px;
   color: #ffffff;
   >>>.el-tabs{
+    flex: 1;
     margin-left: 20px;
     // max-width: 600px;
     .el-tabs__content{
@@ -431,7 +439,7 @@ export default {
   }
 }
 .login-content-right{
-  flex: 0 0 400px;
+  flex: 0 0 500px;
   height: 100%;
   color: #333333;
   background: #ffffff;
@@ -527,12 +535,13 @@ export default {
     align-items: center;
   }
 }
-.tab-content{
-  display: flex;
+.swiper-wrap{
+  width: 600px;
+  // height: 416px;
 }
 .swiper-container{
-  width: 440px;
-  height: 416px;
+  width: 100%;
+  height: 100%;
   position: relative;
   z-index: 999;
   >>> .swiper-pagination{
@@ -565,9 +574,9 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  flex: 0 0 540px;
+  // flex: 0 0 540px;
   padding: 0 30px;
-  height: 440px;
+  height: 500px;
   overflow: hidden;
 }
 .list-info-item{
@@ -620,13 +629,13 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-03{
-  background-image: url(../assets/img/login/icon-form-03.png)
+  background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-04{
-  background-image: url(../assets/img/login/icon-form-04.png)
+  background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-05{
-  background-image: url(../assets/img/login/icon-form-05.png)
+  background-image: url(../assets/img/login/icon-form-02.png)
 }
 
 // register
