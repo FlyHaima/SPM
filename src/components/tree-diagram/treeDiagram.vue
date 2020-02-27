@@ -149,7 +149,7 @@ export default {
           type: 'warning'
         })
       } else {
-        this.$emit('openAppendBox', data.deptId)
+        this.$emit('openAppendBox', data)
       }
     },
     edit (node, data) {
