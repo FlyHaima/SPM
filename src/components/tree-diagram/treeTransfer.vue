@@ -14,11 +14,11 @@
         class="filter-tree"
         :data="treeData"
         :props="defaultProps"
-        default-expand-all
-        node-key="id"
+        node-key="deptId"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
+        :default-expanded-keys="defaultOpenNode"
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
@@ -52,18 +52,35 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'deptName'
-      }
+      },
+      defaultOpenNode: [] // 默认展开节点的集合
     }
   },
   mounted () {
+    this.fetchTreeNodeId(this.treeData)
     this.screenGetData(this.treeData)
   },
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
     }
+    // treeData: {
+    //   immediate: true,
+    //   handler (val) {
+    //     // console.log(val)
+    //     // this.treeData = val
+    //     this.fetchTreeNodeId()
+    //   }
+    // }
   },
   methods: {
+    // 获取一节点集合
+    fetchTreeNodeId (fData) {
+      console.log(fData)
+      fData.forEach(item => {
+        this.defaultOpenNode.push(item.deptId)
+      })
+    },
     filterNode (value, data) {
       if (data.selected === false) {
         if (!value) return true

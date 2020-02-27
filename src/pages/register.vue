@@ -3,92 +3,96 @@
   <div class="wrap login-wrap" v-loading="pageLoading">
     <div class="login-content-left">
       <div class="logo"></div>
-      <div class="left-container">
-        <swiper
-          :options="swiperOption"
-          ref="mySwiper"
-          class="swiper-container">
-          <swiper-slide
-            v-for="(item, index) in swiperSlides"
-            :key="index">
-              <img
-                :src="item.picUrl"
-                class="swiper-img" />
-              <div class="swiper-info">
-                <div class="swiper-info-txt">{{item.picName}}</div>
+      <div class="left-container-wrap">
+        <div class="left-container">
+          <div class="swiper-wrap">
+            <swiper
+              :options="swiperOption"
+              ref="mySwiper"
+              class="swiper-container">
+              <swiper-slide
+                v-for="(item, index) in swiperSlides"
+                :key="index">
+                  <img
+                    :src="item.picUrl"
+                    class="swiper-img" />
+                  <div class="swiper-info">
+                    <div class="swiper-info-txt">{{item.picName}}</div>
+                  </div>
+              </swiper-slide>
+              <div class="swiper-pagination"  slot="pagination"></div>
+              <div class="swiper-button-prev" slot="button-prev"></div>
+              <div class="swiper-button-next" slot="button-next"></div>
+            </swiper>
+          </div>
+          <el-tabs v-model="tabType" @tab-click='clickTab'>
+            <el-tab-pane label="新闻动态" name="xwdt">
+              <div class="tab-content">
+                <ul class="list-info">
+                  <li
+                    v-for="(item, index) in newsList"
+                    :key="index"
+                    class="list-info-item">
+                    <a :href="item.url">
+                      <div class="list-info-title">
+                      <span class="list-info-txt">{{item.newsName}}</span>
+                    </div>
+                    </a>
+                    <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                  </li>
+                </ul>
               </div>
-          </swiper-slide>
-          <div class="swiper-pagination"  slot="pagination"></div>
-          <div class="swiper-button-prev" slot="button-prev"></div>
-          <div class="swiper-button-next" slot="button-next"></div>
-        </swiper>
-        <el-tabs v-model="tabType" @tab-click='clickTab'>
-          <el-tab-pane label="新闻动态" name="xwdt">
-            <div class="tab-content">
-              <ul class="list-info">
-                <li
-                  v-for="(item, index) in newsList"
-                  :key="index"
-                  class="list-info-item">
-                  <a :href="item.url">
+            </el-tab-pane>
+            <el-tab-pane label="政策解读" name="zcjd">
+              <div class="tab-content">
+                <ul class="list-info">
+                  <li
+                    v-for="(item, index) in newsList"
+                    :key="index"
+                    @click="gotoDetailsHandle(item.url)"
+                    class="list-info-item">
                     <div class="list-info-title">
-                    <span class="list-info-txt">{{item.newsName}}</span>
-                  </div>
-                  </a>
-                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                </li>
-              </ul>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="政策解读" name="zcjd">
-            <div class="tab-content">
-              <ul class="list-info">
-                <li
-                  v-for="(item, index) in newsList"
-                  :key="index"
-                  @click="gotoDetailsHandle(item.url)"
-                  class="list-info-item">
-                  <div class="list-info-title">
-                    <span class="list-info-txt">{{item.newsName}}</span>
-                  </div>
-                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                </li>
-              </ul>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="法律法规" name="flfg">
-            <div class="tab-content">
-              <ul class="list-info">
-                <li
-                  v-for="(item, index) in newsList"
-                  :key="index"
-                  @click="gotoDetailsHandle(item.url)"
-                  class="list-info-item">
-                  <div class="list-info-title">
-                    <span class="list-info-txt">{{item.newsName}}</span>
-                  </div>
-                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                </li>
-              </ul>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="定时安管生产事故" name="aqscsg">
-            <div class="tab-content">
-              <ul class="list-info">
-                <li
-                  v-for="(item, index) in newsList"
-                  :key="index"
-                  @click="gotoDetailsHandle(item.url)"
-                  class="list-info-item">
-                  <div class="list-info-title">
-                    <span class="list-info-txt">{{item.newsName}}</span>
-                  </div>
-                  <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
-                </li>
-              </ul>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
+                      <span class="list-info-txt">{{item.newsName}}</span>
+                    </div>
+                    <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                  </li>
+                </ul>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="法律法规" name="flfg">
+              <div class="tab-content">
+                <ul class="list-info">
+                  <li
+                    v-for="(item, index) in newsList"
+                    :key="index"
+                    @click="gotoDetailsHandle(item.url)"
+                    class="list-info-item">
+                    <div class="list-info-title">
+                      <span class="list-info-txt">{{item.newsName}}</span>
+                    </div>
+                    <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                  </li>
+                </ul>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="定时安管生产事故" name="aqscsg">
+              <div class="tab-content">
+                <ul class="list-info">
+                  <li
+                    v-for="(item, index) in newsList"
+                    :key="index"
+                    @click="gotoDetailsHandle(item.url)"
+                    class="list-info-item">
+                    <div class="list-info-title">
+                      <span class="list-info-txt">{{item.newsName}}</span>
+                    </div>
+                    <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
+                  </li>
+                </ul>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
       </div>
     </div>
     <div class="login-content-right">
@@ -373,24 +377,38 @@ export default {
   width: 100%;
   height: 100vh;
   overflow-y: hidden;
+  position: relative;
   background-image: url('../assets/img/login/login-bg-left.png');
   background-repeat: no-repeat;
   background-size: cover;
+  // overflow-y: hidden;
+  // background: #ffffff;
 }
 .login-content{
   height: 100%;
+  // height: 100vh;
 }
 .logo{
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 136px;
   height: 43px;
-  margin: 36px 46px 0;
+  margin: 36px 30px 0;
   background-image: url('../assets/img/login/login-logo.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-.left-container{
+.left-container-wrap{
   display: flex;
-  margin-top: 10%;
+  align-items: center;
+  height: 100%;
+  padding: 150px 0 100px;
+}
+.left-container{
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 .login-box{
   display: flex;
@@ -408,6 +426,7 @@ export default {
   padding: 0 30px;
   color: #ffffff;
   >>>.el-tabs{
+    flex: 1;
     margin-left: 20px;
     // max-width: 600px;
     .el-tabs__content{
@@ -431,7 +450,7 @@ export default {
   }
 }
 .login-content-right{
-  flex: 0 0 400px;
+  flex: 0 0 500px;
   height: 100%;
   color: #333333;
   background: #ffffff;
@@ -527,12 +546,14 @@ export default {
     align-items: center;
   }
 }
-.tab-content{
-  display: flex;
+.swiper-wrap{
+  width: 500px;
+  height: 100%;
+  // height: 416px;
 }
 .swiper-container{
-  width: 440px;
-  height: 416px;
+  width: 100%;
+  height: 100%;
   position: relative;
   z-index: 999;
   >>> .swiper-pagination{
@@ -565,9 +586,9 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  flex: 0 0 540px;
+  // flex: 0 0 540px;
   padding: 0 30px;
-  height: 440px;
+  max-height: 440px;
   overflow: hidden;
 }
 .list-info-item{
@@ -620,13 +641,13 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-03{
-  background-image: url(../assets/img/login/icon-form-03.png)
+  background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-04{
-  background-image: url(../assets/img/login/icon-form-04.png)
+  background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-05{
-  background-image: url(../assets/img/login/icon-form-05.png)
+  background-image: url(../assets/img/login/icon-form-02.png)
 }
 
 // register

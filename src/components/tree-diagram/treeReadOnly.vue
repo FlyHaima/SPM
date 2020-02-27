@@ -31,11 +31,11 @@
         class="filter-tree"
         :data="treeData"
         :props="defaultProps"
-        default-expand-all
         node-key="riskId"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
+        :default-expanded-keys="defaultOpenNode"
         ref="tree">
           <span
             class="custom-tree-node"
@@ -101,10 +101,17 @@ export default {
       },
       openState: false,
       level: 4,
-      addBro: false
+      addBro: false,
+      defaultOpenNode: [] // 默认展开节点的集合
     }
   },
   methods: {
+    // 获取一节点集合
+    fetchTreeNodeId () {
+      this.treeData.forEach(item => {
+        this.defaultOpenNode.push(item.riskId)
+      })
+    },
     openUpload () {},
     uploadExcel () {
     },
@@ -181,6 +188,13 @@ export default {
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
+    },
+    treeData: {
+      immediate: true,
+      handler (val) {
+        this.treeData = val
+        this.fetchTreeNodeId()
+      }
     }
   }
 }

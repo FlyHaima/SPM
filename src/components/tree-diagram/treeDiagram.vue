@@ -38,8 +38,8 @@
         class="filter-tree"
         :data="treeData"
         :props="defaultProps"
-        default-expand-all
-        node-key="'deptId'"
+        :default-expanded-keys="defaultOpenNode"
+        node-key="deptId"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
@@ -94,7 +94,8 @@ export default {
         token: ''
       },
       baseUrl: '',
-      fileList: []
+      fileList: [],
+      defaultOpenNode: [] // 默认展开节点的集合
     }
   },
   created () {
@@ -102,6 +103,12 @@ export default {
     this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
   },
   methods: {
+    // 获取一节点集合
+    fetchTreeNodeId () {
+      this.treeData.forEach(item => {
+        this.defaultOpenNode.push(item.deptId)
+      })
+    },
     handleBeforeUpload (file) {
       this.uploading = true
       this.$emit('open-loading')
@@ -155,6 +162,13 @@ export default {
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
+    },
+    treeData: {
+      immediate: true,
+      handler (val) {
+        this.treeData = val
+        this.fetchTreeNodeId()
+      }
     }
   }
 }
