@@ -272,13 +272,13 @@ export default {
       }
       .theme-select{
         position: absolute;
+        top: 38px;
+        left: -2px;
+        z-index: 9999;
         background: #fff;
         border: 1px solid #ddd;
         color: #505050;
         font-size: 14px;
-        z-index: 9999;
-        top: 38px;
-        left: -2px;
         .themes{
           width: 90px;
           padding: 0 12px;

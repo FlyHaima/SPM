@@ -1046,6 +1046,7 @@ export default {
       startLearn(data).then((res) => {
         if (res.code && res.code === 200) {
           this.getContentTable()
+          this.getRecordTable()
           this.pageLoading = false
         } else {
           this.pageLoading = false
@@ -1059,6 +1060,7 @@ export default {
       endLearn(data).then((res) => {
         if (res.code && res.code === 200) {
           this.getContentTable()
+          this.getRecordTable()
           this.pageLoading = false
         } else {
           this.pageLoading = false
