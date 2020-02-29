@@ -1,377 +1,319 @@
 <template>
-  <div class="index-aside">
-    <ul class="aside-menu">
-      <li v-for="(item, indexA) in menuList" :key="indexA" :class="'menu'+indexA" class="aside-menu-item">
-        <template v-if="item.list != null && item.list.length > 0">
-          <div class="title" @click="foldingMenu(indexA)" :class="item.active ? 'active' : ''">
-            <i></i>{{item.name}}
-          </div>
-          <el-collapse-transition>
-            <ul class="menu-items" v-show="item.active">
-              <li v-for="(child, index) in item.list" :key="index">
-                <a @click="turnToPage(child.url, child.fname+'-'+child.name, indexA, index)"
-                   :to="child.url"
-                   :class="child.active ? 'active' : ''">
-                  {{child.name}}
-                  <span class="icon-box"><i class="icon" :class="'icon'+indexA+index"></i></span>
-                </a>
-              </li>
-            </ul>
-          </el-collapse-transition>
-        </template>
-        <!-- 没有下级，当前级别需点击 -->
-        <template v-else>
-          <a
-            v-if="item.name === '应急指挥调度'"
-            :href="getURL(item.url)"
-            class="title only-title"
-            :class="item.active ? 'active' : ''"
-            target="_blank">
-            <i></i>{{item.name}}</a>
-          <div
-            v-else class="title only-title"
-            @click="turnToPage(item.url, item.name, indexA, 0, 'isRemote')"
-            :class="item.active ? 'active' : ''">
-            <i></i>{{item.name}}
-          </div>
-        </template>
-      </li>
-    </ul>
+  <div class="wrap-side-nav" ref="sideNavDom">
+    <el-menu
+      :default-active="$route.path"
+      router
+      class="el-menu-vertical-demo"
+      :collapse="isCollapse"
+      unique-opened
+      :background-color="theme"
+      active-text-color="#ffffff"
+      text-color="#ffffff"
+      >
+      <template
+        v-for="(item, indexF) in menuList">
+        <el-menu-item
+          v-if="!item.list&&item.url !== '/'"
+          :key="item.name"
+          :index="item.url">
+          <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
+          <span slot="title">{{item.name}}</span>
+        </el-menu-item>
+        <a
+          v-if="item.name === '应急指挥调度'"
+          :href="getURL(item.url)" target='_self'
+          :key= "item.name">
+          <el-menu-item
+            index="">
+            <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
+            <span ref="outLink">{{item.name}}</span>
+          </el-menu-item>
+        </a>
+        <el-submenu
+          v-if="item.list"
+          :key="item.name"
+          :index="item.url">
+          <template slot="title">
+            <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
+            <span slot="title">{{item.name}}</span>
+          </template>
+            <el-menu-item
+              v-for="(itemSub, index) in item.list"
+              :key='index'
+              :index="itemSub.url">
+              <i class="icon-side-nav-sub" :class="'icon'+indexF+index"></i>
+              {{itemSub.name}}</el-menu-item>
+        </el-submenu>
+      </template>
+    </el-menu>
   </div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
-import {setLocalStorage} from '../../utils/js/common'
 import axios from '@/api/axios'
 
 export default {
   name: 'IndexAside',
   data () {
     return {
+      isCollapse: false, // 判断菜单收缩展开状态标志
+      innerWidth: '', // 浏览器显示区宽度
       menuList: [
-        // {
-        //   name: '首页',
-        //   active: true,
-        //   url: '/dashboard'
-        // },
-        // {
-        //   name: '安全基础管理',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '组织机构',
-        //       url: '/organization',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '全员培训',
-        //       url: '/staffTraining',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '制度建设',
-        //       url: '/systemConstruction',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '基础资料',
-        //       url: '/basicData',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '安全基础管理',
-        //       name: '证件管理',
-        //       url: '/certificateManage',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '风险辨识评估',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '风险辨识',
-        //       url: '/riskIdentified',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '风险单元',
-        //       url: '/riskUnit',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '评价记录',
-        //       url: '/evaluationRecord',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险辨识评估',
-        //       name: '系统大数据',
-        //       url: '/systemData',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '风险分级管控',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险点清单',
-        //       url: '/riskList',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '岗位风险告知卡',
-        //       url: '/riskInfoCard',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险点分级管控台账',
-        //       url: '/riskBook',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '重大安全风险',
-        //       url: '/safeRisk',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '重大安全风险公告栏',
-        //       url: '/riskBulletinBoard',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险四色图',
-        //       url: '/riskColorImage',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '作业风险比较图',
-        //       url: '/riskCompareChart',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '风险分级管控',
-        //       name: '风险分级管控表',
-        //       url: '/riskControlList',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '隐患排查治理',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '排查清单',
-        //       url: '/screeningList',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '排查计划',
-        //       url: '/screeningPlan',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '排查周期',
-        //       url: '/screeningCycle',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '隐患排查',
-        //       url: '/riskScreening',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '隐患排查治理',
-        //       name: '隐患治理',
-        //       url: '/riskManagement',
-        //       active: false
-        //     }
-        //   ]
-        // },
-        // {
-        //   name: '应急指挥调度',
-        //   active: false,
-        //   url: ''
-        // },
-        // {
-        //   name: '配置维护管理',
-        //   active: false,
-        //   list: [
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '用户管理',
-        //       url: '/userManagement',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '角色管理',
-        //       url: '/roleManagement',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '数据字典',
-        //       url: '/dataManagement',
-        //       active: false
-        //     },
-        //     // 组织结构管理 这个部分暂时不写，需求未定
-        //     // {
-        //     //   fname: '配置维护管理',
-        //     //   name: '组织结构管理',
-        //     //   url: '/',
-        //     //   active: false
-        //     // },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '日志',
-        //       url: '/log',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '新闻维护',
-        //       url: '/newsManage',
-        //       active: false
-        //     },
-        //     {
-        //       fname: '配置维护管理',
-        //       name: '绩效考核',
-        //       url: '/performanceAssessment',
-        //       active: false
-        //     }
-        //   ]
-        // }
+      //   {
+      //     name: '首页',
+      //     icon: 'home',
+      //     url: '/dashboard'
+      //   },
+      //   {
+      //     name: '安全基础管理',
+      //     url: '/organization',
+      //     active: false,
+      //     list: [
+      //       {
+      //         fname: '安全基础管理',
+      //         name: '组织机构',
+      //         url: '/organization',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '安全基础管理',
+      //         name: '全员培训',
+      //         url: '/staffTraining',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '安全基础管理',
+      //         name: '制度建设',
+      //         url: '/systemConstruction',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '安全基础管理',
+      //         name: '基础资料',
+      //         url: '/basicData',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '安全基础管理',
+      //         name: '证件管理',
+      //         url: '/certificateManage',
+      //         active: false
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: '风险辨识评估',
+      //     url: '/riskIdentified',
+      //     active: false,
+      //     list: [
+      //       {
+      //         fname: '风险辨识评估',
+      //         name: '风险辨识',
+      //         url: '/riskIdentified',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险辨识评估',
+      //         name: '风险单元',
+      //         url: '/riskUnit',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险辨识评估',
+      //         name: '评价记录',
+      //         url: '/evaluationRecord',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险辨识评估',
+      //         name: '系统大数据',
+      //         url: '/systemData',
+      //         active: false
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: '风险分级管控',
+      //     url: '/riskList',
+      //     active: false,
+      //     list: [
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '风险点清单',
+      //         url: '/riskList',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '岗位风险告知卡',
+      //         url: '/riskInfoCard',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '风险点分级管控台账',
+      //         url: '/riskBook',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '重大安全风险',
+      //         url: '/safeRisk',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '重大安全风险公告栏',
+      //         url: '/riskBulletinBoard',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '风险四色图',
+      //         url: '/riskColorImage',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '作业风险比较图',
+      //         url: '/riskCompareChart',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '风险分级管控',
+      //         name: '风险分级管控表',
+      //         url: '/riskControlList',
+      //         active: false
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: '隐患排查治理',
+      //     url: '/screeningList',
+      //     active: false,
+      //     list: [
+      //       {
+      //         fname: '隐患排查治理',
+      //         name: '排查清单',
+      //         url: '/screeningList',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '隐患排查治理',
+      //         name: '排查计划',
+      //         url: '/screeningPlan',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '隐患排查治理',
+      //         name: '排查周期',
+      //         url: '/screeningCycle',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '隐患排查治理',
+      //         name: '隐患排查',
+      //         url: '/riskScreening',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '隐患排查治理',
+      //         name: '隐患治理',
+      //         url: '/riskManagement',
+      //         active: false
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: '应急指挥调度',
+      //     active: false,
+      //     url: ''
+      //   },
+      //   {
+      //     name: '配置维护管理',
+      //     url: '/userManagement',
+      //     active: false,
+      //     list: [
+      //       {
+      //         fname: '配置维护管理',
+      //         name: '用户管理',
+      //         url: '/userManagement',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '配置维护管理',
+      //         name: '角色管理',
+      //         url: '/roleManagement',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '配置维护管理',
+      //         name: '数据字典',
+      //         url: '/dataManagement',
+      //         active: false
+      //       },
+      //       // 组织结构管理 这个部分暂时不写，需求未定
+      //       // {
+      //       //   fname: '配置维护管理',
+      //       //   name: '组织结构管理',
+      //       //   url: '/',
+      //       //   active: false
+      //       // },
+      //       {
+      //         fname: '配置维护管理',
+      //         name: '日志',
+      //         url: '/log',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '配置维护管理',
+      //         name: '新闻维护',
+      //         url: '/newsManage',
+      //         active: false
+      //       },
+      //       {
+      //         fname: '配置维护管理',
+      //         name: '绩效考核',
+      //         url: '/performanceAssessment',
+      //         active: false
+      //       }
+      //     ]
+      //   }
       ],
       linkUrl: '' // 应急指挥调度跳转链接
     }
   },
   computed: { // vuex 参数引入
     ...mapState({
-      // menuList: state => state.menuList
+      theme: (state) => state.theme
     })
   },
+  created () {
+    this.getWidth()
+  },
   mounted () {
+    this.getWidth()
+    // 监听浏览器显示区内的宽度，如果小于800, 侧导航收缩
+    window.addEventListener('resize', this.getWidth)
     // 暂时注掉，后期再放开该方法
     this.initMenuList()
     this.initURL()
-    // menuList参数的active属性是前台自添加, 原始请求下来的数据是没有active的
-    // let returenMenu = [
-    //   {
-    //     name: '安全基础管理',
-    //     active: true,
-    //     list: [
-    //       {
-    //         fname: '安全基础管理',
-    //         name: '组织机构',
-    //         url: '/',
-    //         active: false
-    //       },
-    //       {
-    //         fname: '安全基础管理',
-    //         name: '全员培训',
-    //         url: '/',
-    //         active: false
-    //       },
-    //       {
-    //         fname: '安全基础管理',
-    //         name: '制度建设',
-    //         url: '/',
-    //         active: false
-    //       },
-    //       {
-    //         fname: '安全基础管理',
-    //         name: '基础资料',
-    //         url: '/',
-    //         active: false
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     name: '风险辨识评估',
-    //     active: false,
-    //     list: [
-    //       {
-    //         fname: '安全基础管理',
-    //         name: 'child01',
-    //         url: '/',
-    //         active: false
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     name: '风险分级管控',
-    //     active: false,
-    //     list: [
-    //       {
-    //         fname: '安全基础管理',
-    //         name: 'child01',
-    //         url: '/',
-    //         active: false
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     name: '隐患排查治理',
-    //     url: '/remoteQuery',
-    //     active: false
-    //   },
-    //   {
-    //     name: '应急指挥调度',
-    //     active: false,
-    //     list: [
-    //       {
-    //         fname: '安全基础管理',
-    //         name: 'child01',
-    //         url: '/',
-    //         active: false
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     name: '配置维护管理',
-    //     active: false,
-    //     list: [
-    //       {
-    //         fname: '安全基础管理',
-    //         name: 'child01',
-    //         url: '/',
-    //         active: false
-    //       }
-    //     ]
-    //   }
-    // ]
-    // if (getLocalStorage('menuList')) { // 获取Storage，会在登录后主动清空Storage，因此如果存在即为刷新
-    //   let menuCookie = JSON.parse(getLocalStorage('menuList'))
-    //   this.$store.dispatch('changeMenu', menuCookie)
-    // } else {
-    //   this.$store.dispatch('changeMenu', returenMenu) // 每次刷新均重新请求后台获取最新数据,放到vuex里统一管理
-    // }
   },
   methods: {
+    // 获取浏览器显示区内的宽度，同时设置侧导航显示宽度
+    getWidth () {
+      this.innerWidth = window.innerWidth
+      if (this.innerWidth < 1440) {
+        this.isCollapse = true
+        console.log(this.$refs.outLink)
+        // this.$refs.outLink.values = ''
+        this.$refs.sideNavDom.style.width = '64px'
+      } else {
+        this.isCollapse = false
+        this.$refs.sideNavDom.style.width = '270px'
+      }
+    },
     // 初始化菜单
     initMenuList () {
       axios
@@ -415,37 +357,13 @@ export default {
       } else {
         return null
       }
-    },
-    foldingMenu (index) {
-      let vm = this
-      vm.menuList.forEach((i) => {
-        i.active = false
-      })
-      vm.menuList[index].active = true
-    },
-    turnToPage (url, name, indexA, indexB, menuName) {
-      this.menuList.forEach((i) => {
-        if (i.list) {
-          i.list.forEach((j) => {
-            j.active = false
-          })
-        }
-      })
-      if (menuName === 'isPCenter') {
-        this.menuList[0].list[indexB].active = true
-      } else if (menuName === 'isRemote') {
-        this.foldingMenu(indexA)
-        this.menuList[indexA].active = true
-      } else {
-        this.menuList[indexA].list[indexB].active = true
-      }
-      setLocalStorage('menuList', JSON.stringify(this.menuList))
-      let nArr = name.split('-')
-      this.$emit('changeBreadcrumb', nArr)
-      this.$router.push(url)
     }
   },
   watch: {
+  },
+  destroyed () {
+    // 注销监听事件
+    window.removeEventListener('resize', this.getWidth)
   }
 }
 </script>
@@ -453,345 +371,165 @@ export default {
 <style scoped lang="scss">
 @import '@/utils/css/tools/_variables.scss';
 @import '@/utils/css/tools/_mixin.scss';
-.index-aside{
-  width: 100%;
-  min-height: 100%;
-  position: relative;
-  @include menu_bg($menu-background-theme0);
-  .aside-menu{
-    width: 100%;
-    .aside-menu-item{
-      width: 100%;
-      &.menu0{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon00.png') no-repeat;
-            background-size: 17px 17px;
-            background-position: center center;
-          }
-        }
-      }
-      &.menu1{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon01.png') no-repeat;
-            background-size: 16px 16px;
-            background-position: center center;
-          }
-        }
-      }
-      &.menu2{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon02.png') no-repeat;
-            background-size: 17px 17px;
-            background-position: center center;
-          }
-        }
-      }
-      &.menu3{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon03.png') no-repeat;
-            background-size: 17px 15px;
-            background-position: center center;
-          }
-        }
-      }
-      &.menu4{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon04.png') no-repeat;
-            background-size: 18px 18px;
-            background-position: center center;
-          }
-        }
-      }
-      &.menu5{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon05.png') no-repeat;
-            background-size: 19px 19px;
-            background-position: center center;
-          }
-        }
-      }
-      &.menu6{
-        .title{
-          i{
-            background: url('../../assets/img/aside-icon06.png') no-repeat;
-            background-size: 17px 17px;
-            background-position: center center;
-          }
-        }
-      }
-      .title{
-        display: inline-block;
-        height: 70px;
-        line-height: 70px;
-        padding-left: 60px;
-        color: $colorAside;
-        font-size: 18px;
-        font-family: "Source Han Sans CN","PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
-        width: 100%;
-        position: relative;
-        cursor: pointer;
-        i{
-          display: inline-block;
-          vertical-align: middle;
-          height: 28px;
-          width: 28px;
-          position: absolute;
-          top: 21px;
-          left: 22px;
-        }
-        &:hover{
-          @include menu_active($menu-active-theme0);
-          @include menu_top_active($secmenu-active-theme0);
-          line-height: 69px;
-          i{
-            top: 20px;
-          }
-        }
-        &::after{
-          content: '';
-          display: block;
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          background-position: top left;
-          top: 20px;
-          right: 25px;
-          transform: rotate(90deg);
-        }
-        &.active{
-          @include menu_active($menu-active-theme0);
-          @include menu_top_active($secmenu-active-theme0);
-          line-height: 69px;
-          i{
-            top: 20px;
-          }
-          &::after{
-            transform: rotate(0);
-          }
-        }
-        &.only-title{
-          &::after{
-            display: none;
-          }
-        }
-      }
-      .menu-items{
-        @include menu_top_active($secmenu-active-theme0);
+.wrap-side-nav{
+  background: #545c64;
+  width: 270px;
+  >>> .el-menu{
+    border-right: 0;
+  }
+  >>> .el-menu-item{
+    a,
+    i,
+    .el-submenu__title i{
+      color: #ffffff;
+    }
+    &.is-active{
+      color: #ffffff !important;
+      @include secmenu_bg($sec-menu-theme0);
+    }
+  }
+  >>> .el-submenu {
+    &.is-opened{
+      .el-submenu__title,
+      .el-menu-item{
         @include secmenu_bg($sec-menu-theme0);
-        li{
-          line-height: 50px;
-          color: #fff;
-          @include secmenu_bg($sec-menu-theme0);
-          cursor: pointer;
-          &:hover{
-            @include secmenu_active_bg($secmenu-active-theme0);
-            a{
-              color: #fff;
-            }
-          }
-          a{
-            display: block;
-            font-size: 16px;
-            position: relative;
-            padding-left: 96px;
-            width: 100%;
-            height: 100%;
-            @include secmenu_font($secmenu-font-theme0);
-            .icon-box{
-              position: absolute;
-              top: 12.5px;
-              left: 57px;
-              width: 24px;
-              height: 24px;
-              vertical-align: middle;
-              overflow: hidden;
-            }
-            .icon{
-              position: absolute;
-              @include secmenu_icon_bg($secmenu-font-theme0);
-              top: 0;
-              left: -24px;
-              width: 24px;
-              height: 24px;
-              vertical-align: middle;
-              &.icon10{
-                background: url('../../assets/img/aside-icon00-0.png') no-repeat;
-                background-size: 20px 18px;
-                background-position: center center;
-              }
-              &.icon11{
-                background: url('../../assets/img/aside-icon00-1.png') no-repeat;
-                background-size: 22px 19px;
-                background-position: center center;
-              }
-              &.icon12{
-                background: url('../../assets/img/aside-icon00-2.png') no-repeat;
-                background-size: 19px 19px;
-                background-position: center center;
-              }
-              &.icon13{
-                background: url('../../assets/img/aside-icon00-3.png') no-repeat;
-                background-size: 16px 17px;
-                background-position: center center;
-              }
-              &.icon14{
-                background: url('../../assets/img/aside-icon00-4.png') no-repeat;
-                background-size: 14px 17px;
-                background-position: center center;
-              }
-              &.icon20{
-                background: url('../../assets/img/aside-icon01-0.png') no-repeat;
-                background-size: 16px 16px;
-                background-position: center center;
-              }
-              &.icon21{
-                background: url('../../assets/img/aside-icon01-1.png') no-repeat;
-                background-size: 19px 16px;
-                background-position: center center;
-              }
-              &.icon22{
-                background: url('../../assets/img/aside-icon01-2.png') no-repeat;
-                background-size: 16px 18px;
-                background-position: center center;
-              }
-              &.icon23{
-                background: url('../../assets/img/aside-icon01-2.png') no-repeat;
-                background-size: 16px 18px;
-                background-position: center center;
-              }
-              &.icon30{
-                background: url('../../assets/img/aside-icon02-0.png') no-repeat;
-                background-size: 16px 18px;
-                background-position: center center;
-              }
-              &.icon31{
-                background: url('../../assets/img/aside-icon02-1.png') no-repeat;
-                background-size: 16px 14px;
-                background-position: center center;
-              }
-              &.icon32{
-                background: url('../../assets/img/aside-icon02-2.png') no-repeat;
-                background-size: 18px 14px;
-                background-position: center center;
-              }
-              &.icon33{
-                background: url('../../assets/img/aside-icon02-3.png') no-repeat;
-                background-size: 20px 16px;
-                background-position: center center;
-              }
-              &.icon34{
-                background: url('../../assets/img/aside-icon02-4.png') no-repeat;
-                background-size: 18px 18px;
-                background-position: center center;
-              }
-              &.icon35{
-                background: url('../../assets/img/aside-icon02-5.png') no-repeat;
-                background-size: 17px 17px;
-                background-position: center center;
-              }
-              &.icon36{
-                background: url('../../assets/img/aside-icon02-6.png') no-repeat;
-                background-size: 19px 19px;
-                background-position: center center;
-              }
-              &.icon37{
-                background: url('../../assets/img/aside-icon02-7.png') no-repeat;
-                background-size: 18px 18px;
-                background-position: center center;
-              }
-              &.icon40{
-                background: url('../../assets/img/aside-icon03-0.png') no-repeat;
-                background-size: 16px 16px;
-                background-position: center center;
-              }
-              &.icon41{
-                background: url('../../assets/img/aside-icon03-1.png') no-repeat;
-                background-size: 17px 16px;
-                background-position: center center;
-              }
-              &.icon42{
-                background: url('../../assets/img/aside-icon03-2.png') no-repeat;
-                background-size: 16px 16px;
-                background-position: center center;
-              }
-              &.icon43{
-                background: url('../../assets/img/aside-icon03-3.png') no-repeat;
-                background-size: 14px 16px;
-                background-position: center center;
-              }
-              &.icon44{
-                background: url('../../assets/img/aside-icon03-4.png') no-repeat;
-                background-size: 15px 17px;
-                background-position: center center;
-              }
-              &.icon45{
-                background: url('../../assets/img/aside-icon03-5.png') no-repeat;
-                background-size: 17px 17px;
-                background-position: center center;
-              }
-              &.icon46{
-                background: url('../../assets/img/aside-icon03-6.png') no-repeat;
-                background-size: 19px 17px;
-                background-position: center center;
-              }
-              &.icon60{
-                background: url('../../assets/img/aside-icon06-0.png') no-repeat;
-                background-size: 17px 19px;
-                background-position: center center;
-              }
-              &.icon61{
-                background: url('../../assets/img/aside-icon06-1.png') no-repeat;
-                background-size: 19px 17px;
-                background-position: center center;
-              }
-              &.icon62{
-                background: url('../../assets/img/aside-icon06-2.png') no-repeat;
-                background-size: 17px 19px;
-                background-position: center center;
-              }
-              &.icon63{
-                background: url('../../assets/img/aside-icon06-3.png') no-repeat;
-                background-size: 16px 18px;
-                background-position: center center;
-              }
-              &.icon64{
-                background: url('../../assets/img/aside-icon06-4.png') no-repeat;
-                background-size: 21px 17px;
-                background-position: center center;
-              }
-              &.icon65{
-                background: url('../../assets/img/aside-icon06-5.png') no-repeat;
-                background-size: 15px 17px;
-                background-position: center center;
-              }
-            }
-            &.active{
-              @include secmenu_active_font($secmenu-active-font-theme0);
-              @include secmenu_active_bg($secmenu-active-theme0);
-              .icon{
-                // filter: drop-shadow(24px 0 $colorAsideSubMenu);
-                @include secmenu_active_icon($secmenu-active-font-theme0);
-                overflow: hidden;
-              }
-            }
-            &:hover{
-              @include secmenu_active_font($secmenu-active-font-theme0);
-              .icon{
-                // filter: drop-shadow(24px 0 $colorAsideSubMenu);
-                @include secmenu_active_icon($secmenu-active-font-theme0);
-                overflow: hidden;
-              }
-            }
-          }
-        }
       }
     }
+    .el-menu-item{
+      &:hover,
+      &.is-active{
+        @include secmenu_active_bg($secmenu-active-theme0);
+      }
+    }
+  }
+}
+.icon-side-nav{
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin-right: 10px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center center;
+  &.icon-side-nav-0{
+    background-image: url('../../assets/img/aside-icon00.png');
+  }
+  &.icon-side-nav-1{
+    background-image: url('../../assets/img/aside-icon01.png');
+  }
+  &.icon-side-nav-2{
+    background-image: url('../../assets/img/aside-icon02.png');
+  }
+  &.icon-side-nav-3{
+    background-image: url('../../assets/img/aside-icon03.png');
+  }
+  &.icon-side-nav-4{
+    background-image: url('../../assets/img/aside-icon04.png');
+  }
+  &.icon-side-nav-5{
+    background-image: url('../../assets/img/aside-icon05.png');
+  }
+  &.icon-side-nav-6{
+    background-image: url('../../assets/img/aside-icon06.png');
+  }
+}
+.icon-side-nav-sub{
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin-right: 10px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center center;
+  &.icon10{
+    background-image: url('../../assets/img/aside-icon00-0.png');
+  }
+  &.icon11{
+    background-image: url('../../assets/img/aside-icon00-1.png');
+  }
+  &.icon12{
+    background-image: url('../../assets/img/aside-icon00-2.png');
+  }
+  &.icon13{
+    background-image: url('../../assets/img/aside-icon00-3.png');
+  }
+  &.icon14{
+    background-image: url('../../assets/img/aside-icon00-4.png');
+  }
+  &.icon20{
+    background-image: url('../../assets/img/aside-icon01-0.png');
+  }
+  &.icon21{
+    background-image: url('../../assets/img/aside-icon01-1.png');
+  }
+  &.icon22{
+    background-image: url('../../assets/img/aside-icon01-2.png');
+  }
+  &.icon23{
+    background-image: url('../../assets/img/aside-icon01-2.png');
+  }
+  &.icon30{
+    background-image: url('../../assets/img/aside-icon02-0.png');
+  }
+  &.icon31{
+    background-image: url('../../assets/img/aside-icon02-1.png');
+  }
+  &.icon32{
+    background-image: url('../../assets/img/aside-icon02-2.png');
+  }
+  &.icon33{
+    background-image: url('../../assets/img/aside-icon02-3.png');
+  }
+  &.icon34{
+    background-image: url('../../assets/img/aside-icon02-4.png');
+  }
+  &.icon35{
+    background-image: url('../../assets/img/aside-icon02-5.png');
+  }
+  &.icon36{
+    background-image: url('../../assets/img/aside-icon02-6.png');
+  }
+  &.icon37{
+    background-image: url('../../assets/img/aside-icon02-7.png');
+  }
+  &.icon40{
+    background-image: url('../../assets/img/aside-icon03-0.png');
+  }
+  &.icon41{
+    background-image: url('../../assets/img/aside-icon03-1.png');
+  }
+  &.icon42{
+    background-image: url('../../assets/img/aside-icon03-2.png');
+  }
+  &.icon43{
+    background-image: url('../../assets/img/aside-icon03-3.png');
+  }
+  &.icon44{
+    background-image: url('../../assets/img/aside-icon03-4.png');
+  }
+  &.icon45{
+    background-image: url('../../assets/img/aside-icon03-5.png');
+  }
+  &.icon46{
+    background-image: url('../../assets/img/aside-icon03-6.png');
+  }
+  &.icon60{
+    background-image: url('../../assets/img/aside-icon06-0.png');
+  }
+  &.icon61{
+    background-image: url('../../assets/img/aside-icon06-1.png');
+  }
+  &.icon62{
+    background-image: url('../../assets/img/aside-icon06-2.png');
+  }
+  &.icon63{
+    background-image: url('../../assets/img/aside-icon06-3.png');
+  }
+  &.icon64{
+    background-image: url('../../assets/img/aside-icon06-4.png');
+  }
+  &.icon65{
+    background-image: url('../../assets/img/aside-icon06-5.png');
   }
 }
 </style>

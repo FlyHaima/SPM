@@ -102,9 +102,10 @@
                 header-align="center">
               </el-table-column>
               <el-table-column
+                fixed="right"
                 prop=" "
                 label="操作"
-                width="300"
+                width="120"
                 align="center">
                 <template slot-scope="scope">
                   <a

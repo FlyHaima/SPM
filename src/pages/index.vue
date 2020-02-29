@@ -6,7 +6,7 @@
         <index-header :headerMsgNum="messageCount"></index-header>
       </el-header>
       <el-container class="main-container">
-        <el-aside width="270px">
+        <el-aside class="side-nav">
           <index-aside
             @changeBreadcrumb='changeBreadcrumb'
           ></index-aside>
@@ -49,15 +49,20 @@ export default {
 
 <style scoped lang="scss">
 @import '../utils/css/style.scss';
-
+@import '@/utils/css/tools/_mixin.scss';
 .main-page-wrap{
   width: 100%;
   height: 100%;
   // min-width: 1366px;
-  min-width: 1200px;
+  // min-width: 1200px;
   .el-header{
     width: 100%;
     padding: 0;
+  }
+  .side-nav{
+    width: auto !important;
+    overflow: hidden;
+    @include header_bg($header-background-theme0);
   }
 }
 .main-page-container{

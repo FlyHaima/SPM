@@ -6,7 +6,7 @@
     </el-header>
     <el-main class="inner-main-container">
       <el-container class="inner-main-content">
-        <el-aside class="inner-aside" width="408px">
+        <el-aside class="inner-aside" >
           <div class="left-menu">
             <div class="aside-title"><i></i>页面管理</div>
             <ul class="aside-list">
@@ -74,6 +74,11 @@ export default {
 
 <style scoped lang="scss">
 @import '@/utils/css/tools/_variables.scss';
+.inner-aside{
+  width: 240px !important;
+  margin-right: 10px;
+  overflow: hidden;
+}
 .left-menu{
   background: #fff;
   position: relative;
@@ -122,10 +127,4 @@ export default {
     }
   }
 }
-// .container-box{
-//   background: #fff;
-//   height: 100%;
-//   overflow-y: auto;
-//   padding: 25px;
-// }
 </style>

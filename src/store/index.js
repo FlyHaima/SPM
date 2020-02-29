@@ -11,13 +11,17 @@ const state = { // 要设置的全局访问的state对象
   },
   msgNum: '', // 信息数量
   taskNum: '', // 待办数量
-  count: 1
+  count: 1,
+  theme: '#1a6fba'
 }
 
 const getters = { // 实时监听state值的变化(最新状态)
 }
 
 const mutations = {
+  CHANGE_SETTING: (state, data) => {
+    state.theme = data
+  },
   increment (state) {
     state.count++
   },
@@ -36,6 +40,9 @@ const mutations = {
 }
 
 const actions = {
+  changeSetting ({ commit }, data) {
+    commit('CHANGE_SETTING', data)
+  },
   increment ({ commit }) {
     commit('increment')
   },

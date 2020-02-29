@@ -50,9 +50,9 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop=" "
+                fixed="right"
                 label="操作"
-                width="300"
+                width="140"
                 align="center">
                 <template slot-scope="scope">
                   <a

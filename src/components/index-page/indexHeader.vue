@@ -18,7 +18,7 @@
       <li class="skin-li">
         <div class="btn skin-btn"><i></i>皮肤</div>
         <ul class="theme-select">
-          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index}`)">
+          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index}`, item.color)">
             <i class="theme-i" :style="{ background: `${item.color}`}"></i>
             {{item.name}}
           </li>
@@ -75,7 +75,7 @@ export default {
   mounted () {
   },
   methods: {
-    changeTheme (theme) {
+    changeTheme (theme, color) {
       switch (theme) {
         case 0:
           console.log(0)
@@ -89,6 +89,7 @@ export default {
         case 3:
           console.log(3)
       }
+      this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
     },
     quitHandle () {

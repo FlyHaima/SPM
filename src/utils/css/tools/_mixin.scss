@@ -23,35 +23,35 @@
 
 // menu 的 background
 @mixin menu_bg($color){
-  background-color:$color;
+  background-color:$color !important;
   [data-theme="theme0"] & {
-    background-color:$menu-background-theme0;
+    background-color:$menu-background-theme0 !important;
   }
   [data-theme="theme1"] & {
-    background-color:$menu-background-theme1;
+    background-color:$menu-background-theme1 !important;
   }
   [data-theme="theme2"] & {
-    background-color:$menu-background-theme2;
+    background-color:$menu-background-theme2 !important;
   }
   [data-theme="theme3"] & {
-    background-color:$menu-background-theme3;
+    background-color:$menu-background-theme3 !important;
   }
 }
 
 // menu active 的 background
 @mixin menu_active($color){
-  background-color:$color;
+  background-color:$color !important;
   [data-theme="theme0"] & {
-    background-color:$menu-active-theme0;
+    background-color: $menu-active-theme0 !important;
   }
   [data-theme="theme1"] & {
-    background-color:$menu-active-theme1;
+    background-color: $menu-active-theme1 !important;
   }
   [data-theme="theme2"] & {
-    background-color:$menu-active-theme2;
+    background-color: $menu-active-theme2 !important;
   }
   [data-theme="theme3"] & {
-    background-color:$menu-active-theme3;
+    background-color: $menu-active-theme3 !important;
   }
 }
 
@@ -74,18 +74,18 @@
 
 // 二级菜单 的 背景颜色
 @mixin secmenu_bg($color){
-  background-color:$color;
+  background-color:$color !important;
   [data-theme="theme0"] & {
-    background-color:$sec-menu-theme0;
+    background-color:$sec-menu-theme0 !important;
   }
   [data-theme="theme1"] & {
-    background-color:$sec-menu-theme1;
+    background-color:$sec-menu-theme1 !important;
   }
   [data-theme="theme2"] & {
-    background-color:$sec-menu-theme2;
+    background-color:$sec-menu-theme2 !important;
   }
   [data-theme="theme3"] & {
-    background-color:$sec-menu-theme3;
+    background-color:$sec-menu-theme3 !important;
   }
 }
 
@@ -108,18 +108,18 @@
 
 // 二级菜单 ACTIVE 背景
 @mixin secmenu_active_bg($color){
-  background-color:$color;
+  background-color:$color !important;
   [data-theme="theme0"] & {
-    background-color:$secmenu-active-theme0;
+    background-color:$secmenu-active-theme0 !important;
   }
   [data-theme="theme1"] & {
-    background-color:$secmenu-active-theme1;
+    background-color:$secmenu-active-theme1 !important;
   }
   [data-theme="theme2"] & {
-    background-color:$secmenu-active-theme2;
+    background-color:$secmenu-active-theme2 !important;
   }
   [data-theme="theme3"] & {
-    background-color:$secmenu-active-theme3;
+    background-color:$secmenu-active-theme3 !important;
   }
 }
 

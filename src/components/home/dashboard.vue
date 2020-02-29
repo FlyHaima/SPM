@@ -848,14 +848,15 @@ export default {
     }
     .pie-list-box{
       .pie-box{
-        flex: 0 0 25%;
+        // flex: 0 0 25%;
       }
     }
   }
   @media only screen and (max-width:1680px) {
     .pie-list-box{
+      justify-content: space-around;
       .pie-box{
-        flex: 0 0 300px;
+        flex: 0 0 400px;
       }
     }
   }

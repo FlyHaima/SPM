@@ -53,6 +53,8 @@
         align="center">
       </el-table-column>
       <el-table-column
+        fixed="right"
+        width="140px"
         label="操作"
         align="center">
         <template slot-scope="scope">
