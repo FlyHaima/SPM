@@ -53,7 +53,8 @@ export default {
 .main-page-wrap{
   width: 100%;
   height: 100%;
-  min-width: 1880px;
+  // min-width: 1366px;
+  min-width: 1200px;
   .el-header{
     width: 100%;
     padding: 0;
