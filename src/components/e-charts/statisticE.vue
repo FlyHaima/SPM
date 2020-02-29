@@ -83,30 +83,34 @@ export default {
     } // 日期筛选开关
   },
   mounted () {
-    this.reduceData()
-    this.setEchart()
-  },
-  created () {
+    let vm = this
+    vm.$nextTick(() => {
+      vm.reduceData()
+      vm.setEchart()
+    })
   },
   methods: {
     reduceData () {
-      this.chartValue = []
-      this.chartxAxis = []
-      this.chartData.forEach(item => {
+      let vm = this
+      vm.chartValue = []
+      vm.chartxAxis = []
+      vm.chartData.forEach(item => {
         if (item.value <= 25) {
-          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
+          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 25 && item.value <= 50) {
-          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
+          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 50 && item.value <= 75) {
-          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
+          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         } else if (item.value > 75 && item.value <= 100) {
-          this.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
+          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
         }
-        this.chartValue.push(item.value)
-        this.chartxAxis.push(item.name)
+        vm.chartValue.push(item.value)
+        vm.chartxAxis.push(item.name)
       })
     },
     setEchart (opt) {
+      let vm = this
+      vm.reduceData()
       // 基于准备好的dom，初始化echarts实例
       let chartDom = document.getElementById('columnA')
       let myChart = this.$echarts.init(chartDom)
@@ -134,7 +138,7 @@ export default {
         xAxis: [
           {
             type: 'category',
-            data: this.chartxAxis,
+            data: vm.chartxAxis,
             axisTick: {
               alignWithLabel: true
             },
@@ -169,7 +173,7 @@ export default {
         series: [
           {
             type: 'bar',
-            data: this.chartValue,
+            data: vm.chartValue,
             itemStyle: {
               color: function (params) {
                 let index = params.dataIndex
@@ -215,9 +219,14 @@ export default {
     }
   },
   watch: {
-    chartData () { // 添加数据监听，父组件传值重绘图表
-      this.reduceData()
-      this.setEchart()
+    chartData: { // 添加数据监听，父组件传值重绘图表
+      deep: true,
+      handler: function (val) {
+        let vm = this
+        vm.chartData = val
+        vm.reduceData()
+        vm.setEchart(val)
+      }
     }
   }
 }
