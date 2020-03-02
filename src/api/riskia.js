@@ -25,8 +25,8 @@ export function getRiskUnit (id) {
 }
 
 // 风险辨识评估--评价记录--获取table
-export function getRiskView (riskId, type) {
-  const url = `${baseUrl}/riskia/getRiskView?riskId=${riskId}&type=${type}`
+export function getRiskView (riskId, type, methodType) {
+  const url = `${baseUrl}/riskia/getRiskView?riskId=${riskId}&type=${type}&ram=${methodType}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)

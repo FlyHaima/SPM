@@ -45,7 +45,7 @@
                 label="操作"
                 align="center">
                 <template slot-scope="scope">
-                  <a type="text" :href="scope.row.path">下载</a>
+                  <a type="text" :href="`${scope.row.path}?attname=${scope.row.name}`">下载</a>
                 </template>
               </el-table-column>
             </el-table>
