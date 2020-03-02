@@ -26,7 +26,7 @@
           <el-menu-item
             index="">
             <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
-            <span ref="outLink">{{item.name}}</span>
+            <span v-show="!isCollapse">{{item.name}}</span>
           </el-menu-item>
         </a>
         <el-submenu
@@ -306,7 +306,6 @@ export default {
       this.innerWidth = window.innerWidth
       if (this.innerWidth < 1440) {
         this.isCollapse = true
-        console.log(this.$refs.outLink)
         // this.$refs.outLink.values = ''
         this.$refs.sideNavDom.style.width = '64px'
       } else {
