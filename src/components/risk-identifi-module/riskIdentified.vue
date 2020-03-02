@@ -201,7 +201,7 @@
                   <el-tab-pane :disabled="doneStep<3 ? true : false" name="step-3">
                     <span slot="label">③ 开展评估</span>
                     <div class="step-box step-3-box">
-                      <template v-if="evaluationMethod === 'LEC'">
+                      <template v-if="stepObjA.identifierWay === 'LEC'">
                         <div class="line-p">
                           <div class="line-lf">
                             <div class="label">事故发生的可能性</div>
@@ -248,7 +248,7 @@
                               </el-option>
                             </el-select>
                           </div>
-                          <div class="line-rt" v-if="evaluationMethod === 'LEC'">
+                          <div class="line-rt" v-if="stepObjA.identifierWay === 'LEC'">
                             <div class="label">C值</div>
                             <el-input v-model="stepObjC.LEC.C" disabled="disabled" size="medium"></el-input>
                           </div>
@@ -327,7 +327,7 @@
                           <el-input v-model="stepObjC.manager" size="medium"></el-input>
                         </div>
                       </div>
-                      <div class="btn-box" :class="evaluationMethod === 'LS' ? 'isLS' : ''">
+                      <div class="btn-box" :class="stepObjA.identifierWay === 'LS' ? 'isLS' : ''">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
                         <el-button size="medium" @click="changeStepThree" v-if="doneStep >= 3">修改并关闭</el-button>
                         <el-button size="medium" @click="changeStepThree" v-else>保存并关闭</el-button>
@@ -564,26 +564,26 @@ export default {
         {label: '非常罕见地暴露', value: '0.5'}
       ],
       lec_c_options: [
-        {label: '严重违反法律法规和标准', value: '100'},
-        {label: '违反法律法规和标准', value: '40'},
-        {label: '潜在违反法规和标准', value: '15'},
-        {label: '不符合上级或行业的安全方针、制度、规定等', value: '7'},
-        {label: '不符合公司的安全操作程序、规定', value: '2'},
-        {label: '完全符合', value: '1'}
+        {label: '大灾难', value: '100'},
+        {label: '灾难，数人死亡', value: '40'},
+        {label: '非常严重，一人死亡', value: '15'},
+        {label: '严重，重伤/职业病（多人）', value: '7'},
+        {label: '重大，致残/职业病（一人）', value: '3'},
+        {label: '轻微，仅需救护/职业性多发病', value: '1'}
       ],
       ls_l_options: [
-        {label: '在现场没有采取防范、监测、保护、控制措施，或危害的发生不能被发现（没有监测系统），或在正常情况下经常发生此类事故或事件', value: '5'},
-        {label: '危害的发生不容易被发现，现场没有检测系统，也未发生过任何监测，或在现场有控制措施，但未有效执行或控制措施不当，或危害发生或预期情况下发生', value: '4'},
-        {label: '没有保护措施（如没有保护装置、没有个人防护用品等），或未严格按操作程序执行，或危害的发生容易被发现（现场有监测系统），或曾经作过监测，或过去曾经发生类似事故或事件', value: '3'},
-        {label: '危害一旦发生能及时发现，并定期进行监测，或现场有防范控制措施，并能有效执行，或过去偶尔发生事故或事件', value: '2'},
-        {label: '有充分、有效的防范、控制、监测、保护措施，或员工安全卫生意识相当高，严格执行操作规程。极不可能发生事故或事件', value: '1'}
+        {label: 'Ⅰ 极有可能发生', value: '5'},
+        {label: 'Ⅱ 很可能发生', value: '4'},
+        {label: 'Ⅲ 可能发生', value: '3'},
+        {label: 'Ⅳ 较不可能发生', value: '2'},
+        {label: 'Ⅴ 基本不可能发生', value: '1'}
       ],
       ls_s_options: [
-        {label: '违反法律、法规和标准', value: '5'},
-        {label: '潜在违反法规和标准', value: '4'},
-        {label: '不符合上级公司或行业的安全方针、制度、规定等', value: '3'},
-        {label: '不符合企业的安全操作程序、规定', value: '2'},
-        {label: '完全符合', value: '1'}
+        {label: '影响特别重大', value: '5'},
+        {label: '影响重大', value: '4'},
+        {label: '影响较大', value: '3'},
+        {label: '影响一般', value: '2'},
+        {label: '影响很小', value: '1'}
       ],
       managerLevel: ['公司级', '部门级', '车间级', '班组级', '岗位级'],
       stepObjD: {
@@ -723,7 +723,7 @@ export default {
       })
     },
     handleClick (tab, event) {
-      console.log(tab, event)
+      // console.log(tab, event)
     },
     toStepTwo () {
       let vm = this
@@ -881,25 +881,17 @@ export default {
     },
     saveStepFour () {
       let vm = this
-      if (vm.stepObjD.controlMeasure && vm.stepObjD.standard && vm.stepObjD.technicalMeasures && vm.stepObjD.managerMeasures && vm.stepObjD.educationMeasures && vm.stepObjD.protectMeasures && vm.stepObjD.emergencyMeasures) {
-        let saveData = {
-          mustCs: vm.stepObjD.controlMeasure,
-          csStand: vm.stepObjD.standard,
-          technology: vm.stepObjD.technicalMeasures,
-          bmp: vm.stepObjD.managerMeasures,
-          train: vm.stepObjD.educationMeasures,
-          individual: vm.stepObjD.protectMeasures,
-          emergency: vm.stepObjD.emergencyMeasures
-        }
-        vm.updateDescribe(saveData, '4')
-        return true
-      } else {
-        vm.$message({
-          message: '所有信息均为必填项',
-          type: 'warning'
-        })
-        return false
+      let saveData = {
+        mustCs: vm.stepObjD.controlMeasure,
+        csStand: vm.stepObjD.standard,
+        technology: vm.stepObjD.technicalMeasures,
+        bmp: vm.stepObjD.managerMeasures,
+        train: vm.stepObjD.educationMeasures,
+        individual: vm.stepObjD.protectMeasures,
+        emergency: vm.stepObjD.emergencyMeasures
       }
+      vm.updateDescribe(saveData, '4')
+      return true
     },
     finish () {
       let vm = this
