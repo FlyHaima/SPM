@@ -317,10 +317,12 @@ export default {
 .left-container-wrap{
   display: flex;
   align-items: center;
+  width: 100%;
   height: 100%;
   padding: 150px 0 100px;
 }
 .left-container{
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-between;
@@ -348,7 +350,7 @@ export default {
       min-height: 20px;
     }
     .el-tabs__nav{
-      margin: 0 70px;
+      margin: 0 30px;
     }
     .el-tabs__header{
       background: rgba(61,147,255, 0.25);
@@ -365,7 +367,7 @@ export default {
   }
 }
 .login-content-right{
-  flex: 0 0 500px;
+  flex: 0 0 25%;
   height: 100%;
   color: #333333;
   background: #ffffff;
@@ -501,7 +503,6 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  // flex: 0 0 540px;
   padding: 0 30px;
   max-height: 440px;
   overflow: hidden;
@@ -515,9 +516,6 @@ export default {
   a{
     color: #ffffff;
   }
-}
-.list-info-title{
-
 }
 .list-info-txt{
   max-width: 430px;
@@ -565,4 +563,12 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 
+@media only screen and (max-width:1680px) {
+  .login-content-left{
+    padding: 0 10px;
+  }
+  .login-content-right{
+    padding: 0 20px;
+  }
+}
 </style>
