@@ -297,7 +297,13 @@ export default {
       let vm = this
       let baseUrl = base.baseUrl
       let localToken = sessionStorage.getItem('TOKEN_KEY')
-      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}`
+      let methodType = ''
+      if (this.activeName === '作业活动') {
+        methodType = this.methodA
+      } else {
+        methodType = this.methodB
+      }
+      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}&ram=${methodType}`
       location.href = `${hrefUrl}&attname=${vm.activeName}.xls`
     },
     getRiskTree (create) {
