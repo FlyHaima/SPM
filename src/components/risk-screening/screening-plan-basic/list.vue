@@ -589,11 +589,13 @@ export default {
       axios
         .get('basticHidden/getBasticHiddenList', {
           planId: this.currentPlanId,
-          pageSize: this.page.pageSize
+          pageSize: this.page.pageSize,
+          pageNo: this.page.pageNo
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.initTableData = res.data.data
+            this.page.total = res.data.total
 
             this.initTableData.forEach(item => {
               if (item.autoPush === null) {

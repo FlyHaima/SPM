@@ -196,6 +196,18 @@
             autocomplete></el-input>
         </el-form-item>
         <el-form-item
+          v-if="typeof editData !== 'undefined' && editData !== ''"
+          label="账号:"
+          prop="accountName" >
+          <el-input
+            v-model.trim="form.accountName"
+            placeholder="请输入账号"
+            maxlength="25"
+            autocomplete
+            disabled=""></el-input>
+        </el-form-item>
+         <el-form-item
+          v-else
           label="账号:"
           prop="accountName" >
           <el-input

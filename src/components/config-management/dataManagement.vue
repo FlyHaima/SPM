@@ -117,7 +117,7 @@
           label="名称"
           prop="content">
           <el-input
-            v-model="tables.form.content"
+            v-model.trim="tables.form.content"
             placeholder="请输入名称"
             maxlength="25"
             autocomplete></el-input>
@@ -126,7 +126,7 @@
           label="代码"
           prop="code">
           <el-input
-            v-model="tables.form.code"
+            v-model.trim="tables.form.code"
             placeholder="请输入代码"
             maxlength="25"
             autocomplete></el-input>

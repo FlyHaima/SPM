@@ -312,6 +312,16 @@
                         style="width: 100%"
                         @selection-change="handleSelectionChange">
                 <el-table-column
+                  label="人员名称"
+                  align="center">
+                  <template slot-scope="scope">{{ scope.row.userName }}</template>
+                </el-table-column>
+                <el-table-column
+                  label="组织名称"
+                  align="center">
+                  <template slot-scope="scope">{{ scope.row.deptName }}</template>
+                </el-table-column>
+                <el-table-column
                   label="课程名称"
                   width="322"
                   align="center">
@@ -325,21 +335,25 @@
                 </el-table-column>
                 <el-table-column
                   label="理论开始时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="理论结束时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际开始时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ scope.row.actStartTime ? formatTime(scope.row.actStartTime) : '--' }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际结束时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ scope.row.actEndTime ? formatTime(scope.row.actEndTime) : '--' }}</template>
                 </el-table-column>
@@ -356,6 +370,7 @@
                   <template slot-scope="scope">{{ states[scope.row.state] }}</template>
                 </el-table-column>
                 <el-table-column
+                  fixed="right"
                   label="操作"
                   width="180"
                   align="center">
@@ -404,6 +419,16 @@
                           style="width: 100%"
                           @selection-change="handleSelectionChange">
                   <el-table-column
+                    label="人员名称"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.userName }}</template>
+                  </el-table-column>
+                  <el-table-column
+                    label="组织名称"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.deptName }}</template>
+                  </el-table-column>
+                  <el-table-column
                     label="课程名称"
                     align="center">
                     <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
@@ -433,6 +458,7 @@
                     <template slot-scope="scope">{{ states[scope.row.state] }}</template>
                   </el-table-column>
                   <el-table-column
+                    fixed="right"
                     label="详细内容"
                     width="105"
                     align="center">
@@ -1089,7 +1115,7 @@ export default {
           this.recordDetail.passRate = (res.data.passRate * 100).toFixed(2)
           this.recordDetail.theory = res.data.theory
           this.recordDetail.act = res.data.act
-          this.recordDetail.totalHour = res.data.totalHour
+          this.recordDetail.totalHour = res.data.hourRequire
           this.recordDetail.downList = res.data.trainPlan.attachmentList
 
           this.colNames = 'col_a'

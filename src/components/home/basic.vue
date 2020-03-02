@@ -21,8 +21,8 @@
                   <span class="user-value">{{userInfo.userName}}</span>
                 </li>
                 <li class="user-list-item">
-                  <span class="user-label">登录ID:</span>
-                  <span class="user-value">{{userInfo.userId}}</span>
+                  <span class="user-label">账户名:</span>
+                  <span class="user-value">{{userInfo.accountName}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号创建时间:</span>

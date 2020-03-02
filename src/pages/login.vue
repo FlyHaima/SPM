@@ -33,7 +33,7 @@
                     v-for="(item, index) in newsList"
                     :key="index"
                     class="list-info-item">
-                    <a :href="item.url">
+                    <a :href="item.url" target="_blank">
                       <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
@@ -49,11 +49,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -65,11 +66,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -81,11 +83,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -240,7 +243,6 @@ export default {
       this.fetchData()
     },
     gotoDetailsHandle (url) {
-      console.log(url)
       window.location.href = url
     },
     // 提交发布消息事件
