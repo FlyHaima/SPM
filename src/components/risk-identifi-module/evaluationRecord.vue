@@ -19,6 +19,14 @@
           <el-tabs type="border-card" v-model="activeName" @tab-click="changeTab">
             <el-tab-pane label="作业活动类" name="作业活动">
               <p class="btn-p">
+                <el-select v-model="methodA" placeholder="请选择方法" @change="getTabelData()" autocomplete>
+                  <el-option
+                    v-for="(item, index) in methodOptions"
+                    :key="index"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-select>
                 <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
               </p>
               <div class="table-box">
@@ -66,26 +74,45 @@
                       label="应急处理" width="79px">
                     </el-table-column>
                   </el-table-column>
-                  <el-table-column
-                    prop="l"
-                    label="L" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="e"
-                    label="E" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="c"
-                    label="C" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="d"
-                    label="D" align="center"
-                    width="45">
-                  </el-table-column>
+                  <template v-if="methodA == 'LEC'">
+                    <el-table-column
+                      prop="l"
+                      label="L" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="e"
+                      label="E" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="c"
+                      label="C" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="d"
+                      label="D" align="center"
+                      width="45">
+                    </el-table-column>
+                  </template>
+                  <template v-else>
+                    <el-table-column
+                      prop="l"
+                      label="L" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="e"
+                      label="S" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="d"
+                      label="R" align="center"
+                      width="45">
+                    </el-table-column>
+                  </template>
                   <el-table-column
                     prop="assessLevel"
                     label="评价级别" align="center"
@@ -110,6 +137,14 @@
             </el-tab-pane>
             <el-tab-pane label="设备设施类" name="设备设施">
               <p class="btn-p">
+                <el-select v-model="methodB" placeholder="请选择方法" @change="getTabelData()" autocomplete>
+                  <el-option
+                    v-for="(item, index) in methodOptions"
+                    :key="index"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-select>
                 <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
               </p>
               <div class="table-box">
@@ -157,21 +192,46 @@
                       label="应急处理" width="79px">
                     </el-table-column>
                   </el-table-column>
-                  <el-table-column
-                    prop="l"
-                    label="L" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="e"
-                    label="S" align="center"
-                    width="45">
-                  </el-table-column>
-                  <el-table-column
-                    prop="d"
-                    label="R" align="center"
-                    width="45">
-                  </el-table-column>
+                  <template v-if="methodB == 'LEC'">
+                    <el-table-column
+                      prop="l"
+                      label="L" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="e"
+                      label="E" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="c"
+                      label="C" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="d"
+                      label="D" align="center"
+                      width="45">
+                    </el-table-column>
+                  </template>
+                  <template v-else>
+                    <el-table-column
+                      prop="l"
+                      label="L" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="e"
+                      label="S" align="center"
+                      width="45">
+                    </el-table-column>
+                    <el-table-column
+                      prop="d"
+                      label="R" align="center"
+                      width="45">
+                    </el-table-column>
+                  </template>
+
                   <el-table-column
                     prop="assessLevel"
                     label="评价级别" align="center"
@@ -217,7 +277,10 @@ export default {
       organizationTree: [],
       tableDataA: [],
       tableDataB: [],
-      currentNode: {}
+      currentNode: {},
+      methodA: 'LEC',
+      methodB: 'LEC',
+      methodOptions: ['LEC', 'LS']
     }
   },
   created () {
@@ -250,22 +313,29 @@ export default {
       })
     },
     getTabelData (data) {
-      this.currentNode = data
-      getRiskView(data.riskId, this.activeName).then((res) => {
+      this.pageLoading = true
+      if (data != null) {
+        this.currentNode = data
+      }
+      let methodType = ''
+      if (this.activeName === '作业活动') {
+        methodType = this.methodA
+      } else {
+        methodType = this.methodB
+      }
+      getRiskView(this.currentNode.riskId, this.activeName, methodType).then((res) => {
         if (res.code === 200) {
-          this.tableDataA = res.data
+          if (this.activeName === '作业活动') {
+            this.tableDataA = res.data
+          } else {
+            this.tableDataB = res.data
+          }
         }
         this.pageLoading = false
       })
     },
     changeTab () {
-      this.pageLoading = true
-      getRiskView(this.currentNode.riskId, this.activeName).then((res) => {
-        if (res.code === 200) {
-          this.tableDataB = res.data
-        }
-        this.pageLoading = false
-      })
+      this.getTabelData()
     }
   },
   components: {TreeReadOnly, BreadCrumb}

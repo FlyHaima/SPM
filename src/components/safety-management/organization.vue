@@ -397,8 +397,8 @@ export default {
     addTreeData (data) {
       // console.log(data)
       this.addOrgData.pId = data.deptId
-      this.addOrgData.level = data.level
-      this.minLevel = Number(data.level)
+      this.addOrgData.level = Number(data.level) + 1
+      this.minLevel = Number(data.level) + 1
       this.addTreeVisible = true
     },
     confirmAdd () {
