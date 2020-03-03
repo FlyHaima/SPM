@@ -30,6 +30,7 @@
 // 按钮工具栏
 .content-tools{
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 30px;
   .el-form--inline .el-form-item{
@@ -302,4 +303,9 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 15px;
+}
+
+.tips-nodata{
+  text-align: center;
+  margin: 40px 30px;
 }

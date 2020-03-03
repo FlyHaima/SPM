@@ -4,70 +4,80 @@
     type="border-card"
     @tab-click='clickTab'>
     <el-tab-pane label="我发布的">
-      <span slot="label"> 待办事项<span class="badge">{{todoNum}}</span></span>
+      <span slot="label"> 待办事项<span v-show="todoNum > 0" class="badge">{{todoNum}}</span></span>
       <div class="info-panel">
         <div class="info-content">
-          <ul class="list-info">
-            <li
-              v-for="(item, index) in messageData"
-              :key="index"
-              @click="goDetailsPage(item)"
-              class="list-info-item list-info-item-light">
-              <div class="list-info-title">
-                <span class="list-info-txt">
-                  {{item.taskName}}
-                </span>
-              </div>
-              <div class="list-info-right">
-                <i class="icon-clock"></i>
-                <span class="list-info-date">{{item.checkTime | date-filter}}</span>
-                <span class="list-info-time">{{item.checkTime | time-filter}}</span>
-                <span class="list-info-user">发布人：{{item.checkUserId}}</span>
-              </div>
-            </li>
-          </ul>
-          <el-pagination
-            class="text-right"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="page.index"
-            layout="total, prev, pager, next, jumper"
-            :total="page.total">
-          </el-pagination>
+          <div class="tips-nodata" v-if="messageData.length === 0">
+            暂无代办事项
+          </div>
+          <template v-else>
+            <ul class="list-info">
+              <li
+                v-for="(item, index) in messageData"
+                :key="index"
+                @click="goDetailsPage(item)"
+                class="list-info-item list-info-item-light">
+                <div class="list-info-title">
+                  <span class="list-info-txt">
+                    {{item.taskName}}
+                  </span>
+                </div>
+                <div class="list-info-right">
+                  <i class="icon-clock"></i>
+                  <span class="list-info-date">{{item.checkTime | date-filter}}</span>
+                  <span class="list-info-time">{{item.checkTime | time-filter}}</span>
+                  <span class="list-info-user">发布人：{{item.checkUserId}}</span>
+                </div>
+              </li>
+            </ul>
+            <el-pagination
+              class="text-right"
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="page.index"
+              layout="total, prev, pager, next, jumper"
+              :total="page.total">
+            </el-pagination>
+          </template>
         </div>
       </div>
     </el-tab-pane>
     <el-tab-pane label="已办事项">
       <div class="info-panel">
         <div class="info-content">
-          <ul class="list-info">
-            <li
-              v-for="(item, index) in messageData"
-              :key="index"
-              class="list-info-item list-info-item-light">
-              <div class="list-info-title">
-                <span class="list-info-txt">
-                  {{item.taskName}}
-                </span>
-              </div>
-              <div class="list-info-right">
-                <i class="icon-clock"></i>
-                <span class="list-info-date">{{item.checkTime | date-filter}}</span>
-                <span class="list-info-time">{{item.checkTime | time-filter}}</span>
-                <span class="list-info-user">发布人：{{item.checkUserId}}</span>
-              </div>
-            </li>
-          </ul>
-          <el-pagination
-            class="text-right"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="page.index"
-            layout="total, prev, pager, next, jumper"
-            :total="page.total">
-          </el-pagination>
+          <div class="tips-nodata" v-if="messageData.length === 0">
+            暂无已办事项
+          </div>
+          <template v-else>
+            <ul class="list-info">
+              <li
+                v-for="(item, index) in messageData"
+                :key="index"
+                class="list-info-item list-info-item-light">
+                <div class="list-info-title">
+                  <span class="list-info-txt">
+                    {{item.taskName}}
+                  </span>
+                </div>
+                <div class="list-info-right">
+                  <i class="icon-clock"></i>
+                  <span class="list-info-date">{{item.checkTime | date-filter}}</span>
+                  <span class="list-info-time">{{item.checkTime | time-filter}}</span>
+                  <span class="list-info-user">发布人：{{item.checkUserId}}</span>
+                </div>
+              </li>
+            </ul>
+            <el-pagination
+              class="text-right"
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="page.index"
+              layout="total, prev, pager, next, jumper"
+              :total="page.total">
+            </el-pagination>
+          </template>
         </div>
       </div>
     </el-tab-pane>

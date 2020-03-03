@@ -63,7 +63,8 @@
                 v-if="isEndPint"
                 label="操作"
                 width="80"
-                align="center">
+                align="center"
+                fixed="right">
                 <template slot-scope="scope">
                   <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row)">辨识</el-button>
                   <el-button v-else size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>

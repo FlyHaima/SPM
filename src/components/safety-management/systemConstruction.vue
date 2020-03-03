@@ -27,6 +27,7 @@
             <template slot-scope="scope">{{ scope.row.fileName }}</template>
           </el-table-column>
           <el-table-column
+            fixed="right"
             label="操作"
             width="220"
             align="center">
