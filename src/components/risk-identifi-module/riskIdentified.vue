@@ -183,10 +183,10 @@
                         <span class="label">负责机构</span>
                         <el-select v-model="stepObjB.administrator"  placeholder="请选择" size="medium">
                           <el-option
-                            v-for="item in adminOptions"
-                            :key="item"
-                            :label="item"
-                            :value="item">
+                            v-for="(item, index) in adminOptions"
+                            :key="index"
+                            :label="item.deptName"
+                            :value="item.deptName">
                           </el-option>
                         </el-select>
                       </p>
@@ -395,7 +395,8 @@ import {
   delRiskTree,
   addDescribe,
   delDescribe,
-  updateDescribe
+  updateDescribe,
+  getRiskDeptList
 } from '@/api/riskia'
 import base from '@/api/baseUrl'
 
@@ -527,7 +528,7 @@ export default {
         unitLevelNum: '',
         administrator: ''
       },
-      adminOptions: [ '张三', '李四', '王二麻子' ],
+      adminOptions: [],
       stepObjC: {
         LEC: {
           L: '0.1',
@@ -603,6 +604,7 @@ export default {
     this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
+    this.getRiskDeptList()
   },
   methods: {
     getRiskTree (create) {
@@ -618,6 +620,20 @@ export default {
             treeLevel: '1'
           }
           this.getRiskTable(data)
+        }
+        this.pageLoading = false
+      })
+    },
+    getRiskDeptList () {
+      this.pageLoading = true
+      getRiskDeptList().then((res) => {
+        if (res.code === 200) {
+          this.adminOptions = res.data
+        } else {
+          this.$message({
+            message: '请求信息错误，请稍后重试',
+            type: 'warning'
+          })
         }
         this.pageLoading = false
       })
@@ -671,7 +687,7 @@ export default {
         levelNumB: d.twoNo ? d.twoNo : '',
         levelNumC: d.orderNo ? d.orderNo : '',
         unitLevelNum: d.oneNo && d.twoNo && d.orderNo ? d.oneNo + '-' + d.twoNo + '-' + d.orderNo : '',
-        administrator: ''
+        administrator: d.responsibleBody ? d.responsibleBody : ''
       }
       this.stepObjC = {
         LEC: {
@@ -775,7 +791,7 @@ export default {
       let ad = 1
       if (ad > 0) { // 暂无条件，后续补齐参数
         let saveData = {
-          deptId: vm.stepObjB.administrator
+          responsibleBody: vm.stepObjB.administrator
         }
         vm.updateDescribe(saveData, '2')
         return true
