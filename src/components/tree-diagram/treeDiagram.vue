@@ -206,8 +206,11 @@ export default {
       vertical-align: top;
       left: 126px;
       top: 0;
-      width: 180px;
+      // width: 180px;
       margin-top: -1px;
+      >>> .el-input__inner{
+        padding: 0 5px;
+      }
     }
     .slide-btns{
       position: absolute;

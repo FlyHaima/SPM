@@ -63,14 +63,27 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="position"
-                label="职位"
-                align="center">
-              </el-table-column>
-              <el-table-column
                 prop="accountName"
                 label="账号"
                 align="center">
+              </el-table-column>
+              <el-table-column
+                prop="role"
+                label="角色"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="telephone"
+                width="120"
+                label="电话"
+                header-align="center">
+              </el-table-column>
+              <el-table-column
+                label="账号状态"
+                align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.accountState|account-status-filter}}
+                </template>
               </el-table-column>
               <el-table-column
                 label="启用/禁用"
@@ -87,19 +100,9 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="role"
-                label="角色"
+                prop="position"
+                label="职位"
                 align="center">
-              </el-table-column>
-              <el-table-column
-                prop="telephone"
-                label="电话"
-                header-align="center">
-              </el-table-column>
-              <el-table-column
-                prop="accountState"
-                label="账号状态"
-                header-align="center">
               </el-table-column>
               <el-table-column
                 fixed="right"
@@ -178,6 +181,37 @@
         @submit.native.prevent= "submitForm"
       >
         <el-form-item
+          v-if="typeof editData !== 'undefined' && editData !== ''"
+          label="账号:"
+          prop="accountName" >
+          <el-input
+            v-model.trim="form.accountName"
+            placeholder="请输入账号"
+            maxlength="25"
+            autocomplete
+            disabled=""></el-input>
+        </el-form-item>
+        <el-form-item
+          v-else
+          label="账号:"
+          prop="accountName" >
+          <el-input
+            v-model.trim="form.accountName"
+            placeholder="请输入账号"
+            maxlength="25"
+            autocomplete></el-input>
+        </el-form-item>
+        <el-form-item label="角色:" prop="roleId" >
+          <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
+            <el-option
+              v-for="(item, index) in roleOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
           label="姓名:"
           prop="userName">
           <el-input
@@ -195,27 +229,6 @@
             maxlength="25"
             autocomplete></el-input>
         </el-form-item>
-        <el-form-item
-          v-if="typeof editData !== 'undefined' && editData !== ''"
-          label="账号:"
-          prop="accountName" >
-          <el-input
-            v-model.trim="form.accountName"
-            placeholder="请输入账号"
-            maxlength="25"
-            autocomplete
-            disabled=""></el-input>
-        </el-form-item>
-         <el-form-item
-          v-else
-          label="账号:"
-          prop="accountName" >
-          <el-input
-            v-model.trim="form.accountName"
-            placeholder="请输入账号"
-            maxlength="25"
-            autocomplete></el-input>
-        </el-form-item>
         <!-- <el-radio v-for="(item, index) in RELATION_PRODUCT_STATUS_LIST" :key="index" :label="item.value">{{ item.label }}</el-radio> -->
         <el-form-item label="启用/禁用:" prop="state">
           <el-radio-group v-model="form.state" autocomplete>
@@ -229,27 +242,18 @@
             <el-radio label="0">离职</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="角色:" prop="roleId" >
-          <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
-            <el-option
-              v-for="(item, index) in roleOptions"
-              :key="index"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           label="电话:"
           prop="telephone">
           <el-input
+            disabled=""
             type="number"
             maxlength="11"
             onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
             v-model.trim="form.telephone"
             placeholder="请输入电话"
             autocomplete></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -292,7 +296,7 @@ import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
 import qs from 'qs'
 import base from '@/api/baseUrl'
-
+import { AccountStatusFilter } from '@/filters/status'
 export default {
   name: 'userManagement',
   mixins: [Tables],
@@ -351,14 +355,14 @@ export default {
         ],
         roleId: [
           { required: true, message: '请选择角色', trigger: 'change' }
-        ],
-        telephone: [
-          // {
-          //   validator: phoneValidator
-          // },
-          { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { len: 11, message: '手机号码必须是11位', trigger: 'blur' }
         ]
+        // telephone: [
+        //   // {
+        //   //   validator: phoneValidator
+        //   // },
+        //   { required: true, message: '请输入手机号码', trigger: 'blur' },
+        //   { len: 11, message: '手机号码必须是11位', trigger: 'blur' }
+        // ]
       },
       uploading: false, // 导入loading
       uploadData: {
@@ -369,6 +373,9 @@ export default {
         token: ''
       }
     }
+  },
+  filters: {
+    'account-status-filter': AccountStatusFilter
   },
   mounted () {
     // 设置题库上传的header 添加token

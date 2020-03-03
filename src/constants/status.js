@@ -1,15 +1,4 @@
-// 账号状态
-export const ACCOUNT_STATUS = {
-  normal: {
-    label: '正常', value: '1'
-  },
-  abNormal: {
-    label: '异常', value: '2'
-  },
-  freeze: {
-    label: '冻结', value: '3'
-  }
-}
+
 // 资格认证
 export const ZGRZ = {
   verify: {
@@ -19,6 +8,22 @@ export const ZGRZ = {
     label: '未认证', value: 'false'
   }
 }
+
+// 账号状态
+export const normal = {text: '正常', label: '正常', value: '1'}
+export const abNormal = {text: '异常', label: '异常', value: '2'}
+export const freeze = {text: '冻结', label: '冻结', value: '3'}
+
+export const ACCOUNT_STATUS = {
+  normal,
+  abNormal,
+  freeze
+}
+export const ACCOUNT_STATUS_LIST = [
+  normal,
+  abNormal,
+  freeze
+]
 
 // 显示位置
 export const all = {text: '全部', label: '全部', value: 'all'}

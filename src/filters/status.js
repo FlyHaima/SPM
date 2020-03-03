@@ -1,4 +1,18 @@
-import { DISPLAY_POSITION, NEWS_TYPE, VISIBLE_SWITCH } from '@/constants/status'
+import { ACCOUNT_STATUS_LIST, DISPLAY_POSITION, NEWS_TYPE, VISIBLE_SWITCH } from '@/constants/status'
+
+/**
+ * 格式化账号状态
+ * @param {string} type | 1 | 2 | 3
+ */
+export const AccountStatusFilter = (type) => {
+  try {
+    // 由于传过来的数据值是字符串数字，所以使用数组对象格式做转换
+    let typeChange = parseInt(type) - 1
+    return ACCOUNT_STATUS_LIST[typeChange].text
+  } catch (e) {
+    return ''
+  }
+}
 
 /**
  * 格式化显示位置
