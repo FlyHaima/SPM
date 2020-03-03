@@ -131,3 +131,13 @@ export function delBdata (param) {
     return Promise.resolve(res.data)
   })
 }
+
+// 风险辨识评估--风险辨识评估--获取负责机构list
+export function getRiskDeptList () {
+  let token = sessionStorage.getItem('TOKEN_KEY')
+  const url = `${baseUrl}/dept/getRiskDeptList?token=${token}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
