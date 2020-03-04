@@ -101,7 +101,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop=" "
+            fixed="right"
             label="操作"
             width="100"
             align="center">

@@ -89,6 +89,7 @@
                     <template slot-scope="scope">{{ scope.row.duty }}</template>
                   </el-table-column>
                   <el-table-column
+                    fixed="right"
                     label="操作"
                     width="80px"
                     align="center">

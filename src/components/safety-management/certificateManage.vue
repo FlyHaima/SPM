@@ -76,6 +76,7 @@
 <!--              <template slot-scope="scope">{{ scope.row.id }}</template>-->
 <!--            </el-table-column>-->
             <el-table-column
+              fixed="right"
               label="操作"
               align="center">
               <template slot-scope="scope">

@@ -14,72 +14,30 @@
           </div>
         </div>
         <div class="info-content">
-          <ul class="list-info">
-            <li
-              v-for="(item, index) in messageData"
-              :key="index"
-              class="list-info-item list-info-item-light">
-              <div class="list-info-title" @click="goDetailsPage(item)">
-                <span class="list-info-txt">
-                  <span v-if="item.type" class="list-info-type">
-                    [{{item.type}}]
-                    <i v-if="item.isRead === '1'" class="badge"></i>
-                  </span>
-                  {{item.title}}
-                </span>
-              </div>
-              <div class="list-info-right">
-                <template v-if="item.sendTime">
-                  <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.sendTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.sendTime | time-filter}}</span>
-                </template>
-                <span class="list-info-user">发布人：{{item.userName}}</span>
-                <i @click="deleteRow(item)" class="el-icon-delete" ></i>
-              </div>
-            </li>
-          </ul>
-          <el-pagination
-            class="text-right"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="page.index"
-            layout="total, prev, pager, next, jumper"
-            :total="page.total">
-          </el-pagination>
-        </div>
-      </div>
-    </el-tab-pane>
-    <el-tab-pane label="我收到的" name="2">
-      <div class="">
-        <div class="info-panel">
-          <div class="info-header">
-            <div class="info-link">
-              <el-button @click="signReadHandle" type="success" size="mini">标记当页已读</el-button>
-              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
-            </div>
+          <div class="tips-nodata" v-if="messageData.length === 0">
+            暂无消息
           </div>
-          <div class="info-content">
+          <template v-else>
             <ul class="list-info">
               <li
-                @click="goDetailsPage(item)"
                 v-for="(item, index) in messageData"
                 :key="index"
                 class="list-info-item list-info-item-light">
-                <div class="list-info-title">
+                <div class="list-info-title" @click="goDetailsPage(item)">
                   <span class="list-info-txt">
                     <span v-if="item.type" class="list-info-type">
                       [{{item.type}}]
-                      <i v-if="item.isRead === '0'" class="badge"></i>
+                      <i v-if="item.isRead === '1'" class="badge"></i>
                     </span>
                     {{item.title}}
                   </span>
                 </div>
                 <div class="list-info-right">
-                  <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.sendTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                  <template v-if="item.sendTime">
+                    <i class="icon-clock"></i>
+                    <span class="list-info-date">{{item.sendTime | date-filter}}</span>
+                    <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                  </template>
                   <span class="list-info-user">发布人：{{item.userName}}</span>
                   <i @click="deleteRow(item)" class="el-icon-delete" ></i>
                 </div>
@@ -94,6 +52,58 @@
               layout="total, prev, pager, next, jumper"
               :total="page.total">
             </el-pagination>
+          </template>
+        </div>
+      </div>
+    </el-tab-pane>
+    <el-tab-pane label="我收到的" name="2">
+      <div class="">
+        <div class="info-panel">
+          <div class="info-header">
+            <div class="info-link">
+              <el-button @click="signReadHandle" type="success" size="mini">标记当页已读</el-button>
+              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
+            </div>
+          </div>
+          <div class="info-content">
+            <div class="tips-nodata" v-if="messageData.length === 0">
+              暂无消息
+            </div>
+            <template v-else>
+              <ul class="list-info">
+                <li
+                  @click="goDetailsPage(item)"
+                  v-for="(item, index) in messageData"
+                  :key="index"
+                  class="list-info-item list-info-item-light">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">
+                      <span v-if="item.type" class="list-info-type">
+                        [{{item.type}}]
+                        <i v-if="item.isRead === '0'" class="badge"></i>
+                      </span>
+                      {{item.title}}
+                    </span>
+                  </div>
+                  <div class="list-info-right">
+                    <i class="icon-clock"></i>
+                    <span class="list-info-date">{{item.sendTime | date-filter}}</span>
+                    <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                    <span class="list-info-user">发布人：{{item.userName}}</span>
+                    <i @click="deleteRow(item)" class="el-icon-delete" ></i>
+                  </div>
+                </li>
+              </ul>
+              <el-pagination
+                class="text-right"
+                background
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="page.index"
+                layout="total, prev, pager, next, jumper"
+                :total="page.total">
+              </el-pagination>
+            </template>
           </div>
         </div>
       </div>

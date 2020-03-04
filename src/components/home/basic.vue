@@ -53,13 +53,18 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号状态：</span>
+                  <!-- v-if="item.value === userInfo.accountState" -->
                   <span
-                    v-if="item.value === userInfo.accountState"
                     v-for="(item, index) in accountStatus"
                     :key="index"
                     :label="item.value"
                     class="user-value color-primary"
-                    :class="classObj(item.value)">{{item.label}}</span>
+                    :class="classObj(item.value)">
+                    <template
+                      v-if="item.value === userInfo.accountState">
+                      {{item.label}}
+                    </template>
+                   </span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">上次登录信息：</span>
@@ -101,8 +106,7 @@
           <div class="user-account-list-item">
             <div class="user-account-left">
               <span class="user-account-label">登录密码</span>
-              <span class="user-account-value">
-                安全性高的密码可以使账号更安全，建议您定期更换密码，设置一个包含字母，符号或数字中至少两项且长度超过6位的密码。
+              <span class="user-account-value">安全性高的密码可以使账号更安全，建议您定期更换密码，设置一个包含字母，符号或数字中至少两项且长度超过6位的密码。
               </span>
             </div>
             <div class="user-account-operation">
@@ -234,20 +238,32 @@
             <el-form-item label="原手机号码：" prop="telOld">
               <el-input
                 type="text"
-                v-model="telForm.telOld"
+                v-model="telForm.phone"
                 autocomplete="off"
-                placeholder="请输入原手机号码"
                 :disabled="true"></el-input>
             </el-form-item>
-            <el-form-item label="修改绑定手机：" prop="telNew">
+            <el-form-item label="修改绑定手机：" prop="phoneNew">
               <el-input
                 type="number"
-                v-model="telForm.telNew"
+                v-model="telForm.phoneNew"
                 autocomplete="off"
                 placeholder="请输入修改绑定手机"
                 clearable></el-input>
               <el-button
                 type="primary">发送</el-button>
+            </el-form-item>
+            <el-form-item label="验证码：" prop="code">
+              <el-input
+                type="number"
+                v-model="passwordForm.code"
+                autocomplete="off"
+                placeholder="请输入验证码"
+                clearable
+                class="input-captcha"></el-input>
+                <el-button
+                  :disabled="codeBtnDisabled"
+                  type="primary"
+                  @click="sendCodeHandle">{{codeBtnTxt}}</el-button>
             </el-form-item>
             <el-form-item label="验证码：" prop="captcha">
               <el-input
@@ -321,15 +337,15 @@ export default {
       }
     }
     // 校验验证码
-    var validateCaptcha = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入验证码'))
-      } else if (value !== this.captcha) {
-        callback(new Error('验证码输入有误'))
-      } else {
-        callback()
-      }
-    }
+    // var validateCaptcha = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入验证码'))
+    //   } else if (value !== this.captcha) {
+    //     callback(new Error('验证码输入有误'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       accountStatus: ACCOUNT_STATUS, // 账户状态
       verify: ZGRZ.verify.label, // 已认证
@@ -348,9 +364,9 @@ export default {
         dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
       }, // 修改密码form
       telForm: {
-        telOld: '', // 原手机号码
-        telNew: '', // 新手机号码
-        captcha: '' // 验证码
+        phone: '', // 原手机号码
+        phoneNew: '', // 新手机号码
+        code: '' // 验证码
       }, // 修改绑定手机
       rulesPassword: {
         oldPassword: [
@@ -373,11 +389,16 @@ export default {
         ]
       }, // 修改密码的校验规则
       rulesTel: {
-        telNew: [
-          { validator: validateTelNew, trigger: 'blur' }
+        phoneNew: [
+          { required: true,
+            message: '请输入修改的手机号码',
+            trigger: 'blur' },
+          { validator: validateTelNew, trigger: 'change' }
         ],
-        captcha: [
-          { validator: validateCaptcha, trigger: 'blur' }
+        code: [
+          { required: true,
+            message: '请输入验证码',
+            trigger: 'blur' }
         ]
       }, // 修改绑定手机的校验规则
       codeTime: 0,
@@ -398,6 +419,7 @@ export default {
   created () {
     this.passwordForm.phone = this.userInfo.telephone
     this.passwordForm.userId = this.userInfo.userId
+    this.telForm.phone = this.userInfo.telephone
   },
   methods: {
     // 发送验证码
@@ -626,7 +648,8 @@ export default {
 
   }
   .user-account-left{
-
+    display: flex;
+    flex: 1;
   }
   .user-account-list-item{
     display: flex;
@@ -635,12 +658,15 @@ export default {
     border-top: 1px dashed #414141;
   }
   .user-account-label{
-
+    flex: 0 0 90px;
   }
   .user-account-value{
-    margin-left: 60px;
+    margin-left: 10px;
   }
   .user-account-operation{
+    flex: 0 0 180px;
+    text-align: right;
+    justify-content: flex-end;
     display: flex;
   }
   .user-account-operation-item{
@@ -664,6 +690,7 @@ export default {
       content: "";
       display: inline-block;
       position: absolute;
+      left: 0;
       margin-left: 3px;
       margin-top: 4px;
       width: 10px;
