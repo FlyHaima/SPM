@@ -419,6 +419,11 @@ export default {
             message: '节点设置成功'
           })
           this.getOrgTree(true)
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
         }
         this.addTreeVisible = false
         this.addConfirming = false
