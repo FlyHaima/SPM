@@ -1164,6 +1164,13 @@ export default {
     },
     // 导入失败
     importError (file, fileList) {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: `请选中至少一条课程`
+        })
+        return
+      }
       this.$notify.error('导入失败，请稍后重试')
     }
   },

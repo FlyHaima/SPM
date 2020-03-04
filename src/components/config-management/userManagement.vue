@@ -167,6 +167,7 @@
     <el-dialog
       width="40%"
       :visible.sync="dialogAddVisible"
+      :close-on-click-modal="false"
       >
       <div slot="title">
         {{typeof editData !== 'undefined' && editData !== '' ? '编辑用户' : '新增用户' }}
