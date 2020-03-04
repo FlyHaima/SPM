@@ -103,7 +103,7 @@
                       </p>
                       <p class="step-1-p">
                         <span class="label">风险类别/事故后果：</span>
-                        <el-select v-model="stepObjA.riskType"  placeholder="请选择" size="medium">
+                        <el-select v-model="stepObjA.riskType" multiple placeholder="请选择" size="medium">
                           <el-option
                             v-for="item in riskTypeOptions"
                             :key="item"
@@ -345,27 +345,27 @@
                       </p>
                       <p class="step-4-p">
                         <span class="label">管控措施依据的标准和规范：</span>
-                        <el-input size="medium" v-model="stepObjD.standard"></el-input>
+                        <el-input size="medium" v-model="stepObjD.standard" maxlength="50"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">技术措施：</span>
-                        <el-input size="medium" v-model="stepObjD.technicalMeasures"></el-input>
+                        <el-input size="medium" v-model="stepObjD.technicalMeasures" maxlength="50"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管理措施：</span>
-                        <el-input size="medium" v-model="stepObjD.managerMeasures"></el-input>
+                        <el-input size="medium" v-model="stepObjD.managerMeasures" maxlength="50"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">教育措施：</span>
-                        <el-input size="medium" v-model="stepObjD.educationMeasures"></el-input>
+                        <el-input size="medium" v-model="stepObjD.educationMeasures" maxlength="50"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">防护措施：</span>
-                        <el-input size="medium" v-model="stepObjD.protectMeasures"></el-input>
+                        <el-input size="medium" v-model="stepObjD.protectMeasures" maxlength="50"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">应急措施：</span>
-                        <el-input size="medium" v-model="stepObjD.emergencyMeasures"></el-input>
+                        <el-input size="medium" v-model="stepObjD.emergencyMeasures" maxlength="50"></el-input>
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
@@ -424,7 +424,7 @@ export default {
         pointC: '',
         identifierRange: '',
         workStep: '',
-        riskType: '',
+        riskType: [],
         riskReason: '',
         riskPointType: '',
         identifierWay: ''
@@ -675,7 +675,7 @@ export default {
         pointC: d.riskName ? d.riskName : '',
         identifierRange: d.project ? d.project : '',
         workStep: d.work ? d.work : '',
-        riskType: d.riskSourceType ? d.riskSourceType : '',
+        riskType: d.riskSourceType ? d.riskSourceType.split(',') : '',
         riskReason: d.factor ? d.factor.split('/') : '',
         riskPointType: d.riskType ? d.riskType : '',
         identifierWay: d.ram ? d.ram : ''
@@ -750,14 +750,14 @@ export default {
     },
     saveStepOne () {
       let vm = this
-      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
         let saveData = {
           oneName: vm.stepObjA.pointA,
           twoName: vm.stepObjA.pointB,
           riskName: vm.stepObjA.pointC,
           project: vm.stepObjA.identifierRange,
           work: vm.stepObjA.workStep,
-          riskSourceType: vm.stepObjA.riskType,
+          riskSourceType: vm.stepObjA.riskType.join(','),
           factor: vm.stepObjA.riskReason ? vm.stepObjA.riskReason.join('/') : '',
           riskType: vm.stepObjA.riskPointType,
           ram: vm.stepObjA.identifierWay
