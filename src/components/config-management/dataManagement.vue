@@ -100,6 +100,7 @@
       </el-container>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       width="40%"
       :visible.sync="dialogAddVisible"
       title="添加"
@@ -154,6 +155,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       width="40%"
       :visible.sync="dialogAddGroupVisible"
       title="添加分类"

@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     title="复核"
     :visible.sync="show"
     width="40%">
@@ -51,6 +52,7 @@
       </el-form-item>
     </el-form>
     <el-dialog
+      :close-on-click-modal="false"
       :title="'选择排查复核人'"
       :visible.sync="showTree"
       width="80%"

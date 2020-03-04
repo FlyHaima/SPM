@@ -1,6 +1,7 @@
 <template>
   <div v-if="dialogShow">
     <el-dialog
+      :close-on-click-modal="false"
       title="编辑"
       :visible.sync="dialogVisibleSwitch"
       >

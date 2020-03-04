@@ -92,6 +92,7 @@
       </el-container>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
       width="30%"
       title="编辑"

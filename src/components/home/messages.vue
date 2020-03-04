@@ -110,6 +110,7 @@
     </el-tab-pane>
   </el-tabs>
   <el-dialog
+    :close-on-click-modal="false"
     title="发布消息"
     :visible.sync="dialogFormMessageVisible"
     :width="'800px'"
@@ -207,6 +208,7 @@
     </div>
 
     <el-dialog
+      :close-on-click-modal="false"
       :title="'选择推送目标'"
       :visible.sync="showTreeTransfer"
       :width="'774px'"

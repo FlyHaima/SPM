@@ -78,6 +78,7 @@
       </el-container>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
       >
       <div slot="title">
@@ -116,6 +117,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="分配"
       :visible.sync="dialogRoleVisible"
       >

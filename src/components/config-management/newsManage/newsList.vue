@@ -71,6 +71,7 @@
         @current-change="tablesHandleCurrentPage"></el-pagination>
     </div>
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
       width="50%"
       :show-close="false"

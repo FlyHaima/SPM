@@ -53,7 +53,7 @@
       </div>
     </el-main>
 
-    <el-dialog :title="'预览'"
+    <el-dialog :close-on-click-modal="false" :title="'预览'"
                :visible.sync="showPre"
                :width="'1290px'" :top="'20px'">
       <div class="preview-box">
@@ -61,7 +61,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="'编辑'" v-loading="editorLoading"
+    <el-dialog :close-on-click-modal="false" :title="'编辑'" v-loading="editorLoading"
                :visible.sync="showEdit"
                :width="'1290px'" :top="'20px'">
       <div class="edit-box">

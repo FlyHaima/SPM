@@ -3,7 +3,7 @@
   <div class="organigram-wrap">
     <div id="mountNode"></div>
 
-    <el-dialog title="编辑" :visible.sync="dialogVisibleEdit" v-loading="pageLoading">
+    <el-dialog :close-on-click-modal="false" title="编辑" :visible.sync="dialogVisibleEdit" v-loading="pageLoading">
       <div class="form-modal">
         <el-form
           ref="form"

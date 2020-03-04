@@ -269,6 +269,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="分配"
       :visible.sync="dialogRoleVisible"
       >

@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     title="详情"
     :visible.sync="show"
     width="60%">

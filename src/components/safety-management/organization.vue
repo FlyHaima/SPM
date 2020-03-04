@@ -196,7 +196,7 @@
       </el-tabs>
     </el-main>
 
-    <el-dialog title="主要职责" :visible.sync="dutyVisible" width="30%">
+    <el-dialog :close-on-click-modal="false" title="主要职责" :visible.sync="dutyVisible" width="30%">
       <el-form ref="dutyForm" label-width="80px">
         <el-form-item label="主要职责">
           <el-input v-model="dutyPostData" type="textarea"
@@ -210,7 +210,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="添加节点" :visible.sync="addTreeVisible" width="620px">
+    <el-dialog :close-on-click-modal="false" title="添加节点" :visible.sync="addTreeVisible" width="620px">
       <el-form :model="addOrgData">
         <el-form-item label="请输入节点名称：" :label-width="'140px'">
           <el-input v-model="addOrgData.deptName" autocomplete="off"></el-input>

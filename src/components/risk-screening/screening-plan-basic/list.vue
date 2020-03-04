@@ -180,6 +180,7 @@
       </div>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       title="提示"
       :visible.sync="dialogTipsVisible"
       width="35%">
@@ -221,6 +222,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="编辑机构"
       :visible.sync="dialogOrganizationVisible"
       width="30%">
@@ -256,6 +258,7 @@
       @reload="fetchInvestigationOptions"
     ></dialog-sort>
     <el-dialog
+      :close-on-click-modal="false"
       title="编辑"
       :visible.sync="dialogEditVisible"
       width="40%">

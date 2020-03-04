@@ -41,7 +41,7 @@
                   </el-upload>
                 </p>
 
-                <el-dialog :title="'计划发布'" :visible.sync="showPlanDialog"
+                <el-dialog :close-on-click-modal="false" :title="'计划发布'" :visible.sync="showPlanDialog"
                            :width="'1004px'"
                            :show-close="false">
                   <div class="plan-body">
@@ -127,7 +127,7 @@
                   </div>
                 </el-dialog>
 
-                <el-dialog :title="'编辑计划'" :visible.sync="showEditDialog"
+                <el-dialog :close-on-click-modal="false" :title="'编辑计划'" :visible.sync="showEditDialog"
                            :width="'1004px'"
                            :show-close="false">
                   <div class="plan-body">
@@ -483,7 +483,7 @@
             </el-main>
           </el-container>
 
-          <el-dialog :title="'详细'" :visible.sync="showDetailLog"
+          <el-dialog :close-on-click-modal="false" :title="'详细'" :visible.sync="showDetailLog"
                      :width="'970px'">
             <div class="detail-log">
               <el-collapse accordion v-model="colNames">

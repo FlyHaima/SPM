@@ -159,7 +159,7 @@
           </div>
         </div>
       </div>
-      <el-dialog title="修改密码" :visible.sync="dialogFormPasswordVisible">
+      <el-dialog :close-on-click-modal="false" title="修改密码" :visible.sync="dialogFormPasswordVisible">
         <div class="form-tips">
           修改密码提升密码强度，可以保障账号的安全性
         </div>
@@ -225,7 +225,7 @@
           <el-button @click="dialogFormPasswordVisible = false">取 消</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="修改绑定手机" :visible.sync="dialogFormTelVisible">
+      <el-dialog :close-on-click-modal="false" title="修改绑定手机" :visible.sync="dialogFormTelVisible">
         <div class="form-modal">
           <el-form
             :model="telForm"
