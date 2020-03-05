@@ -384,6 +384,7 @@ export default {
         // manager: fData.userName,
         // telNum: fData.telephone,
         // duty: fData.duty,
+        level: fData.level,
         workList: fData.workList,
         children: []
       }
