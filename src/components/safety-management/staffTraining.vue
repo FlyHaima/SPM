@@ -34,7 +34,8 @@
                     :on-success="importSuccess"
                     :on-error="importError"
                     :file-list="importList"
-                    :show-file-list="false">
+                    :show-file-list="false"
+                    :data="uploadDataTopic">
                     <a style="display: block; background: #79ce64; width: 108px; height: 36px; color: #fff; font-size: 16px; text-align: center; margin-left: 28px;"
                       v-loading="importting"><i class="el-icon-upload2" style="margin-right: 8px;"></i>导入题库
                     </a>
@@ -620,6 +621,9 @@ export default {
       uploadData: {
         token: ''
       },
+      uploadDataTopic: {
+        id: []
+      },
       activeName: 'tab_a',
       triggerAid: '',
       triggerCid: '',
@@ -711,6 +715,9 @@ export default {
       uploadHeader: {
         token: ''
       },
+      // uploadData: {
+      //   id: ''
+      // }, // 上传数据
       pickerDisabled: {
         // 验证时间范围
         disabledDate: (time) => {
@@ -1155,6 +1162,16 @@ export default {
     // 导入
     beforeImport (file) {
       this.uploading = true
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: `请选中至少一条`
+        })
+      }
+      this.uploadDataTopic.id = []
+      this.multipleSelection.forEach((item) => {
+        this.uploadDataTopic.id.push(item.id)
+      })
     },
     // 导入成功
     importSuccess (response, file, fileList) {
@@ -1164,13 +1181,6 @@ export default {
     },
     // 导入失败
     importError (file, fileList) {
-      if (this.multipleSelection.length === 0) {
-        this.$message({
-          type: 'warning',
-          message: `请选中至少一条课程`
-        })
-        return
-      }
       this.$notify.error('导入失败，请稍后重试')
     }
   },
