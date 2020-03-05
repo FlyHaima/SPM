@@ -32,10 +32,10 @@
         :data="treeData"
         :props="defaultProps"
         node-key="riskId"
+        default-expand-all
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
-        :default-expanded-keys="defaultOpenNode"
         ref="tree">
           <span
             class="custom-tree-node"
