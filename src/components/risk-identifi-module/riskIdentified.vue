@@ -647,6 +647,11 @@ export default {
       getDescribeList(riskId).then(res => {
         if (res.code === 200) {
           vm.riskList = res.data
+        } else {
+          vm.$message({
+            message: res.message,
+            type: 'warning'
+          })
         }
         vm.pageLoading = false
       })
@@ -735,6 +740,7 @@ export default {
             treeLevel: vm.currentTreeData.treeLevel
           }
           vm.getRiskTable(data)
+          vm.getRiskTree()
         }
         vm.pageLoading = false
       })
