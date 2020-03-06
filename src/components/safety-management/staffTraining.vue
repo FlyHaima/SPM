@@ -104,7 +104,7 @@
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload class="upload-demo"
                                    :data="uploadData"
@@ -189,7 +189,7 @@
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload class="upload-demo"
                                    :data="uploadData"
