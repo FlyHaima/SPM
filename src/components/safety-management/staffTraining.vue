@@ -106,11 +106,10 @@
                     <div class="dialog-inner-all">
                       <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
-                        <el-upload multiple
-                                   class="upload-demo"
+                        <el-upload class="upload-demo"
                                    :data="uploadData"
                                    :action="uploadingAddress"
-                                   accept=".doc, .docx, .mp4"
+                                   accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP"
                                    :limit="3"
                                    :before-upload="handleBeforeUpload"
                                    :on-success="handleSuccess"
@@ -192,11 +191,10 @@
                     <div class="dialog-inner-all">
                       <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
-                        <el-upload multiple
-                                   class="upload-demo"
+                        <el-upload class="upload-demo"
                                    :data="uploadData"
                                    :action="uploadingAddress"
-                                   accept=".doc, .docx, .mp4"
+                                   accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP"
                                    :limit="3"
                                    :before-upload="handleBeforeUpload"
                                    :on-success="handleSuccessA"
@@ -977,20 +975,40 @@ export default {
     },
     // upload前，获取七牛云的token
     handleBeforeUpload (file) {
-      // this.uploading = true
-      // const isLt1M = file.size / 1024 / 1024 < 1
-      // if (!isLt1M) {
-      //   this.$message.error('上传头像图片大小不能超过 1MB!')
-      //   this.uploading = false
-      // }
+      let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      // .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP
+      const extens = testmsg === 'xls'
+      const extens1 = testmsg === 'xlsx'
+      const extens2 = testmsg === 'pdf'
+      const extens3 = testmsg === 'doc'
+      const extens4 = testmsg === 'docx'
+      const extens5 = testmsg === 'ppt'
+      const extens6 = testmsg === 'pptx'
+      const extens7 = testmsg === 'AVI'
+      const extens8 = testmsg === 'mov'
+      const extens9 = testmsg === 'rmvb'
+      const extens10 = testmsg === 'rm'
+      const extens11 = testmsg === 'FLV'
+      const extens12 = testmsg === 'mp4'
+      const extens13 = testmsg === '3GP'
+      // const isLt2M = file.size / 1024 / 1024 < 10
+      if (!extens && !extens1 && !extens2 && !extens3 && !extens4 && !extens5 && !extens6 && !extens7 && !extens8 && !extens9 && !extens10 && !extens11 && !extens12 && !extens13) {
+        this.$message({
+          message: '上传文件只能是 .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP格式!',
+          type: 'warning'
+        })
+        return false
+      }
       return getQiNiuToken().then((res) => {
         this.uploadData.token = res
       })
+      // return extens || extens1 || extens2 || extens3 || extens4 || extens5 || extens6 || extens7 || extens8 || extens9 || extens10 || extens11 || extens12 || extens13
     },
     // 上传结束后，返回上传结果
     handleSuccess (response, file, fileList) {
       this.fileList = []
       fileList.forEach(item => {
+        debugger
         let fItem = {
           name: item.name, // 附件名称
           path: this.fileAddress + item.response.key, // 附件路径
