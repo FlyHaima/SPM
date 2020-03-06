@@ -21,7 +21,7 @@
                   <span class="user-value">{{userInfo.userName}}</span>
                 </li>
                 <li class="user-list-item">
-                  <span class="user-label">账户名:</span>
+                  <span class="user-label">账号:</span>
                   <span class="user-value">{{userInfo.accountName}}</span>
                 </li>
                 <li class="user-list-item">

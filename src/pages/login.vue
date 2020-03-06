@@ -122,7 +122,7 @@
                   v-model.trim="form.accountName"
                   autocomplete="off"
                   maxlength="25"
-                  placeholder="请输入用户名">
+                  placeholder="请输入账号">
                   <i slot="prefix" class="icon-form icon-form-01"></i>
                 </el-input>
               </el-form-item>

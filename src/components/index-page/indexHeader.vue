@@ -25,7 +25,17 @@
         </ul>
       </li>
       <li>
-        <div class="btn user-name-btn" @click="goUserPage()"><i></i>{{userName}}</div>
+        <div
+          class="btn user-name-btn"
+          @click="goUserPage()">
+            <i></i>
+            <template v-if="userName">
+              {{userName}}
+            </template>
+            <template v-else>
+              {{accountName}}
+            </template>
+        </div>
       </li>
     </ul>
     <div class="quit-btn inline-block" @click="quitHandle()" title="退出登录">
@@ -178,7 +188,7 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    width: 700px;
+    // width: 700px;
     &>li{
       position: relative;
       height: 39px;
@@ -186,6 +196,9 @@ export default {
       color: #fff;
       cursor: pointer;
       font-size: 20px;
+      + li{
+        margin-left: 30px;
+      }
       .btn{
         i{
           display: inline-block;

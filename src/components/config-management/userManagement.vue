@@ -213,11 +213,11 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          label="姓名:"
+          label="用户名:"
           prop="userName">
           <el-input
             v-model.trim="form.userName"
-            placeholder="请输入姓名(不可输入数字)"
+            placeholder="请输入用户名(不可输入数字)"
             maxlength="15"
             autocomplete></el-input>
         </el-form-item>
@@ -353,10 +353,13 @@ export default {
       rules: {
         accountName: [
           { required: true, message: '请输入账号', trigger: 'blur' },
-          { validator: accountNameValidator, trigger: 'blur' }
+          { validator: accountNameValidator, trigger: 'change' }
         ],
         roleId: [
           { required: true, message: '请选择角色', trigger: 'change' }
+        ],
+        userName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ]
         // telephone: [
         //   // {
