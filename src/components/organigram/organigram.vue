@@ -277,6 +277,7 @@ export default {
                   text = '<span style="font-weight: 600;">人员：</span>'
                     + '<br/><span style="font-weight: 600;">电话：</'
                     + 'span><br/><span style="font-weight: 600;">主要职责：</span>'
+                    + '<br/><span style="font-weight: 600;">层级：</span>' + model.level
                 } else if (list.length === 1) {
                   let worker = []
 
@@ -285,8 +286,8 @@ export default {
                     text = '<span style="font-weight: 600;">管理人员：</span>'
                     worker.forEach((item) => {
                       let itemObj = vm.findItem(item)
-                      let userName = itemObj.userName ? itemObj.userName : ''
-                      let telephone = itemObj.telephone ? itemObj.telephone : ''
+                      let userName = itemObj.userName == null || itemObj.userName == '' ? '' : itemObj.userName
+                      let telephone = itemObj.telephone == null || itemObj.telephone == '' ? '' : itemObj.telephone
                       text += '<br/>' + userName + '&nbsp;&nbsp;' + telephone
                     })
                     text += '<br/><span style="font-weight: 600;">主要职责：</span>' + list[0].duty
@@ -295,6 +296,7 @@ export default {
                       + 'span><br/><span style="font-weight: 600;">电话：</'
                       + 'span><br/><span style="font-weight: 600;">主要职责：</span>' + list[0].duty
                   }
+                  text += '<br/><span style="font-weight: 600;">层级：</span>' + model.level
                 } else if (list.length === 2) {
                   let managerA = [],
                       managerB = [],
@@ -330,6 +332,7 @@ export default {
                     text += '<br/>' + item.userName + '&nbsp;&nbsp;' + item.telephone
                   })
                   text += '<br/><span style="font-weight: 600;">主要职责：</span>' + dutyB
+                  text += '<br/><span style="font-weight: 600;">层级：</span>' + model.level
                 }
                 return text
               },
@@ -431,7 +434,6 @@ export default {
       this.graph.fitView()
       this.graph.refresh()
       this.graph.on('node:contextmenu', (e) =>{
-        // console.log(e.item._cfg.model)
         this.filter(e.item._cfg.model.workList)
         this.subId = e.item._cfg.id
         this.dialogVisibleEdit = true

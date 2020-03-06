@@ -345,27 +345,27 @@
                       </p>
                       <p class="step-4-p">
                         <span class="label">管控措施依据的标准和规范：</span>
-                        <el-input size="medium" v-model="stepObjD.standard" maxlength="50"></el-input>
+                        <el-input size="medium" v-model="stepObjD.standard" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">技术措施：</span>
-                        <el-input size="medium" v-model="stepObjD.technicalMeasures" maxlength="50"></el-input>
+                        <el-input size="medium" v-model="stepObjD.technicalMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管理措施：</span>
-                        <el-input size="medium" v-model="stepObjD.managerMeasures" maxlength="50"></el-input>
+                        <el-input size="medium" v-model="stepObjD.managerMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">教育措施：</span>
-                        <el-input size="medium" v-model="stepObjD.educationMeasures" maxlength="50"></el-input>
+                        <el-input size="medium" v-model="stepObjD.educationMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">防护措施：</span>
-                        <el-input size="medium" v-model="stepObjD.protectMeasures" maxlength="50"></el-input>
+                        <el-input size="medium" v-model="stepObjD.protectMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">应急措施：</span>
-                        <el-input size="medium" v-model="stepObjD.emergencyMeasures" maxlength="50"></el-input>
+                        <el-input size="medium" v-model="stepObjD.emergencyMeasures" maxlength="250"></el-input>
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
@@ -455,9 +455,8 @@ export default {
         }
       ],
       // 风险类别/事故后果
-      riskTypeOptions: ['物体打击', '车辆伤害', '机械伤害', '触电', '淹溺', '灼烫', '火灾',
-        '高处坠落', '坍塌', '冒顶片帮', '透水', '放炮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸',
-        '其它爆炸', '中毒和窒息', '其它伤害'],
+      riskTypeOptions: ['触电', '淹溺', '灼烫', '火灾', '坍塌', '透水', '放炮', '物体打击', '高处坠落',
+        '车辆伤害', '机械伤害', '起重伤害', '冒顶片帮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸', '其它爆炸', '中毒和窒息', '其它伤害'],
       // 风险因素
       reasonOptions: [
         {
@@ -647,6 +646,11 @@ export default {
       getDescribeList(riskId).then(res => {
         if (res.code === 200) {
           vm.riskList = res.data
+        } else {
+          vm.$message({
+            message: res.message,
+            type: 'warning'
+          })
         }
         vm.pageLoading = false
       })
@@ -735,6 +739,7 @@ export default {
             treeLevel: vm.currentTreeData.treeLevel
           }
           vm.getRiskTable(data)
+          vm.getRiskTree()
         }
         vm.pageLoading = false
       })

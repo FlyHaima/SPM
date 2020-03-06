@@ -384,6 +384,7 @@ export default {
         // manager: fData.userName,
         // telNum: fData.telephone,
         // duty: fData.duty,
+        level: fData.level,
         workList: fData.workList,
         children: []
       }
@@ -419,6 +420,7 @@ export default {
             message: '节点设置成功'
           })
           this.getOrgTree(true)
+          this.getLeaderTree()
         } else {
           this.$message({
             type: 'error',
@@ -454,6 +456,7 @@ export default {
               message: '节点设置成功'
             })
             this.getOrgTree(true)
+            this.getLeaderTree()
           }
         })
       }).catch(() => {
@@ -479,6 +482,7 @@ export default {
               message: '删除成功!'
             })
             this.getOrgTree(true)
+            this.getLeaderTree()
           } else {
             this.$message({
               type: 'warning',
