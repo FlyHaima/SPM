@@ -1008,7 +1008,6 @@ export default {
     handleSuccess (response, file, fileList) {
       this.fileList = []
       fileList.forEach(item => {
-        debugger
         let fItem = {
           name: item.name, // 附件名称
           path: this.fileAddress + item.response.key, // 附件路径
