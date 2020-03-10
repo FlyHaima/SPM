@@ -57,6 +57,7 @@
           style="width: 100%"
           align="center">
           <el-table-column
+            fixed="left"
             type="selection" align="center"
             width="50">
           </el-table-column>
@@ -218,7 +219,8 @@
               v-model="item.value"
               type="datetime"
               placeholder="选择日期时间"
-              @change="changeDate">
+              @change="changeDate"
+              :clearable='false'>
             </el-date-picker>
             <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
             <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
@@ -237,7 +239,7 @@
       :close-on-click-modal="false"
       title="编辑机构"
       :visible.sync="dialogOrganizationVisible"
-      width="30%">
+      width="450px">
       <div style="height: 450px">
         <template>
           <tree-organization
@@ -245,7 +247,13 @@
             :tree-data= "organizationTree"
             editVisible
             @editTreeData="editOrgTreeData"
-          ></tree-organization>
+          >
+          <el-button
+            class="btn-sync"
+            type="primary"
+            size="small"
+            @click="syncOrganizationData">同步数据</el-button>
+          </tree-organization>
         </template>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -306,6 +314,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
@@ -341,7 +350,7 @@ export default {
       currentPlanId: '', // 当前清单项的id
       listDate: [
         {
-          value: ''
+          value: moment().format('YYYY-MM-DD HH:mm:ss')
         }
       ],
       checkedAuto: null,
@@ -366,7 +375,6 @@ export default {
   },
   created () {
     this.fetchUnitTreeData()
-    this.fetchOrgTreeData()
   },
   methods: {
     // 切换分页数量
@@ -434,6 +442,7 @@ export default {
           if (res.data.code === 200) {
             // let initTableData = []
             this.initTableData = res.data.data
+            this.page.total = res.data.total
             this.initTableData.forEach(item => {
               if (item.autoPush === null) {
                 item.isPushDisabled = true
@@ -457,12 +466,54 @@ export default {
     },
     // 获取组织机构树数据
     fetchOrgTreeData () {
-      // let userId = sessionStorage.getItem('userId')
+      let vm = this
       axios
         .get('basticHidden/getDeptList')
         .then((res) => {
           if (res.data.code === 200) {
-            this.organizationTree = res.data.data
+            vm.organizationTree = res.data.data
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+        })
+    },
+    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
+    syncOrganizationData () {
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          // 如果size是0，表示无数据，如果是1，表示有数据
+          if (res.data.length === 0) {
+            this.$confirm('此机构目前没有数据, 需要从安全技术管理的组织机构里同步数据吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.fetchOrgTreeData()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消同步'
+              })
+            })
+          } else {
+            this.$confirm('确认更新此组织机构吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.fetchOrgTreeData()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消同步'
+              })
+            })
           }
         })
     },
@@ -576,12 +627,20 @@ export default {
     // 计划发布
     handleSendMsg () {
       let vm = this
+      vm.sendPlanSwitch = true
+      vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm:ss')}]
+      if (vm.multipleSelection.length === 0) {
+        vm.$message({
+          message: '发布选项不能为空，请至少选择一个',
+          type: 'warning'
+        })
+        return
+      }
       vm.dialogTipsVisible = true
-      vm.tableData.forEach(item => {
+      vm.multipleSelection.forEach(item => {
         if (item.autoPush === '手动') {
           vm.sendPlanSwitch = false
         } else {
-          // vm.sendPlanSwitch = false
         }
       })
     },
@@ -594,11 +653,11 @@ export default {
     },
     savePlanHandle () {
       let vm = this
-      vm.listDate = vm.filterListDate(vm.listDate)
+      let listDate = vm.filterListDate(vm.listDate)
       let sendData = {
         list: [{
-          spmProductHiddenList: vm.tableData,
-          checkTime: vm.listDate
+          spmBasicHiddenList: vm.multipleSelection,
+          checkTime: listDate
         }]
       }
       vm.submitting = true
@@ -609,6 +668,7 @@ export default {
             vm.$notify.success('清单任务计划发布完成')
             vm.dialogTipsVisible = false
             vm.fetchSortTableData()
+            vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm:ss')}]
           } else {
             vm.$message({
               message: res.data.message,
@@ -633,7 +693,7 @@ export default {
     },
     addDateHandle () {
       this.listDate.push({
-        value: ''
+        value: moment().format('YYYY-MM-DD HH:mm:ss')
       })
     },
     delDateHandle () {
@@ -678,24 +738,26 @@ export default {
         })
         return
       }
-      console.log(vm.multipleSelection)
       vm.pageLoading = true
       let ids = []
       vm.multipleSelection.forEach(item => {
         ids.push(item.id)
       })
       let postD = {
+        // riskId: vm.currentPlanId,
+        // basicId: ids.join(',')
         riskId: vm.currentPlanId,
         id: ids.join(',')
       }
       copyProductHidden(postD).then((res) => {
         if (res.code === 200) {
+          this.$notify.success('复制成功')
           vm.fetchTableData()
           vm.pageLoading = false
         } else {
           vm.pageLoading = false
           vm.$message({
-            message: '请求发生错误，请稍后重试',
+            message: res.message,
             type: 'warning'
           })
         }
@@ -863,5 +925,9 @@ export default {
   line-height: 30px;
   color: #ababab;
   margin-left: 20px;
+}
+.btn-sync{
+  position: absolute;
+  right: 0;
 }
 </style>

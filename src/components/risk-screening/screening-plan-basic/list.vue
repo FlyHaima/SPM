@@ -226,7 +226,7 @@
       :close-on-click-modal="false"
       title="编辑机构"
       :visible.sync="dialogOrganizationVisible"
-      width="30%">
+      width="450px">
       <div style="height: 450px">
         <template>
           <tree-organization
@@ -390,10 +390,7 @@ export default {
   created () {
     // 设置上传的header 添加token
     this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
-    // this.listDate.value = Date.parse(moment().format('YYYY-MM-DD HH:mm:s'))
-    // this.listDate.value = moment().format('YYYY-MM-DD HH:mm:ss')
     this.fetchListMenuData()
-    // this.fetchOrgTreeData()
   },
   methods: {
     // 切换分页数量
