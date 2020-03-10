@@ -82,7 +82,9 @@
           @selection-change="handleSelectionChange"
           v-loading="tablesLoading">
           <el-table-column
-            type="selection" align="center"
+            fixed="left"
+            type="selection"
+            align="center"
             width="50">
           </el-table-column>
           <el-table-column
@@ -228,7 +230,7 @@
       :visible.sync="dialogOrganizationVisible"
       width="450px">
       <div style="height: 450px">
-        <template>
+        <template v-loading="pageLoading">
           <tree-organization
             :tree-name="'组织机构'"
             :tree-data="organizationTree"
@@ -328,7 +330,8 @@ export default {
       pageLoading: false,
       tablesLoading: false,
       submitting: false,
-      sendPlanSwitch: true, // 计划发布开关
+      sendPlanSwitch: true, // 计划发布手动自动区别开关
+      isSendPlan: true, // 是否可以发布计划开关
       btnDisabledProductSend: false, // 计划发布可用开关
       dialogTipsVisible: false, // 添加弹框显示开关
       dialogAddVisible: false, // 添加弹框显示开关
@@ -391,6 +394,7 @@ export default {
     // 设置上传的header 添加token
     this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     this.fetchListMenuData()
+    this.fetchPlanOrganizationData()
   },
   methods: {
     // 切换分页数量
@@ -534,7 +538,7 @@ export default {
       this.fetchTableData()
       this.fetchInvestigationOptions()
     },
-    // 获取组织机构树数据
+    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
     fetchOrgTreeData () {
       let vm = this
       axios
@@ -542,6 +546,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             vm.organizationTree = res.data.data
+            this.$notify.success('更新成功')
           } else {
             vm.$message({
               message: res.data.message,
@@ -552,7 +557,24 @@ export default {
         .finally(() => {
         })
     },
-    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
+    // 获取计划下的组织机构树
+    fetchPlanOrganizationData () {
+      this.pageLoading = true
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.organizationTree = res.data.data
+            this.pageLoading = false
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    // 判断组织机构树状态，同步组织机构树数据，是从安全技术管理的组织机构里同步数据
     syncOrganizationData () {
       axios
         .get('basticHidden/getDeptListSize')
@@ -745,11 +767,23 @@ export default {
         })
         return
       }
-      vm.dialogTipsVisible = true
       vm.multipleSelection.forEach(item => {
-        if (item.autoPush === '手动') {
-          vm.sendPlanSwitch = false
+        if (!item.investigation) {
+          vm.$message({
+            message: '发布选项的排查频率不能为空',
+            type: 'warning'
+          })
+          vm.isSendPlan = false
         } else {
+          vm.isSendPlan = true
+        }
+      })
+      vm.multipleSelection.forEach(item => {
+        if (vm.isSendPlan) {
+          vm.dialogTipsVisible = true
+          if (item.autoPush === '手动') {
+            vm.sendPlanSwitch = false
+          }
         }
       })
     },

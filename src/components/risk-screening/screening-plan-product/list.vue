@@ -334,7 +334,8 @@ export default {
       pageLoading: false,
       submitting: false,
       tablesLoading: false,
-      sendPlanSwitch: true, // 计划发布开关
+      sendPlanSwitch: true, // 计划发布手动自动区别开关
+      isSendPlan: true, // 是否可以发布计划开关
       btnDisabledProductSend: false, // 计划发布可用开关
       dialogTipsVisible: false, // 添加弹框显示开关
       // dialogAddDangerVisible: false, // 添加随机隐患弹框开关
@@ -375,6 +376,7 @@ export default {
   },
   created () {
     this.fetchUnitTreeData()
+    this.fetchPlanOrganizationData()
   },
   methods: {
     // 切换分页数量
@@ -464,7 +466,7 @@ export default {
     handleAddDanger () {
       this.dialogAddDangerVisible = true
     },
-    // 获取组织机构树数据
+    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
     fetchOrgTreeData () {
       let vm = this
       axios
@@ -472,6 +474,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             vm.organizationTree = res.data.data
+            this.$notify.success('更新成功')
           } else {
             vm.$message({
               message: res.data.message,
@@ -482,7 +485,24 @@ export default {
         .finally(() => {
         })
     },
-    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
+    // 获取计划下的组织机构树
+    fetchPlanOrganizationData () {
+      this.pageLoading = true
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.organizationTree = res.data.data
+            this.pageLoading = false
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    // 判断组织机构树状态，同步组织机构树数据，是从安全技术管理的组织机构里同步数据
     syncOrganizationData () {
       axios
         .get('basticHidden/getDeptListSize')
@@ -636,11 +656,23 @@ export default {
         })
         return
       }
-      vm.dialogTipsVisible = true
       vm.multipleSelection.forEach(item => {
-        if (item.autoPush === '手动') {
-          vm.sendPlanSwitch = false
+        if (!item.investigation) {
+          vm.$message({
+            message: '发布选项的排查频率不能为空',
+            type: 'warning'
+          })
+          vm.isSendPlan = false
         } else {
+          vm.isSendPlan = true
+        }
+      })
+      vm.multipleSelection.forEach(item => {
+        if (vm.isSendPlan) {
+          vm.dialogTipsVisible = true
+          if (item.autoPush === '手动') {
+            vm.sendPlanSwitch = false
+          }
         }
       })
     },
@@ -656,7 +688,7 @@ export default {
       let listDate = vm.filterListDate(vm.listDate)
       let sendData = {
         list: [{
-          spmBasicHiddenList: vm.multipleSelection,
+          spmProductHiddenList: vm.multipleSelection,
           checkTime: listDate
         }]
       }
