@@ -11,6 +11,7 @@
     <div class="tree-title">
       <i class="double-line-icon"></i>
       {{treeName}}
+      <slot></slot>
       <div v-show="searchVisible" class="tree-search">
         <el-input
           size="mini"

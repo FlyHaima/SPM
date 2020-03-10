@@ -78,6 +78,7 @@ export default {
   computed: {
     ...mapState({
       userName: (state) => state.userInfo.userName,
+      accountName: (state) => state.userInfo.accountName,
       msgNum: (state) => state.msgNum,
       taskNum: (state) => state.taskNum
     })

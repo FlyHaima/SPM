@@ -183,7 +183,7 @@
       :close-on-click-modal="false"
       title="提示"
       :visible.sync="dialogTipsVisible"
-      width="35%">
+      width="40%">
       <div class="dialog-content">
         <div class="dialog-tips-content" v-if="sendPlanSwitch">
           <i class="el-icon-circle-check dialog-tips-icon"></i>
@@ -206,7 +206,8 @@
               type="datetime"
               placeholder="选择日期时间"
               @change="changeDate"
-              :picker-options="pickerDisabled">
+              :picker-options="pickerDisabled"
+              :clearable='false'>
             </el-date-picker>
             <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
             <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
@@ -233,7 +234,13 @@
             :tree-data="organizationTree"
             editVisible
             @editTreeData="editOrgTreeData"
-          ></tree-organization>
+          >
+          <el-button
+            class="btn-sync"
+            type="primary"
+            size="small"
+            @click="syncOrganizationData">同步数据</el-button>
+          </tree-organization>
         </template>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -342,7 +349,7 @@ export default {
       tableData: [], // 基础类清单列表数据
       listDate: [
         {
-          value: Date.parse(moment().format('YYYY-MM-DD'))
+          value: moment().format('YYYY-MM-DD HH:mm:ss')
         }
       ],
       pickerDisabled: {
@@ -383,9 +390,10 @@ export default {
   created () {
     // 设置上传的header 添加token
     this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
-    // this.listDate.value = Date.parse(moment().format('YYYY-MM-DD'))
+    // this.listDate.value = Date.parse(moment().format('YYYY-MM-DD HH:mm:s'))
+    // this.listDate.value = moment().format('YYYY-MM-DD HH:mm:ss')
     this.fetchListMenuData()
-    this.fetchOrgTreeData()
+    // this.fetchOrgTreeData()
   },
   methods: {
     // 切换分页数量
@@ -531,12 +539,54 @@ export default {
     },
     // 获取组织机构树数据
     fetchOrgTreeData () {
-      // let userId = sessionStorage.getItem('userId')
+      let vm = this
       axios
         .get('basticHidden/getDeptList')
         .then((res) => {
           if (res.data.code === 200) {
-            this.organizationTree = res.data.data
+            vm.organizationTree = res.data.data
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+        })
+    },
+    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
+    syncOrganizationData () {
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          // 如果size是0，表示无数据，如果是1，表示有数据
+          if (res.data.length === 0) {
+            this.$confirm('此机构目前没有数据, 需要从安全技术管理的组织机构里同步数据吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.fetchOrgTreeData()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消同步'
+              })
+            })
+          } else {
+            this.$confirm('确认更新此组织机构吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.fetchOrgTreeData()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消同步'
+              })
+            })
           }
         })
     },
@@ -568,19 +618,6 @@ export default {
         // after cancel
         this.pageLoading = false
       })
-      // axios
-      //   .post('dept/updateDept')
-      //   .then((res) => {
-      //     if (res.data.code === 200) {
-      //       vm.$notify.success('修改成功')
-      //       vm.fetchOrgTreeData()
-      //     } else {
-      //       vm.$message({
-      //         message: res.data.message,
-      //         type: 'warning'
-      //       })
-      //     }
-      //   })
     },
     // 编辑机构
     eiditOrganizationHandle () {
@@ -702,12 +739,20 @@ export default {
     // 计划发布
     handleSendMsg () {
       let vm = this
+      vm.sendPlanSwitch = true
+      vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm:ss')}]
+      if (vm.multipleSelection.length === 0) {
+        vm.$message({
+          message: '发布选项不能为空，请至少选择一个',
+          type: 'warning'
+        })
+        return
+      }
       vm.dialogTipsVisible = true
-      vm.tableData.forEach(item => {
+      vm.multipleSelection.forEach(item => {
         if (item.autoPush === '手动') {
           vm.sendPlanSwitch = false
         } else {
-          // vm.sendPlanSwitch = false
         }
       })
     },
@@ -723,7 +768,7 @@ export default {
       let listDate = vm.filterListDate(vm.listDate)
       let sendData = {
         list: [{
-          spmBasicHiddenList: vm.tableData,
+          spmBasicHiddenList: vm.multipleSelection,
           checkTime: listDate
         }]
       }
@@ -735,6 +780,7 @@ export default {
             vm.$notify.success('清单任务计划发布完成')
             vm.dialogTipsVisible = false
             vm.fetchTableData()
+            vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm:ss')}]
           } else {
             vm.$message({
               message: res.data.message,
@@ -759,7 +805,7 @@ export default {
     },
     addDateHandle () {
       this.listDate.push({
-        value: ''
+        value: moment().format('YYYY-MM-DD HH:mm:ss')
       })
     },
     delDateHandle () {
@@ -818,6 +864,7 @@ export default {
       }
       copyBasticHidden(postD).then((res) => {
         if (res.code === 200) {
+          this.$notify.success('复制成功')
           vm.fetchListMenuData()
           vm.pageLoading = false
         } else {
@@ -951,7 +998,8 @@ export default {
     }
   }
   >>> .el-date-editor{
-    width: 280px;
+    // width: 280px;
+    width: auto;
     .el-input__inner{
       height: 30px;
       line-height: 30px;
@@ -986,5 +1034,9 @@ export default {
   line-height: 30px;
   color: #ababab;
   margin-left: 20px;
+}
+.btn-sync{
+  position: absolute;
+  right: 0;
 }
 </style>

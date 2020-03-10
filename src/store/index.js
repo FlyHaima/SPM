@@ -7,7 +7,8 @@ Vue.use(Vuex)
 const state = { // 要设置的全局访问的state对象
   passwordLevel: '',
   userInfo: {
-    userName: '' // 用户名
+    userName: '', // 用户名
+    accountName: '' // 账号
   },
   msgNum: '', // 信息数量
   taskNum: '', // 待办数量
