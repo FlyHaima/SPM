@@ -212,6 +212,9 @@
 
     <el-dialog :close-on-click-modal="false" title="添加节点" :visible.sync="addTreeVisible" width="620px">
       <el-form :model="addOrgData">
+        <el-form-item label="社会信用代码：" :label-width="'140px'">
+          <el-input v-model="addOrgData.companyId" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="请输入节点名称：" :label-width="'140px'">
           <el-input v-model="addOrgData.deptName" autocomplete="off"></el-input>
         </el-form-item>
@@ -266,7 +269,8 @@ export default {
         deptName: '',
         pId: '',
         position: '',
-        responsibility: ''
+        responsibility: '',
+        companyId: ''
       },
       editOrgData: {
         deptName: '',
@@ -399,16 +403,25 @@ export default {
     addTreeData (data) {
       // console.log(data)
       this.addOrgData.pId = data.deptId
+      this.addOrgData.companyId = data.companyId
       this.addOrgData.level = Number(data.level) + 1
       this.minLevel = Number(data.level) + 1
       this.addTreeVisible = true
     },
     confirmAdd () {
       let rex = /^.{1,12}$/
+      let rex1 = /^.{1,30}$/
       if (!rex.test(this.addOrgData.deptName)) {
         this.$message({
           type: 'error',
           message: '节点名称不能为空,且不超过12个字'
+        })
+        return
+      }
+      if (!rex1.test(this.addOrgData.companyId)) {
+        this.$message({
+          type: 'error',
+          message: '社会信用代码不能为空,且不超过30个字符'
         })
         return
       }

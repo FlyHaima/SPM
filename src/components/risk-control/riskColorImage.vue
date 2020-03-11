@@ -623,6 +623,12 @@ export default {
         ctx.globalAlpha = 0.7
         ctx.fill()
         ctx.stroke()
+        ctx.font= '20px Georgia'
+        ctx.fillStyle = 'black'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(item.riskName, item.x1 + item.width/2, (item.y1 + item.height * 0.5), item.width)
+        ctx.stroke()
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
