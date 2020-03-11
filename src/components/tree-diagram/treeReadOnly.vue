@@ -69,6 +69,10 @@ export default {
       type: Array,
       default: null
     },
+    currentId: {
+      type: String,
+      default: ''
+    },
     treeName: {
       type: String,
       default: ''
@@ -96,6 +100,7 @@ export default {
   },
   data () {
     return {
+      key: '',
       filterText: '',
       defaultProps: {
         children: 'children',
@@ -108,24 +113,14 @@ export default {
     }
   },
   created () {
-    // this.$nextTick(function () {
-    //   this.treeData.forEach(row => {
-    //     console.log(row)
-    //     this.$refs.tree.setCurrentKey(row.riskId)
-    //   })
-    // })
   },
   methods: {
     //  默认高亮显示一条数据
     highLightTreeNode () {
-      // let id = this.treeData[0].riskId
-      // console.log(this.treeData[0].riskId)
-      this.treeData.forEach(row => {
-        if (row.pId === '0') {
-          this.$refs.tree.setCurrentKey(row.riskId)
-        }
+      let vm = this
+      this.$nextTick(function () {
+        vm.$refs.tree.setCurrentKey(vm.currentId)
       })
-      // this.$refs.tree.setCurrentKey(id)
     },
     // 获取一节点集合
     fetchTreeNodeId () {

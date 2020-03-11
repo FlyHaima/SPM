@@ -4,6 +4,7 @@
       <tree-read-only
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
+        :current-id ="currentPlanId"
         editOrgVisible
         @eidit-org="eiditOrganizationHandle"
         @tree-click-handle="treeClickHandle">

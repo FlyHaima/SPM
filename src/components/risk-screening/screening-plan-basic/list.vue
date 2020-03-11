@@ -931,7 +931,7 @@ export default {
       copyBasticHidden(postD).then((res) => {
         if (res.code === 200) {
           this.$notify.success('复制成功')
-          vm.fetchListMenuData()
+          vm.fetchTableData()
           vm.pageLoading = false
         } else {
           vm.pageLoading = false

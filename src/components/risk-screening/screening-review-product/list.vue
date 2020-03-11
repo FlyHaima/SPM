@@ -4,6 +4,7 @@
       <tree-read-only
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
+        :current-id ="currentPlanId"
         searchVisible
         shrinkVisible
         @tree-click-handle="treeClickHandle">
@@ -217,7 +218,6 @@ export default {
             vm.riskUnitTree = res.data.data
             if (vm.$route.query.id) {
               vm.currentPlanId = vm.$route.query.id
-              console.log(this.currentPlanId)
             } else {
               vm.currentPlanId = this.riskUnitTree[0].riskId
             }
