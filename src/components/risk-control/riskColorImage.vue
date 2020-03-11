@@ -214,11 +214,69 @@
                 label="风险点详情"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button type="text" @click="checkOutDetail(scope.row.id)">详情</el-button>
+                  <el-button type="text" @click="checkOutDetail(scope.row)">详情</el-button>
                 </template>
               </el-table-column>
             </el-table>
           </div>
+
+          <!-- 四色图风险点详情 -->
+          <el-dialog title="风险点详情"
+                    :visible.sync="detailVisible"
+                    width="580px" :append-to-body="true">
+            <div class="detail-p">
+              <div class="detail-key">风险点：</div>
+              <div class="detail-value">{{`${detailData.oneName}-${detailData.twoName}-${detailData.riskName}`}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">作业步骤：</div>
+              <div class="detail-value">{{detailData.work}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">风险类别/事故后果：</div>
+              <div class="detail-value">{{detailData.riskSourceType}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">风险因素：</div>
+              <div class="detail-value">{{detailData.factor}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">风险点类别：</div>
+              <div class="detail-value">{{detailData.riskType}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">三级风险单元编号：</div>
+              <div class="detail-value">{{`${detailData.oneNo}-${detailData.twoNo}-${detailData.orderNo}`}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">应采取的管控措施：</div>
+              <div class="detail-value">{{detailData.mustCs}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">管控措施依据的标准和规范：</div>
+              <div class="detail-value">{{detailData.csStand}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">技术措施：</div>
+              <div class="detail-value">{{detailData.technology}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">管理措施：</div>
+              <div class="detail-value">{{detailData.bmp}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">教育措施：</div>
+              <div class="detail-value">{{detailData.train}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">防护措施：</div>
+              <div class="detail-value">{{detailData.individual}}</div>
+            </div>
+            <div class="detail-p">
+              <div class="detail-key">应急措施：</div>
+              <div class="detail-value">{{detailData.emergency}}</div>
+            </div>
+          </el-dialog>
         </div>
       </div>
     </el-main>
@@ -299,7 +357,9 @@ export default {
       uploadVisible: false,
       uploadLoading: false,
       slidLoading: false,
-      starshMenu: null // 暂存右键的值
+      starshMenu: null, // 暂存右键的值
+      detailVisible: false,
+      detailData: {}
     }
   },
   mounted () {
@@ -623,11 +683,11 @@ export default {
         ctx.globalAlpha = 0.7
         ctx.fill()
         ctx.stroke()
-        ctx.font= '20px Georgia'
+        ctx.font = '20px Georgia'
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillText(item.riskName, item.x1 + item.width/2, (item.y1 + item.height * 0.5), item.width)
+        ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
         ctx.stroke()
       })
 
@@ -815,7 +875,6 @@ export default {
         vm.currentR = null
       }
       if (vm.currentR) {
-        console.log('currentR', vm.currentR)
         vm.leftDistance = vm.startx - vm.currentR.x1
         vm.topDistance = vm.starty - vm.currentR.y1
       } else {
@@ -994,7 +1053,11 @@ export default {
     uploadNewMap () {
       this.uploadVisible = true
     },
-    checkOutDetail () {}, // 点击查看详情
+    checkOutDetail (data) {
+      console.log(data)
+      this.detailVisible = true
+      this.detailData = data
+    }, // 点击查看详情
     confirmBind () { // 提交绑定区域
       let vm = this
       vm.layers.forEach(item => {
@@ -1197,6 +1260,20 @@ export default {
           }
         }
       }
+    }
+  }
+  .detail-p{
+    position: relative;
+    padding-left: 15em;
+    font-size: 15px;
+    min-height: 20px;
+    line-height: 20px;
+    .detail-key{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 14em;
+      text-align: right;
     }
   }
 </style>
