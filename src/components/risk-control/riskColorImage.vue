@@ -1054,7 +1054,7 @@ export default {
       this.uploadVisible = true
     },
     checkOutDetail (data) {
-      console.log(data)
+      // console.log(data)
       this.detailVisible = true
       this.detailData = data
     }, // 点击查看详情
