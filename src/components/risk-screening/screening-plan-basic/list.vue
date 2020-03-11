@@ -1,6 +1,6 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
         v-if="listMenuDataTag"
         :menu-name="'计划清单'"
@@ -93,19 +93,9 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop="investContent"
-            label="排查内容与排查标准"
-            header-align="center">
-          </el-table-column>
-          <el-table-column
-            prop="inspectionBasic"
-            label="检查依据"
-            align="center">
-          </el-table-column>
-          <el-table-column
             label="排查频率"
             header-align="center"
-            width="250px">
+            width="180px">
             <template slot-scope="scope">
               <el-select
                 @change="selChange($event, scope.row, tableData)"
@@ -126,9 +116,10 @@
             align="center">
             <el-table-column
               align="center"
-              width="220px">
+              width="160px">
               <template slot="header">
                 <el-checkbox
+                style="margin-right: 0"
                 v-model="checkedAuto"
                 @change="autoCheckChangeHandle">
                 自动推送</el-checkbox>
@@ -148,6 +139,16 @@
                 </el-radio-group>
               </template>
             </el-table-column>
+          </el-table-column>
+          <el-table-column
+            prop="investContent"
+            label="排查内容与排查标准"
+            header-align="center">
+          </el-table-column>
+          <el-table-column
+            prop="inspectionBasic"
+            label="检查依据"
+            align="center">
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -197,20 +198,34 @@
             <div class="dialog-tips-text">当前检查清单中存在手动推送的任务，请为手动推送的隐患任务设置<span class="color-primary">推送时间</span></div>
           </div>
           <div
-            v-for="(item,index) in listDate"
+            v-for="(item,index) in listDateInit"
             :key="index"
             ref="dateColumn"
             class="data-colum"
           >
             <span class="data-colum-label">推送时间{{index + 1}}：</span>
             <el-date-picker
-              v-model="item.value"
-              type="datetime"
-              placeholder="选择日期时间"
-              @change="changeDate"
+              class="push-date"
+              v-model="item.date"
+              type="date"
+              placeholder="选择日期"
               :picker-options="pickerDisabled"
-              :clearable='false'>
+              :clearable='false'
+              value-format="yyyy-MM-dd">
             </el-date-picker>
+            -
+            <el-time-select
+              class="push-time"
+              v-model="item.time"
+              :picker-options="{
+                start: '00:00',
+                step: '01:00',
+                end: '23:00'
+              }"
+              placeholder="选择时间"
+              :clearable='false'
+              value-format="HH:00">
+            </el-time-select>
             <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
             <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
           </div>
@@ -350,11 +365,19 @@ export default {
       }, // 添加清单菜单项的表单
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
+      // defaultDate: moment().format('YYYY-MM-DD'),
+      // defaultTime: moment().format('HH:00'),
+      listDateInit: [
+        {
+          date: moment().format('YYYY-MM-DD'),
+          time: moment().format('HH:00')
+        }
+      ], // 初始化日期时间格式，只到时间
       listDate: [
         {
-          value: moment().format('YYYY-MM-DD HH:mm:ss')
+          value: ''
         }
-      ],
+      ], // 传值后台的变量
       pickerDisabled: {
         // 验证时间范围
         disabledDate: (time) => {
@@ -669,6 +692,8 @@ export default {
             this.tableData = this.initTableData
 
             this.btnDisabledProductSend = this.tableData.length > 0
+
+            this.selChange()
           }
         })
         .finally(() => {
@@ -685,6 +710,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.investigationOptions = res.data.data
+            console.log(this.investigationOptions)
           }
         })
     },
@@ -759,7 +785,12 @@ export default {
     handleSendMsg () {
       let vm = this
       vm.sendPlanSwitch = true
-      vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm:ss')}]
+      vm.listDateInit = [
+        {
+          date: moment().format('YYYY-MM-DD'),
+          time: moment().format('HH:00')
+        }
+      ]
       if (vm.multipleSelection.length === 0) {
         vm.$message({
           message: '发布选项不能为空，请至少选择一个',
@@ -769,15 +800,17 @@ export default {
       }
       vm.multipleSelection.forEach(item => {
         if (!item.investigation) {
-          vm.$message({
-            message: '发布选项的排查频率不能为空',
-            type: 'warning'
-          })
           vm.isSendPlan = false
         } else {
           vm.isSendPlan = true
         }
       })
+      if (!vm.isSendPlan) {
+        vm.$message({
+          message: '发布选项的排查频率不能为空',
+          type: 'warning'
+        })
+      }
       vm.multipleSelection.forEach(item => {
         if (vm.isSendPlan) {
           vm.dialogTipsVisible = true
@@ -790,13 +823,13 @@ export default {
     filterListDate (data) {
       let newListDate = []
       data.forEach(item => {
-        newListDate.push(item.value)
+        newListDate.push(item.date + ' ' + item.time)
       })
       return newListDate
     },
     savePlanHandle () {
       let vm = this
-      let listDate = vm.filterListDate(vm.listDate)
+      let listDate = vm.filterListDate(vm.listDateInit)
       let sendData = {
         list: [{
           spmBasicHiddenList: vm.multipleSelection,
@@ -811,7 +844,7 @@ export default {
             vm.$notify.success('清单任务计划发布完成')
             vm.dialogTipsVisible = false
             vm.fetchTableData()
-            vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm:ss')}]
+            vm.listDate = [{value: moment().format('YYYY-MM-DD HH:mm')}]
           } else {
             vm.$message({
               message: res.data.message,
@@ -830,18 +863,19 @@ export default {
     },
     // 手动模式添加日期处理
     changeDate (val) {
-      this.listDate.forEach(item => {
+      this.listDateInit.forEach(item => {
 
       })
     },
     addDateHandle () {
-      this.listDate.push({
-        value: moment().format('YYYY-MM-DD HH:mm:ss')
+      this.listDateInit.push({
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HH:00')
       })
     },
     delDateHandle () {
-      if (this.listDate.length > 1) {
-        this.listDate.pop()
+      if (this.listDateInit.length > 1) {
+        this.listDateInit.pop()
       }
     },
     // 复选框的推送可用状态改变
@@ -874,6 +908,7 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+      console.log(this.multipleSelection)
     },
     copy () {
       let vm = this
@@ -1069,5 +1104,13 @@ export default {
 .btn-sync{
   position: absolute;
   right: 0;
+}
+.push-date{
+  display: inline-block;
+  width: 150px !important;
+}
+.push-time{
+  display: inline-block;
+  width: 100px !important;
 }
 </style>

@@ -36,6 +36,8 @@
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
+        highlight-current
+        current-node-key
         ref="tree">
           <span
             class="custom-tree-node"
@@ -105,7 +107,26 @@ export default {
       defaultOpenNode: [] // 默认展开节点的集合
     }
   },
+  created () {
+    // this.$nextTick(function () {
+    //   this.treeData.forEach(row => {
+    //     console.log(row)
+    //     this.$refs.tree.setCurrentKey(row.riskId)
+    //   })
+    // })
+  },
   methods: {
+    //  默认高亮显示一条数据
+    highLightTreeNode () {
+      // let id = this.treeData[0].riskId
+      // console.log(this.treeData[0].riskId)
+      this.treeData.forEach(row => {
+        if (row.pId === '0') {
+          this.$refs.tree.setCurrentKey(row.riskId)
+        }
+      })
+      // this.$refs.tree.setCurrentKey(id)
+    },
     // 获取一节点集合
     fetchTreeNodeId () {
       this.treeData.forEach(item => {
@@ -190,10 +211,11 @@ export default {
       this.$refs.tree.filter(val)
     },
     treeData: {
-      immediate: true,
+      deep: true,
       handler (val) {
         this.treeData = val
         this.fetchTreeNodeId()
+        this.highLightTreeNode()
       }
     }
   }
@@ -203,7 +225,7 @@ export default {
 <style scoped lang="scss">
 @import '@/utils/css/tools/_variables.scss';
   /deep/.tree-diagram{
-  width: 400px;
+  width: 100%;
   height: 100%;
   position: relative;
   background: #fff;

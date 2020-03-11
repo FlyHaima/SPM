@@ -128,7 +128,10 @@ export default {
     // 跳转到我的待办列表页面
     goMineTodoPage () {
       this.$router.push({
-        name: 'mineTodo'
+        name: 'mineTodo',
+        query: {
+          tabType: '1'
+        }
       })
     },
     // 跳转所有信息页面的点击事件
@@ -136,7 +139,7 @@ export default {
       this.$router.push({
         name: 'messages',
         query: {
-          tabType: '1'
+          tabType: '2'
         }
       })
     },

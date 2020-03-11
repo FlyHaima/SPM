@@ -1,9 +1,10 @@
 <template>
 <div class="message-wrap">
   <el-tabs
+    v-model="tabType"
     type="border-card"
     @tab-click='clickTab'>
-    <el-tab-pane label="我发布的">
+    <el-tab-pane label="我发布的" name="1">
       <span slot="label"> 待办事项<span v-show="todoNum > 0" class="badge">{{todoNum}}</span></span>
       <div class="info-panel">
         <div class="info-content">
@@ -43,7 +44,7 @@
         </div>
       </div>
     </el-tab-pane>
-    <el-tab-pane label="已办事项">
+    <el-tab-pane label="已办事项" name="2">
       <div class="info-panel">
         <div class="info-content">
           <div class="tips-nodata" v-if="messageData.length === 0">
@@ -101,7 +102,7 @@ export default {
         pageNo: 1,
         pageSize: 10 // limit
       },
-      tabType: '1', // tab切换类型
+      tabType: '', // tab切换类型
       todoNum: 0
     }
   },
@@ -123,12 +124,16 @@ export default {
     }
   },
   created () {
-    this.fetchList()
+    let vm = this
+    // 从路由上存取当前页面的tabType
+    vm.tabType = vm.$route.query.tabType
+    vm.fetchList()
   },
   methods: {
     fetchList () {
+      let vm = this
       let userId = sessionStorage.getItem('userId')
-      if (this.tabType === '1') {
+      if (vm.tabType === '1') {
         axios
           .get('flowAct/todoList', {
             pageNo: this.page.pageNo,
@@ -169,27 +174,44 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
-      this.tabType = (Number(item.paneName) + 1) + ''
-      this.fetchList()
+      let vm = this
+      vm.tabType = (Number(item.paneName)) + ''
+      // vm.$route.tabType = vm.tabType
+      vm.fetchList()
     },
     // 跳转信息详情页面的点击事件
     goDetailsPage (item) {
-      console.log(item)
       if (item.name === '排查实施') {
         this.$router.push({
-          name: 'screeningImplementation'
+          name: 'screeningImplementation',
+          query: {
+            tabType: item.investType,
+            id: item.leftId
+          }
         })
       } else if (item.name === '排查复核') {
         this.$router.push({
-          name: 'screeningReview'
+          name: 'screeningReview',
+          query: {
+            tabType: item.investType,
+            id: item.leftId
+          }
         })
       } else if (item.name === '隐患治理') {
         this.$router.push({
-          name: 'riskManagement'
+          name: 'riskManagement',
+          query: {
+            tabType: item.investType,
+            id: item.leftId
+          }
         })
       } else if (item.name === '治理复核') {
         this.$router.push({
-          name: 'managementReview'
+          name: 'managementReview',
+          query: {
+            tabType: item.investType,
+            id: item.leftId
+          }
         })
       }
     }

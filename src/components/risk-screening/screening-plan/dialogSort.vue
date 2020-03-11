@@ -71,7 +71,7 @@
               v-show="scope.row.addVisible === 'false'"
               href="javascript:;"
               class="color-danger talbe-links-del"
-              @click="delTableRow(scope.$index, tableData)"
+              @click="delTableRow(scope.$index, tableData, scope.row)"
             >删除</a>
           </template>
         </el-table-column>
@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import qs from 'qs'
+// import qs from 'qs'
 import axios from '@/api/axios'
 export default {
   name: 'dialogSort',
@@ -254,24 +254,24 @@ export default {
       rows.splice(index + 1, 0, newLine)
     },
     // 删除talbe行
-    delTableRow (index, rows) {
+    delTableRow (index, rows, row) {
       rows.splice(index, 1)
-    },
-    // 删除事件
-    delRowHandle (row) {
-      let sendData = {
-        id: row.id
-      }
-      axios
-        .post('news/delNews', qs.stringify(sendData))
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.$notify.success('删除成功')
-            this.tablesFetchList()
-          }
-        })
-        .finally(() => {
-        })
+      console.log(index)
+      console.log(rows)
+      console.log(row)
+      // let sendData = {
+      //   id: row.investTypeid
+      // }
+      // axios
+      //   .delete('basticHidden/delBasicHidden', sendData)
+      //   .then((res) => {
+      //     if (res.data.code === 200) {
+      //       this.$notify.success('删除成功')
+      //       this.fetchTableData()
+      //     }
+      //   })
+      //   .finally(() => {
+      //   })
     },
     // 切换分页数量
     handleSizeChange (val) {

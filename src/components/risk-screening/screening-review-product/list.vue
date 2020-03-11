@@ -170,6 +170,8 @@ export default {
     DialogReview
   },
   created () {
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
   },
@@ -200,18 +202,25 @@ export default {
     },
     // 树节点，点击功能
     treeClickHandle (item) {
-      this.currentPlanId = item.riskId
-      this.fetchTableData()
+      let vm = this
+      vm.currentPlanId = item.riskId
+      vm.fetchTableData()
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
-      this.pageLoading = true
+      let vm = this
+      vm.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
+            vm.riskUnitTree = res.data.data
+            if (vm.$route.query.id) {
+              vm.currentPlanId = vm.$route.query.id
+              console.log(this.currentPlanId)
+            } else {
+              vm.currentPlanId = this.riskUnitTree[0].riskId
+            }
             this.fetchTableData()
           }
         })
@@ -221,19 +230,20 @@ export default {
     },
     // 获取排查隐患清单列表
     fetchTableData () {
-      this.tablesLoading = true
+      let vm = this
+      vm.tablesLoading = true
       axios
         .get('hiddenAct/dImpleList', {
-          checkName: this.form.checkName,
-          investType: this.type,
-          startTime: this.form.startTime,
-          endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          checkName: vm.form.checkName,
+          investType: vm.type,
+          startTime: vm.form.startTime,
+          endTime: vm.form.endTime,
+          leftId: vm.currentPlanId
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
+            vm.formatTableData = res.data.data
+            vm.formatTableData.forEach(item => {
               // 格式化复核时间
               if (item.checkByTime) {
                 item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
@@ -247,11 +257,11 @@ export default {
                 item.rectiTime = ''
               }
             })
-            this.tableData = this.formatTableData
+            vm.tableData = this.formatTableData
           }
         })
         .finally(() => {
-          this.tablesLoading = false
+          vm.tablesLoading = false
         })
     },
     // 查询table，表单提交响应事件

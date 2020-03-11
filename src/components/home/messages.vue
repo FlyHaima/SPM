@@ -422,6 +422,7 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
+      this.tabType = (Number(item.paneName)) + ''
       this.fetchList()
     },
     // 标记当前页已读事件处理
