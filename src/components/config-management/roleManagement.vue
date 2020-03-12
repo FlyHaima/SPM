@@ -80,6 +80,7 @@
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
+      width="35%"
       >
       <div slot="title">
         {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '新增' }}

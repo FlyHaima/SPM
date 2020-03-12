@@ -88,10 +88,10 @@
           label-width="100px"
           label-position="right">
           <el-form-item label="标题名称" prop="picName">
-            <el-input v-model="swiperForm.picName"></el-input>
+            <el-input v-model.trim="swiperForm.picName"></el-input>
           </el-form-item>
           <el-form-item label="链接地址" prop="url">
-            <el-input v-model="swiperForm.url"></el-input>
+            <el-input v-model.trim="swiperForm.url"></el-input>
           </el-form-item>
           <el-form-item
             v-show="this.editData"

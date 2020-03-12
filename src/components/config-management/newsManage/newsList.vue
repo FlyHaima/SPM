@@ -87,7 +87,7 @@
           label-width="100px"
           label-position="right">
           <el-form-item label="文章标题" prop="newsName">
-            <el-input v-model="form.newsName"></el-input>
+            <el-input v-model.trim="form.newsName"></el-input>
           </el-form-item>
           <el-form-item label="分类" prop="typeName">
             <el-select v-model="form.typeName" placeholder="请选择">
@@ -100,7 +100,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="链接地址" prop="url">
-            <el-input v-model="form.url"></el-input>
+            <el-input v-model.trim="form.url"></el-input>
           </el-form-item>
           <!-- <el-form-item>
              <vue-ueditor-wrap v-model="form.content" :config="editorConfig"></vue-ueditor-wrap>

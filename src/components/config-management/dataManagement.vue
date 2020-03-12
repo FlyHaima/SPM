@@ -136,7 +136,7 @@
           label="备注">
           <el-input
             type="textarea"
-            v-model="tables.form.remark"
+            v-model.trim="tables.form.remark"
             placeholder="请输入备注"
             autocomplete
           ></el-input>
@@ -163,15 +163,17 @@
       <el-form
         :model= "formGroup"
         ref= "formGroup"
+        :rules= "rulesGroup"
         size= "mini"
         label-width= "100px"
         label-position= "right"
         @submit.native.prevent= "submitFormGroup"
       >
         <el-form-item
-          label="分类名称">
+          label="分类名称"
+          prop="groupName">
           <el-input
-            v-model="formGroup.groupName"
+            v-model.trim="formGroup.groupName"
             placeholder="请输入分类名称"
             maxlength="25"
             autocomplete></el-input>
@@ -232,6 +234,11 @@ export default {
           {required: true, message: '请输入代码', trigger: 'blur'}
         ]
       },
+      rulesGroup: {
+        groupName: [
+          {required: true, message: '请输入分类名称', trigger: 'blur'}
+        ]
+      },
       currentRow: null
     }
   },
@@ -286,30 +293,36 @@ export default {
     // form表单提交事件
     submitFormGroup () {
       let vm = this
-      vm.$confirm('确定新增分类?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        vm.submitting = true
-        axios
-          .post('dic/addGroup', this.formGroup)
-          .then((res) => {
-            if (res.data.code === 200) {
-              vm.$notify.success('提交成功')
-              vm.dialogAddGroupVisible = false
-              vm.submitting = false
-              vm.fetchTableData()
-            } else {
-              vm.$message({
-                message: res.data.message,
-                type: 'warning'
+      this.$refs.formGroup.validate((valid) => {
+        if (valid) {
+          vm.$confirm('确定新增分类?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            vm.submitting = true
+            axios
+              .post('dic/addGroup', this.formGroup)
+              .then((res) => {
+                if (res.data.code === 200) {
+                  vm.$notify.success('提交成功')
+                  vm.dialogAddGroupVisible = false
+                  vm.submitting = false
+                  vm.fetchTableData()
+                } else {
+                  vm.$message({
+                    message: res.data.message,
+                    type: 'warning'
+                  })
+                }
               })
-            }
+              .finally(() => {
+                vm.submitting = false
+              })
           })
-          .finally(() => {
-            vm.submitting = false
-          })
+        } else {
+          return false
+        }
       })
     },
     // form表单提交事件
