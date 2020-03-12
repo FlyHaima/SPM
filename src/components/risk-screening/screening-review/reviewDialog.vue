@@ -302,7 +302,8 @@ export default {
     confirmChooseList () {
       let vm = this
       if (vm.currentRow) {
-        vm.form.nextUserId = vm.currentRow.id
+        console.log(vm.currentRow)
+        vm.form.nextUserId = vm.currentRow.userId
         vm.nextUserName = vm.currentRow.userName
         vm.showTree = false
       } else {

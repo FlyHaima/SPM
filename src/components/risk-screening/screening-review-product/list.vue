@@ -87,7 +87,7 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop=" "
+            fixed="right"
             label="复核情况"
             width="120"
             align="center">
@@ -195,7 +195,7 @@ export default {
     },
     // 触发详情弹框
     detailsHandle (item) {
-      this.currentDetailsId = item.hiddInstanceId
+      this.currentDetailsId = item.procInstId
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {
