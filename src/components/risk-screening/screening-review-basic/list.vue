@@ -2,7 +2,7 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-list
-        v-if="listMenuData.length > 0"
+        v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
         :current-id ="currentPlanId"
@@ -159,6 +159,7 @@ export default {
         endTime: ''
       },
       listMenuData: [], // 计划清单列表数据
+      listMenuDataTag: false,
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
       queryDate: '', // 查询日期
@@ -201,6 +202,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
+            this.listMenuDataTag = true
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
             } else {

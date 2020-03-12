@@ -110,11 +110,11 @@
     </el-tab-pane>
   </el-tabs>
   <el-dialog
+    @close="closeDialog('messageForm')"
     :close-on-click-modal="false"
     title="发布消息"
     :visible.sync="dialogFormMessageVisible"
-    :width="'800px'"
-    :show-close="false">
+    :width="'800px'">
     <div class="form-modal">
       <el-form
         :model="messageForm"
@@ -225,7 +225,7 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submitMessageForm()">发布</el-button>
-      <el-button @click="dialogFormMessageVisible = false">取 消</el-button>
+      <el-button @click="closeDialog('messageForm')">取 消</el-button>
     </div>
   </el-dialog>
 </div>
@@ -339,6 +339,11 @@ export default {
     vm.fetchInfoTypeOptions()
   },
   methods: {
+    // 关闭弹框
+    closeDialog (formName) {
+      this.dialogFormMessageVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 获取消息列表数据
     fetchList () {
       axios
