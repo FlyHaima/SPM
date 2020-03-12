@@ -65,6 +65,7 @@
 }
 .tools-right{
   display: flex;
+  align-items: flex-start;
   .el-button + .el-button,
   .el-button + .tools-item,
   .tools-item + .tools-item,
@@ -308,4 +309,18 @@
 .tips-nodata{
   text-align: center;
   margin: 40px 30px;
+}
+
+@media only screen and (max-width:1680px) {
+  .content-tools{
+    margin-bottom: 10px;
+    .el-form--inline {
+      .el-form-item{
+        margin-bottom: 15px !important;
+      }
+    }
+    .tools-right{
+      margin-bottom: 15px !important;
+    }
+  }
 }

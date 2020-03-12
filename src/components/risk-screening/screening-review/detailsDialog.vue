@@ -39,12 +39,13 @@
                   <el-col :span="24">
                     <div class="attachment-list">
                       <div
-                        v-for = "(itemImg, index) in item.hiddenPhoto"
+                        v-for = "(itemImg, index) in item.spmHiddenInstanceHis.hiddenPhotos"
                         :key = index
                         class="attachment-list-item">
                         <img
+                          v-show="item.spmHiddenInstanceHis.hiddenPhotos"
                           class="attachment-img"
-                          src="itemImg"
+                          :src="itemImg"
                           alt="上传的图片" />
                       </div>
                     </div>
@@ -93,12 +94,13 @@
                   <el-col :span="24">
                     <div class="attachment-list">
                       <div
-                        v-for = "(itemImg, index) in item.rectiPhoto"
+                        v-for = "(itemImg, index) in item.spmHiddenInstanceHis.rectiPhotos"
                         :key = index
                         class="attachment-list-item">
                         <img
+                          v-show="item.spmHiddenInstanceHis.rectiPhotos"
                           class="attachment-img"
-                          src="itemImg"
+                          :src="itemImg"
                           alt="上传的图片" />
                       </div>
                     </div>
@@ -127,12 +129,13 @@
                   <el-col :span="24">
                     <div class="attachment-list">
                       <div
-                        v-for = "(itemImg, index) in item.goverReviPhoto"
+                        v-for = "(itemImg, index) in item.spmHiddenInstanceHis.goverReviPhotos"
                         :key = index
                         class="attachment-list-item">
                         <img
+                          v-show="item.spmHiddenInstanceHis.goverReviPhotos"
                           class="attachment-img"
-                          src="itemImg"
+                          :src="itemImg"
                           alt="上传的图片" />
                       </div>
                     </div>
@@ -259,7 +262,6 @@ export default {
     width: 173px;
     height: 102px;
     border-radius: 6px;
-    background: pink;
   }
   .details-layer{
     // display: flex;
