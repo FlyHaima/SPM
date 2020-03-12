@@ -169,7 +169,6 @@ export default {
   },
   methods: {
     validateMoney (key) {
-      console.log(key)
       let inputVal = key
       inputVal = inputVal
         .replace(/[^\d.]/g, '')
@@ -178,7 +177,6 @@ export default {
         // .replace('.', '$#$').replace(/\./g, '').replace('$#$', '.')
         // .replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3')
       this.form.money = inputVal
-      console.log(this.form.money)
     },
     // 导出excel
     exportEexcelHandel () {

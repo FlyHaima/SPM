@@ -144,6 +144,8 @@ export default {
     DialogDetails
   },
   created () {
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
   },
@@ -171,13 +173,18 @@ export default {
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
+      let vm = this
       this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
+            if (vm.$route.query.id) {
+              vm.currentPlanId = vm.$route.query.id
+            } else {
+              vm.currentPlanId = this.riskUnitTree[0].riskId
+            }
             this.fetchTableData()
           }
         })

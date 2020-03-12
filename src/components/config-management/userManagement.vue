@@ -8,14 +8,6 @@
       <el-container class="inner-main-content">
         <el-main class="inner-content">
           <div class="container-box">
-<el-tree
-  ref="treeList"
-  :highlight-current='true'
-  default-expand-all
-  :data="data"
-  :props="defaultProps"
-  node-key="id" >
-</el-tree>
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
@@ -338,50 +330,6 @@ export default {
       }
     }
     return {
-      data: [{
-        id: 'sdfsfsf',
-        label: '一级 1',
-        children: [{
-          id: 1,
-          label: '二级 1-1',
-          children: [{
-            id: 2,
-            label: '三级 1-1-1'
-          }]
-        }]
-      }, {
-        id: 3,
-        label: '一级 2',
-        children: [{
-          id: 4,
-          label: '二级 2-1',
-          children: [{
-            label: '三级 2-1-1'
-          }]
-        }, {
-          label: '二级 2-2',
-          children: [{
-            label: '三级 2-2-1'
-          }]
-        }]
-      }, {
-        label: '一级 3',
-        children: [{
-          label: '二级 3-1',
-          children: [{
-            label: '三级 3-1-1'
-          }]
-        }, {
-          label: '二级 3-2',
-          children: [{
-            label: '三级 3-2-1'
-          }]
-        }]
-      }],
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      },
       breadcrumb: ['配置维护管理', '用户管理'],
       tables: {
         api: 'user/getUserList'
@@ -435,11 +383,6 @@ export default {
     'account-status-filter': AccountStatusFilter
   },
   created () {
-    let _this = this
-    this.$nextTick(function () {
-      _this.$refs.treeList.setCurrentKey(_this.data[0].id)
-      console.log(_this.$refs.treeList)
-    })
   },
   mounted () {
     // 设置题库上传的header 添加token
@@ -470,7 +413,6 @@ export default {
     },
     // 修改 启用/禁用 状态
     changeState (row) {
-      console.log(row)
       let sendData = {
         userId: row.userId,
         state: row.state === '1' ? '0' : '1'

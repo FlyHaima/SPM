@@ -232,7 +232,6 @@ export default {
   methods: {
     // 选择器change事件 - 潜在的事故及职业危害类型
     selChangeRiskResult (data) {
-      console.log(data)
       let vm = this
       vm.imgPathSelRiskResult = []
       vm.imgPathColletion.forEach(item => {
@@ -254,7 +253,6 @@ export default {
           }
         })
       })
-      console.log(vm.imgPathSelEmergency)
     },
     // 获取树的数据
     fetchTreeData () {

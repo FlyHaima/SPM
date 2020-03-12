@@ -389,7 +389,6 @@ export default {
         axios
           .post('msg/delBatch', sendData)
           .then((res) => {
-            console.log(res.data.code)
             if (res.data.code === 200) {
               this.$notify.success('删除成功')
               this.page.pageNo--
@@ -507,7 +506,6 @@ export default {
               vm.submitting = false
             })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -562,7 +560,6 @@ export default {
       this.chooseList.forEach(item => {
         this.messageForm.sendList += `${item.nameStr}; `
       })
-      console.log(this.treeData) // 上传该数据
       this.showTreeTransfer = false
     }
   },

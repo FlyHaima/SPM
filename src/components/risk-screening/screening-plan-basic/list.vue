@@ -5,6 +5,7 @@
         v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showEditOrgBtn
         showAddMenuBtn
         showOperation
@@ -414,10 +415,12 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
     // 设置上传的header 添加token
-    this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
-    this.fetchListMenuData()
-    this.fetchPlanOrganizationData()
+    vm.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
+    vm.fetchListMenuData()
+    vm.fetchPlanOrganizationData()
   },
   methods: {
     // 切换分页数量
@@ -466,7 +469,11 @@ export default {
           if (res.data.code === 200) {
             vm.listMenuData = res.data.data
             vm.listMenuDataTag = true
-            vm.currentPlanId = this.listMenuData[0].planId
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             vm.fetchInvestigationOptions()
             vm.fetchTableData()
           }
@@ -710,7 +717,6 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.investigationOptions = res.data.data
-            console.log(this.investigationOptions)
           }
         })
     },
@@ -908,7 +914,6 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
-      console.log(this.multipleSelection)
     },
     copy () {
       let vm = this

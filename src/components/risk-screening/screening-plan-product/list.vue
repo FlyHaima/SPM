@@ -837,7 +837,6 @@ export default {
     editItem (row) {
       let vm = this
       vm.editFormVal = row
-      console.log(vm.editFormVal)
       vm.dialogEditVisible = true
     },
     closeEditConfirm () {

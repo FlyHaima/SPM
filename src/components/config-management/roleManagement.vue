@@ -360,7 +360,6 @@ export default {
         this.submitting = true
         let sendDAta = { roleId: [] }
         this.multipleSelection.forEach(item => {
-          console.log(item.roleId)
           sendDAta.roleId.push(item.roleId)
         })
         this.$confirm('是否删除？', '提示', {
@@ -371,7 +370,6 @@ export default {
           axios
             .post('role/delRole', sendDAta)
             .then((res) => {
-              console.log(res.data.code)
               if (res.data.code === 200) {
                 this.$notify.success('删除成功')
                 this.tablesFetchList()

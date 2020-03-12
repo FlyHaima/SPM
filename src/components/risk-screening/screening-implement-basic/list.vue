@@ -5,6 +5,7 @@
         v-if="listMenuData.length > 0"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showSearch
         @menu-click-handle="menuClickHandle"
 
@@ -52,7 +53,7 @@
           </div>
         </div>
         <el-table
-          v-loadding="tablesLoading"
+          v-loading="tablesLoading"
           :data="tableData"
           border
           style="width: 100%"
@@ -123,8 +124,10 @@ export default {
     TreeList // 计划清单菜单
   },
   created () {
-    this.fetchListMenuData()
-    this.fetchTableData()
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
+    vm.fetchListMenuData()
+    vm.fetchTableData()
   },
   methods: {
     // 选择时间事件
@@ -145,7 +148,11 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             this.fetchTableData()
           }
         })

@@ -22,7 +22,7 @@
               <el-form-item label="检查名称">
                 <el-input v-model="form.checkName" placeholder="请输入检查名称"></el-input>
               </el-form-item>
-              <el-form-item label="检查日期">
+              <el-form-item label="复核时间">
                 <el-date-picker
                   v-model="queryDate"
                   @change="checkQueryDate"

@@ -5,12 +5,11 @@
         v-if="listMenuData.length > 0"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showSearch
         @menu-click-handle="menuClickHandle"
-
       ></tree-list>
     </el-aside>
-
     <el-main class="inner-content">
       <div class="container-box">
         <div class="content-tools">
@@ -144,8 +143,10 @@ export default {
     DialogDetails
   },
   created () {
-    this.fetchListMenuData()
-    this.fetchTableData()
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
+    vm.fetchListMenuData()
+    vm.fetchTableData()
   },
   methods: {
     checkQueryDate (val) {
@@ -165,7 +166,11 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             this.fetchTableData()
           }
         })

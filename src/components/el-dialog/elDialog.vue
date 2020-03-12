@@ -34,9 +34,7 @@ export default {
   },
   watch: {
     dialogShow (val) {
-      console.log(val)
       this.dialogVisibleSwitch = val
-      console.log(this.dialogVisibleSwitch)
     }
   }
 }

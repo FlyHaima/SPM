@@ -331,7 +331,6 @@ export default {
       this.fetchData()
     },
     gotoDetailsHandle (url) {
-      console.log(url)
       window.location.href = url
     },
     // 注册事件
