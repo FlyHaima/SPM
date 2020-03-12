@@ -13,7 +13,7 @@
       <template
         v-for="(item, indexF) in menuList">
         <el-menu-item
-          v-if="!item.list&&item.url !== '/'"
+          v-if="!item.list&&item.url !== '/' &&item.name !== '应急指挥调度'"
           :key="item.name"
           :index="item.url">
           <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
@@ -21,7 +21,7 @@
         </el-menu-item>
         <a
           v-if="item.name === '应急指挥调度'"
-          :href="getURL(item.url)" target='_self'
+          :href="getURL(item.url)" target='_blank'
           :key= "item.name">
           <el-menu-item
             index="">

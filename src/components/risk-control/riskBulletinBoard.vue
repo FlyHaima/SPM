@@ -226,7 +226,6 @@ export default {
           if (res.data.code === 200) {
             vm.options = res.data.selectList
             vm.imgPathColletion = res.data.picList
-            console.log(res.data.data.length)
             if (treeLevel !== '5') {
               vm.tableVisible = true
               vm.tableData = res.data.data
