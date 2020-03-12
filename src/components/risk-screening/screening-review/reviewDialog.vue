@@ -300,9 +300,17 @@ export default {
     },
     // 选择治理人员弹框的确定操作
     confirmChooseList () {
-      this.form.nextUserId = this.currentRow.id
-      this.nextUserName = this.currentRow.userName
-      this.showTree = false
+      let vm = this
+      if (vm.currentRow) {
+        vm.form.nextUserId = vm.currentRow.id
+        vm.nextUserName = vm.currentRow.userName
+        vm.showTree = false
+      } else {
+        vm.$message({
+          message: '请选择排查复核人',
+          type: 'warning'
+        })
+      }
     }
   },
   watch: {
