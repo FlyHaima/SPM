@@ -134,7 +134,6 @@
             width="115">
           </el-table-column>
           <el-table-column
-            fixed="right"
             label="进度"
             align="center"
             width="200">
@@ -154,7 +153,11 @@
             width="120"
             align="center">
             <template slot-scope="scope">
+              <span
+                v-if="scope.row.isHidden === '合格'"
+              >完成</span>
               <a
+                v-else
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情

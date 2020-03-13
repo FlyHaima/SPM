@@ -148,13 +148,6 @@
         </div>
       </div>
     </div>
-
-    <div slot="footer" class="dialog-footer">
-      <el-button
-        type="primary"
-        size="small"
-        @click="show = false">确 定</el-button>
-    </div>
   </el-dialog>
 </template>
 

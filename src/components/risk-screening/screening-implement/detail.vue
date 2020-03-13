@@ -24,13 +24,11 @@
         {{formData.hiddenDesc}}
       </el-form-item>
       <el-form-item label="附件：">
-        {{formData.hiddenPhotos}}
-        <div class="attachment-list">ee
+        <div class="attachment-list">
           <div
-            v-for = "(itemImg, index) in formData.hiddenPhotos"
+            v-for = "(itemImg, index) in photos"
             :key = index
             class="attachment-list-item">
-            dd
             <img
               class="attachment-img"
               :src="itemImg"
@@ -60,11 +58,12 @@ export default {
     }
   },
   created () {
-    console.log(this.formData.hiddenPhotos)
+    this.photos = this.formData.hiddenPhotos
   },
   data () {
     return {
-      show: false
+      show: false,
+      photos: null
     }
   },
   methods: {

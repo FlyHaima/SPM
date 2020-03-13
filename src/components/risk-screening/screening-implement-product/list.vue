@@ -77,15 +77,27 @@
             align="center">
           </el-table-column>
           <el-table-column
-            label="附件"
-            align="center">
+            fixed="right"
+            label="操作"
+            align="center"
+            width="100px">
             <template slot-scope="scope">
-              <img class="table-img" :src="scope.row.hiddenPhoto" title="img"/>
+              <a
+                href="javascript:;"
+                class="talbe-links-del"
+                @click.prevent="editItem(scope.row)">详情
+              </a>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-main>
+    <dialog-detail
+      :dialogVisible="dialogDetailVisible"
+      :planId="currentPlanId"
+      :formData="detailData"
+      @on-dialog-change="changeDetailDialog"
+    ></dialog-detail>
   </el-container>
 </template>
 
@@ -94,6 +106,7 @@ import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
 import { mapState } from 'vuex'
+import DialogDetail from '@/components/risk-screening/screening-implement/detail'
 export default {
   name: 'list',
   props: {
@@ -107,6 +120,7 @@ export default {
       pageLoading: false,
       tablesLoading: false,
       submitting: false,
+      dialogDetailVisible: false,
       form: {
         checkName: '',
         startTime: '',
@@ -116,11 +130,19 @@ export default {
       currentPlanId: '', // 当前清单项的id
       riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
-      queryDate: '' // 查询时间段
+      queryDate: '', // 查询时间段
+      detailData: {
+        checkName: '', // 检查名称
+        checkUser: '', // 检查人员
+        checkTime: '', // 检查时间
+        hiddenDesc: '', // 隐患描述
+        hiddenPhotos: [] // 附件
+      }
     }
   },
   components: {
-    TreeReadOnly // 风险单元树
+    TreeReadOnly, // 风险单元树
+    DialogDetail // 详情
   },
   created () {
     let vm = this
@@ -129,6 +151,20 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    editItem (data) {
+      let vm = this
+      vm.dialogDetailVisible = true
+      vm.detailData = {
+        checkName: data.checkName, // 检查名称
+        checkUser: data.checkUser, // 检查人员
+        checkTime: data.checkTime, // 检查时间
+        hiddenDesc: data.hiddenDesc, // 隐患描述
+        hiddenPhotos: data.hiddenPhotos // 附件
+      }
+    },
+    changeDetailDialog (val) {
+      this.dialogDetailVisible = val
+    },
     // 选择时间事件
     checkQueryDate (val) {
       if (val) {
