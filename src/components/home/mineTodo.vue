@@ -9,7 +9,7 @@
       <div class="info-panel">
         <div class="info-content">
           <div class="tips-nodata" v-if="messageData.length === 0">
-            暂无代办事项
+            暂无待办事项
           </div>
           <template v-else>
             <ul class="list-info">

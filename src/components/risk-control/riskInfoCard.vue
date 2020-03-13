@@ -86,7 +86,7 @@
                       </div>
                     </div>
                     <div class="custom-tr">
-                      <div class="custom-th-label">岗位</div>
+                      <div class="custom-th-label">岗位<span style="font-size: 12px">(组织结构中的第7级开始)</span></div>
                       <div class="custom-td-value">
                         <el-select v-model="form.gw"  placeholder="请选择" size="mini">
                           <el-option label="请选择岗位" value=""></el-option>

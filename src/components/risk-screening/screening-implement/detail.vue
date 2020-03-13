@@ -2,49 +2,47 @@
   <el-dialog
     @close="closeDialog('form' )"
     :close-on-click-modal="false"
-    title="添加"
+    title="详情"
     :visible.sync="show"
     width="40%">
     <el-form
-      :model="form"
+      :model="formData"
       ref="form"
-      :rules="rules"
       size="mini"
       label-width="100px"
-      label-position="top"
     >
-      <el-form-item label="排查目标" prop="investTarget">
-        <el-input v-model.trim="form.investTarget"></el-input>
+      <el-form-item label="检查名称：">
+        {{formData.checkName}}
       </el-form-item>
-      <el-form-item label="排查内容与排查标注" prop="investContent">
-        <el-input
-          type="textarea"
-          v-model.trim="form.investContent"></el-input>
+      <el-form-item label="检查人员：">
+        {{formData.checkUser}}
       </el-form-item>
-      <el-form-item label="排查依据" prop="inspectionBasic">
-        <el-input
-          type="textarea"
-          v-model.trim="form.inspectionBasic"
-          maxlength="30"
-          show-word-limit></el-input>
+      <el-form-item label="检查时间：">
+        {{formData.checkTime}}
+      </el-form-item>
+      <el-form-item label="隐患描述：">
+        {{formData.hiddenDesc}}
+      </el-form-item>
+      <el-form-item label="附件：">
+        {{formData.hiddenPhotos}}
+        <div class="attachment-list">ee
+          <div
+            v-for = "(itemImg, index) in formData.hiddenPhotos"
+            :key = index
+            class="attachment-list-item">
+            dd
+            <img
+              class="attachment-img"
+              :src="itemImg"
+              alt="上传的图片" />
+          </div>
+        </div>
       </el-form-item>
     </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button
-        v-loading="submitting"
-        type="primary"
-        size="small"
-        @click="submitForm()">确 定</el-button>
-      <el-button
-        size="small"
-        @click="closeDialog('form' )"
-        >取 消</el-button>
-    </div>
   </el-dialog>
 </template>
 
 <script>
-import axios from '@/api/axios'
 export default {
   name: '',
   props: {
@@ -55,77 +53,24 @@ export default {
     planId: {
       type: String,
       default: ''
+    },
+    formData: {
+      type: Object,
+      default: null
     }
+  },
+  created () {
+    console.log(this.formData.hiddenPhotos)
   },
   data () {
     return {
-      submitting: false,
-      show: false,
-      form: {
-        investTarget: '', // 排查目标
-        investContent: '', // 排查内容和标准
-        inspectionBasic: '', // 排查依据
-        planId: '' // 当前清单Id
-      },
-      rules: {
-        investTarget: [
-          {
-            required: true,
-            message: '请输入排查目标',
-            trigger: 'blur'
-          }
-        ],
-        investContent: [
-          {
-            required: true,
-            message: '请输入排查内容与排查标注',
-            trigger: 'blur'
-          }
-        ],
-        inspectionBasic: [
-          {
-            required: true,
-            message: '请输入排查依据',
-            trigger: 'blur'
-          }
-        ]
-      }
+      show: false
     }
   },
   methods: {
     // 关闭弹框
     closeDialog (formName) {
       this.show = false
-      this.$refs[formName].resetFields()
-    },
-    submitForm () {
-      let vm = this
-      this.form.planId = this.planId
-      vm.$refs.form.validate((valid) => {
-        if (valid) {
-          vm.show = true
-          axios
-            .post('basticHidden/addBasticHidden', vm.form)
-            .then((res) => {
-              vm.submitting = true
-              if (res.data.code === 200) {
-                vm.$notify.success('添加计划成功')
-                this.$emit('reload')
-                vm.show = false
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
-                })
-              }
-            })
-            .finally(() => {
-              vm.submitting = false
-            })
-        } else {
-          return false
-        }
-      })
     }
   },
   watch: {
@@ -140,5 +85,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.attachment-list{
+  display: flex;
+  flex-wrap: wrap;
+}
+.attachment-list-item{
+  width: 143px;
+  margin-right: 43px;
+  // border: 1px solid #dddddd;
+  border-radius: 8px;
+  video{
+    display: inline-block;
+    width: 143px;
+    height: 113px;
+    border-radius: 6px;
+  }
+}
+.attachment-img{
+  display: inline-block;
+  width: 173px;
+  height: 102px;
+  border-radius: 6px;
+}
 </style>

@@ -294,6 +294,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
+            this.tablesLoading = false
             this.formatTableData = res.data.data
             this.formatTableData.forEach(item => {
               // 治理复核时间

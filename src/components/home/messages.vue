@@ -10,7 +10,7 @@
         <div class="info-header">
           <div class="info-link">
             <el-button @click="handleSendMessage" type="primary" size="mini">发布消息</el-button>
-            <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
+            <el-button v-show="messageData.length > 0" @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
           </div>
         </div>
         <div class="info-content">
@@ -59,7 +59,7 @@
     <el-tab-pane label="我收到的" name="2">
       <div class="">
         <div class="info-panel">
-          <div class="info-header">
+          <div v-show="messageData.length > 0" class="info-header">
             <div class="info-link">
               <el-button @click="signReadHandle" type="success" size="mini">标记当页已读</el-button>
               <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>

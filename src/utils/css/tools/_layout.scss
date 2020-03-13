@@ -102,12 +102,12 @@
   }
   &.is-inline{
     .custom-th-label{
-      min-width: 220px;
+      min-width: 240px;
     }
 
     .custom-td-value{
       padding-left: 30px;
-      width: calc( 100% - 220px);
+      width: calc( 100% - 240px);
     }
     .custom-tr{
       // max-height: 40px;
