@@ -35,6 +35,7 @@
               <el-table-column
                 prop="logTimeStr"
                 label="时间"
+                width="120"
                 align="center">
               </el-table-column>
               <el-table-column
@@ -50,7 +51,8 @@
               <el-table-column
                 prop="loginType"
                 label="登录端"
-                align="center">
+                align="center"
+                width="80">
               </el-table-column>
               <el-table-column
                 prop="userName"
@@ -109,7 +111,8 @@
               <el-table-column
                 prop="logTimeStr"
                 label="时间"
-                align="center">
+                align="center"
+                width="120">
               </el-table-column>
               <el-table-column
                 prop="menuName"
@@ -124,7 +127,8 @@
               <el-table-column
                 prop="loginType"
                 label="登录端"
-                align="center">
+                align="center"
+                width="80">
               </el-table-column>
               <el-table-column
                 prop="userName"
@@ -183,7 +187,8 @@
               <el-table-column
                 prop="logTimeStr"
                 label="时间"
-                align="center">
+                align="center"
+                width="120">
               </el-table-column>
               <el-table-column
                 prop="menuName"
@@ -198,7 +203,8 @@
               <el-table-column
                 prop="loginType"
                 label="登录端"
-                align="center">
+                align="center"
+                width="80">
               </el-table-column>
               <el-table-column
                 prop="userName"

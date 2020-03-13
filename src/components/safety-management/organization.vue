@@ -371,11 +371,11 @@ export default {
       } else if (this.activeName === 'tab_b') {
         this.leaderPosition = position
         this.triggerLeaderId = deptId
-        this.pageLoading = true
+        // this.pageLoading = true
         this.getLeaderTable()
       } else if (this.activeName === 'tab_c') {
         this.triggerWorkId = deptId
-        this.pageLoading = true
+        // this.pageLoading = true
         this.getWorkerTable()
       }
     },
@@ -464,6 +464,7 @@ export default {
         this.editOrgData.deptName = value
         editTreeData(this.editOrgData).then((res) => {
           if (res.code === 200) {
+            this.pageLoading = false
             this.$message({
               type: 'success',
               message: '节点设置成功'
@@ -490,6 +491,7 @@ export default {
         }
         delTreeData(data).then((res) => {
           if (res.code === 200) {
+            this.pageLoading = false
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -525,6 +527,7 @@ export default {
       let userId = sessionStorage.getItem('userId')
       getLeaderTree(userId).then((res) => {
         if (res.code === 200) {
+          this.pageLoading = false
           this.leaderTree = res.data
           if (created) {
             this.triggerLeaderId = res.data[0].deptId
@@ -539,10 +542,10 @@ export default {
       vm.pageLoading = true
       getLeaderTabel(vm.triggerLeaderId, vm.leaderPosition, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
         if (res.code === 200) {
+          vm.pageLoading = false
           vm.leaderData = res.data
           vm.leaderPageData.total = res.total
         }
-        vm.pageLoading = false
       })
     },
     handleLeaderPage (val) {
@@ -555,10 +558,10 @@ export default {
       vm.pageLoading = true
       getWorkerTabel(vm.triggerWorkId, vm.workerPageData.currentPageNo, vm.workerPageData.pageSize).then((res) => {
         if (res.code === 200) {
+          vm.pageLoading = false
           vm.workerData = res.data
           vm.workerPageData.total = res.total
         }
-        vm.pageLoading = false
       })
     },
     handleWorkerPage (val) {

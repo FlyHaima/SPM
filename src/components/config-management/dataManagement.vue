@@ -32,7 +32,8 @@
               <el-table-column
                 label="序号"
                 type="index"
-                width="50">
+                width="60"
+                align="center">
               </el-table-column>
               <el-table-column
                 label="数据字典分类列表"
