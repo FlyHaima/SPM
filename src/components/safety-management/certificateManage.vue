@@ -20,7 +20,7 @@
                      width="580px" :append-to-body="true">
             <el-form ref="form" label-width="85px">
               <el-form-item label="证件名称：">
-                <el-input v-model="addData.documentName"></el-input>
+                <el-input v-model.trim="addData.documentName"></el-input>
               </el-form-item>
               <el-form-item label="证件种类：">
                 <el-select v-model="addData.fileCategory">

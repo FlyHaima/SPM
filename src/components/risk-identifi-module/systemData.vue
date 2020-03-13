@@ -13,7 +13,7 @@
                  :visible.sync="dialogVisible"
                  v-loading="dialogLoading"
                  width="580px" :append-to-body="true">
-        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model="addData.industry"></el-input></p>
+        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model.trim="addData.industry"></el-input></p>
         <p style="margin-top: 10px; line-height: 22px;">通用模板：</p>
         <el-upload
           class="upload-demo"
@@ -38,7 +38,7 @@
                  :visible.sync="editorVisible"
                  v-loading="editorLoading"
                  width="580px" :append-to-body="true">
-        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model="editData.industry"></el-input></p>
+        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model.trim="editData.industry"></el-input></p>
         <p style="margin-top: 10px; line-height: 22px;">通用模板：</p>
         <el-upload
           class="upload-demo"

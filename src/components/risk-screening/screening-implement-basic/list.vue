@@ -1,6 +1,6 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
         v-if="listMenuDataTag"
         :menu-name="'计划清单'"
@@ -83,6 +83,19 @@
             align="center">
             <template slot-scope="scope">
               <img class="table-img" :src="scope.row.hiddenPhoto" title="img"/>
+            </template>
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            align="center"
+            width="100px">
+            <template slot-scope="scope">
+              <a
+                href="javascript:;"
+                class="talbe-links-del"
+                @click.prevent="editItem(scope.row)">详情
+              </a>
             </template>
           </el-table-column>
         </el-table>
@@ -181,6 +194,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
+            this.tablesLoading = false
             // let formatTableData = []
             this.formatTableData = res.data.data
             this.formatTableData.forEach(item => {

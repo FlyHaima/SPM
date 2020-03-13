@@ -49,7 +49,7 @@
                     <div class="dialog-inner-line">
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>课程名称</p>
-                        <p class="val-p"><el-input size="medium" v-model="addPlanData.className"></el-input></p>
+                        <p class="val-p"><el-input size="medium" v-model.trim="addPlanData.className"></el-input></p>
                       </div>
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>类别</p>
@@ -93,14 +93,14 @@
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>总课时(小时)</p>
                         <p class="val-p">
-                          <el-input size="medium" type="number" v-model="addPlanData.hourRequire"></el-input>
+                          <el-input size="medium" type="number" v-model.trim="addPlanData.hourRequire"></el-input>
                         </p>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model="addPlanData.need"></el-input>
+                        <el-input type="textarea" v-model.trim="addPlanData.need"></el-input>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
@@ -134,7 +134,7 @@
                     <div class="dialog-inner-line">
                       <div class="inner-item">
                         <p class="title">课程名称</p>
-                        <p class="val-p"><el-input size="medium" v-model="editData.className"></el-input></p>
+                        <p class="val-p"><el-input size="medium" v-model.trim="editData.className"></el-input></p>
                       </div>
                       <div class="inner-item">
                         <p class="title">类别</p>
@@ -178,14 +178,14 @@
                       <div class="inner-item">
                         <p class="title">总课时(小时)</p>
                         <p class="val-p">
-                          <el-input size="medium" v-model="editData.hourRequire"></el-input>
+                          <el-input size="medium" v-model.trim="editData.hourRequire"></el-input>
                         </p>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model="editData.need"></el-input>
+                        <el-input type="textarea" v-model.trim="editData.need"></el-input>
                       </div>
                     </div>
                     <div class="dialog-inner-all">

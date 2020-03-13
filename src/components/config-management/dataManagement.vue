@@ -104,6 +104,7 @@
       width="40%"
       :visible.sync="dialogAddVisible"
       title="添加"
+      @close="closeDialog('form')"
       >
       <el-form
         :model= "tables.form"
@@ -151,7 +152,7 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddVisible = false">取 消</el-button>
+          @click="closeDialog('form')">取 消</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -159,6 +160,7 @@
       width="40%"
       :visible.sync="dialogAddGroupVisible"
       title="添加分类"
+      @close="closeDialogGroup('formGroup')"
       >
       <el-form
         :model= "formGroup"
@@ -188,7 +190,8 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddGroupVisible = false">取 消</el-button>
+          @click="closeDialogGroup('formGroup')"
+          >取 消</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -246,6 +249,16 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 关闭添加弹框
+    closeDialog (formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields()
+    },
+    // 关闭添加分类弹框
+    closeDialogGroup (formName) {
+      this.dialogAddGroupVisible = false
+      this.$refs[formName].resetFields()
+    },
     setCurrent (row) {
       this.$refs.singleTable.setCurrentRow(row)
     },

@@ -71,13 +71,13 @@
             label="治理复核时间"
             align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="治理复核图片"
             align="center">
             <template slot-scope="scope">
               <img class="table-img" :src="scope.row.goverReviPhoto" title="img"/>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="goverReviRecord"
             label="治理复核记录"

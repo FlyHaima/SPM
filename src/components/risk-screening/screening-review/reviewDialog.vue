@@ -3,7 +3,8 @@
     :close-on-click-modal="false"
     title="复核"
     :visible.sync="show"
-    width="40%">
+    width="40%"
+    @close="closeDialog('form')">
     <el-form :model="formWays" :rules="rules" ref="formWays" label-width="100px">
       <el-form-item label="处理方式:" prop="handleType" >
         <el-radio-group v-model="formWays.handleType" @change="waySelChange">
@@ -81,7 +82,7 @@
           </el-table-column>
           <el-table-column
             label="联系方式"
-            width="120"
+            width="130"
             align="center"
             prop="telephone">
           </el-table-column>
@@ -105,7 +106,7 @@
         @click="submitForm()">确 定</el-button>
       <el-button
         size="small"
-        @click="show = false">取 消</el-button>
+        @click="closeDialog('form')">取 消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -175,6 +176,11 @@ export default {
     })
   },
   methods: {
+    // 关闭添加弹框
+    closeDialog (formName) {
+      this.show = false
+      this.$refs[formName].resetFields()
+    },
     // 初始化处理方式数据
     initFormData () {
       // 清空表单编辑后的值
@@ -209,7 +215,7 @@ export default {
         .get('workUser/getList', {
           deptId: this.deptId,
           pageNo: 1,
-          pageSize: 1
+          pageSize: 10
         })
         .then((res) => {
           if (res.data.code === 200) {

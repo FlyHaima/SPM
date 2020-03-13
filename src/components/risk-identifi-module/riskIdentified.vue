@@ -100,7 +100,7 @@
                       </p>
                       <p class="step-1-p">
                         <span class="label">作业步骤：</span>
-                        <el-input size="medium" v-model="stepObjA.workStep"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjA.workStep"></el-input>
                       </p>
                       <p class="step-1-p">
                         <span class="label">风险类别/事故后果：</span>
@@ -326,7 +326,7 @@
                         </div>
                         <div class="line-rt">
                           <div class="label">管控人</div>
-                          <el-input v-model="stepObjC.manager" size="medium"></el-input>
+                          <el-input v-model.trim="stepObjC.manager" size="medium"></el-input>
                         </div>
                       </div>
                       <div class="btn-box" :class="stepObjA.identifierWay === 'LS' ? 'isLS' : ''">
@@ -342,31 +342,31 @@
                     <div class="step-box step-4-box">
                       <p class="step-4-p">
                         <span class="label">应采取的管控措施：</span>
-                        <el-input size="medium" v-model="stepObjD.controlMeasure"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.controlMeasure"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管控措施依据的标准和规范：</span>
-                        <el-input size="medium" v-model="stepObjD.standard" maxlength="250"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.standard" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">技术措施：</span>
-                        <el-input size="medium" v-model="stepObjD.technicalMeasures" maxlength="250"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.technicalMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管理措施：</span>
-                        <el-input size="medium" v-model="stepObjD.managerMeasures" maxlength="250"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.managerMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">教育措施：</span>
-                        <el-input size="medium" v-model="stepObjD.educationMeasures" maxlength="250"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.educationMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">防护措施：</span>
-                        <el-input size="medium" v-model="stepObjD.protectMeasures" maxlength="250"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.protectMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">应急措施：</span>
-                        <el-input size="medium" v-model="stepObjD.emergencyMeasures" maxlength="250"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.emergencyMeasures" maxlength="250"></el-input>
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>

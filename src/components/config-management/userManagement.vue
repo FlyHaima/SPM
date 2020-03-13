@@ -141,12 +141,6 @@
                     @click="changeState(scope.row)">
                     {{ scope.row.state === '1' ? '禁用' : '启用' }}
                   </a>
-                  <!-- <span class="color-primary"> / </span>
-                  <a
-                    href="javascript:;"
-                    class="color-primary"
-                    @click="editRole(scope.row)">分配角色
-                  </a> -->
                 </template>
               </el-table-column>
             </el-table>
@@ -165,6 +159,7 @@
       </el-container>
     </el-main>
     <el-dialog
+      @close="closeDialog('form')"
       width="40%"
       :visible.sync="dialogAddVisible"
       :close-on-click-modal="false"
@@ -265,29 +260,7 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddVisible = false">取 消</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      :close-on-click-modal="false"
-      title="分配"
-      :visible.sync="dialogRoleVisible"
-      >
-      <el-radio-group v-model="radio">
-        <el-radio :label="1">管理员</el-radio>
-        <el-radio :label="2">经理</el-radio>
-        <el-radio :label="3">部长</el-radio>
-        <el-radio :label="4">车间主任</el-radio>
-        <el-radio :label="5">班组长</el-radio>
-      </el-radio-group>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="submitForm()">保 存</el-button>
-        <el-button
-          size="small"
-          @click="dialogRoleVisible = false">取 消</el-button>
+          @click="closeDialog('form')">取 消</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -334,7 +307,6 @@ export default {
       tables: {
         api: 'user/getUserList'
       },
-      dialogRoleVisible: false, // 分配角色弹框开关
       dialogAddVisible: false, // 添加用户弹框开关
       radio: 1,
       form: {
@@ -390,6 +362,11 @@ export default {
     this.fetchRoleOptions()
   },
   methods: {
+    // 关闭添加用户的弹框
+    closeDialog (formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 导入接口地址
     uploadUrl () {
       return base.baseUrl + '/user/importUsers'
@@ -427,10 +404,6 @@ export default {
           }
         })
         .finally(() => {})
-    },
-    // 分配角色
-    editRole (row) {
-      this.dialogRoleVisible = true
     },
     // 添加事件
     addHandle () {

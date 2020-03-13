@@ -71,13 +71,13 @@
             label="整改人"
             align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="整改图片"
             align="center">
             <template slot-scope="scope">
               <img class="table-img" :src="scope.row.rectiPhoto" title="img"/>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="rectiRecord"
             label="整改记录"

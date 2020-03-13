@@ -1,6 +1,6 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
         v-if="listMenuDataTag"
         :menu-name="'计划清单'"
@@ -71,13 +71,13 @@
             label="整改人"
             align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="整改图片"
             align="center">
             <template slot-scope="scope">
               <img class="table-img" :src="scope.row.rectiPhoto" title="img"/>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="rectiRecord"
             label="整改记录"

@@ -81,6 +81,7 @@
       :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
       width="35%"
+      @close="closeDialog('form')"
       >
       <div slot="title">
         {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '新增' }}
@@ -114,7 +115,7 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddVisible = false">取 消</el-button>
+          @click="closeDialog('form')">取 消</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -122,7 +123,7 @@
       title="分配"
       :visible.sync="dialogRoleVisible"
       >
-      <el-collapse v-model="activeNames" >
+      <el-collapse v-loading="pageLoading" v-model="activeNames" >
         <el-collapse-item
           v-for="(item, index) in roleOptions"
           :key = index
@@ -183,6 +184,7 @@ export default {
         ]
       },
       multipleSelection: [],
+      pageLoading: false,
       submitting: false,
       editData: '',
       roleOptions: [], // 角色
@@ -198,6 +200,11 @@ export default {
     this.initPage()
   },
   methods: {
+    // 关闭弹框
+    closeDialog (formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 页面初始化数据
     initPage () {
       this.initMenuList()
@@ -223,13 +230,14 @@ export default {
     // 获取角色数据
     fetchRoleOptions (row) {
       this.roleId = row.roleId
-      this.submitting = true
+      this.pageLoading = true
       axios
         .get('role/getRoleMenus', {
           roleId: this.roleId
         })
         .then((res) => {
           if (res.data.code === 200) {
+            this.pageLoading = false
             this.roleOptions = res.data.data
             for (let i = 0; i < this.roleOptions.length; i++) {
               for (let j = 0; j < this.newMenuList.length; j++) {
@@ -241,7 +249,7 @@ export default {
           }
         })
         .finally(() => {
-          this.submitting = false
+          this.pageLoading = false
         })
     },
     filterRoleOptions (fData) {

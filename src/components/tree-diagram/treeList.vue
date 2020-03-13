@@ -205,8 +205,8 @@ export default {
 }
 .tree-search{
   display: inline-block;
-  width: 180px;
-  margin-left: 20px;
+  width: 160px;
+  margin-left: 5px;
 }
 
 .tree-list{

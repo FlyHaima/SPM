@@ -199,7 +199,7 @@
     <el-dialog :close-on-click-modal="false" title="主要职责" :visible.sync="dutyVisible" width="30%">
       <el-form ref="dutyForm" label-width="80px">
         <el-form-item label="主要职责">
-          <el-input v-model="dutyPostData" type="textarea"
+          <el-input v-model.trim="dutyPostData" type="textarea"
                     :rows="3"></el-input>
         </el-form-item>
       </el-form>
@@ -213,13 +213,13 @@
     <el-dialog :close-on-click-modal="false" title="添加节点" :visible.sync="addTreeVisible" width="620px">
       <el-form :model="addOrgData">
         <el-form-item label="社会信用代码：" :label-width="'140px'">
-          <el-input v-model="addOrgData.companyId" autocomplete="off"></el-input>
+          <el-input v-model.trim="addOrgData.companyId" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="请输入节点名称：" :label-width="'140px'">
-          <el-input v-model="addOrgData.deptName" autocomplete="off"></el-input>
+          <el-input v-model.trim="addOrgData.deptName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="节点层级：" :label-width="'140px'">
-          <el-input-number v-model="addOrgData.level" :step="1" :min="minLevel" step-strictly></el-input-number>
+          <el-input-number v-model.trim="addOrgData.level" :step="1" :min="minLevel" step-strictly></el-input-number>
         </el-form-item>
         <p style="color: red; font-size: 13px; margin-left: 140px;">*风险辨识划分的一级单元和二级单元取的是第四级和第六级</p>
       </el-form>

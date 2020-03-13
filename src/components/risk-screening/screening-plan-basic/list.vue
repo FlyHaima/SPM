@@ -1116,6 +1116,6 @@ export default {
 }
 .push-time{
   display: inline-block;
-  width: 100px !important;
+  width: 110px !important;
 }
 </style>
