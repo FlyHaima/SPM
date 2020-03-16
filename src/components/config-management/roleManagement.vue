@@ -297,7 +297,7 @@ export default {
         })
         .finally(() => {
           vm.submitting = false
-          this.postDataChecked = ''
+          this.postDataChecked = []
         })
     },
     handleCheckAllChange (item) {
