@@ -63,12 +63,15 @@
           </el-table-column>
           <el-table-column
             prop="goverTime"
-            label="整改时间"
+            label="治理时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.goverTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="goverUser"
-            label="整改人"
+            label="治理人"
             align="center">
           </el-table-column>
           <!-- <el-table-column
@@ -149,6 +152,16 @@ export default {
     vm.fetchListMenuData()
     vm.fetchTableData()
   },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
   methods: {
     checkQueryDate (val) {
       if (val) {
@@ -207,16 +220,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 整改时间
-              if (item.goverTime) {
-                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

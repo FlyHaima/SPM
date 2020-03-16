@@ -72,6 +72,9 @@
             label="检查时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.checkTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="content"
@@ -104,6 +107,9 @@
             label="复核时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.checkByTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="rectiRemark"
@@ -120,6 +126,9 @@
             label="治理时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.goverTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="goverReviUser"
@@ -132,6 +141,9 @@
             label="治理复核时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.goverReviTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -235,6 +247,16 @@ export default {
     vm.fetchListMenuData()
     vm.fetchTableData()
   },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
   methods: {
     checkQueryDate (val) {
       if (val) {
@@ -294,40 +316,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 治理复核时间
-              if (item.goverReviTime) {
-                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverReviTime = ''
-              }
-              // 检查时间
-              if (item.checkTime) {
-                item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.checkTime = ''
-              }
-              // 复核时间
-              if (item.checkByTime) {
-                item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.checkByTime = ''
-              }
-              // 治理时间
-              if (item.goverTime) {
-                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverTime = ''
-              }
-              // 治理复核时间
-              if (item.goverReviTime) {
-                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverReviTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

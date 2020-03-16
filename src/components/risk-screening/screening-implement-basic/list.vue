@@ -66,12 +66,17 @@
           <el-table-column
             prop="checkUser"
             label="检查人员"
-            align="center">
+            align="center"
+            width="120">
           </el-table-column>
           <el-table-column
             prop="checkTime"
             label="检查时间"
-            align="center">
+            align="center"
+            width="120">
+            <template slot-scope="scope">
+              {{scope.row.checkTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="hiddenDesc"
@@ -152,6 +157,16 @@ export default {
     vm.fetchListMenuData()
     vm.fetchTableData()
   },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
   methods: {
     editItem (data) {
       let vm = this
@@ -218,12 +233,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.tablesLoading = false
-            // let formatTableData = []
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

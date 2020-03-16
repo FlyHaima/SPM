@@ -69,7 +69,11 @@
           <el-table-column
             prop="checkTime"
             label="检查时间"
-            align="center">
+            align="center"
+            width="120">
+            <template slot-scope="scope">
+              {{scope.row.checkTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="hiddenDesc"
@@ -102,6 +106,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
@@ -149,6 +154,16 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
     editItem (data) {

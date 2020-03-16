@@ -71,6 +71,9 @@
             prop="goverReviTime"
             label="治理复核时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.goverReviTime | time-filter}}
+            </template>
           </el-table-column>
           <!-- <el-table-column
             label="治理复核图片"
@@ -150,6 +153,16 @@ export default {
     vm.fetchListMenuData()
     vm.fetchTableData()
   },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
   methods: {
     checkQueryDate (val) {
       if (val) {
@@ -208,16 +221,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 治理复核时间
-              if (item.goverReviTime) {
-                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverReviTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

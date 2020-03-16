@@ -77,11 +77,17 @@
             prop="checkByTime"
             label="复核时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.checkByTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="rectiTime"
             label="整改时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.rectiTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="rectiRemark"
@@ -184,6 +190,16 @@ export default {
     vm.fetchListMenuData()
     vm.fetchTableData()
   },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
   methods: {
     checkQueryDate (val) {
       if (val) {
@@ -250,22 +266,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 格式化复核时间
-              if (item.checkByTime) {
-                item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.checkByTime = ''
-              }
-              // 格式化整改时间
-              if (item.rectiTime) {
-                item.rectiTime = moment(item.rectiTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.rectiTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

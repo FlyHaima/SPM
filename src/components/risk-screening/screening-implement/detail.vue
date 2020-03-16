@@ -18,7 +18,7 @@
         {{formData.checkUser}}
       </el-form-item>
       <el-form-item label="检查时间：">
-        {{formData.checkTime}}
+        {{formData.checkTime | time-filter}}
       </el-form-item>
       <el-form-item label="隐患描述：">
         {{formData.hiddenDesc}}
@@ -26,7 +26,7 @@
       <el-form-item label="附件：">
         <div class="attachment-list">
           <div
-            v-for = "(itemImg, index) in photos"
+            v-for = "(itemImg, index) in formData.hiddenPhotos"
             :key = index
             class="attachment-list-item">
             <img
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   name: '',
   props: {
@@ -58,7 +59,16 @@ export default {
     }
   },
   created () {
-    this.photos = this.formData.hiddenPhotos
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   data () {
     return {
@@ -78,6 +88,12 @@ export default {
     },
     show (val) {
       this.$emit('on-dialog-change', val)
+    },
+    formData: {
+      immediate: true,
+      handler (val, oldVal) {
+        this.formData = val
+      }
     }
   }
 }
