@@ -176,6 +176,9 @@
         label-position= "right"
         @submit.native.prevent= "submitForm"
       >
+        <el-form-item label-width="0" class="tips-area">
+          <span class="tips">*</span>注意：新增用户默认的初始密码是111111
+        </el-form-item>
         <el-form-item
           v-if="typeof editData !== 'undefined' && editData !== ''"
           label="账号:"
@@ -541,5 +544,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+  .tips-area{
+    .tips{
+      color: #ff0000;
+      margin: 8px;
+    }
+  }
 </style>

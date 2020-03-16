@@ -34,7 +34,10 @@
               size="medium"
               v-model="form.rectiTime"
               type="datetime"
-              placeholder="选择日期时间">
+              placeholder="选择日期时间"
+              :picker-options="pickerDisabled"
+              :clearable='false'
+              value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -163,7 +166,13 @@ export default {
       workTree: [], // 工作小组树数据
       workData: [],
       currentRow: null,
-      deptId: ''
+      deptId: '',
+      pickerDisabled: {
+        // 验证时间范围
+        disabledDate: (time) => {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      }
     }
   },
   components: {

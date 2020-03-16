@@ -71,6 +71,10 @@
                   <el-col class="box-item-label" :span="3">整改意见:</el-col>
                   <el-col :span="9">{{item.spmHiddenInstanceHis.rectiRemark}}</el-col>
                 </el-row>
+                <el-row class="item">
+                  <el-col class="box-item-label" :span="3">隐患描述:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.hiddenDesc}}</el-col>
+                </el-row>
               </el-card>
               <el-card
                 class="box-card"
@@ -133,7 +137,7 @@
                         :key = index
                         class="attachment-list-item">
                         <img
-                          v-show="item.spmHiddenInstanceHis.goverReviPhotos"
+                          v-show="item.spmHiddenInstanceHis.goverReviPhotos.length > 0"
                           class="attachment-img"
                           :src="itemImg"
                           alt="上传的图片" />
