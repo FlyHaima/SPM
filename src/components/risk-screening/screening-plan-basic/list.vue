@@ -275,7 +275,6 @@
       @reload="fetchTableData"
     ></dialog-add>
     <dialog-sort
-      v-if='currentPlanId'
       :dialogVisible="dialogSortVisible"
       :planId="currentPlanId"
       :type="type"
