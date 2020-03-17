@@ -13,7 +13,10 @@
                  :visible.sync="dialogVisible"
                  v-loading="dialogLoading"
                  width="580px" :append-to-body="true">
-        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model.trim="addData.industry"></el-input></p>
+        <p style="margin-top: 10px; line-height: 22px;">
+          所属行业：
+          <el-input v-model.trim="addData.industry" maxlength="12"></el-input>
+        </p>
         <p style="margin-top: 10px; line-height: 22px;">通用模板：</p>
         <el-upload
           class="upload-demo"
@@ -38,7 +41,7 @@
                  :visible.sync="editorVisible"
                  v-loading="editorLoading"
                  width="580px" :append-to-body="true">
-        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model.trim="editData.industry"></el-input></p>
+        <p style="margin-top: 10px; line-height: 22px;">所属行业：<el-input v-model.trim="editData.industry" maxlength="12"></el-input></p>
         <p style="margin-top: 10px; line-height: 22px;">通用模板：</p>
         <el-upload
           class="upload-demo"
@@ -253,7 +256,7 @@ export default {
     },
     confirmEdit () {
       let vm = this
-      vm.editorLoading = true
+      // vm.editorLoading = true
       if (!vm.editData.industry) {
         vm.$message({
           message: '请填写所属行业名称',
@@ -268,14 +271,15 @@ export default {
         return
       }
       updataBdata(vm.editData).then(res => {
+        vm.editorLoading = true
         if (res.code === 200) {
+          vm.editorLoading = false
           vm.$message({
             type: 'success',
-            message: '添加成功'
+            message: '修改成功'
           })
           vm.getTable()
         }
-        vm.editorLoading = false
         vm.editFileList = []
         vm.editData = {
           id: '',
