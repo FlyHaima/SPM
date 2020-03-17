@@ -155,10 +155,14 @@
 </template>
 
 <script>
-import axios from '@/api/axios'
+// import axios from '@/api/axios'
 import moment from 'moment'
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import {
+  login,
+  getNewsList
+} from '@/api/login'
 export default {
   name: 'loginPage',
   data () {
@@ -227,16 +231,22 @@ export default {
   methods: {
     // 获取新闻列表
     fetchData () {
-      axios
-        .get('ontroller/getNewsList', {
-          tabType: this.tabType
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.newsList = res.data.newsList
-            this.swiperSlides = res.data.picList
-          }
-        })
+      // axios
+      //   .get('ontroller/getNewsList', {
+      //     tabType: this.tabType
+      //   })
+      //   .then((res) => {
+      //     if (res.data.code === 200) {
+      //       this.newsList = res.data.newsList
+      //       this.swiperSlides = res.data.picList
+      //     }
+      //   })
+      getNewsList(this.tabType).then(res => {
+        if (res.code === 200) {
+          this.newsList = res.newsList
+          this.swiperSlides = res.picList
+        }
+      })
     },
     // tab切换事件
     clickTab (item) {
@@ -250,26 +260,42 @@ export default {
       let vm = this
       vm.$refs.form.validate((valid) => {
         if (valid) {
-          axios
-            .post('ontroller/login', vm.form)
-            .then((res) => {
-              vm.submitting = true
-              if (res.data.code === 200) {
-                vm.$notify.success('登录成功')
-                // 保存token
-                const token = res.data.data
-                sessionStorage.setItem('TOKEN_KEY', token)
-                window.location = '/dashboard'
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
-                })
-              }
-            })
-            .finally(() => {
-              vm.submitting = false
-            })
+          // axios
+          //   .post('ontroller/login', vm.form)
+          //   .then((res) => {
+          //     vm.submitting = true
+          //     if (res.data.code === 200) {
+          //       vm.$notify.success('登录成功')
+          //       // 保存token
+          //       const token = res.data.data
+          //       sessionStorage.setItem('TOKEN_KEY', token)
+          //       window.location = '/dashboard'
+          //     } else {
+          //       vm.$message({
+          //         message: res.data.message,
+          //         type: 'warning'
+          //       })
+          //     }
+          //   })
+          //   .finally(() => {
+          //     vm.submitting = false
+          //   })
+          login(vm.form).then((res) => {
+            vm.submitting = true
+            if (res.code === 200) {
+              vm.$notify.success('登录成功')
+              // 保存token
+              const token = res.data
+              sessionStorage.setItem('TOKEN_KEY', token)
+              window.location = '/dashboard'
+            } else {
+              vm.$message({
+                message: res.message,
+                type: 'warning'
+              })
+            }
+            vm.submitting = false
+          })
         } else {
           return false
         }
@@ -391,9 +417,9 @@ export default {
   letter-spacing: 9px;
   color: #282828;
 }
-.login-form-box{
+// .login-form-box{
 
-}
+// }
 .login-form-header{
   display: flex;
   justify-content: space-between;
