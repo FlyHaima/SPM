@@ -198,7 +198,8 @@ import axios from '@/api/axios'
 import moment from 'moment'
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
-import { INDUSTRY_NAME_LIST, USE_INDUSTRY } from '@/constants/status'
+// INDUSTRY_NAME_LIST
+import { USE_INDUSTRY } from '@/constants/status'
 export default {
   name: 'loginPage',
   data () {
@@ -255,7 +256,7 @@ export default {
           { validator: validatePassConfirm, trigger: 'blur' }
         ]
       },
-      industryOptions: INDUSTRY_NAME_LIST,
+      industryOptions: null,
       useIndustryOptions: USE_INDUSTRY,
       value: '',
       swiperOption: {
@@ -308,6 +309,7 @@ export default {
   },
   mounted () {
     this.fetchData()
+    this.getHyList()
     this.swiper.slideTo(3, 1000, false)
   },
   methods: {
@@ -323,6 +325,16 @@ export default {
             this.pageLoading = false
             this.newsList = res.data.newsList
             this.swiperSlides = res.data.picList
+          }
+        })
+    },
+    // 获取行业列表
+    getHyList () {
+      axios
+        .get('registerController/getHyList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.industryOptions = res.data.data
           }
         })
     },

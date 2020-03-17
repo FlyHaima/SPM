@@ -17,6 +17,9 @@
       <el-form-item label="检查人员：">
         {{formData.checkUser}}
       </el-form-item>
+      <el-form-item label="接收人：">
+        {{formData.receiverUser}}
+      </el-form-item>
       <el-form-item label="检查时间：">
         {{formData.checkTime | time-filter}}
       </el-form-item>

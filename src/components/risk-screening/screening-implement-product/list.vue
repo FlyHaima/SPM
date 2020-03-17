@@ -67,6 +67,12 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="receiverUser"
+            label="接收人"
+            align="center"
+            width="120">
+          </el-table-column>
+          <el-table-column
             prop="checkTime"
             label="检查时间"
             align="center"
