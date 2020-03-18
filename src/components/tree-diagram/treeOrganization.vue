@@ -42,10 +42,10 @@
     <div class="tree-box">
       <el-tree
         class="filter-tree"
-        :data="treeData"
-        :props="defaultProps"
         default-expand-all
         node-key="invDeptId"
+        :data="treeData"
+        :props="defaultProps"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"

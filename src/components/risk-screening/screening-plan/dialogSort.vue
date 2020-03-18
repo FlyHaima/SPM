@@ -151,9 +151,14 @@ export default {
     }
   },
   mounted () {
-    this.currentPlanId = this.planId
-    this.fetchOrgOptions()
-    this.fetchCycleOptions()
+    this.$nextTick(() => {
+      this.currentPlanId = this.planId
+      // this.fetchOrgOptions()
+      this.fetchCycleOptions()
+    })
+    // this.currentPlanId = this.planId
+    // this.fetchOrgOptions()
+    // this.fetchCycleOptions()
     // this.fetchSortTableData(this.currentPlanId)
   },
   methods: {

@@ -257,7 +257,7 @@
       title="编辑机构"
       :visible.sync="dialogOrganizationVisible"
       width="450px">
-      <div style="height: 450px">
+      <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
             :tree-name="'组织机构'"
@@ -272,12 +272,6 @@
             @click="syncOrganizationData">同步数据</el-button>
           </tree-organization>
         </template>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="dialogOrganizationVisible = false">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -321,6 +315,7 @@
       </div>
     </el-dialog>
     <dialog-sort
+      ref="dialogSort"
       :dialogVisible = "dialogSortVisible"
       :planId = "currentPlanId"
       :type = "type"
@@ -351,6 +346,7 @@ export default {
       pageLoading: false,
       submitting: false,
       tablesLoading: false,
+      treeLoading: false,
       sendPlanSwitch: true, // 计划发布手动自动区别开关
       isSendPlan: true, // 是否可以发布计划开关
       btnDisabledProductSend: false, // 计划发布可用开关
@@ -498,10 +494,12 @@ export default {
     // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
     fetchOrgTreeData () {
       let vm = this
+      this.treeLoading = true
       axios
         .get('basticHidden/getDeptList')
         .then((res) => {
           if (res.data.code === 200) {
+            this.treeLoading = false
             vm.organizationTree = res.data.data
             this.$notify.success('更新成功')
           } else {
@@ -512,6 +510,7 @@ export default {
           }
         })
         .finally(() => {
+          this.treeLoading = false
         })
     },
     // 获取计划下的组织机构树
@@ -629,6 +628,9 @@ export default {
     // 排查种类
     handleSort () {
       this.dialogSortVisible = true
+      // 触发排查种类子组件的获取组织机构和获取周期的事件
+      this.$refs.dialogSort.fetchOrgOptions()
+      this.$refs.dialogSort.fetchCycleOptions()
     },
     // 弹框取消操作改变现实状态
     changeSortDialog (val) {
