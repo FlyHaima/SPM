@@ -64,14 +64,14 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop="checkUser"
-            label="检查人员"
+            prop="receiverUser"
+            label="接收人"
             align="center"
             width="120">
           </el-table-column>
           <el-table-column
-            prop="receiverUser"
-            label="接收人"
+            prop="checkUser"
+            label="检查人员"
             align="center"
             width="120">
           </el-table-column>
