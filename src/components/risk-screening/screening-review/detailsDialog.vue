@@ -33,6 +33,10 @@
                   <el-col :span="9">{{item.spmHiddenInstanceHis.checkTime | date-filter}}</el-col>
                 </el-row>
                 <el-row class="item">
+                  <el-col class="box-item-label" :span="3">隐患描述:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.hiddenDesc}}</el-col>
+                </el-row>
+                <el-row class="item">
                   <el-col class="box-item-label" :span="24">隐患图片:</el-col>
                 </el-row>
                 <el-row class="item">
@@ -70,10 +74,6 @@
                 <el-row class="item">
                   <el-col class="box-item-label" :span="3">整改意见:</el-col>
                   <el-col :span="9">{{item.spmHiddenInstanceHis.rectiRemark}}</el-col>
-                </el-row>
-                <el-row class="item">
-                  <el-col class="box-item-label" :span="3">隐患描述:</el-col>
-                  <el-col :span="9">{{item.spmHiddenInstanceHis.hiddenDesc}}</el-col>
                 </el-row>
               </el-card>
               <el-card
