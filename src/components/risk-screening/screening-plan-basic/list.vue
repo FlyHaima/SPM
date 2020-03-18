@@ -261,12 +261,6 @@
           </tree-organization>
         </template>
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="dialogOrganizationVisible = false">关闭</el-button>
-      </div>
     </el-dialog>
     <dialog-add
       :dialogVisible="dialogAddVisible"
@@ -345,7 +339,7 @@ export default {
     return {
       pageLoading: false,
       tablesLoading: false,
-      treeLoading: true,
+      treeLoading: false,
       submitting: false,
       sendPlanSwitch: true, // 计划发布手动自动区别开关
       isSendPlan: true, // 是否可以发布计划开关
