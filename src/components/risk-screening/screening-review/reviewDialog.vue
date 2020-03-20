@@ -45,7 +45,7 @@
         <el-input
           size="medium"
           type="textarea"
-          v-model="form.rectiRemark"
+          v-model.trim="form.rectiRemark"
           maxlength="200"
           show-word-limit></el-input>
       </el-form-item>
