@@ -11,7 +11,7 @@
           <el-radio
             v-for="(item, index) in listWay"
             :key="index"
-            :label="item.value">{{item.value}}</el-radio>
+            :label="item.key">{{item.value}}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -36,8 +36,7 @@
               type="datetime"
               placeholder="选择日期时间"
               :picker-options="pickerDisabled"
-              :clearable='false'
-              value-format="yyyy-MM-dd HH:mm:ss">
+              :clearable='false'>
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -59,7 +58,7 @@
       :close-on-click-modal="false"
       :title="'选择排查复核人'"
       :visible.sync="showTree"
-      width="80%"
+      width="60%"
       append-to-body>
       <div class="select-layer" style="height: 400px">
         <tree-diagram
@@ -79,21 +78,19 @@
           >
           <el-table-column
             label="姓名"
-            width="120"
             align="center"
             prop="userName">
           </el-table-column>
           <el-table-column
             label="联系方式"
-            width="130"
             align="center"
             prop="telephone">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="主要职责"
             align="center"
             prop="duty">
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </div>
 
@@ -219,22 +216,22 @@ export default {
         })
     },
     // 获取工作小组table数据
-    fetchWorkTableData () {
-      axios
-        .get('workUser/getList', {
-          deptId: this.deptId,
-          pageNo: 1,
-          pageSize: 10
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.workData = res.data.data
-          }
-        })
-    },
+    // fetchWorkTableData () {
+    //   axios
+    //     .get('workUser/getList', {
+    //       deptId: this.deptId,
+    //       pageNo: 1,
+    //       pageSize: 10
+    //     })
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.workData = res.data.data
+    //       }
+    //     })
+    // },
     // 处理方式切换
-    waySelChange (val) {
-      if (val === '退回') {
+    waySelChange (label) {
+      if (label === '_5') {
         this.showGovernContent = false
       } else {
         this.showGovernContent = true
@@ -305,9 +302,10 @@ export default {
       this.fetchWorkTreeData()
     },
     // 选择治理人员弹窗的左侧菜单的点击事件
-    handleNodeClick (deptId) {
+    handleNodeClick (treeData, deptId) {
       this.deptId = deptId
-      this.fetchWorkTableData()
+      this.workData = treeData.userList
+      // this.fetchWorkTableData()
     },
     // 选择治理人员弹框的table单选操作
     handleCurrentChange (val) {
