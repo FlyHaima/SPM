@@ -11,7 +11,7 @@
           <el-radio
             v-for="(item, index) in listWay"
             :key="index"
-            :label="item.key">{{item.value}}</el-radio>
+            :label="item.value">{{item.value}}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -231,7 +231,7 @@ export default {
     // },
     // 处理方式切换
     waySelChange (label) {
-      if (label === '_5') {
+      if (label === '结束') {
         this.showGovernContent = false
       } else {
         this.showGovernContent = true
