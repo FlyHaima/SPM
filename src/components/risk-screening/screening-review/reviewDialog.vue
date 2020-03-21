@@ -281,6 +281,8 @@ export default {
               vm.submitting = true
               if (res.data.code === 200) {
                 vm.$notify.success('排查复核提交成功！')
+                // 复核成功后刷新导航我的待办的数量显示
+                this.$store.dispatch('BASE_INFO_SET')
                 this.$emit('reload')
                 vm.show = false
               } else {

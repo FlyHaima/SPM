@@ -11,12 +11,12 @@
       text-color="#ffffff"
       >
       <template
-        v-for="(item, indexF) in menuList">
+        v-for="(item) in menuList">
         <el-menu-item
           v-if="!item.list&&item.url !== '/' &&item.name !== '应急指挥调度'"
-          :key="item.name"
+          :key="item.index"
           :index="item.url">
-          <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
+          <i class="icon-side-nav" :class="'icon-side-nav-'+item.index"></i>
           <span slot="title">{{item.name}}</span>
         </el-menu-item>
         <a
@@ -25,23 +25,23 @@
           :key= "item.name">
           <el-menu-item
             index="">
-            <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
+            <i class="icon-side-nav" :class="'icon-side-nav-'+item.index"></i>
             <span v-show="!isCollapse">{{item.name}}</span>
           </el-menu-item>
         </a>
         <el-submenu
           v-if="item.list"
-          :key="item.name"
+          :key="item.index"
           :index="item.url">
           <template slot="title">
-            <i class="icon-side-nav" :class="'icon-side-nav-'+indexF"></i>
+            <i class="icon-side-nav" :class="'icon-side-nav-'+item.index"></i>
             <span slot="title">{{item.name}}</span>
           </template>
             <el-menu-item
-              v-for="(itemSub, index) in item.list"
-              :key='index'
+              v-for="(itemSub) in item.list"
+              :key='itemSub.index'
               :index="itemSub.url">
-              <i class="icon-side-nav-sub" :class="'icon'+indexF+index"></i>
+              <i class="icon-side-nav-sub" :class="'icon'+item.index+itemSub.index"></i>
               {{itemSub.name}}</el-menu-item>
         </el-submenu>
       </template>
@@ -63,42 +63,49 @@ export default {
       //   {
       //     name: '首页',
       //     icon: 'home',
-      //     url: '/dashboard'
+      //     url: '/dashboard',
+      //     index: 1
       //   },
       //   {
       //     name: '安全基础管理',
       //     url: '/organization',
       //     active: false,
+      //     index: 2
       //     list: [
       //       {
       //         fname: '安全基础管理',
       //         name: '组织机构',
       //         url: '/organization',
       //         active: false
+      //         index: 1
       //       },
       //       {
       //         fname: '安全基础管理',
       //         name: '全员培训',
       //         url: '/staffTraining',
       //         active: false
+      //         index: 2
       //       },
       //       {
       //         fname: '安全基础管理',
       //         name: '制度建设',
       //         url: '/systemConstruction',
       //         active: false
+      //         index: 3
       //       },
       //       {
       //         fname: '安全基础管理',
       //         name: '基础资料',
       //         url: '/basicData',
       //         active: false
+      //         index: 4
       //       },
       //       {
       //         fname: '安全基础管理',
       //         name: '证件管理',
       //         url: '/certificateManage',
       //         active: false
+      //         index: 5
       //       }
       //     ]
       //   },
@@ -106,30 +113,35 @@ export default {
       //     name: '风险辨识评估',
       //     url: '/riskIdentified',
       //     active: false,
+      //     index: 3
       //     list: [
       //       {
       //         fname: '风险辨识评估',
       //         name: '风险辨识',
       //         url: '/riskIdentified',
       //         active: false
+      //         index: 1
       //       },
       //       {
       //         fname: '风险辨识评估',
       //         name: '风险单元',
       //         url: '/riskUnit',
       //         active: false
+      //         index: 2
       //       },
       //       {
       //         fname: '风险辨识评估',
       //         name: '评价记录',
       //         url: '/evaluationRecord',
       //         active: false
+      //         index: 3
       //       },
       //       {
       //         fname: '风险辨识评估',
       //         name: '系统大数据',
       //         url: '/systemData',
       //         active: false
+      //         index: 4
       //       }
       //     ]
       //   },
@@ -410,25 +422,25 @@ export default {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center center;
-  &.icon-side-nav-0{
+  &.icon-side-nav-1{
     background-image: url('../../assets/img/aside-icon00.png');
   }
-  &.icon-side-nav-1{
+  &.icon-side-nav-2{
     background-image: url('../../assets/img/aside-icon01.png');
   }
-  &.icon-side-nav-2{
+  &.icon-side-nav-3{
     background-image: url('../../assets/img/aside-icon02.png');
   }
-  &.icon-side-nav-3{
+  &.icon-side-nav-4{
     background-image: url('../../assets/img/aside-icon03.png');
   }
-  &.icon-side-nav-4{
+  &.icon-side-nav-5{
     background-image: url('../../assets/img/aside-icon04.png');
   }
-  &.icon-side-nav-5{
+  &.icon-side-nav-6{
     background-image: url('../../assets/img/aside-icon05.png');
   }
-  &.icon-side-nav-6{
+  &.icon-side-nav-7{
     background-image: url('../../assets/img/aside-icon06.png');
   }
 }
@@ -440,94 +452,94 @@ export default {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center center;
-  &.icon10{
+  &.icon21{
     background-image: url('../../assets/img/aside-icon00-0.png');
   }
-  &.icon11{
+  &.icon22{
     background-image: url('../../assets/img/aside-icon00-1.png');
   }
-  &.icon12{
+  &.icon23{
     background-image: url('../../assets/img/aside-icon00-2.png');
   }
-  &.icon13{
+  &.icon24{
     background-image: url('../../assets/img/aside-icon00-3.png');
   }
-  &.icon14{
+  &.icon25{
     background-image: url('../../assets/img/aside-icon00-4.png');
   }
-  &.icon20{
+  &.icon31{
     background-image: url('../../assets/img/aside-icon01-0.png');
   }
-  &.icon21{
+  &.icon32{
     background-image: url('../../assets/img/aside-icon01-1.png');
   }
-  &.icon22{
-    background-image: url('../../assets/img/aside-icon01-2.png');
-  }
-  &.icon23{
-    background-image: url('../../assets/img/aside-icon01-2.png');
-  }
-  &.icon30{
-    background-image: url('../../assets/img/aside-icon02-0.png');
-  }
-  &.icon31{
-    background-image: url('../../assets/img/aside-icon02-1.png');
-  }
-  &.icon32{
-    background-image: url('../../assets/img/aside-icon02-2.png');
-  }
   &.icon33{
-    background-image: url('../../assets/img/aside-icon02-3.png');
+    background-image: url('../../assets/img/aside-icon01-2.png');
   }
   &.icon34{
-    background-image: url('../../assets/img/aside-icon02-4.png');
-  }
-  &.icon35{
-    background-image: url('../../assets/img/aside-icon02-5.png');
-  }
-  &.icon36{
-    background-image: url('../../assets/img/aside-icon02-6.png');
-  }
-  &.icon37{
-    background-image: url('../../assets/img/aside-icon02-7.png');
-  }
-  &.icon40{
-    background-image: url('../../assets/img/aside-icon03-0.png');
+    background-image: url('../../assets/img/aside-icon01-2.png');
   }
   &.icon41{
-    background-image: url('../../assets/img/aside-icon03-1.png');
+    background-image: url('../../assets/img/aside-icon02-0.png');
   }
   &.icon42{
-    background-image: url('../../assets/img/aside-icon03-2.png');
+    background-image: url('../../assets/img/aside-icon02-1.png');
   }
   &.icon43{
-    background-image: url('../../assets/img/aside-icon03-3.png');
+    background-image: url('../../assets/img/aside-icon02-2.png');
   }
   &.icon44{
-    background-image: url('../../assets/img/aside-icon03-4.png');
+    background-image: url('../../assets/img/aside-icon02-3.png');
   }
   &.icon45{
-    background-image: url('../../assets/img/aside-icon03-5.png');
+    background-image: url('../../assets/img/aside-icon02-4.png');
   }
   &.icon46{
+    background-image: url('../../assets/img/aside-icon02-5.png');
+  }
+  &.icon47{
+    background-image: url('../../assets/img/aside-icon02-6.png');
+  }
+  &.icon48{
+    background-image: url('../../assets/img/aside-icon02-7.png');
+  }
+  &.icon51{
+    background-image: url('../../assets/img/aside-icon03-0.png');
+  }
+  &.icon52{
+    background-image: url('../../assets/img/aside-icon03-1.png');
+  }
+  &.icon53{
+    background-image: url('../../assets/img/aside-icon03-2.png');
+  }
+  &.icon54{
+    background-image: url('../../assets/img/aside-icon03-3.png');
+  }
+  &.icon55{
+    background-image: url('../../assets/img/aside-icon03-4.png');
+  }
+  &.icon56{
+    background-image: url('../../assets/img/aside-icon03-5.png');
+  }
+  &.icon57{
     background-image: url('../../assets/img/aside-icon03-6.png');
   }
-  &.icon60{
+  &.icon71{
     background-image: url('../../assets/img/aside-icon06-0.png');
   }
-  &.icon61{
+  &.icon72{
     background-image: url('../../assets/img/aside-icon06-1.png');
   }
-  &.icon62{
+  &.icon73{
     background-image: url('../../assets/img/aside-icon06-2.png');
   }
-  &.icon63{
+  &.icon74{
     background-image: url('../../assets/img/aside-icon06-3.png');
   }
-  &.icon64{
+  &.icon75{
     background-image: url('../../assets/img/aside-icon06-4.png');
   }
-  &.icon65{
+  &.icon76{
     background-image: url('../../assets/img/aside-icon06-5.png');
   }
 }
