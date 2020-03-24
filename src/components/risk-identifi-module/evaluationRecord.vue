@@ -125,6 +125,7 @@
                     width="45">
                   </el-table-column>
                   <el-table-column
+                    width="500"
                     prop="mustCs"
                     label="建议新增（改进）措施" align="center">
                   </el-table-column>
