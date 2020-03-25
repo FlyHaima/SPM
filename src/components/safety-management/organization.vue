@@ -401,7 +401,6 @@ export default {
     },
     // 添加orgTree的节点
     addTreeData (data) {
-      // console.log(data)
       this.addOrgData.pId = data.deptId
       this.addOrgData.companyId = data.companyId
       this.addOrgData.level = Number(data.level) + 1

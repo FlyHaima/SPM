@@ -304,7 +304,7 @@ export default {
       this.fetchWorkTreeData()
     },
     // 选择治理人员弹窗的左侧菜单的点击事件
-    handleNodeClick (treeData, deptId) {
+    handleNodeClick (deptId, position, treeData) {
       this.deptId = deptId
       this.workData = treeData.userList
       // this.fetchWorkTableData()
