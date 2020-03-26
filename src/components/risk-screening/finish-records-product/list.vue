@@ -59,6 +59,7 @@
           <el-table-column
             prop="checkName"
             label="检查名称"
+            width="280"
             align="center">
           </el-table-column>
           <el-table-column
@@ -75,6 +76,7 @@
           <el-table-column
             prop="content"
             label="检查内容"
+            width="280"
             align="center">
           </el-table-column>
           <el-table-column
