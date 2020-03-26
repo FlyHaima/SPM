@@ -1184,6 +1184,7 @@ export default {
           type: 'warning',
           message: `请选中至少一条`
         })
+        return false
       }
       this.uploadDataTopic.id = []
       this.multipleSelection.forEach((item) => {
