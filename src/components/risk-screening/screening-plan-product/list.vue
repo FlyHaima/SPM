@@ -1,9 +1,10 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="368px">
       <tree-read-only
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
+        :current-id ="currentPlanId"
         editOrgVisible
         @eidit-org="eiditOrganizationHandle"
         @tree-click-handle="treeClickHandle">
@@ -57,6 +58,7 @@
           style="width: 100%"
           align="center">
           <el-table-column
+            fixed="left"
             type="selection" align="center"
             width="50">
           </el-table-column>
@@ -77,6 +79,54 @@
               prop="riskName"
               label="三级"
               align="center">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column
+            label="排查频率"
+            header-align="center"
+            width="180px">
+            <template slot-scope="scope">
+              <el-select
+                @change="selChange($event, scope.row, tableData)"
+                v-model="scope.row.investigation"
+                placeholder="请选择排查频率">
+                <el-option
+                  v-for="item in investigationOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                  :disabled="item.disabled">
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="推送方式"
+            align="center">
+            <el-table-column
+              align="center"
+              width="160px">
+              <template slot="header">
+                <el-checkbox
+                  style="margin-right: 0px;"
+                  v-model="checkedAuto"
+                  @change="autoCheckChangeHandle">
+                  自动推送</el-checkbox>
+                <el-checkbox
+                  v-model="checkedManual"
+                  @change="manualCheckChangeHandle">
+                  手动推送</el-checkbox>
+              </template>
+              <template slot-scope="scope">
+                <el-radio-group
+                  @change="checkPushChangeHandle"
+                  :disabled="scope.row.isPushDisabled"
+                  v-model="scope.row.autoPush"
+                  class="raido-group-custom" >
+                  <el-radio-button label="自动"></el-radio-button>
+                  <el-radio-button label="手动"></el-radio-button>
+                </el-radio-group>
+              </template>
             </el-table-column>
           </el-table-column>
           <el-table-column
@@ -114,53 +164,7 @@
             width="300">
           </el-table-column>
           <el-table-column
-            label="排查频率"
-            header-align="center"
-            width="250px">
-            <template slot-scope="scope">
-              <el-select
-                @change="selChange($event, scope.row, tableData)"
-                v-model="scope.row.investigation"
-                placeholder="请选择排查频率">
-                <el-option
-                  v-for="item in investigationOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                  :disabled="item.disabled">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="推送方式"
-            align="center">
-            <el-table-column
-              align="center"
-              width="220px">
-              <template slot="header">
-                <el-checkbox
-                  v-model="checkedAuto"
-                  @change="autoCheckChangeHandle">
-                  自动推送</el-checkbox>
-                <el-checkbox
-                  v-model="checkedManual"
-                  @change="manualCheckChangeHandle">
-                  手动推送</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-radio-group
-                  @change="checkPushChangeHandle"
-                  :disabled="scope.row.isPushDisabled"
-                  v-model="scope.row.autoPush"
-                  class="raido-group-custom" >
-                  <el-radio-button label="自动"></el-radio-button>
-                  <el-radio-button label="手动"></el-radio-button>
-                </el-radio-group>
-              </template>
-            </el-table-column>
-          </el-table-column>
-          <el-table-column
+            fixed="right"
             label="操作"
             align="center"
             width="100px">
@@ -192,9 +196,10 @@
       </div>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       title="提示"
       :visible.sync="dialogTipsVisible"
-      width="30%">
+      width="40%">
       <div class="dialog-content">
         <div class="dialog-tips-content" v-if="sendPlanSwitch">
           <i class="el-icon-circle-check dialog-tips-icon"></i>
@@ -206,18 +211,34 @@
             <div class="dialog-tips-text">当前检查清单中存在手动推送的任务，请为手动推送的隐患任务设置<span class="color-primary">推送时间</span></div>
           </div>
           <div
-            v-for="(item,index) in listDate"
+            v-for="(item,index) in listDateInit"
             :key="index"
             ref="dateColumn"
             class="data-colum"
           >
             <span class="data-colum-label">推送时间{{index + 1}}：</span>
             <el-date-picker
-              v-model="item.value"
-              type="datetime"
-              placeholder="选择日期时间"
-              @change="changeDate">
+              class="push-date"
+              v-model="item.date"
+              type="date"
+              placeholder="选择日期"
+              :picker-options="pickerDisabled"
+              :clearable='false'
+              value-format="yyyy-MM-dd">
             </el-date-picker>
+            -
+            <el-time-select
+              class="push-time"
+              v-model="item.time"
+              :picker-options="{
+                start: '00:00',
+                step: '01:00',
+                end: '23:00'
+              }"
+              placeholder="选择时间"
+              :clearable='false'
+              value-format="HH:00">
+            </el-time-select>
             <i @click="addDateHandle" class="el-icon-circle-plus-outline button-add-time"></i>
             <i @click="delDateHandle" class="el-icon-remove-outline button-add-time"></i>
           </div>
@@ -232,27 +253,29 @@
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="编辑机构"
       :visible.sync="dialogOrganizationVisible"
-      width="30%">
-      <div style="height: 450px">
+      width="450px">
+      <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
             :tree-name="'组织机构'"
             :tree-data= "organizationTree"
             editVisible
             @editTreeData="editOrgTreeData"
-          ></tree-organization>
+          >
+          <el-button
+            class="btn-sync"
+            type="primary"
+            size="small"
+            @click="syncOrganizationData">同步数据</el-button>
+          </tree-organization>
         </template>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="dialogOrganizationVisible = false">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="编辑"
       :visible.sync="dialogEditVisible"
       width="40%">
@@ -292,6 +315,7 @@
       </div>
     </el-dialog>
     <dialog-sort
+      ref="dialogSort"
       :dialogVisible = "dialogSortVisible"
       :planId = "currentPlanId"
       :type = "type"
@@ -302,6 +326,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
@@ -321,7 +346,9 @@ export default {
       pageLoading: false,
       submitting: false,
       tablesLoading: false,
-      sendPlanSwitch: true, // 计划发布开关
+      treeLoading: false,
+      sendPlanSwitch: true, // 计划发布手动自动区别开关
+      isSendPlan: true, // 是否可以发布计划开关
       btnDisabledProductSend: false, // 计划发布可用开关
       dialogTipsVisible: false, // 添加弹框显示开关
       // dialogAddDangerVisible: false, // 添加随机隐患弹框开关
@@ -335,11 +362,23 @@ export default {
         invDeptId: ''
       }, // 编辑机构数据的表单
       currentPlanId: '', // 当前清单项的id
+      listDateInit: [
+        {
+          date: moment().format('YYYY-MM-DD'),
+          time: moment().format('HH:00')
+        }
+      ], // 初始化日期时间格式，只到时间
       listDate: [
         {
           value: ''
         }
-      ],
+      ], // 传值后台的变量
+      pickerDisabled: {
+        // 验证时间范围
+        disabledDate: (time) => {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      },
       checkedAuto: null,
       checkedManual: null,
       investigationOptions: [], // 排查频率选项
@@ -362,7 +401,7 @@ export default {
   },
   created () {
     this.fetchUnitTreeData()
-    this.fetchOrgTreeData()
+    this.fetchPlanOrganizationData()
   },
   methods: {
     // 切换分页数量
@@ -430,6 +469,7 @@ export default {
           if (res.data.code === 200) {
             // let initTableData = []
             this.initTableData = res.data.data
+            this.page.total = res.data.total
             this.initTableData.forEach(item => {
               if (item.autoPush === null) {
                 item.isPushDisabled = true
@@ -451,14 +491,77 @@ export default {
     handleAddDanger () {
       this.dialogAddDangerVisible = true
     },
-    // 获取组织机构树数据
+    // 同步组织机构树数据，是从安全技术管理的组织机构里同步数据
     fetchOrgTreeData () {
-      // let userId = sessionStorage.getItem('userId')
+      let vm = this
+      this.treeLoading = true
       axios
         .get('basticHidden/getDeptList')
         .then((res) => {
           if (res.data.code === 200) {
+            this.treeLoading = false
+            vm.organizationTree = res.data.data
+            this.$notify.success('更新成功')
+          } else {
+            vm.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+        .finally(() => {
+          this.treeLoading = false
+        })
+    },
+    // 获取计划下的组织机构树
+    fetchPlanOrganizationData () {
+      this.pageLoading = true
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          if (res.data.code === 200) {
             this.organizationTree = res.data.data
+            this.pageLoading = false
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    // 判断组织机构树状态，同步组织机构树数据，是从安全技术管理的组织机构里同步数据
+    syncOrganizationData () {
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          // 如果size是0，表示无数据，如果是1，表示有数据
+          if (res.data.length === 0) {
+            this.$confirm('此机构目前没有数据, 需要从安全技术管理的组织机构里同步数据吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.fetchOrgTreeData()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消同步'
+              })
+            })
+          } else {
+            this.$confirm('确认更新此组织机构吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.fetchOrgTreeData()
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消同步'
+              })
+            })
           }
         })
     },
@@ -525,6 +628,9 @@ export default {
     // 排查种类
     handleSort () {
       this.dialogSortVisible = true
+      // 触发排查种类子组件的获取组织机构和获取周期的事件
+      this.$refs.dialogSort.fetchOrgOptions()
+      this.$refs.dialogSort.fetchCycleOptions()
     },
     // 弹框取消操作改变现实状态
     changeSortDialog (val) {
@@ -569,32 +675,58 @@ export default {
         })
       }
     },
-    // 计划发布
     handleSendMsg () {
       let vm = this
-      vm.dialogTipsVisible = true
-      vm.tableData.forEach(item => {
-        if (item.autoPush === '手动') {
-          vm.sendPlanSwitch = false
+      vm.sendPlanSwitch = true
+      vm.listDateInit = [
+        {
+          date: moment().format('YYYY-MM-DD'),
+          time: moment().format('HH:00')
+        }
+      ]
+      if (vm.multipleSelection.length === 0) {
+        vm.$message({
+          message: '发布选项不能为空，请至少选择一个',
+          type: 'warning'
+        })
+        return
+      }
+      vm.multipleSelection.forEach(item => {
+        if (!item.investigation) {
+          vm.isSendPlan = false
         } else {
-          // vm.sendPlanSwitch = false
+          vm.isSendPlan = true
+        }
+      })
+      if (!vm.isSendPlan) {
+        vm.$message({
+          message: '发布选项的排查频率不能为空',
+          type: 'warning'
+        })
+      }
+      vm.multipleSelection.forEach(item => {
+        if (vm.isSendPlan) {
+          vm.dialogTipsVisible = true
+          if (item.autoPush === '手动') {
+            vm.sendPlanSwitch = false
+          }
         }
       })
     },
     filterListDate (data) {
       let newListDate = []
       data.forEach(item => {
-        newListDate.push(item.value)
+        newListDate.push(item.date + ' ' + item.time)
       })
       return newListDate
     },
     savePlanHandle () {
       let vm = this
-      vm.listDate = vm.filterListDate(vm.listDate)
+      let listDate = vm.filterListDate(vm.listDateInit)
       let sendData = {
         list: [{
-          spmProductHiddenList: vm.tableData,
-          checkTime: vm.listDate
+          spmProductHiddenList: vm.multipleSelection,
+          checkTime: listDate
         }]
       }
       vm.submitting = true
@@ -605,6 +737,7 @@ export default {
             vm.$notify.success('清单任务计划发布完成')
             vm.dialogTipsVisible = false
             vm.fetchSortTableData()
+            vm.listDate = [{value: moment().format('YYYY-MM-DD HH:00')}]
           } else {
             vm.$message({
               message: res.data.message,
@@ -623,18 +756,19 @@ export default {
     },
     // 手动模式添加日期处理
     changeDate (val) {
-      this.listDate.forEach(item => {
+      this.listDateInit.forEach(item => {
 
       })
     },
     addDateHandle () {
-      this.listDate.push({
-        value: ''
+      this.listDateInit.push({
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HH:00')
       })
     },
     delDateHandle () {
-      if (this.listDate.length > 1) {
-        this.listDate.pop()
+      if (this.listDateInit.length > 1) {
+        this.listDateInit.pop()
       }
     },
     // 复选框的推送可用状态改变
@@ -674,24 +808,26 @@ export default {
         })
         return
       }
-      console.log(vm.multipleSelection)
       vm.pageLoading = true
       let ids = []
       vm.multipleSelection.forEach(item => {
         ids.push(item.id)
       })
       let postD = {
+        // riskId: vm.currentPlanId,
+        // basicId: ids.join(',')
         riskId: vm.currentPlanId,
         id: ids.join(',')
       }
       copyProductHidden(postD).then((res) => {
         if (res.code === 200) {
+          this.$notify.success('复制成功')
           vm.fetchTableData()
           vm.pageLoading = false
         } else {
           vm.pageLoading = false
           vm.$message({
-            message: '请求发生错误，请稍后重试',
+            message: res.message,
             type: 'warning'
           })
         }
@@ -703,7 +839,6 @@ export default {
     editItem (row) {
       let vm = this
       vm.editFormVal = row
-      console.log(vm.editFormVal)
       vm.dialogEditVisible = true
     },
     closeEditConfirm () {
@@ -824,7 +959,7 @@ export default {
     }
   }
   >>> .el-date-editor{
-    width: 280px;
+    width: auto;
     .el-input__inner{
       height: 30px;
       line-height: 30px;
@@ -859,5 +994,17 @@ export default {
   line-height: 30px;
   color: #ababab;
   margin-left: 20px;
+}
+.btn-sync{
+  position: absolute;
+  right: 0;
+}
+.push-date{
+  display: inline-block;
+  width: 150px !important;
+}
+.push-time{
+  display: inline-block;
+  width: 110px !important;
 }
 </style>

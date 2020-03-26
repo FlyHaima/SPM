@@ -139,8 +139,8 @@ export default {
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
       // console.log('节点deptID：' + data.deptId)
-      console.log(data)
-      this.$emit('handleNodeClick', data.deptId, data.position)
+      // console.log(data)
+      this.$emit('handleNodeClick', data.deptId, data.position, data)
     },
     addNode (node, data) {
       if (node.level > this.level) {
@@ -206,8 +206,11 @@ export default {
       vertical-align: top;
       left: 126px;
       top: 0;
-      width: 180px;
+      // width: 180px;
       margin-top: -1px;
+      >>> .el-input__inner{
+        padding: 0 5px;
+      }
     }
     .slide-btns{
       position: absolute;

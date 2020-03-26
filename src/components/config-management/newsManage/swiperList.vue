@@ -53,6 +53,8 @@
         align="center">
       </el-table-column>
       <el-table-column
+        fixed="right"
+        width="140px"
         label="操作"
         align="center">
         <template slot-scope="scope">
@@ -70,10 +72,12 @@
       </el-table-column>
     </el-table>
      <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="dialogAddSwiperVisible"
       :width="'600px'"
       :show-close="false"
-      v-loading="submitting">
+      v-loading="submitting"
+      @close="closeDialog('swiperForm')">
       <div slot="title">
         {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '添加' }}
       </div>
@@ -85,10 +89,10 @@
           label-width="100px"
           label-position="right">
           <el-form-item label="标题名称" prop="picName">
-            <el-input v-model="swiperForm.picName"></el-input>
+            <el-input v-model.trim="swiperForm.picName"></el-input>
           </el-form-item>
           <el-form-item label="链接地址" prop="url">
-            <el-input v-model="swiperForm.url"></el-input>
+            <el-input v-model.trim="swiperForm.url"></el-input>
           </el-form-item>
           <el-form-item
             v-show="this.editData"
@@ -125,7 +129,7 @@
               :file-list="fileList">
               <i class="el-icon-plus"></i>
             </el-upload>
-            <el-dialog :visible.sync="dialogVisible">
+            <el-dialog :close-on-click-modal="false" :visible.sync="dialogVisible">
               <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
           </el-form-item>
@@ -133,7 +137,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" v-loading="submitting" @click="submitSwiperForm()">确定</el-button>
-        <el-button @click="dialogAddSwiperVisible = false">取 消</el-button>
+        <el-button @click="closeDialog('swiperForm')">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -191,6 +195,11 @@ export default {
     this.fetchSwiperListData()
   },
   methods: {
+    // 关闭添加弹框
+    closeDialog (formName) {
+      this.dialogAddSwiperVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 获取轮播图列表数据
     fetchSwiperListData () {
       axios

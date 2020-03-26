@@ -32,10 +32,12 @@
         :data="treeData"
         :props="defaultProps"
         node-key="riskId"
+        default-expand-all
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
-        :default-expanded-keys="defaultOpenNode"
+        highlight-current
+        current-node-key
         ref="tree">
           <span
             class="custom-tree-node"
@@ -67,6 +69,10 @@ export default {
       type: Array,
       default: null
     },
+    currentId: {
+      type: String,
+      default: ''
+    },
     treeName: {
       type: String,
       default: ''
@@ -94,6 +100,7 @@ export default {
   },
   data () {
     return {
+      key: '',
       filterText: '',
       defaultProps: {
         children: 'children',
@@ -105,7 +112,16 @@ export default {
       defaultOpenNode: [] // 默认展开节点的集合
     }
   },
+  created () {
+  },
   methods: {
+    //  默认高亮显示一条数据
+    highLightTreeNode () {
+      let vm = this
+      this.$nextTick(function () {
+        vm.$refs.tree.setCurrentKey(vm.currentId)
+      })
+    },
     // 获取一节点集合
     fetchTreeNodeId () {
       this.treeData.forEach(item => {
@@ -190,10 +206,11 @@ export default {
       this.$refs.tree.filter(val)
     },
     treeData: {
-      immediate: true,
+      deep: true,
       handler (val) {
         this.treeData = val
         this.fetchTreeNodeId()
+        this.highLightTreeNode()
       }
     }
   }
@@ -203,7 +220,7 @@ export default {
 <style scoped lang="scss">
 @import '@/utils/css/tools/_variables.scss';
   /deep/.tree-diagram{
-  width: 400px;
+  width: 100%;
   height: 100%;
   position: relative;
   background: #fff;

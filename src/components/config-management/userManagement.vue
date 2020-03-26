@@ -63,14 +63,27 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="position"
-                label="职位"
-                align="center">
-              </el-table-column>
-              <el-table-column
                 prop="accountName"
                 label="账号"
                 align="center">
+              </el-table-column>
+              <el-table-column
+                prop="role"
+                label="角色"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="telephone"
+                width="120"
+                label="电话"
+                header-align="center">
+              </el-table-column>
+              <el-table-column
+                label="账号状态"
+                align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.accountState|account-status-filter}}
+                </template>
               </el-table-column>
               <el-table-column
                 label="启用/禁用"
@@ -87,24 +100,15 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="role"
-                label="角色"
+                prop="position"
+                label="职位"
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="telephone"
-                label="电话"
-                header-align="center">
-              </el-table-column>
-              <el-table-column
-                prop="accountState"
-                label="账号状态"
-                header-align="center">
-              </el-table-column>
-              <el-table-column
+                fixed="right"
                 prop=" "
                 label="操作"
-                width="300"
+                width="120"
                 align="center">
                 <template slot-scope="scope">
                   <a
@@ -137,12 +141,6 @@
                     @click="changeState(scope.row)">
                     {{ scope.row.state === '1' ? '禁用' : '启用' }}
                   </a>
-                  <!-- <span class="color-primary"> / </span>
-                  <a
-                    href="javascript:;"
-                    class="color-primary"
-                    @click="editRole(scope.row)">分配角色
-                  </a> -->
                 </template>
               </el-table-column>
             </el-table>
@@ -161,8 +159,10 @@
       </el-container>
     </el-main>
     <el-dialog
+      @close="closeDialog('form')"
       width="40%"
       :visible.sync="dialogAddVisible"
+      :close-on-click-modal="false"
       >
       <div slot="title">
         {{typeof editData !== 'undefined' && editData !== '' ? '编辑用户' : '新增用户' }}
@@ -176,12 +176,46 @@
         label-position= "right"
         @submit.native.prevent= "submitForm"
       >
+        <el-form-item label-width="0" class="tips-area">
+          <span class="tips">*</span>注意：新增用户默认的初始密码是111111
+        </el-form-item>
         <el-form-item
-          label="姓名:"
+          v-if="typeof editData !== 'undefined' && editData !== ''"
+          label="账号:"
+          prop="accountName" >
+          <el-input
+            v-model.trim="form.accountName"
+            placeholder="请输入账号"
+            maxlength="25"
+            autocomplete
+            disabled=""></el-input>
+        </el-form-item>
+        <el-form-item
+          v-else
+          label="账号:"
+          prop="accountName" >
+          <el-input
+            v-model.trim="form.accountName"
+            placeholder="请输入账号"
+            maxlength="25"
+            autocomplete></el-input>
+        </el-form-item>
+        <el-form-item label="角色:" prop="roleId" >
+          <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
+            <el-option
+              v-for="(item, index) in roleOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="用户名:"
           prop="userName">
           <el-input
             v-model.trim="form.userName"
-            placeholder="请输入姓名(不可输入数字)"
+            placeholder="请输入用户名(不可输入数字)"
             maxlength="15"
             autocomplete></el-input>
         </el-form-item>
@@ -191,15 +225,6 @@
           <el-input
             v-model.trim="form.position"
             placeholder="请输入职位"
-            maxlength="25"
-            autocomplete></el-input>
-        </el-form-item>
-        <el-form-item
-          label="账号:"
-          prop="accountName" >
-          <el-input
-            v-model.trim="form.accountName"
-            placeholder="请输入账号"
             maxlength="25"
             autocomplete></el-input>
         </el-form-item>
@@ -216,27 +241,18 @@
             <el-radio label="0">离职</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="角色:" prop="roleId" >
-          <el-select v-model="form.roleId" placeholder="请选择角色" autocomplete>
-            <el-option
-              v-for="(item, index) in roleOptions"
-              :key="index"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           label="电话:"
           prop="telephone">
           <el-input
+            disabled=""
             type="number"
             maxlength="11"
             onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
             v-model.trim="form.telephone"
             placeholder="请输入电话"
             autocomplete></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -247,28 +263,7 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddVisible = false">取 消</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      title="分配"
-      :visible.sync="dialogRoleVisible"
-      >
-      <el-radio-group v-model="radio">
-        <el-radio :label="1">管理员</el-radio>
-        <el-radio :label="2">经理</el-radio>
-        <el-radio :label="3">部长</el-radio>
-        <el-radio :label="4">车间主任</el-radio>
-        <el-radio :label="5">班组长</el-radio>
-      </el-radio-group>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="submitForm()">保 存</el-button>
-        <el-button
-          size="small"
-          @click="dialogRoleVisible = false">取 消</el-button>
+          @click="closeDialog('form')">取 消</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -279,7 +274,7 @@ import Tables from '@/mixins/Tables'
 import axios from '@/api/axios'
 import qs from 'qs'
 import base from '@/api/baseUrl'
-
+import { AccountStatusFilter } from '@/filters/status'
 export default {
   name: 'userManagement',
   mixins: [Tables],
@@ -315,7 +310,6 @@ export default {
       tables: {
         api: 'user/getUserList'
       },
-      dialogRoleVisible: false, // 分配角色弹框开关
       dialogAddVisible: false, // 添加用户弹框开关
       radio: 1,
       form: {
@@ -334,18 +328,21 @@ export default {
       rules: {
         accountName: [
           { required: true, message: '请输入账号', trigger: 'blur' },
-          { validator: accountNameValidator, trigger: 'blur' }
+          { validator: accountNameValidator, trigger: 'change' }
         ],
         roleId: [
           { required: true, message: '请选择角色', trigger: 'change' }
         ],
-        telephone: [
-          // {
-          //   validator: phoneValidator
-          // },
-          { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { len: 11, message: '手机号码必须是11位', trigger: 'blur' }
+        userName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ]
+        // telephone: [
+        //   // {
+        //   //   validator: phoneValidator
+        //   // },
+        //   { required: true, message: '请输入手机号码', trigger: 'blur' },
+        //   { len: 11, message: '手机号码必须是11位', trigger: 'blur' }
+        // ]
       },
       uploading: false, // 导入loading
       uploadData: {
@@ -357,12 +354,22 @@ export default {
       }
     }
   },
+  filters: {
+    'account-status-filter': AccountStatusFilter
+  },
+  created () {
+  },
   mounted () {
     // 设置题库上传的header 添加token
     this.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     this.fetchRoleOptions()
   },
   methods: {
+    // 关闭添加用户的弹框
+    closeDialog (formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 导入接口地址
     uploadUrl () {
       return base.baseUrl + '/user/importUsers'
@@ -386,7 +393,6 @@ export default {
     },
     // 修改 启用/禁用 状态
     changeState (row) {
-      console.log(row)
       let sendData = {
         userId: row.userId,
         state: row.state === '1' ? '0' : '1'
@@ -401,10 +407,6 @@ export default {
           }
         })
         .finally(() => {})
-    },
-    // 分配角色
-    editRole (row) {
-      this.dialogRoleVisible = true
     },
     // 添加事件
     addHandle () {
@@ -542,5 +544,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+  .tips-area{
+    .tips{
+      color: #ff0000;
+      margin: 8px;
+    }
+  }
 </style>

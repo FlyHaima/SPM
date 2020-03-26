@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :current-id ="currentPlanId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
@@ -85,7 +86,7 @@
                       </div>
                     </div>
                     <div class="custom-tr">
-                      <div class="custom-th-label">岗位</div>
+                      <div class="custom-th-label">岗位<span style="font-size: 12px">(组织结构中的第7级开始)</span></div>
                       <div class="custom-td-value">
                         <el-select v-model="form.gw"  placeholder="请选择" size="mini">
                           <el-option label="请选择岗位" value=""></el-option>
@@ -222,7 +223,8 @@ export default {
       imgPathColletion: [], // 所有图片路径集合
       imgPathSelRiskResult: [], // 已选择的图片路径 - 潜在的事故及职业危害类型
       imgPathSelEmergency: [], // 已选择的图片路径 - 异常状况应急处置
-      gwList: [] // 岗位选项列表
+      gwList: [], // 岗位选项列表
+      currentPlanId: '' // 当前清单项的id
     }
   },
   created () {
@@ -232,7 +234,6 @@ export default {
   methods: {
     // 选择器change事件 - 潜在的事故及职业危害类型
     selChangeRiskResult (data) {
-      console.log(data)
       let vm = this
       vm.imgPathSelRiskResult = []
       vm.imgPathColletion.forEach(item => {
@@ -254,7 +255,6 @@ export default {
           }
         })
       })
-      console.log(vm.imgPathSelEmergency)
     },
     // 获取树的数据
     fetchTreeData () {
@@ -263,6 +263,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
+            this.currentPlanId = this.organizationTree[0].riskId
           }
         })
     },

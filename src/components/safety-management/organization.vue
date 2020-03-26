@@ -89,6 +89,7 @@
                     <template slot-scope="scope">{{ scope.row.duty }}</template>
                   </el-table-column>
                   <el-table-column
+                    fixed="right"
                     label="操作"
                     width="80px"
                     align="center">
@@ -195,10 +196,10 @@
       </el-tabs>
     </el-main>
 
-    <el-dialog title="主要职责" :visible.sync="dutyVisible" width="30%">
+    <el-dialog :close-on-click-modal="false" title="主要职责" :visible.sync="dutyVisible" width="30%">
       <el-form ref="dutyForm" label-width="80px">
         <el-form-item label="主要职责">
-          <el-input v-model="dutyPostData" type="textarea"
+          <el-input v-model.trim="dutyPostData" type="textarea"
                     :rows="3"></el-input>
         </el-form-item>
       </el-form>
@@ -209,13 +210,16 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="添加节点" :visible.sync="addTreeVisible" width="620px">
+    <el-dialog :close-on-click-modal="false" title="添加节点" :visible.sync="addTreeVisible" width="620px">
       <el-form :model="addOrgData">
+        <el-form-item label="社会信用代码：" :label-width="'140px'">
+          <el-input v-model.trim="addOrgData.companyId" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="请输入节点名称：" :label-width="'140px'">
-          <el-input v-model="addOrgData.deptName" autocomplete="off"></el-input>
+          <el-input v-model.trim="addOrgData.deptName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="节点层级：" :label-width="'140px'">
-          <el-input-number v-model="addOrgData.level" :step="1" :min="minLevel" step-strictly></el-input-number>
+          <el-input-number v-model.trim="addOrgData.level" :step="1" :min="minLevel" step-strictly></el-input-number>
         </el-form-item>
         <p style="color: red; font-size: 13px; margin-left: 140px;">*风险辨识划分的一级单元和二级单元取的是第四级和第六级</p>
       </el-form>
@@ -265,7 +269,8 @@ export default {
         deptName: '',
         pId: '',
         position: '',
-        responsibility: ''
+        responsibility: '',
+        companyId: ''
       },
       editOrgData: {
         deptName: '',
@@ -366,11 +371,11 @@ export default {
       } else if (this.activeName === 'tab_b') {
         this.leaderPosition = position
         this.triggerLeaderId = deptId
-        this.pageLoading = true
+        // this.pageLoading = true
         this.getLeaderTable()
       } else if (this.activeName === 'tab_c') {
         this.triggerWorkId = deptId
-        this.pageLoading = true
+        // this.pageLoading = true
         this.getWorkerTable()
       }
     },
@@ -383,6 +388,7 @@ export default {
         // manager: fData.userName,
         // telNum: fData.telephone,
         // duty: fData.duty,
+        level: fData.level,
         workList: fData.workList,
         children: []
       }
@@ -395,18 +401,26 @@ export default {
     },
     // 添加orgTree的节点
     addTreeData (data) {
-      // console.log(data)
       this.addOrgData.pId = data.deptId
+      this.addOrgData.companyId = data.companyId
       this.addOrgData.level = Number(data.level) + 1
       this.minLevel = Number(data.level) + 1
       this.addTreeVisible = true
     },
     confirmAdd () {
       let rex = /^.{1,12}$/
+      let rex1 = /^.{1,30}$/
       if (!rex.test(this.addOrgData.deptName)) {
         this.$message({
           type: 'error',
           message: '节点名称不能为空,且不超过12个字'
+        })
+        return
+      }
+      if (!rex1.test(this.addOrgData.companyId)) {
+        this.$message({
+          type: 'error',
+          message: '社会信用代码不能为空,且不超过30个字符'
         })
         return
       }
@@ -418,6 +432,12 @@ export default {
             message: '节点设置成功'
           })
           this.getOrgTree(true)
+          this.getLeaderTree()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
         }
         this.addTreeVisible = false
         this.addConfirming = false
@@ -443,11 +463,13 @@ export default {
         this.editOrgData.deptName = value
         editTreeData(this.editOrgData).then((res) => {
           if (res.code === 200) {
+            this.pageLoading = false
             this.$message({
               type: 'success',
               message: '节点设置成功'
             })
             this.getOrgTree(true)
+            this.getLeaderTree()
           }
         })
       }).catch(() => {
@@ -468,11 +490,13 @@ export default {
         }
         delTreeData(data).then((res) => {
           if (res.code === 200) {
+            this.pageLoading = false
             this.$message({
               type: 'success',
               message: '删除成功!'
             })
             this.getOrgTree(true)
+            this.getLeaderTree()
           } else {
             this.$message({
               type: 'warning',
@@ -502,6 +526,7 @@ export default {
       let userId = sessionStorage.getItem('userId')
       getLeaderTree(userId).then((res) => {
         if (res.code === 200) {
+          this.pageLoading = false
           this.leaderTree = res.data
           if (created) {
             this.triggerLeaderId = res.data[0].deptId
@@ -516,10 +541,10 @@ export default {
       vm.pageLoading = true
       getLeaderTabel(vm.triggerLeaderId, vm.leaderPosition, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
         if (res.code === 200) {
+          vm.pageLoading = false
           vm.leaderData = res.data
           vm.leaderPageData.total = res.total
         }
-        vm.pageLoading = false
       })
     },
     handleLeaderPage (val) {
@@ -532,10 +557,10 @@ export default {
       vm.pageLoading = true
       getWorkerTabel(vm.triggerWorkId, vm.workerPageData.currentPageNo, vm.workerPageData.pageSize).then((res) => {
         if (res.code === 200) {
+          vm.pageLoading = false
           vm.workerData = res.data
           vm.workerPageData.total = res.total
         }
-        vm.pageLoading = false
       })
     },
     handleWorkerPage (val) {

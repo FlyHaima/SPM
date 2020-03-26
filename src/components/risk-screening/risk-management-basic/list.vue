@@ -1,16 +1,15 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
-        v-if="listMenuData.length > 0"
+        v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showSearch
         @menu-click-handle="menuClickHandle"
-
       ></tree-list>
     </el-aside>
-
     <el-main class="inner-content">
       <div class="container-box">
         <div class="content-tools">
@@ -64,21 +63,24 @@
           </el-table-column>
           <el-table-column
             prop="goverTime"
-            label="整改时间"
+            label="治理时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.goverTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="goverUser"
-            label="整改人"
+            label="治理人"
             align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="整改图片"
             align="center">
             <template slot-scope="scope">
               <img class="table-img" :src="scope.row.rectiPhoto" title="img"/>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="rectiRecord"
             label="整改记录"
@@ -133,6 +135,7 @@ export default {
         endTime: ''
       },
       listMenuData: [], // 计划清单列表数据
+      listMenuDataTag: false,
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
       queryDate: '',
@@ -144,8 +147,20 @@ export default {
     DialogDetails
   },
   created () {
-    this.fetchListMenuData()
-    this.fetchTableData()
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
+    vm.fetchListMenuData()
+    vm.fetchTableData()
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
     checkQueryDate (val) {
@@ -165,7 +180,12 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
+            this.listMenuDataTag = true
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             this.fetchTableData()
           }
         })
@@ -200,16 +220,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 整改时间
-              if (item.goverTime) {
-                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

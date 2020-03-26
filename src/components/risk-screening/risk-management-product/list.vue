@@ -4,6 +4,7 @@
       <tree-read-only
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
+        :current-id ="currentPlanId"
         searchVisible
         shrinkVisible
         @tree-click-handle="treeClickHandle">
@@ -62,21 +63,24 @@
           </el-table-column>
           <el-table-column
             prop="goverTime"
-            label="整改间"
+            label="治理时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.goverTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="goverUser"
-            label="整改人"
+            label="治理人"
             align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="整改图片"
             align="center">
             <template slot-scope="scope">
               <img class="table-img" :src="scope.row.rectiPhoto" title="img"/>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="rectiRecord"
             label="整改记录"
@@ -143,8 +147,20 @@ export default {
     DialogDetails
   },
   created () {
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
     checkQueryDate (val) {
@@ -170,13 +186,18 @@ export default {
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
+      let vm = this
       this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
+            if (vm.$route.query.id) {
+              vm.currentPlanId = vm.$route.query.id
+            } else {
+              vm.currentPlanId = this.riskUnitTree[0].riskId
+            }
             this.fetchTableData()
           }
         })
@@ -197,16 +218,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 整改时间
-              if (item.goverTime) {
-                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

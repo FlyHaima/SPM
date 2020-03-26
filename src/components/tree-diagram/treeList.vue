@@ -75,6 +75,10 @@
 export default {
   // name: '计划清单',
   props: {
+    currentId: {
+      type: String,
+      default: ''
+    },
     showSearch: {
       type: Boolean,
       default: false
@@ -102,7 +106,7 @@ export default {
   },
   data () {
     return {
-      currentTab: this.listData[0].planId, // 菜单当前项, 默认数据的第一项
+      currentTab: this.currentId, // 菜单当前项, 默认数据的第一项
       filterText: '', // 搜索关键词
       filterData: [] // 搜索后的数据
     }
@@ -157,7 +161,7 @@ export default {
 .left-menu{
   background: #ffffff;
   position: relative;
-  width: 400px;
+  width: 100%;
   height: 100%;
 }
 .aside-header{
@@ -201,8 +205,8 @@ export default {
 }
 .tree-search{
   display: inline-block;
-  width: 180px;
-  margin-left: 20px;
+  width: 160px;
+  margin-left: 5px;
 }
 
 .tree-list{

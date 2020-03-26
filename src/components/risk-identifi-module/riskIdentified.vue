@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :current-id ="currentPlanId"
             :show-btns="true"
             @tree-click-handle="getRiskTable"
             @tree-add-item="addTreeNode"
@@ -63,7 +64,8 @@
                 v-if="isEndPint"
                 label="操作"
                 width="80"
-                align="center">
+                align="center"
+                fixed="right">
                 <template slot-scope="scope">
                   <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row)">辨识</el-button>
                   <el-button v-else size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>
@@ -98,11 +100,11 @@
                       </p>
                       <p class="step-1-p">
                         <span class="label">作业步骤：</span>
-                        <el-input size="medium" v-model="stepObjA.workStep"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjA.workStep"></el-input>
                       </p>
                       <p class="step-1-p">
                         <span class="label">风险类别/事故后果：</span>
-                        <el-select v-model="stepObjA.riskType"  placeholder="请选择" size="medium">
+                        <el-select v-model="stepObjA.riskType" multiple placeholder="请选择" size="medium">
                           <el-option
                             v-for="item in riskTypeOptions"
                             :key="item"
@@ -183,10 +185,10 @@
                         <span class="label">负责机构</span>
                         <el-select v-model="stepObjB.administrator"  placeholder="请选择" size="medium">
                           <el-option
-                            v-for="item in adminOptions"
-                            :key="item"
-                            :label="item"
-                            :value="item">
+                            v-for="(item, index) in adminOptions"
+                            :key="index"
+                            :label="item.deptName"
+                            :value="item.deptName">
                           </el-option>
                         </el-select>
                       </p>
@@ -324,7 +326,7 @@
                         </div>
                         <div class="line-rt">
                           <div class="label">管控人</div>
-                          <el-input v-model="stepObjC.manager" size="medium"></el-input>
+                          <el-input v-model.trim="stepObjC.manager" size="medium"></el-input>
                         </div>
                       </div>
                       <div class="btn-box" :class="stepObjA.identifierWay === 'LS' ? 'isLS' : ''">
@@ -340,31 +342,31 @@
                     <div class="step-box step-4-box">
                       <p class="step-4-p">
                         <span class="label">应采取的管控措施：</span>
-                        <el-input size="medium" v-model="stepObjD.controlMeasure"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.controlMeasure"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管控措施依据的标准和规范：</span>
-                        <el-input size="medium" v-model="stepObjD.standard"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.standard" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">技术措施：</span>
-                        <el-input size="medium" v-model="stepObjD.technicalMeasures"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.technicalMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">管理措施：</span>
-                        <el-input size="medium" v-model="stepObjD.managerMeasures"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.managerMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">教育措施：</span>
-                        <el-input size="medium" v-model="stepObjD.educationMeasures"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.educationMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">防护措施：</span>
-                        <el-input size="medium" v-model="stepObjD.protectMeasures"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.protectMeasures" maxlength="250"></el-input>
                       </p>
                       <p class="step-4-p">
                         <span class="label">应急措施：</span>
-                        <el-input size="medium" v-model="stepObjD.emergencyMeasures"></el-input>
+                        <el-input size="medium" v-model.trim="stepObjD.emergencyMeasures" maxlength="250"></el-input>
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
@@ -395,7 +397,8 @@ import {
   delRiskTree,
   addDescribe,
   delDescribe,
-  updateDescribe
+  updateDescribe,
+  getRiskDeptList
 } from '@/api/riskia'
 import base from '@/api/baseUrl'
 
@@ -422,7 +425,7 @@ export default {
         pointC: '',
         identifierRange: '',
         workStep: '',
-        riskType: '',
+        riskType: [],
         riskReason: '',
         riskPointType: '',
         identifierWay: ''
@@ -453,9 +456,8 @@ export default {
         }
       ],
       // 风险类别/事故后果
-      riskTypeOptions: ['物体打击', '车辆伤害', '机械伤害', '触电', '淹溺', '灼烫', '火灾',
-        '高处坠落', '坍塌', '冒顶片帮', '透水', '放炮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸',
-        '其它爆炸', '中毒和窒息', '其它伤害'],
+      riskTypeOptions: ['触电', '淹溺', '灼烫', '火灾', '坍塌', '透水', '放炮', '物体打击', '高处坠落',
+        '车辆伤害', '机械伤害', '起重伤害', '冒顶片帮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸', '其它爆炸', '中毒和窒息', '其它伤害'],
       // 风险因素
       reasonOptions: [
         {
@@ -527,7 +529,7 @@ export default {
         unitLevelNum: '',
         administrator: ''
       },
-      adminOptions: [ '张三', '李四', '王二麻子' ],
+      adminOptions: [],
       stepObjC: {
         LEC: {
           L: '0.1',
@@ -596,13 +598,15 @@ export default {
         emergencyMeasures: ''
       },
       currentData: {},
-      localToken: ''
+      localToken: '',
+      currentPlanId: '' // 当前清单项的id
     }
   },
   created () {
     this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
+    this.getRiskDeptList()
   },
   methods: {
     getRiskTree (create) {
@@ -610,6 +614,7 @@ export default {
       getRiskTree().then((res) => {
         if (res.code === 200) {
           this.organizationTree = res.data
+          this.currentPlanId = this.organizationTree[0].riskId
         }
         if (create) {
           let data = {
@@ -622,6 +627,20 @@ export default {
         this.pageLoading = false
       })
     },
+    getRiskDeptList () {
+      this.pageLoading = true
+      getRiskDeptList().then((res) => {
+        if (res.code === 200) {
+          this.adminOptions = res.data
+        } else {
+          this.$message({
+            message: '请求信息错误，请稍后重试',
+            type: 'warning'
+          })
+        }
+        this.pageLoading = false
+      })
+    },
     getRiskTable (data) {
       let vm = this
       vm.currentTreeData = data
@@ -630,6 +649,11 @@ export default {
       getDescribeList(riskId).then(res => {
         if (res.code === 200) {
           vm.riskList = res.data
+        } else {
+          vm.$message({
+            message: res.message,
+            type: 'warning'
+          })
         }
         vm.pageLoading = false
       })
@@ -658,7 +682,7 @@ export default {
         pointC: d.riskName ? d.riskName : '',
         identifierRange: d.project ? d.project : '',
         workStep: d.work ? d.work : '',
-        riskType: d.riskSourceType ? d.riskSourceType : '',
+        riskType: d.riskSourceType ? d.riskSourceType.split(',') : '',
         riskReason: d.factor ? d.factor.split('/') : '',
         riskPointType: d.riskType ? d.riskType : '',
         identifierWay: d.ram ? d.ram : ''
@@ -671,7 +695,7 @@ export default {
         levelNumB: d.twoNo ? d.twoNo : '',
         levelNumC: d.orderNo ? d.orderNo : '',
         unitLevelNum: d.oneNo && d.twoNo && d.orderNo ? d.oneNo + '-' + d.twoNo + '-' + d.orderNo : '',
-        administrator: ''
+        administrator: d.responsibleBody ? d.responsibleBody : ''
       }
       this.stepObjC = {
         LEC: {
@@ -718,6 +742,7 @@ export default {
             treeLevel: vm.currentTreeData.treeLevel
           }
           vm.getRiskTable(data)
+          vm.getRiskTree()
         }
         vm.pageLoading = false
       })
@@ -733,14 +758,14 @@ export default {
     },
     saveStepOne () {
       let vm = this
-      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
         let saveData = {
           oneName: vm.stepObjA.pointA,
           twoName: vm.stepObjA.pointB,
           riskName: vm.stepObjA.pointC,
           project: vm.stepObjA.identifierRange,
           work: vm.stepObjA.workStep,
-          riskSourceType: vm.stepObjA.riskType,
+          riskSourceType: vm.stepObjA.riskType.join(','),
           factor: vm.stepObjA.riskReason ? vm.stepObjA.riskReason.join('/') : '',
           riskType: vm.stepObjA.riskPointType,
           ram: vm.stepObjA.identifierWay
@@ -775,7 +800,7 @@ export default {
       let ad = 1
       if (ad > 0) { // 暂无条件，后续补齐参数
         let saveData = {
-          deptId: vm.stepObjB.administrator
+          responsibleBody: vm.stepObjB.administrator
         }
         vm.updateDescribe(saveData, '2')
         return true

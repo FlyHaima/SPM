@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     title="详情"
     :visible.sync="show"
     width="55%"
@@ -32,18 +33,23 @@
                   <el-col :span="9">{{item.spmHiddenInstanceHis.checkTime | date-filter}}</el-col>
                 </el-row>
                 <el-row class="item">
+                  <el-col class="box-item-label" :span="3">隐患描述:</el-col>
+                  <el-col :span="9">{{item.spmHiddenInstanceHis.hiddenDesc}}</el-col>
+                </el-row>
+                <el-row class="item">
                   <el-col class="box-item-label" :span="24">隐患图片:</el-col>
                 </el-row>
                 <el-row class="item">
                   <el-col :span="24">
                     <div class="attachment-list">
                       <div
-                        v-for = "(itemImg, index) in item.hiddenPhoto"
+                        v-for = "(itemImg, index) in item.spmHiddenInstanceHis.hiddenPhotos"
                         :key = index
                         class="attachment-list-item">
                         <img
+                          v-show="item.spmHiddenInstanceHis.hiddenPhotos"
                           class="attachment-img"
-                          src="itemImg"
+                          :src="itemImg"
                           alt="上传的图片" />
                       </div>
                     </div>
@@ -92,12 +98,13 @@
                   <el-col :span="24">
                     <div class="attachment-list">
                       <div
-                        v-for = "(itemImg, index) in item.rectiPhoto"
+                        v-for = "(itemImg, index) in item.spmHiddenInstanceHis.rectiPhotos"
                         :key = index
                         class="attachment-list-item">
                         <img
+                          v-show="item.spmHiddenInstanceHis.rectiPhotos"
                           class="attachment-img"
-                          src="itemImg"
+                          :src="itemImg"
                           alt="上传的图片" />
                       </div>
                     </div>
@@ -126,12 +133,13 @@
                   <el-col :span="24">
                     <div class="attachment-list">
                       <div
-                        v-for = "(itemImg, index) in item.goverReviPhoto"
+                        v-for = "(itemImg, index) in item.spmHiddenInstanceHis.goverReviPhotos"
                         :key = index
                         class="attachment-list-item">
                         <img
+                          v-show="item.spmHiddenInstanceHis.goverReviPhotos.length > 0"
                           class="attachment-img"
-                          src="itemImg"
+                          :src="itemImg"
                           alt="上传的图片" />
                       </div>
                     </div>
@@ -143,13 +151,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div slot="footer" class="dialog-footer">
-      <el-button
-        type="primary"
-        size="small"
-        @click="show = false">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -258,7 +259,6 @@ export default {
     width: 173px;
     height: 102px;
     border-radius: 6px;
-    background: pink;
   }
   .details-layer{
     // display: flex;

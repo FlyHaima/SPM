@@ -33,7 +33,7 @@
                     v-for="(item, index) in newsList"
                     :key="index"
                     class="list-info-item">
-                    <a :href="item.url">
+                    <a :href="item.url" target="_blank">
                       <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
@@ -49,11 +49,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -65,11 +66,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -81,11 +83,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -119,7 +122,7 @@
                   v-model.trim="form.accountName"
                   autocomplete="off"
                   maxlength="25"
-                  placeholder="请输入用户名">
+                  placeholder="请输入账号">
                   <i slot="prefix" class="icon-form icon-form-01"></i>
                 </el-input>
               </el-form-item>
@@ -152,10 +155,14 @@
 </template>
 
 <script>
-import axios from '@/api/axios'
+// import axios from '@/api/axios'
 import moment from 'moment'
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import {
+  login,
+  getNewsList
+} from '@/api/login'
 export default {
   name: 'loginPage',
   data () {
@@ -224,23 +231,28 @@ export default {
   methods: {
     // 获取新闻列表
     fetchData () {
-      axios
-        .get('ontroller/getNewsList', {
-          tabType: this.tabType
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.newsList = res.data.newsList
-            this.swiperSlides = res.data.picList
-          }
-        })
+      // axios
+      //   .get('ontroller/getNewsList', {
+      //     tabType: this.tabType
+      //   })
+      //   .then((res) => {
+      //     if (res.data.code === 200) {
+      //       this.newsList = res.data.newsList
+      //       this.swiperSlides = res.data.picList
+      //     }
+      //   })
+      getNewsList(this.tabType).then(res => {
+        if (res.code === 200) {
+          this.newsList = res.newsList
+          this.swiperSlides = res.picList
+        }
+      })
     },
     // tab切换事件
     clickTab (item) {
       this.fetchData()
     },
     gotoDetailsHandle (url) {
-      console.log(url)
       window.location.href = url
     },
     // 提交发布消息事件
@@ -248,26 +260,42 @@ export default {
       let vm = this
       vm.$refs.form.validate((valid) => {
         if (valid) {
-          axios
-            .post('ontroller/login', vm.form)
-            .then((res) => {
-              vm.submitting = true
-              if (res.data.code === 200) {
-                vm.$notify.success('登录成功')
-                // 保存token
-                const token = res.data.data
-                sessionStorage.setItem('TOKEN_KEY', token)
-                window.location = '/dashboard'
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
-                })
-              }
-            })
-            .finally(() => {
-              vm.submitting = false
-            })
+          // axios
+          //   .post('ontroller/login', vm.form)
+          //   .then((res) => {
+          //     vm.submitting = true
+          //     if (res.data.code === 200) {
+          //       vm.$notify.success('登录成功')
+          //       // 保存token
+          //       const token = res.data.data
+          //       sessionStorage.setItem('TOKEN_KEY', token)
+          //       window.location = '/dashboard'
+          //     } else {
+          //       vm.$message({
+          //         message: res.data.message,
+          //         type: 'warning'
+          //       })
+          //     }
+          //   })
+          //   .finally(() => {
+          //     vm.submitting = false
+          //   })
+          login(vm.form).then((res) => {
+            vm.submitting = true
+            if (res.code === 200) {
+              vm.$notify.success('登录成功')
+              // 保存token
+              const token = res.data
+              sessionStorage.setItem('TOKEN_KEY', token)
+              window.location = '/dashboard'
+            } else {
+              vm.$message({
+                message: res.message,
+                type: 'warning'
+              })
+            }
+            vm.submitting = false
+          })
         } else {
           return false
         }
@@ -317,10 +345,12 @@ export default {
 .left-container-wrap{
   display: flex;
   align-items: center;
+  width: 100%;
   height: 100%;
   padding: 150px 0 100px;
 }
 .left-container{
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-between;
@@ -348,7 +378,7 @@ export default {
       min-height: 20px;
     }
     .el-tabs__nav{
-      margin: 0 70px;
+      margin: 0 30px;
     }
     .el-tabs__header{
       background: rgba(61,147,255, 0.25);
@@ -365,7 +395,7 @@ export default {
   }
 }
 .login-content-right{
-  flex: 0 0 500px;
+  flex: 0 0 25%;
   height: 100%;
   color: #333333;
   background: #ffffff;
@@ -387,9 +417,9 @@ export default {
   letter-spacing: 9px;
   color: #282828;
 }
-.login-form-box{
+// .login-form-box{
 
-}
+// }
 .login-form-header{
   display: flex;
   justify-content: space-between;
@@ -501,7 +531,6 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  // flex: 0 0 540px;
   padding: 0 30px;
   max-height: 440px;
   overflow: hidden;
@@ -515,9 +544,6 @@ export default {
   a{
     color: #ffffff;
   }
-}
-.list-info-title{
-
 }
 .list-info-txt{
   max-width: 430px;
@@ -565,4 +591,12 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 
+@media only screen and (max-width:1680px) {
+  .login-content-left{
+    padding: 0 10px;
+  }
+  .login-content-right{
+    padding: 0 20px;
+  }
+}
 </style>

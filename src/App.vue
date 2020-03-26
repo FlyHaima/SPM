@@ -23,6 +23,10 @@ export default {
   },
   mounted () {
     this.getUserInfo()
+    window.onload = function () {
+      // 0.1秒后刷新
+      setTimeout(this.$store.dispatch('BASE_INFO_SET'), 100)
+    }
   },
   created () {
     let that = this

@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :current-id ="currentPlanId"
             @open-loading="openLoading"
             @close-loading="closeLoading"
             @tree-click-handle="getTableData">
@@ -87,7 +88,8 @@ export default {
       ],
       baseUrl: '',
       curentId: '',
-      localToken: ''
+      localToken: '',
+      currentPlanId: '' // 当前清单项的id
     }
   },
   created () {
@@ -107,6 +109,7 @@ export default {
       getRiskTree().then((res) => {
         if (res.code === 200) {
           this.organizationTree = res.data
+          this.currentPlanId = this.organizationTree[0].riskId
         }
         if (create) {
           this.getTableData(res.data[0])

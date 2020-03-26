@@ -18,14 +18,24 @@
       <li class="skin-li">
         <div class="btn skin-btn"><i></i>皮肤</div>
         <ul class="theme-select">
-          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index}`)">
+          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index}`, item.color)">
             <i class="theme-i" :style="{ background: `${item.color}`}"></i>
             {{item.name}}
           </li>
         </ul>
       </li>
       <li>
-        <div class="btn user-name-btn" @click="goUserPage()"><i></i>{{userName}}</div>
+        <div
+          class="btn user-name-btn"
+          @click="goUserPage()">
+            <i></i>
+            <template v-if="userName">
+              {{userName}}
+            </template>
+            <template v-else>
+              {{accountName}}
+            </template>
+        </div>
       </li>
     </ul>
     <div class="quit-btn inline-block" @click="quitHandle()" title="退出登录">
@@ -68,6 +78,7 @@ export default {
   computed: {
     ...mapState({
       userName: (state) => state.userInfo.userName,
+      accountName: (state) => state.userInfo.accountName,
       msgNum: (state) => state.msgNum,
       taskNum: (state) => state.taskNum
     })
@@ -75,7 +86,7 @@ export default {
   mounted () {
   },
   methods: {
-    changeTheme (theme) {
+    changeTheme (theme, color) {
       switch (theme) {
         case 0:
           console.log(0)
@@ -89,6 +100,7 @@ export default {
         case 3:
           console.log(3)
       }
+      this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
     },
     quitHandle () {
@@ -116,7 +128,10 @@ export default {
     // 跳转到我的待办列表页面
     goMineTodoPage () {
       this.$router.push({
-        name: 'mineTodo'
+        name: 'mineTodo',
+        query: {
+          tabType: '1'
+        }
       })
     },
     // 跳转所有信息页面的点击事件
@@ -124,7 +139,7 @@ export default {
       this.$router.push({
         name: 'messages',
         query: {
-          tabType: '1'
+          tabType: '2'
         }
       })
     },
@@ -177,7 +192,7 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    width: 700px;
+    // width: 700px;
     &>li{
       position: relative;
       height: 39px;
@@ -185,6 +200,9 @@ export default {
       color: #fff;
       cursor: pointer;
       font-size: 20px;
+      + li{
+        margin-left: 30px;
+      }
       .btn{
         i{
           display: inline-block;

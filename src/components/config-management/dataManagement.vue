@@ -32,7 +32,8 @@
               <el-table-column
                 label="序号"
                 type="index"
-                width="50">
+                width="60"
+                align="center">
               </el-table-column>
               <el-table-column
                 label="数据字典分类列表"
@@ -100,9 +101,11 @@
       </el-container>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       width="40%"
       :visible.sync="dialogAddVisible"
       title="添加"
+      @close="closeDialog('form')"
       >
       <el-form
         :model= "tables.form"
@@ -117,7 +120,7 @@
           label="名称"
           prop="content">
           <el-input
-            v-model="tables.form.content"
+            v-model.trim="tables.form.content"
             placeholder="请输入名称"
             maxlength="25"
             autocomplete></el-input>
@@ -126,7 +129,7 @@
           label="代码"
           prop="code">
           <el-input
-            v-model="tables.form.code"
+            v-model.trim="tables.form.code"
             placeholder="请输入代码"
             maxlength="25"
             autocomplete></el-input>
@@ -135,7 +138,7 @@
           label="备注">
           <el-input
             type="textarea"
-            v-model="tables.form.remark"
+            v-model.trim="tables.form.remark"
             placeholder="请输入备注"
             autocomplete
           ></el-input>
@@ -150,26 +153,30 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddVisible = false">取 消</el-button>
+          @click="closeDialog('form')">取 消</el-button>
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       width="40%"
       :visible.sync="dialogAddGroupVisible"
       title="添加分类"
+      @close="closeDialogGroup('formGroup')"
       >
       <el-form
         :model= "formGroup"
         ref= "formGroup"
+        :rules= "rulesGroup"
         size= "mini"
         label-width= "100px"
         label-position= "right"
         @submit.native.prevent= "submitFormGroup"
       >
         <el-form-item
-          label="分类名称">
+          label="分类名称"
+          prop="groupName">
           <el-input
-            v-model="formGroup.groupName"
+            v-model.trim="formGroup.groupName"
             placeholder="请输入分类名称"
             maxlength="25"
             autocomplete></el-input>
@@ -184,7 +191,8 @@
           >保 存</el-button>
         <el-button
           size="small"
-          @click="dialogAddGroupVisible = false">取 消</el-button>
+          @click="closeDialogGroup('formGroup')"
+          >取 消</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -230,6 +238,11 @@ export default {
           {required: true, message: '请输入代码', trigger: 'blur'}
         ]
       },
+      rulesGroup: {
+        groupName: [
+          {required: true, message: '请输入分类名称', trigger: 'blur'}
+        ]
+      },
       currentRow: null
     }
   },
@@ -237,6 +250,16 @@ export default {
     this.fetchTableData()
   },
   methods: {
+    // 关闭添加弹框
+    closeDialog (formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields()
+    },
+    // 关闭添加分类弹框
+    closeDialogGroup (formName) {
+      this.dialogAddGroupVisible = false
+      this.$refs[formName].resetFields()
+    },
     setCurrent (row) {
       this.$refs.singleTable.setCurrentRow(row)
     },
@@ -284,30 +307,36 @@ export default {
     // form表单提交事件
     submitFormGroup () {
       let vm = this
-      vm.$confirm('确定新增分类?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        vm.submitting = true
-        axios
-          .post('dic/addGroup', this.formGroup)
-          .then((res) => {
-            if (res.data.code === 200) {
-              vm.$notify.success('提交成功')
-              vm.dialogAddGroupVisible = false
-              vm.submitting = false
-              vm.fetchTableData()
-            } else {
-              vm.$message({
-                message: res.data.message,
-                type: 'warning'
+      this.$refs.formGroup.validate((valid) => {
+        if (valid) {
+          vm.$confirm('确定新增分类?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            vm.submitting = true
+            axios
+              .post('dic/addGroup', this.formGroup)
+              .then((res) => {
+                if (res.data.code === 200) {
+                  vm.$notify.success('提交成功')
+                  vm.dialogAddGroupVisible = false
+                  vm.submitting = false
+                  vm.fetchTableData()
+                } else {
+                  vm.$message({
+                    message: res.data.message,
+                    type: 'warning'
+                  })
+                }
               })
-            }
+              .finally(() => {
+                vm.submitting = false
+              })
           })
-          .finally(() => {
-            vm.submitting = false
-          })
+        } else {
+          return false
+        }
       })
     },
     // form表单提交事件

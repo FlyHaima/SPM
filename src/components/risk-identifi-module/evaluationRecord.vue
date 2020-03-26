@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :current-id ="currentPlanId"
             @open-loading="openLoading"
             @close-loading="closeLoading"
             @tree-click-handle="getTabelData">
@@ -124,6 +125,7 @@
                     width="45">
                   </el-table-column>
                   <el-table-column
+                    width="500"
                     prop="mustCs"
                     label="建议新增（改进）措施" align="center">
                   </el-table-column>
@@ -280,7 +282,8 @@ export default {
       currentNode: {},
       methodA: 'LEC',
       methodB: 'LEC',
-      methodOptions: ['LEC', 'LS']
+      methodOptions: ['LEC', 'LS'],
+      currentPlanId: '' // 当前清单项的id
     }
   },
   created () {
@@ -297,7 +300,13 @@ export default {
       let vm = this
       let baseUrl = base.baseUrl
       let localToken = sessionStorage.getItem('TOKEN_KEY')
-      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}`
+      let methodType = ''
+      if (this.activeName === '作业活动') {
+        methodType = this.methodA
+      } else {
+        methodType = this.methodB
+      }
+      let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}&ram=${methodType}`
       location.href = `${hrefUrl}&attname=${vm.activeName}.xls`
     },
     getRiskTree (create) {
@@ -305,6 +314,7 @@ export default {
       getRiskTree().then((res) => {
         if (res.code === 200) {
           this.organizationTree = res.data
+          this.currentPlanId = this.organizationTree[0].riskId
         }
         if (create) {
           this.getTabelData(res.data[0])

@@ -1,10 +1,11 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
-        v-if="listMenuData.length > 0"
+        v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showSearch
         @menu-click-handle="menuClickHandle"
       ></tree-list>
@@ -133,7 +134,6 @@
             width="115">
           </el-table-column>
           <el-table-column
-            fixed="right"
             label="进度"
             align="center"
             width="200">
@@ -153,7 +153,11 @@
             width="120"
             align="center">
             <template slot-scope="scope">
+              <span
+                v-if="scope.row.isHidden === '合格'"
+              >完成</span>
               <a
+                v-else
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
@@ -199,6 +203,7 @@ export default {
         endTime: ''
       },
       listMenuData: [], // 计划清单列表数据
+      listMenuDataTag: false,
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
       queryDate: '',
@@ -229,8 +234,10 @@ export default {
     TableStep
   },
   created () {
-    this.fetchListMenuData()
-    this.fetchTableData()
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
+    vm.fetchListMenuData()
+    vm.fetchTableData()
   },
   methods: {
     checkQueryDate (val) {
@@ -250,7 +257,12 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
+            this.listMenuDataTag = true
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             this.fetchTableData()
           }
         })
@@ -285,6 +297,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
+            this.tablesLoading = false
             this.formatTableData = res.data.data
             this.formatTableData.forEach(item => {
               // 治理复核时间

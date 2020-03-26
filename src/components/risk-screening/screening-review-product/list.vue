@@ -4,6 +4,7 @@
       <tree-read-only
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
+        :current-id ="currentPlanId"
         searchVisible
         shrinkVisible
         @tree-click-handle="treeClickHandle">
@@ -21,7 +22,7 @@
               <el-form-item label="检查名称">
                 <el-input v-model="form.checkName" placeholder="请输入检查名称"></el-input>
               </el-form-item>
-              <el-form-item label="检查日期">
+              <el-form-item label="复核时间">
                 <el-date-picker
                   v-model="queryDate"
                   @change="checkQueryDate"
@@ -74,11 +75,17 @@
             prop="checkByTime"
             label="复核时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.checkByTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="rectiTime"
             label="整改时间"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.rectiTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="rectiRemark"
@@ -86,7 +93,7 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop=" "
+            fixed="right"
             label="复核情况"
             width="120"
             align="center">
@@ -99,7 +106,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop=" "
+            fixed="right"
             label="操作"
             width="100"
             align="center">
@@ -170,8 +177,20 @@ export default {
     DialogReview
   },
   created () {
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
     checkQueryDate (val) {
@@ -192,7 +211,7 @@ export default {
     },
     // 触发详情弹框
     detailsHandle (item) {
-      this.currentDetailsId = item.hiddInstanceId
+      this.currentDetailsId = item.procInstId
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {
@@ -200,18 +219,24 @@ export default {
     },
     // 树节点，点击功能
     treeClickHandle (item) {
-      this.currentPlanId = item.riskId
-      this.fetchTableData()
+      let vm = this
+      vm.currentPlanId = item.riskId
+      vm.fetchTableData()
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
-      this.pageLoading = true
+      let vm = this
+      vm.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
+            vm.riskUnitTree = res.data.data
+            if (vm.$route.query.id) {
+              vm.currentPlanId = vm.$route.query.id
+            } else {
+              vm.currentPlanId = this.riskUnitTree[0].riskId
+            }
             this.fetchTableData()
           }
         })
@@ -221,37 +246,23 @@ export default {
     },
     // 获取排查隐患清单列表
     fetchTableData () {
-      this.tablesLoading = true
+      let vm = this
+      vm.tablesLoading = true
       axios
         .get('hiddenAct/dImpleList', {
-          checkName: this.form.checkName,
-          investType: this.type,
-          startTime: this.form.startTime,
-          endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          checkName: vm.form.checkName,
+          investType: vm.type,
+          startTime: vm.form.startTime,
+          endTime: vm.form.endTime,
+          leftId: vm.currentPlanId
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 格式化复核时间
-              if (item.checkByTime) {
-                item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.checkByTime = ''
-              }
-              // 格式化整改时间
-              if (item.rectiTime) {
-                item.rectiTime = moment(item.rectiTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.rectiTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            vm.tableData = res.data.data
           }
         })
         .finally(() => {
-          this.tablesLoading = false
+          vm.tablesLoading = false
         })
     },
     // 查询table，表单提交响应事件

@@ -34,21 +34,22 @@
                     :on-success="importSuccess"
                     :on-error="importError"
                     :file-list="importList"
-                    :show-file-list="false">
+                    :show-file-list="false"
+                    :data="uploadDataTopic">
                     <a style="display: block; background: #79ce64; width: 108px; height: 36px; color: #fff; font-size: 16px; text-align: center; margin-left: 28px;"
                       v-loading="importting"><i class="el-icon-upload2" style="margin-right: 8px;"></i>导入题库
                     </a>
                   </el-upload>
                 </p>
 
-                <el-dialog :title="'计划发布'" :visible.sync="showPlanDialog"
+                <el-dialog :close-on-click-modal="false" :title="'计划发布'" :visible.sync="showPlanDialog"
                            :width="'1004px'"
                            :show-close="false">
                   <div class="plan-body">
                     <div class="dialog-inner-line">
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>课程名称</p>
-                        <p class="val-p"><el-input size="medium" v-model="addPlanData.className"></el-input></p>
+                        <p class="val-p"><el-input size="medium" v-model.trim="addPlanData.className"></el-input></p>
                       </div>
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>类别</p>
@@ -92,24 +93,23 @@
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>总课时(小时)</p>
                         <p class="val-p">
-                          <el-input size="medium" type="number" v-model="addPlanData.hourRequire"></el-input>
+                          <el-input size="medium" type="number" v-model.trim="addPlanData.hourRequire"></el-input>
                         </p>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model="addPlanData.need"></el-input>
+                        <el-input type="textarea" v-model.trim="addPlanData.need"></el-input>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
-                        <el-upload multiple
-                                   class="upload-demo"
+                        <el-upload class="upload-demo"
                                    :data="uploadData"
                                    :action="uploadingAddress"
-                                   accept=".doc, .docx, .mp4"
+                                   accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP"
                                    :limit="3"
                                    :before-upload="handleBeforeUpload"
                                    :on-success="handleSuccess"
@@ -127,14 +127,14 @@
                   </div>
                 </el-dialog>
 
-                <el-dialog :title="'编辑计划'" :visible.sync="showEditDialog"
+                <el-dialog :close-on-click-modal="false" :title="'编辑计划'" :visible.sync="showEditDialog"
                            :width="'1004px'"
                            :show-close="false">
                   <div class="plan-body">
                     <div class="dialog-inner-line">
                       <div class="inner-item">
                         <p class="title">课程名称</p>
-                        <p class="val-p"><el-input size="medium" v-model="editData.className"></el-input></p>
+                        <p class="val-p"><el-input size="medium" v-model.trim="editData.className"></el-input></p>
                       </div>
                       <div class="inner-item">
                         <p class="title">类别</p>
@@ -178,24 +178,23 @@
                       <div class="inner-item">
                         <p class="title">总课时(小时)</p>
                         <p class="val-p">
-                          <el-input size="medium" v-model="editData.hourRequire"></el-input>
+                          <el-input size="medium" v-model.trim="editData.hourRequire"></el-input>
                         </p>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model="editData.need"></el-input>
+                        <el-input type="textarea" v-model.trim="editData.need"></el-input>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
-                      <p class="title">附件（ <span>仅支持上传</span><span class="red">doc、docx、mp4</span><span>格式的文件</span> ）</p>
+                      <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
-                        <el-upload multiple
-                                   class="upload-demo"
+                        <el-upload class="upload-demo"
                                    :data="uploadData"
                                    :action="uploadingAddress"
-                                   accept=".doc, .docx, .mp4"
+                                   accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP"
                                    :limit="3"
                                    :before-upload="handleBeforeUpload"
                                    :on-success="handleSuccessA"
@@ -277,6 +276,7 @@
                     <template slot-scope="scope">{{ scope.row.creater }}</template>
                   </el-table-column>
                   <el-table-column
+                    fixed="right"
                     label="操作" width="110"
                     align="center">
                     <template slot-scope="scope">
@@ -312,6 +312,16 @@
                         style="width: 100%"
                         @selection-change="handleSelectionChange">
                 <el-table-column
+                  label="人员名称"
+                  align="center">
+                  <template slot-scope="scope">{{ scope.row.userName }}</template>
+                </el-table-column>
+                <el-table-column
+                  label="组织名称"
+                  align="center">
+                  <template slot-scope="scope">{{ scope.row.deptName }}</template>
+                </el-table-column>
+                <el-table-column
                   label="课程名称"
                   width="322"
                   align="center">
@@ -325,21 +335,25 @@
                 </el-table-column>
                 <el-table-column
                   label="理论开始时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ formatTime(scope.row.theorysTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="理论结束时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ formatTime(scope.row.theoryeTime) }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际开始时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ scope.row.actStartTime ? formatTime(scope.row.actStartTime) : '--' }}</template>
                 </el-table-column>
                 <el-table-column
                   label="实际结束时间"
+                  width="110"
                   align="center">
                   <template slot-scope="scope">{{ scope.row.actEndTime ? formatTime(scope.row.actEndTime) : '--' }}</template>
                 </el-table-column>
@@ -356,6 +370,7 @@
                   <template slot-scope="scope">{{ states[scope.row.state] }}</template>
                 </el-table-column>
                 <el-table-column
+                  fixed="right"
                   label="操作"
                   width="180"
                   align="center">
@@ -404,6 +419,16 @@
                           style="width: 100%"
                           @selection-change="handleSelectionChange">
                   <el-table-column
+                    label="人员名称"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.userName }}</template>
+                  </el-table-column>
+                  <el-table-column
+                    label="组织名称"
+                    align="center">
+                    <template slot-scope="scope">{{ scope.row.deptName }}</template>
+                  </el-table-column>
+                  <el-table-column
                     label="课程名称"
                     align="center">
                     <template slot-scope="scope">{{ scope.row.courseTitle }}</template>
@@ -433,6 +458,7 @@
                     <template slot-scope="scope">{{ states[scope.row.state] }}</template>
                   </el-table-column>
                   <el-table-column
+                    fixed="right"
                     label="详细内容"
                     width="105"
                     align="center">
@@ -456,7 +482,7 @@
             </el-main>
           </el-container>
 
-          <el-dialog :title="'详细'" :visible.sync="showDetailLog"
+          <el-dialog :close-on-click-modal="false" :title="'详细'" :visible.sync="showDetailLog"
                      :width="'970px'">
             <div class="detail-log">
               <el-collapse accordion v-model="colNames">
@@ -593,6 +619,9 @@ export default {
       uploadData: {
         token: ''
       },
+      uploadDataTopic: {
+        id: []
+      },
       activeName: 'tab_a',
       triggerAid: '',
       triggerCid: '',
@@ -684,6 +713,9 @@ export default {
       uploadHeader: {
         token: ''
       },
+      // uploadData: {
+      //   id: ''
+      // }, // 上传数据
       pickerDisabled: {
         // 验证时间范围
         disabledDate: (time) => {
@@ -943,15 +975,34 @@ export default {
     },
     // upload前，获取七牛云的token
     handleBeforeUpload (file) {
-      // this.uploading = true
-      // const isLt1M = file.size / 1024 / 1024 < 1
-      // if (!isLt1M) {
-      //   this.$message.error('上传头像图片大小不能超过 1MB!')
-      //   this.uploading = false
-      // }
+      let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      // .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP
+      const extens = testmsg === 'xls'
+      const extens1 = testmsg === 'xlsx'
+      const extens2 = testmsg === 'pdf'
+      const extens3 = testmsg === 'doc'
+      const extens4 = testmsg === 'docx'
+      const extens5 = testmsg === 'ppt'
+      const extens6 = testmsg === 'pptx'
+      const extens7 = testmsg === 'AVI'
+      const extens8 = testmsg === 'mov'
+      const extens9 = testmsg === 'rmvb'
+      const extens10 = testmsg === 'rm'
+      const extens11 = testmsg === 'FLV'
+      const extens12 = testmsg === 'mp4'
+      const extens13 = testmsg === '3GP'
+      // const isLt2M = file.size / 1024 / 1024 < 10
+      if (!extens && !extens1 && !extens2 && !extens3 && !extens4 && !extens5 && !extens6 && !extens7 && !extens8 && !extens9 && !extens10 && !extens11 && !extens12 && !extens13) {
+        this.$message({
+          message: '上传文件只能是 .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP格式!',
+          type: 'warning'
+        })
+        return false
+      }
       return getQiNiuToken().then((res) => {
         this.uploadData.token = res
       })
+      // return extens || extens1 || extens2 || extens3 || extens4 || extens5 || extens6 || extens7 || extens8 || extens9 || extens10 || extens11 || extens12 || extens13
     },
     // 上传结束后，返回上传结果
     handleSuccess (response, file, fileList) {
@@ -1089,7 +1140,7 @@ export default {
           this.recordDetail.passRate = (res.data.passRate * 100).toFixed(2)
           this.recordDetail.theory = res.data.theory
           this.recordDetail.act = res.data.act
-          this.recordDetail.totalHour = res.data.totalHour
+          this.recordDetail.totalHour = res.data.hourRequire
           this.recordDetail.downList = res.data.trainPlan.attachmentList
 
           this.colNames = 'col_a'
@@ -1128,6 +1179,16 @@ export default {
     // 导入
     beforeImport (file) {
       this.uploading = true
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: `请选中至少一条`
+        })
+      }
+      this.uploadDataTopic.id = []
+      this.multipleSelection.forEach((item) => {
+        this.uploadDataTopic.id.push(item.id)
+      })
     },
     // 导入成功
     importSuccess (response, file, fileList) {

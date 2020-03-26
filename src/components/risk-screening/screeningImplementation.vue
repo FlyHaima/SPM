@@ -50,8 +50,25 @@ export default {
     productList
   },
   created () {
+    this.initData()
   },
   methods: {
+    initData () {
+      let vm = this
+      // 从路由上存取当前页面的tabType
+      if (vm.$route.query.tabType) {
+        vm.type = vm.$route.query.tabType
+      } else {
+        vm.type = '基础类排查清单'
+      }
+      if (vm.type === '基础类排查清单') {
+        this.isChildUpdate1 = true
+        this.isChildUpdate2 = false
+      } else if (vm.type === '现场类排查清单') {
+        this.isChildUpdate1 = false
+        this.isChildUpdate2 = true
+      }
+    },
     // tab切换处理
     tabClickHandle (tab, event) {
       this.type = tab.name

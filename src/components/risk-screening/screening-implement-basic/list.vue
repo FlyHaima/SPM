@@ -1,10 +1,11 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
-        v-if="listMenuData.length > 0"
+        v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showSearch
         @menu-click-handle="menuClickHandle"
 
@@ -52,7 +53,7 @@
           </div>
         </div>
         <el-table
-          v-loadding="tablesLoading"
+          v-loading="tablesLoading"
           :data="tableData"
           border
           style="width: 100%"
@@ -63,14 +64,25 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="receiverUser"
+            label="接收人"
+            align="center"
+            width="120">
+          </el-table-column>
+          <el-table-column
             prop="checkUser"
             label="检查人员"
-            align="center">
+            align="center"
+            width="120">
           </el-table-column>
           <el-table-column
             prop="checkTime"
             label="检查时间"
-            align="center">
+            align="center"
+            width="120">
+            <template slot-scope="scope">
+              {{scope.row.checkTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="hiddenDesc"
@@ -78,15 +90,27 @@
             align="center">
           </el-table-column>
           <el-table-column
-            label="附件"
-            align="center">
+            fixed="right"
+            label="操作"
+            align="center"
+            width="100px">
             <template slot-scope="scope">
-              <img class="table-img" :src="scope.row.hiddenPhoto" title="img"/>
+              <a
+                href="javascript:;"
+                class="talbe-links-del"
+                @click.prevent="editItem(scope.row)">详情
+              </a>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-main>
+    <dialog-detail
+      :dialogVisible="dialogDetailVisible"
+      :planId="currentPlanId"
+      :formData="detailData"
+      @on-dialog-change="changeDetailDialog"
+    ></dialog-detail>
   </el-container>
 </template>
 
@@ -96,6 +120,7 @@ import axios from '@/api/axios'
 import moment from 'moment'
 import exportExcel from '@/api/exportExcel'
 import { mapState } from 'vuex'
+import DialogDetail from '@/components/risk-screening/screening-implement/detail'
 export default {
   name: 'list',
   props: {
@@ -108,6 +133,7 @@ export default {
     return {
       pageLoading: false,
       submmiting: false,
+      dialogDetailVisible: false,
       form: {
         checkName: '',
         startTime: '',
@@ -115,18 +141,53 @@ export default {
       },
       listMenuData: [], // 计划清单列表数据
       currentPlanId: '', // 当前清单项的id
+      listMenuDataTag: false,
       tableData: [], // 基础类清单列表数据
-      queryDate: '' // 查询时间段
+      queryDate: '', // 查询时间段
+      detailData: {
+        checkName: '', // 检查名称
+        checkUser: '', // 检查人员
+        checkTime: '', // 检查时间
+        hiddenDesc: '', // 隐患描述
+        hiddenPhotos: [] // 附件
+      }
     }
   },
   components: {
-    TreeList // 计划清单菜单
+    TreeList, // 计划清单菜单
+    DialogDetail // 详情
   },
   created () {
-    this.fetchListMenuData()
-    this.fetchTableData()
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
+    vm.fetchListMenuData()
+    vm.fetchTableData()
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
+    editItem (data) {
+      let vm = this
+      vm.dialogDetailVisible = true
+      vm.detailData = {
+        checkName: data.checkName, // 检查名称
+        checkUser: data.checkUser, // 检查人员
+        checkTime: data.checkTime, // 检查时间
+        hiddenDesc: data.hiddenDesc, // 隐患描述
+        hiddenPhotos: data.hiddenPhotos // 附件
+      }
+    },
+    changeDetailDialog (val) {
+      this.dialogDetailVisible = val
+    },
     // 选择时间事件
     checkQueryDate (val) {
       if (val) {
@@ -145,7 +206,12 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
+            this.listMenuDataTag = true
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             this.fetchTableData()
           }
         })
@@ -172,12 +238,8 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            // let formatTableData = []
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')
-            })
-            this.tableData = this.formatTableData
+            this.tablesLoading = false
+            this.tableData = res.data.data
           }
         })
         .finally(() => {

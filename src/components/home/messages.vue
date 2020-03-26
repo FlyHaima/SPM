@@ -10,76 +10,34 @@
         <div class="info-header">
           <div class="info-link">
             <el-button @click="handleSendMessage" type="primary" size="mini">发布消息</el-button>
-            <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
+            <el-button v-show="messageData.length > 0" @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
           </div>
         </div>
         <div class="info-content">
-          <ul class="list-info">
-            <li
-              v-for="(item, index) in messageData"
-              :key="index"
-              class="list-info-item list-info-item-light">
-              <div class="list-info-title" @click="goDetailsPage(item)">
-                <span class="list-info-txt">
-                  <span v-if="item.type" class="list-info-type">
-                    [{{item.type}}]
-                    <i v-if="item.isRead === '1'" class="badge"></i>
-                  </span>
-                  {{item.title}}
-                </span>
-              </div>
-              <div class="list-info-right">
-                <template v-if="item.sendTime">
-                  <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.sendTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.sendTime | time-filter}}</span>
-                </template>
-                <span class="list-info-user">发布人：{{item.userName}}</span>
-                <i @click="deleteRow(item)" class="el-icon-delete" ></i>
-              </div>
-            </li>
-          </ul>
-          <el-pagination
-            class="text-right"
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="page.index"
-            layout="total, prev, pager, next, jumper"
-            :total="page.total">
-          </el-pagination>
-        </div>
-      </div>
-    </el-tab-pane>
-    <el-tab-pane label="我收到的" name="2">
-      <div class="">
-        <div class="info-panel">
-          <div class="info-header">
-            <div class="info-link">
-              <el-button @click="signReadHandle" type="success" size="mini">标记当页已读</el-button>
-              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
-            </div>
+          <div class="tips-nodata" v-if="messageData.length === 0">
+            暂无消息
           </div>
-          <div class="info-content">
+          <template v-else>
             <ul class="list-info">
               <li
-                @click="goDetailsPage(item)"
                 v-for="(item, index) in messageData"
                 :key="index"
                 class="list-info-item list-info-item-light">
-                <div class="list-info-title">
+                <div class="list-info-title" @click="goDetailsPage(item)">
                   <span class="list-info-txt">
                     <span v-if="item.type" class="list-info-type">
                       [{{item.type}}]
-                      <i v-if="item.isRead === '0'" class="badge"></i>
+                      <i v-if="item.isRead === '1'" class="badge"></i>
                     </span>
                     {{item.title}}
                   </span>
                 </div>
                 <div class="list-info-right">
-                  <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.sendTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                  <template v-if="item.sendTime">
+                    <i class="icon-clock"></i>
+                    <span class="list-info-date">{{item.sendTime | date-filter}}</span>
+                    <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                  </template>
                   <span class="list-info-user">发布人：{{item.userName}}</span>
                   <i @click="deleteRow(item)" class="el-icon-delete" ></i>
                 </div>
@@ -94,16 +52,69 @@
               layout="total, prev, pager, next, jumper"
               :total="page.total">
             </el-pagination>
+          </template>
+        </div>
+      </div>
+    </el-tab-pane>
+    <el-tab-pane label="我收到的" name="2">
+      <div class="">
+        <div class="info-panel">
+          <div v-show="messageData.length > 0" class="info-header">
+            <div class="info-link">
+              <el-button @click="signReadHandle" type="success" size="mini">标记当页已读</el-button>
+              <el-button @click="batchDeleteHandle" type="danger" size="mini">删除当页消息</el-button>
+            </div>
+          </div>
+          <div class="info-content">
+            <div class="tips-nodata" v-if="messageData.length === 0">
+              暂无消息
+            </div>
+            <template v-else>
+              <ul class="list-info">
+                <li
+                  @click="goDetailsPage(item)"
+                  v-for="(item, index) in messageData"
+                  :key="index"
+                  class="list-info-item list-info-item-light">
+                  <div class="list-info-title">
+                    <span class="list-info-txt">
+                      <span v-if="item.type" class="list-info-type">
+                        [{{item.type}}]
+                        <i v-if="item.isRead === '0'" class="badge"></i>
+                      </span>
+                      {{item.title}}
+                    </span>
+                  </div>
+                  <div class="list-info-right">
+                    <i class="icon-clock"></i>
+                    <span class="list-info-date">{{item.sendTime | date-filter}}</span>
+                    <span class="list-info-time">{{item.sendTime | time-filter}}</span>
+                    <span class="list-info-user">发布人：{{item.userName}}</span>
+                    <i @click="deleteRow(item)" class="el-icon-delete" ></i>
+                  </div>
+                </li>
+              </ul>
+              <el-pagination
+                class="text-right"
+                background
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="page.index"
+                layout="total, prev, pager, next, jumper"
+                :total="page.total">
+              </el-pagination>
+            </template>
           </div>
         </div>
       </div>
     </el-tab-pane>
   </el-tabs>
   <el-dialog
+    @close="closeDialog('messageForm')"
+    :close-on-click-modal="false"
     title="发布消息"
     :visible.sync="dialogFormMessageVisible"
-    :width="'800px'"
-    :show-close="false">
+    :width="'800px'">
     <div class="form-modal">
       <el-form
         :model="messageForm"
@@ -197,6 +208,7 @@
     </div>
 
     <el-dialog
+      :close-on-click-modal="false"
       :title="'选择推送目标'"
       :visible.sync="showTreeTransfer"
       :width="'774px'"
@@ -213,7 +225,7 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submitMessageForm()">发布</el-button>
-      <el-button @click="dialogFormMessageVisible = false">取 消</el-button>
+      <el-button @click="closeDialog('messageForm')">取 消</el-button>
     </div>
   </el-dialog>
 </div>
@@ -327,6 +339,11 @@ export default {
     vm.fetchInfoTypeOptions()
   },
   methods: {
+    // 关闭弹框
+    closeDialog (formName) {
+      this.dialogFormMessageVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 获取消息列表数据
     fetchList () {
       axios
@@ -377,7 +394,6 @@ export default {
         axios
           .post('msg/delBatch', sendData)
           .then((res) => {
-            console.log(res.data.code)
             if (res.data.code === 200) {
               this.$notify.success('删除成功')
               this.page.pageNo--
@@ -410,6 +426,7 @@ export default {
     },
     // tab切换事件
     clickTab (item) {
+      this.tabType = (Number(item.paneName)) + ''
       this.fetchList()
     },
     // 标记当前页已读事件处理
@@ -494,7 +511,6 @@ export default {
               vm.submitting = false
             })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -549,7 +565,6 @@ export default {
       this.chooseList.forEach(item => {
         this.messageForm.sendList += `${item.nameStr}; `
       })
-      console.log(this.treeData) // 上传该数据
       this.showTreeTransfer = false
     }
   },

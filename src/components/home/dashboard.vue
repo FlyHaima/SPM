@@ -24,176 +24,208 @@
         </el-carousel>
       </div>
       <div class="home-showcase">
-        <el-row :gutter="24">
-          <el-col :span="14">
-            <div class="home-entrance">
-              <div class="entrance-btn">
-                <span class="entrance-btn-txt">快速进入</span>
-                <i class="entrance-btn-icon"></i>
-              </div>
-              <div class="entrance-menu">
-                <div
-                  v-for=" (item, index) in enterData"
-                  :key = index
-                  @click="turnToPage(item.url)"
-                  class="entrance-menu-item">
-                  <div class="entrance-menu-icon-wrap">
-                    <i class="entrance-menu-icon"></i>
-                  </div>
-                  <div class="entrance-menu-txt">{{item.name}}</div>
+        <div class="flex-layout">
+          <div class="home-entrance">
+            <div class="entrance-btn">
+              <span class="entrance-btn-txt">快速进入</span>
+              <i class="entrance-btn-icon"></i>
+            </div>
+            <div class="entrance-menu">
+              <div
+                v-for=" (item, index) in enterData"
+                :key = index
+                @click="turnToPage(item.url)"
+                class="entrance-menu-item">
+                <div class="entrance-menu-icon-wrap">
+                  <i class="entrance-menu-icon"></i>
                 </div>
+                <div class="entrance-menu-txt">{{item.name}}</div>
               </div>
             </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="info-panel">
-              <div class="info-header" style="border: 0;">
-                <div class="info-title">
-                  <span class="info-title-txt">风险动态显示</span>
+          </div>
+          <div class="info-panel">
+            <div class="info-header" style="border: 0;">
+              <div class="info-title">
+                <span class="info-title-txt">风险动态显示</span>
+              </div>
+              <!-- <div class="info-link">
+                <a
+                  href="javascript:;"
+                  @click=" goMorePage() "
+                  class="info-link-txt">更多</div>
+              </div> -->
+            </div>
+            <div class="info-content">
+              <gauge
+                class="gauge"
+                :chart-data="gaugeData">
+                <div class="gauge-tabs-box">
+                  <el-tabs class="gauge-tabs" type="border-card">
+                    <el-tab-pane class="gauge-tab-pane" label="重大风险">
+                      <div class="custom-table gauge-table">
+                        <div class="custom-theader">
+                          <div class="custom-tr is-flex">
+                            <div class="custom-th-label">点：{{tabaleHeaderData1.dot}}%</div>
+                            <div class="custom-th-label">线：{{tabaleHeaderData1.line}}%</div>
+                            <div class="custom-th-label">面：{{tabaleHeaderData1.surface}}%</div>
+                          </div>
+                        </div>
+                        <div
+                          class="custom-tbody">
+                          <div class="custom-tr is-flex">
+                            <div
+                              v-for="(item, index) in tableData1"
+                              :key=index
+                              class="custom-td-value">
+                              <el-tag
+                                class="tag-danger"
+                                type="danger"
+                                effect="dark"
+                                size="mini">{{item.value}}个</el-tag>
+                            </div>
+                            <!-- <div class="custom-td-value">
+                              <el-tag
+                                class="tag-danger"
+                                type="danger"
+                                effect="dark"
+                                size="mini">标签五</el-tag>
+                            </div>
+                            <div class="custom-td-value">
+                              <el-tag
+                                class="tag-danger"
+                                type="danger"
+                                effect="dark"
+                                size="mini">标签五</el-tag>
+                            </div> -->
+                          </div>
+                        </div>
+
+                      </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="较大风险">
+                      <div class="custom-table gauge-table">
+                        <div class="custom-theader">
+                          <div class="custom-tr is-flex">
+                            <div class="custom-th-label">点：{{tabaleHeaderData2.dot}}%</div>
+                            <div class="custom-th-label">线：{{tabaleHeaderData2.line}}%</div>
+                            <div class="custom-th-label">面：{{tabaleHeaderData2.surface}}%</div>
+                          </div>
+                        </div>
+                        <div
+                          class="custom-tbody">
+                          <div class="custom-tr is-flex">
+                            <div
+                              v-for="(item, index) in tableData2"
+                              :key=index
+                              class="custom-td-value">
+                              <el-tag
+                                class="tag-danger"
+                                type="danger"
+                                effect="dark"
+                                size="mini">{{item.value}}个</el-tag>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="一般风险">
+                      <div class="custom-table gauge-table">
+                        <div class="custom-theader">
+                          <div class="custom-tr is-flex">
+                            <div class="custom-th-label">点：{{tabaleHeaderData3.dot}}%</div>
+                            <div class="custom-th-label">线：{{tabaleHeaderData3.line}}%</div>
+                            <div class="custom-th-label">面：{{tabaleHeaderData3.surface}}%</div>
+                          </div>
+                        </div>
+                        <div
+                          class="custom-tbody">
+                          <div class="custom-tr is-flex">
+                            <div
+                              v-for="(item, index) in tableData3"
+                              :key=index
+                              class="custom-td-value">
+                              <el-tag
+                                class="tag-danger"
+                                type="danger"
+                                effect="dark"
+                                size="mini">{{item.value}}个</el-tag>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="低风险">
+                      <div class="custom-table gauge-table">
+                        <div class="custom-theader">
+                          <div class="custom-tr is-flex">
+                            <div class="custom-th-label">点：{{tabaleHeaderData4.dot}}%</div>
+                            <div class="custom-th-label">线：{{tabaleHeaderData4.line}}%</div>
+                            <div class="custom-th-label">面：{{tabaleHeaderData4.surface}}%</div>
+                          </div>
+                        </div>
+                        <div
+                          class="custom-tbody">
+                          <div class="custom-tr is-flex">
+                            <div
+                              v-for="(item, index) in tableData4"
+                              :key=index
+                              class="custom-td-value">
+                              <el-tag
+                                class="tag-danger"
+                                type="danger"
+                                effect="dark"
+                                size="mini">{{item.value}}个</el-tag>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </el-tab-pane>
+                  </el-tabs>
                 </div>
-                <!-- <div class="info-link">
-                  <a
-                    href="javascript:;"
-                    @click=" goMorePage() "
-                    class="info-link-txt">更多</div>
-                </div> -->
+              </gauge>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="home-showcase">
+        <el-row>
+          <el-col :xl="24" :lg="24">
+            <div class="info-panel">
+              <div class="info-header">
+                <div class="info-title">
+                  <span class="info-title-txt">安全指数分析</span>
+                </div>
               </div>
               <div class="info-content">
-                <gauge
-                  class="gauge"
-                  :chart-data="gaugeData">
-                  <div class="gauge-tabs-box">
-                    <el-tabs class="gauge-tabs" type="border-card">
-                      <el-tab-pane class="gauge-tab-pane" label="重大风险">
-                        <div class="custom-table gauge-table">
-                          <div class="custom-theader">
-                            <div class="custom-tr is-flex">
-                              <div class="custom-th-label">点：{{tabaleHeaderData1.dot}}%</div>
-                              <div class="custom-th-label">线：{{tabaleHeaderData1.line}}%</div>
-                              <div class="custom-th-label">面：{{tabaleHeaderData1.surface}}%</div>
-                            </div>
-                          </div>
-                          <div
-                            class="custom-tbody">
-                            <div class="custom-tr is-flex">
-                              <div
-                                v-for="(item, index) in tableData1"
-                                :key=index
-                                class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">{{item.value}}个</el-tag>
-                              </div>
-                              <!-- <div class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">标签五</el-tag>
-                              </div>
-                              <div class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">标签五</el-tag>
-                              </div> -->
-                            </div>
-                          </div>
-
-                        </div>
-                      </el-tab-pane>
-                      <el-tab-pane label="较大风险">
-                        <div class="custom-table gauge-table">
-                          <div class="custom-theader">
-                            <div class="custom-tr is-flex">
-                              <div class="custom-th-label">点：{{tabaleHeaderData2.dot}}%</div>
-                              <div class="custom-th-label">线：{{tabaleHeaderData2.line}}%</div>
-                              <div class="custom-th-label">面：{{tabaleHeaderData2.surface}}%</div>
-                            </div>
-                          </div>
-                          <div
-                            class="custom-tbody">
-                            <div class="custom-tr is-flex">
-                              <div
-                                v-for="(item, index) in tableData2"
-                                :key=index
-                                class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">{{item.value}}个</el-tag>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </el-tab-pane>
-                      <el-tab-pane label="一般风险">
-                        <div class="custom-table gauge-table">
-                          <div class="custom-theader">
-                            <div class="custom-tr is-flex">
-                              <div class="custom-th-label">点：{{tabaleHeaderData3.dot}}%</div>
-                              <div class="custom-th-label">线：{{tabaleHeaderData3.line}}%</div>
-                              <div class="custom-th-label">面：{{tabaleHeaderData3.surface}}%</div>
-                            </div>
-                          </div>
-                          <div
-                            class="custom-tbody">
-                            <div class="custom-tr is-flex">
-                              <div
-                                v-for="(item, index) in tableData3"
-                                :key=index
-                                class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">{{item.value}}个</el-tag>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </el-tab-pane>
-                      <el-tab-pane label="低风险">
-                        <div class="custom-table gauge-table">
-                          <div class="custom-theader">
-                            <div class="custom-tr is-flex">
-                              <div class="custom-th-label">点：{{tabaleHeaderData4.dot}}%</div>
-                              <div class="custom-th-label">线：{{tabaleHeaderData4.line}}%</div>
-                              <div class="custom-th-label">面：{{tabaleHeaderData4.surface}}%</div>
-                            </div>
-                          </div>
-                          <div
-                            class="custom-tbody">
-                            <div class="custom-tr is-flex">
-                              <div
-                                v-for="(item, index) in tableData4"
-                                :key=index
-                                class="custom-td-value">
-                                <el-tag
-                                  class="tag-danger"
-                                  type="danger"
-                                  effect="dark"
-                                  size="mini">{{item.value}}个</el-tag>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </el-tab-pane>
-                    </el-tabs>
+                <div class="pie-list-box">
+                  <div
+                    v-for="item in pieOptions"
+                    :key="item.id"
+                    class="pie-box">
+                    <pie-c
+                      :return-data = "item.pieData"
+                      :title = "item.title"
+                      :color-list = "item.colorList"
+                      :pie-height = "pieHeight"
+                       >
+                       <div class="pie-tips">
+                         <p class="pie-tips-item">
+                           <i class="pie-tips-sign">*</i>
+                           {{item.tipsText}}
+                         </p>
+                         <p class="pie-tipdivs-item">
+                           {{item.participationRate}}%
+                         </p>
+                       </div>
+                       </pie-c>
                   </div>
-                </gauge>
+                </div>
               </div>
             </div>
           </el-col>
         </el-row>
-      </div>
-      <div class="home-showcase">
-        <el-row>
-          <el-col :span="24">
+        <!-- <el-row>
+          <el-col :xl="24" :lg="24">
             <div class="info-panel">
               <div class="info-header">
                 <div class="info-title">
@@ -205,7 +237,7 @@
                   <el-col
                     v-for="item in pieOptions"
                     :key="item.id"
-                    :span="6"
+                    :xl="6" :lg="4"
                     class="pie-box">
                     <pie-c
                       :return-data = "item.pieData"
@@ -228,32 +260,24 @@
               </div>
             </div>
           </el-col>
-        </el-row>
+        </el-row> -->
       </div>
       <div class="home-showcase">
-        <el-row :gutter="24">
-          <el-col :span="24">
-            <div class="info-panel">
-              <div class="info-header">
-                <div class="info-title">
-                  <span class="info-title-txt">现有风险等级情况</span>
-                </div>
-              </div>
-              <div class="info-content">
-                <el-row :gutter="24">
-                  <el-col :span="24">
-                    <div class="pie-box">
-                      <statistic-e
-                        :chart-data = "chartData"
-                        :chart-height = "chartHeight"
-                      ></statistic-e>
-                    </div>
-                  </el-col>
-                </el-row>
-              </div>
+        <div class="info-panel">
+          <div class="info-header">
+            <div class="info-title">
+              <span class="info-title-txt">现有风险等级情况</span>
             </div>
-          </el-col>
-        </el-row>
+          </div>
+          <div class="info-content">
+            <div class="statistic-box">
+              <statistic-e
+                :chart-data = "chartData"
+                :chart-height = "chartHeight"
+              ></statistic-e>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -497,7 +521,16 @@ export default {
   .view-box{
     background: #ffffff;
   }
-
+  .flex-layout{
+    display: flex;
+    flex-wrap: wrap;
+    .home-entrance{
+      flex: 1;
+    }
+    .info-panel{
+      flex: 0 0 600px;
+    }
+  }
   .home-showcase{
     padding: 0 30px;
     border-bottom: 4px solid #e9e9e9;
@@ -720,9 +753,22 @@ export default {
       border-color: #ff1616 transparent transparent #ff1616;
     }
   }
-  .pie-box{
+  .pie-list-box{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .pie-box{
+      flex: 0 0 340px;
+      position: relative;
+      margin-top: 40px;
+      // display: flex;
+      // flex-wrap: wrap;
+    }
+  }
+  .statistic-box{
     position: relative;
     margin-top: 40px;
+    overflow-x: scroll;
   }
   .pie-tips{
     position: absolute;
@@ -787,6 +833,31 @@ export default {
     // width: 100px;
     .el-carousel__indicators{
       display: none;
+    }
+  }
+  @media only screen and (max-width:1400px) {
+    .flex-layout{
+      .home-entrance{
+        flex: 0 0 100%;
+        border-right: 0;
+        border-bottom: 4px solid $colorBorder;
+      }
+      .info-panel{
+        flex: 0 0 100%;
+      }
+    }
+    .pie-list-box{
+      .pie-box{
+        // flex: 0 0 25%;
+      }
+    }
+  }
+  @media only screen and (max-width:1680px) {
+    .pie-list-box{
+      justify-content: space-around;
+      .pie-box{
+        flex: 0 0 400px;
+      }
     }
   }
 </style>

@@ -4,6 +4,7 @@
       <tree-read-only
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
+        :current-id ="currentPlanId"
         searchVisible
         shrinkVisible
         @tree-click-handle="treeClickHandle">
@@ -61,6 +62,12 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="receiverUser"
+            label="接收人"
+            align="center"
+            width="120">
+          </el-table-column>
+          <el-table-column
             prop="checkUser"
             label="检查人员"
             align="center">
@@ -68,7 +75,11 @@
           <el-table-column
             prop="checkTime"
             label="检查时间"
-            align="center">
+            align="center"
+            width="120">
+            <template slot-scope="scope">
+              {{scope.row.checkTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="hiddenDesc"
@@ -76,23 +87,37 @@
             align="center">
           </el-table-column>
           <el-table-column
-            label="附件"
-            align="center">
+            fixed="right"
+            label="操作"
+            align="center"
+            width="100px">
             <template slot-scope="scope">
-              <img class="table-img" :src="scope.row.hiddenPhoto" title="img"/>
+              <a
+                href="javascript:;"
+                class="talbe-links-del"
+                @click.prevent="editItem(scope.row)">详情
+              </a>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-main>
+    <dialog-detail
+      :dialogVisible="dialogDetailVisible"
+      :planId="currentPlanId"
+      :formData="detailData"
+      @on-dialog-change="changeDetailDialog"
+    ></dialog-detail>
   </el-container>
 </template>
 
 <script>
+import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
 import { mapState } from 'vuex'
+import DialogDetail from '@/components/risk-screening/screening-implement/detail'
 export default {
   name: 'list',
   props: {
@@ -106,6 +131,7 @@ export default {
       pageLoading: false,
       tablesLoading: false,
       submitting: false,
+      dialogDetailVisible: false,
       form: {
         checkName: '',
         startTime: '',
@@ -115,17 +141,51 @@ export default {
       currentPlanId: '', // 当前清单项的id
       riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
-      queryDate: '' // 查询时间段
+      queryDate: '', // 查询时间段
+      detailData: {
+        checkName: '', // 检查名称
+        checkUser: '', // 检查人员
+        checkTime: '', // 检查时间
+        hiddenDesc: '', // 隐患描述
+        hiddenPhotos: [] // 附件
+      }
     }
   },
   components: {
-    TreeReadOnly // 风险单元树
+    TreeReadOnly, // 风险单元树
+    DialogDetail // 详情
   },
   created () {
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
   },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
+  },
   methods: {
+    editItem (data) {
+      let vm = this
+      vm.dialogDetailVisible = true
+      vm.detailData = {
+        checkName: data.checkName, // 检查名称
+        checkUser: data.checkUser, // 检查人员
+        checkTime: data.checkTime, // 检查时间
+        hiddenDesc: data.hiddenDesc, // 隐患描述
+        hiddenPhotos: data.hiddenPhotos // 附件
+      }
+    },
+    changeDetailDialog (val) {
+      this.dialogDetailVisible = val
+    },
     // 选择时间事件
     checkQueryDate (val) {
       if (val) {
@@ -142,13 +202,18 @@ export default {
     },
     // 获取风险单元树的数据
     fetchUnitTreeData () {
+      let vm = this
       this.pageLoading = true
       axios
         .get('riskia/getRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
+            if (vm.$route.query.id) {
+              vm.currentPlanId = vm.$route.query.id
+            } else {
+              vm.currentPlanId = this.riskUnitTree[0].riskId
+            }
             this.fetchTableData()
           }
         })

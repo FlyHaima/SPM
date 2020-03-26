@@ -30,8 +30,12 @@
 // 按钮工具栏
 .content-tools{
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 30px;
+  &.is-align-center{
+    align-items: center;
+  }
   .el-form--inline .el-form-item{
     margin-bottom: 0px;
   }
@@ -62,8 +66,16 @@
   }
 
 }
+.tools-left{
+  color: #666666;
+  .tips{
+    color: #ff0000;
+    margin: 8px;
+  }
+}
 .tools-right{
   display: flex;
+  align-items: flex-start;
   .el-button + .el-button,
   .el-button + .tools-item,
   .tools-item + .tools-item,
@@ -100,12 +112,12 @@
   }
   &.is-inline{
     .custom-th-label{
-      min-width: 220px;
+      min-width: 240px;
     }
 
     .custom-td-value{
       padding-left: 30px;
-      width: calc( 100% - 220px);
+      width: calc( 100% - 240px);
     }
     .custom-tr{
       // max-height: 40px;
@@ -302,4 +314,24 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 15px;
+}
+
+.tips-nodata{
+  text-align: center;
+  margin: 40px 30px;
+}
+
+@media only screen and (max-width:1680px) {
+  .content-tools{
+    margin-bottom: 10px;
+    .el-form--inline {
+      .el-form-item{
+        margin-bottom: 15px !important;
+      }
+    }
+    .tools-right,
+    .tools-left{
+      margin-bottom: 15px !important;
+    }
+  }
 }

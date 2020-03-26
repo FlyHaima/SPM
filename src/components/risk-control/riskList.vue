@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :current-id ="currentPlanId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
@@ -221,7 +222,8 @@ export default {
       uploadData: {
         riskId: ''
       }, // 上传数据
-      fileList: [] // 导入列表
+      fileList: [], // 导入列表
+      currentPlanId: '' // 当前清单项的id
     }
   },
   created () {
@@ -254,6 +256,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
+            this.currentPlanId = this.organizationTree[0].riskId
           }
         })
     },

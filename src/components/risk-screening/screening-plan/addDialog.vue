@@ -1,5 +1,7 @@
 <template>
   <el-dialog
+    @close="closeDialog('form' )"
+    :close-on-click-modal="false"
     title="添加"
     :visible.sync="show"
     width="40%">
@@ -12,17 +14,17 @@
       label-position="top"
     >
       <el-form-item label="排查目标" prop="investTarget">
-        <el-input v-model="form.investTarget"></el-input>
+        <el-input v-model.trim="form.investTarget"></el-input>
       </el-form-item>
       <el-form-item label="排查内容与排查标注" prop="investContent">
         <el-input
           type="textarea"
-          v-model="form.investContent"></el-input>
+          v-model.trim="form.investContent"></el-input>
       </el-form-item>
       <el-form-item label="排查依据" prop="inspectionBasic">
         <el-input
           type="textarea"
-          v-model="form.inspectionBasic"
+          v-model.trim="form.inspectionBasic"
           maxlength="30"
           show-word-limit></el-input>
       </el-form-item>
@@ -35,7 +37,8 @@
         @click="submitForm()">确 定</el-button>
       <el-button
         size="small"
-        @click="show = false">取 消</el-button>
+        @click="closeDialog('form' )"
+        >取 消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -90,6 +93,11 @@ export default {
     }
   },
   methods: {
+    // 关闭弹框
+    closeDialog (formName) {
+      this.show = false
+      this.$refs[formName].resetFields()
+    },
     submitForm () {
       let vm = this
       this.form.planId = this.planId

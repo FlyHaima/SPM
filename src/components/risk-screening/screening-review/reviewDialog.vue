@@ -1,8 +1,10 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     title="复核"
     :visible.sync="show"
-    width="40%">
+    width="40%"
+    @close="closeDialog('form')">
     <el-form :model="formWays" :rules="rules" ref="formWays" label-width="100px">
       <el-form-item label="处理方式:" prop="handleType" >
         <el-radio-group v-model="formWays.handleType" @change="waySelChange">
@@ -32,7 +34,9 @@
               size="medium"
               v-model="form.rectiTime"
               type="datetime"
-              placeholder="选择日期时间">
+              placeholder="选择日期时间"
+              :picker-options="pickerDisabled"
+              :clearable='false'>
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -41,7 +45,7 @@
         <el-input
           size="medium"
           type="textarea"
-          v-model="form.rectiRemark"
+          v-model.trim="form.rectiRemark"
           maxlength="200"
           show-word-limit></el-input>
       </el-form-item>
@@ -51,9 +55,10 @@
       </el-form-item>
     </el-form>
     <el-dialog
+      :close-on-click-modal="false"
       :title="'选择排查复核人'"
       :visible.sync="showTree"
-      width="80%"
+      width="60%"
       append-to-body>
       <div class="select-layer" style="height: 400px">
         <tree-diagram
@@ -73,21 +78,19 @@
           >
           <el-table-column
             label="姓名"
-            width="120"
             align="center"
             prop="userName">
           </el-table-column>
           <el-table-column
             label="联系方式"
-            width="120"
             align="center"
             prop="telephone">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="主要职责"
             align="center"
             prop="duty">
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </div>
 
@@ -103,7 +106,7 @@
         @click="submitForm()">确 定</el-button>
       <el-button
         size="small"
-        @click="show = false">取 消</el-button>
+        @click="closeDialog('form')">取 消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -160,7 +163,13 @@ export default {
       workTree: [], // 工作小组树数据
       workData: [],
       currentRow: null,
-      deptId: ''
+      deptId: '',
+      pickerDisabled: {
+        // 验证时间范围
+        disabledDate: (time) => {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      }
     }
   },
   components: {
@@ -173,6 +182,11 @@ export default {
     })
   },
   methods: {
+    // 关闭添加弹框
+    closeDialog (formName) {
+      this.show = false
+      this.$refs[formName].resetFields()
+    },
     // 初始化处理方式数据
     initFormData () {
       // 清空表单编辑后的值
@@ -202,22 +216,22 @@ export default {
         })
     },
     // 获取工作小组table数据
-    fetchWorkTableData () {
-      axios
-        .get('workUser/getList', {
-          deptId: this.deptId,
-          pageNo: 1,
-          pageSize: 1
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.workData = res.data.data
-          }
-        })
-    },
+    // fetchWorkTableData () {
+    //   axios
+    //     .get('workUser/getList', {
+    //       deptId: this.deptId,
+    //       pageNo: 1,
+    //       pageSize: 10
+    //     })
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.workData = res.data.data
+    //       }
+    //     })
+    // },
     // 处理方式切换
-    waySelChange (val) {
-      if (val === '退回') {
+    waySelChange (label) {
+      if (label === '结束') {
         this.showGovernContent = false
       } else {
         this.showGovernContent = true
@@ -267,6 +281,8 @@ export default {
               vm.submitting = true
               if (res.data.code === 200) {
                 vm.$notify.success('排查复核提交成功！')
+                // 复核成功后刷新导航我的待办的数量显示
+                this.$store.dispatch('BASE_INFO_SET')
                 this.$emit('reload')
                 vm.show = false
               } else {
@@ -288,9 +304,10 @@ export default {
       this.fetchWorkTreeData()
     },
     // 选择治理人员弹窗的左侧菜单的点击事件
-    handleNodeClick (deptId) {
+    handleNodeClick (deptId, position, treeData) {
       this.deptId = deptId
-      this.fetchWorkTableData()
+      this.workData = treeData.userList
+      // this.fetchWorkTableData()
     },
     // 选择治理人员弹框的table单选操作
     handleCurrentChange (val) {
@@ -298,9 +315,18 @@ export default {
     },
     // 选择治理人员弹框的确定操作
     confirmChooseList () {
-      this.form.nextUserId = this.currentRow.id
-      this.nextUserName = this.currentRow.userName
-      this.showTree = false
+      let vm = this
+      if (vm.currentRow) {
+        console.log(vm.currentRow)
+        vm.form.nextUserId = vm.currentRow.userId
+        vm.nextUserName = vm.currentRow.userName
+        vm.showTree = false
+      } else {
+        vm.$message({
+          message: '请选择排查复核人',
+          type: 'warning'
+        })
+      }
     }
   },
   watch: {
@@ -465,10 +491,4 @@ export default {
       width: 360px;
     }
   }
-  // .el-input-group__append button.el-button {
-  //   color: #FFF !important;
-  //   background-color: #409EFF !important;
-  //   border-color: #409EFF !important;
-  //   border-radius: 0 4px 4px 0;
-  // }
 </style>

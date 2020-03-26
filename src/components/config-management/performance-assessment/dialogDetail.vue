@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     title="详情"
     :visible.sync="show"
     width="60%">
@@ -108,7 +109,6 @@ export default {
     // 获取table数据
     fetchTableData () {
       this.tablesLoading = true
-      console.log(this.data)
       axios
         .get('performance/seePerformance', {
           checkUser: this.checkUser,
@@ -118,6 +118,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             let formatTableData = res.data.data
+            this.page.total = res.data.total
             formatTableData.forEach(item => {
               if (item.checkTime) {
                 item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')

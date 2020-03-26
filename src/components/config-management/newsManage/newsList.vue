@@ -42,6 +42,8 @@
         align="center">
       </el-table-column>
       <el-table-column
+        fixed="right"
+        width="140px"
         label="操作"
         align="center">
         <template slot-scope="scope">
@@ -69,10 +71,12 @@
         @current-change="tablesHandleCurrentPage"></el-pagination>
     </div>
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
-      width="50%"
+      width="600px"
       :show-close="false"
-      v-loading="submitting">
+      v-loading="submitting"
+      @close="closeDialog('newsForm')">
       <div slot="title">
         {{typeof editData !== 'undefined' && editData !== '' ? '编辑' : '添加' }}
       </div>
@@ -84,7 +88,7 @@
           label-width="100px"
           label-position="right">
           <el-form-item label="文章标题" prop="newsName">
-            <el-input v-model="form.newsName"></el-input>
+            <el-input v-model.trim="form.newsName"></el-input>
           </el-form-item>
           <el-form-item label="分类" prop="typeName">
             <el-select v-model="form.typeName" placeholder="请选择">
@@ -97,7 +101,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="链接地址" prop="url">
-            <el-input v-model="form.url"></el-input>
+            <el-input v-model.trim="form.url"></el-input>
           </el-form-item>
           <!-- <el-form-item>
              <vue-ueditor-wrap v-model="form.content" :config="editorConfig"></vue-ueditor-wrap>
@@ -106,7 +110,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" v-loading="submitting" @click="submitForm()">确定</el-button>
-        <el-button @click="dialogAddVisible = false">取 消</el-button>
+        <el-button @click="closeDialog('newsForm')">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -186,6 +190,11 @@ export default {
     'type-filter': NewsTypeFilter
   },
   methods: {
+    // 关闭添加弹框
+    closeDialog (formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 添加新闻事件
     addHandle () {
       this.dialogAddVisible = true

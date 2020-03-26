@@ -1,6 +1,7 @@
 <template>
   <div v-if="dialogShow">
     <el-dialog
+      :close-on-click-modal="false"
       title="编辑"
       :visible.sync="dialogVisibleSwitch"
       >
@@ -33,9 +34,7 @@ export default {
   },
   watch: {
     dialogShow (val) {
-      console.log(val)
       this.dialogVisibleSwitch = val
-      console.log(this.dialogVisibleSwitch)
     }
   }
 }

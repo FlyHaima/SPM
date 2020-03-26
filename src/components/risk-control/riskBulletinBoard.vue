@@ -10,6 +10,7 @@
           <tree-read-only
             :tree-name="'风险单元'"
             :tree-data="organizationTree"
+            :current-id ="currentPlanId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
@@ -198,7 +199,8 @@ export default {
       options: [], // 下拉框选择项数据
       imgPathColletion: [], // 所有图片路径集合
       imgPathSelGkcs: [], // 已选择的图片路径 - 主要管控措施
-      imgPathSelEmergency: [] // 已选择的图片路径 - 主要应急措施
+      imgPathSelEmergency: [], // 已选择的图片路径 - 主要应急措施
+      currentPlanId: '' // 当前清单项的id
     }
   },
   created () {
@@ -213,6 +215,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
+            this.currentPlanId = this.organizationTree[0].riskId
           }
         })
     },
@@ -226,7 +229,6 @@ export default {
           if (res.data.code === 200) {
             vm.options = res.data.selectList
             vm.imgPathColletion = res.data.picList
-            console.log(res.data.data.length)
             if (treeLevel !== '5') {
               vm.tableVisible = true
               vm.tableData = res.data.data

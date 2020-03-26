@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     title="随机隐患添加"
     :visible.sync="show"
     width="50%">

@@ -58,9 +58,9 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop=" "
+                fixed="right"
                 label="操作"
-                width="300"
+                width="130"
                 align="center">
                 <template slot-scope="scope">
                   <a
@@ -92,6 +92,7 @@
       </el-container>
     </el-main>
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="dialogAddVisible"
       width="30%"
       title="编辑"
@@ -100,7 +101,7 @@
         :model= "form"
         ref= "form"
         size= "mini"
-        label-width= "100px"
+        label-width= "110px"
         label-position= "right"
         @submit.native.prevent= "submitForm"
         v-loading= "submitting"
@@ -170,14 +171,12 @@ export default {
     validateMoney (key) {
       console.log(key)
       let inputVal = key
-      inputVal = inputVal
         .replace(/[^\d.]/g, '')
         // .replace(/\.{2,}/g, '.')
         // .replace(/^(0(0)+|\.)/g, '')
         // .replace('.', '$#$').replace(/\./g, '').replace('$#$', '.')
         // .replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3')
       this.form.money = inputVal
-      console.log(this.form.money)
     },
     // 导出excel
     exportEexcelHandel () {

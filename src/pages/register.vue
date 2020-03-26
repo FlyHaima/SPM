@@ -33,7 +33,7 @@
                     v-for="(item, index) in newsList"
                     :key="index"
                     class="list-info-item">
-                    <a :href="item.url">
+                    <a :href="item.url" target="_blank">
                       <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
@@ -49,11 +49,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -65,11 +66,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -81,11 +83,12 @@
                   <li
                     v-for="(item, index) in newsList"
                     :key="index"
-                    @click="gotoDetailsHandle(item.url)"
                     class="list-info-item">
-                    <div class="list-info-title">
+                    <a :href="item.url" target="_blank">
+                      <div class="list-info-title">
                       <span class="list-info-txt">{{item.newsName}}</span>
                     </div>
+                    </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
                 </ul>
@@ -195,7 +198,8 @@ import axios from '@/api/axios'
 import moment from 'moment'
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
-import { INDUSTRY_NAME_LIST, USE_INDUSTRY } from '@/constants/status'
+// INDUSTRY_NAME_LIST
+import { USE_INDUSTRY } from '@/constants/status'
 export default {
   name: 'loginPage',
   data () {
@@ -252,7 +256,7 @@ export default {
           { validator: validatePassConfirm, trigger: 'blur' }
         ]
       },
-      industryOptions: INDUSTRY_NAME_LIST,
+      industryOptions: null,
       useIndustryOptions: USE_INDUSTRY,
       value: '',
       swiperOption: {
@@ -305,6 +309,7 @@ export default {
   },
   mounted () {
     this.fetchData()
+    this.getHyList()
     this.swiper.slideTo(3, 1000, false)
   },
   methods: {
@@ -323,12 +328,21 @@ export default {
           }
         })
     },
+    // 获取行业列表
+    getHyList () {
+      axios
+        .get('registerController/getHyList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.industryOptions = res.data.data
+          }
+        })
+    },
     // tab切换事件
     clickTab (item) {
       this.fetchData()
     },
     gotoDetailsHandle (url) {
-      console.log(url)
       window.location.href = url
     },
     // 注册事件
@@ -402,10 +416,12 @@ export default {
 .left-container-wrap{
   display: flex;
   align-items: center;
+  width: 100%;
   height: 100%;
   padding: 150px 0 100px;
 }
 .left-container{
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-between;
@@ -433,7 +449,7 @@ export default {
       min-height: 20px;
     }
     .el-tabs__nav{
-      margin: 0 70px;
+      margin: 0 30px;
     }
     .el-tabs__header{
       background: rgba(61,147,255, 0.25);
@@ -450,7 +466,7 @@ export default {
   }
 }
 .login-content-right{
-  flex: 0 0 500px;
+  flex: 0 0 25%;
   height: 100%;
   color: #333333;
   background: #ffffff;
@@ -586,7 +602,6 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  // flex: 0 0 540px;
   padding: 0 30px;
   max-height: 440px;
   overflow: hidden;
@@ -600,9 +615,6 @@ export default {
   a{
     color: #ffffff;
   }
-}
-.list-info-title{
-
 }
 .list-info-txt{
   max-width: 430px;
@@ -650,6 +662,14 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 
+@media only screen and (max-width:1680px) {
+  .login-content-left{
+    padding: 0 10px;
+  }
+  .login-content-right{
+    padding: 0 20px;
+  }
+}
 // register
 .custom-form-item{
   display: flex;

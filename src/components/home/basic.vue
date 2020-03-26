@@ -21,8 +21,8 @@
                   <span class="user-value">{{userInfo.userName}}</span>
                 </li>
                 <li class="user-list-item">
-                  <span class="user-label">登录ID:</span>
-                  <span class="user-value">{{userInfo.userId}}</span>
+                  <span class="user-label">账号:</span>
+                  <span class="user-value">{{userInfo.accountName}}</span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号创建时间:</span>
@@ -53,13 +53,18 @@
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">账号状态：</span>
+                  <!-- v-if="item.value === userInfo.accountState" -->
                   <span
-                    v-if="item.value === userInfo.accountState"
                     v-for="(item, index) in accountStatus"
                     :key="index"
                     :label="item.value"
                     class="user-value color-primary"
-                    :class="classObj(item.value)">{{item.label}}</span>
+                    :class="classObj(item.value)">
+                    <template
+                      v-if="item.value === userInfo.accountState">
+                      {{item.label}}
+                    </template>
+                   </span>
                 </li>
                 <li class="user-list-item">
                   <span class="user-label">上次登录信息：</span>
@@ -101,8 +106,7 @@
           <div class="user-account-list-item">
             <div class="user-account-left">
               <span class="user-account-label">登录密码</span>
-              <span class="user-account-value">
-                安全性高的密码可以使账号更安全，建议您定期更换密码，设置一个包含字母，符号或数字中至少两项且长度超过6位的密码。
+              <span class="user-account-value">安全性高的密码可以使账号更安全，建议您定期更换密码，设置一个包含字母，符号或数字中至少两项且长度超过6位的密码。
               </span>
             </div>
             <div class="user-account-operation">
@@ -155,7 +159,7 @@
           </div>
         </div>
       </div>
-      <el-dialog title="修改密码" :visible.sync="dialogFormPasswordVisible">
+      <el-dialog @close="closeDialog('passwordForm' )" :close-on-click-modal="false" title="修改密码" :visible.sync="dialogFormPasswordVisible">
         <div class="form-tips">
           修改密码提升密码强度，可以保障账号的安全性
         </div>
@@ -171,7 +175,7 @@
             <el-form-item label="旧密码：" prop="oldPassword">
               <el-input
                 type="password"
-                v-model="passwordForm.oldPassword"
+                v-model.trim="passwordForm.oldPassword"
                 autocomplete="off"
                 placeholder="请输入旧密码"
                 clearable></el-input>
@@ -179,7 +183,7 @@
             <el-form-item label="新密码：" prop="Password">
               <el-input
                 type="password"
-                v-model="passwordForm.Password"
+                v-model.trim="passwordForm.Password"
                 autocomplete="off"
                 placeholder="请输入新密码"
                 clearable></el-input>
@@ -188,14 +192,14 @@
               <el-input
                 type="password"
                 autocomplete="off"
-                v-model="passwordForm.passwordConfirm"
+                v-model.trim="passwordForm.passwordConfirm"
                 placeholder="请再次输入新密码"
                 clearable></el-input>
             </el-form-item>
             <el-form-item label="手机号码：" prop="phone">
               <el-input
                 type="text"
-                v-model="passwordForm.phone"
+                v-model.trim="passwordForm.phone"
                 autocomplete="off"
                 placeholder="请输入手机号码"
                 :disabled="true"
@@ -204,7 +208,7 @@
             <el-form-item label="验证码：" prop="code">
               <el-input
                 type="number"
-                v-model="passwordForm.code"
+                v-model.trim="passwordForm.code"
                 autocomplete="off"
                 placeholder="请输入验证码"
                 clearable
@@ -218,10 +222,10 @@
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitPasswordForm()" :loading="submitting">保 存</el-button>
-          <el-button @click="dialogFormPasswordVisible = false">取 消</el-button>
+          <el-button @click="closeDialog('passwordForm' )">取 消</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="修改绑定手机" :visible.sync="dialogFormTelVisible">
+      <el-dialog :close-on-click-modal="false" title="修改绑定手机" :visible.sync="dialogFormTelVisible">
         <div class="form-modal">
           <el-form
             :model="telForm"
@@ -234,25 +238,37 @@
             <el-form-item label="原手机号码：" prop="telOld">
               <el-input
                 type="text"
-                v-model="telForm.telOld"
+                v-model.trim="telForm.phone"
                 autocomplete="off"
-                placeholder="请输入原手机号码"
                 :disabled="true"></el-input>
             </el-form-item>
-            <el-form-item label="修改绑定手机：" prop="telNew">
+            <el-form-item label="修改绑定手机：" prop="phoneNew">
               <el-input
                 type="number"
-                v-model="telForm.telNew"
+                v-model.trim="telForm.phoneNew"
                 autocomplete="off"
                 placeholder="请输入修改绑定手机"
                 clearable></el-input>
               <el-button
                 type="primary">发送</el-button>
             </el-form-item>
+            <el-form-item label="验证码：" prop="code">
+              <el-input
+                type="number"
+                v-model.trim="passwordForm.code"
+                autocomplete="off"
+                placeholder="请输入验证码"
+                clearable
+                class="input-captcha"></el-input>
+                <el-button
+                  :disabled="codeBtnDisabled"
+                  type="primary"
+                  @click="sendCodeHandle">{{codeBtnTxt}}</el-button>
+            </el-form-item>
             <el-form-item label="验证码：" prop="captcha">
               <el-input
                 type="number"
-                v-model="telForm.captcha"
+                v-model.trim="telForm.captcha"
                 autocomplete="off"
                 placeholder="请输入验证码"
                 clearable
@@ -321,15 +337,15 @@ export default {
       }
     }
     // 校验验证码
-    var validateCaptcha = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入验证码'))
-      } else if (value !== this.captcha) {
-        callback(new Error('验证码输入有误'))
-      } else {
-        callback()
-      }
-    }
+    // var validateCaptcha = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入验证码'))
+    //   } else if (value !== this.captcha) {
+    //     callback(new Error('验证码输入有误'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       accountStatus: ACCOUNT_STATUS, // 账户状态
       verify: ZGRZ.verify.label, // 已认证
@@ -348,22 +364,22 @@ export default {
         dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
       }, // 修改密码form
       telForm: {
-        telOld: '', // 原手机号码
-        telNew: '', // 新手机号码
-        captcha: '' // 验证码
+        phone: '', // 原手机号码
+        phoneNew: '', // 新手机号码
+        code: '' // 验证码
       }, // 修改绑定手机
       rulesPassword: {
         oldPassword: [
           { required: true, message: '请输入旧密码', trigger: 'blur' },
-          { validator: validatePassOld, trigger: 'blur' }
+          { validator: validatePassOld, trigger: 'change' }
         ],
         Password: [
           { required: true, message: '请输入新密码', trigger: 'blur' },
-          { validator: validatePassNew, trigger: 'blur' }
+          { validator: validatePassNew, trigger: 'change' }
         ],
         passwordConfirm: [
           { required: true, message: '请再一次输入密码', trigger: 'blur' },
-          { validator: validatePassConfirm, trigger: 'blur' }
+          { validator: validatePassConfirm, trigger: 'change' }
         ],
         code: [
           { required: true,
@@ -373,11 +389,16 @@ export default {
         ]
       }, // 修改密码的校验规则
       rulesTel: {
-        telNew: [
-          { validator: validateTelNew, trigger: 'blur' }
+        phoneNew: [
+          { required: true,
+            message: '请输入修改的手机号码',
+            trigger: 'blur' },
+          { validator: validateTelNew, trigger: 'change' }
         ],
-        captcha: [
-          { validator: validateCaptcha, trigger: 'blur' }
+        code: [
+          { required: true,
+            message: '请输入验证码',
+            trigger: 'blur' }
         ]
       }, // 修改绑定手机的校验规则
       codeTime: 0,
@@ -398,8 +419,14 @@ export default {
   created () {
     this.passwordForm.phone = this.userInfo.telephone
     this.passwordForm.userId = this.userInfo.userId
+    this.telForm.phone = this.userInfo.telephone
   },
   methods: {
+    // 关闭修改密码弹框
+    closeDialog (formName) {
+      this.dialogFormPasswordVisible = false
+      this.$refs[formName].resetFields()
+    },
     // 发送验证码
     sendCodeHandle () {
       this.codeTime = 60
@@ -626,7 +653,8 @@ export default {
 
   }
   .user-account-left{
-
+    display: flex;
+    flex: 1;
   }
   .user-account-list-item{
     display: flex;
@@ -635,12 +663,15 @@ export default {
     border-top: 1px dashed #414141;
   }
   .user-account-label{
-
+    flex: 0 0 90px;
   }
   .user-account-value{
-    margin-left: 60px;
+    margin-left: 10px;
   }
   .user-account-operation{
+    flex: 0 0 180px;
+    text-align: right;
+    justify-content: flex-end;
     display: flex;
   }
   .user-account-operation-item{
@@ -664,6 +695,7 @@ export default {
       content: "";
       display: inline-block;
       position: absolute;
+      left: 0;
       margin-left: 3px;
       margin-top: 4px;
       width: 10px;

@@ -1,10 +1,11 @@
 <template>
   <el-container class="inner-main-content" v-loading="pageLoading">
-    <el-aside class="inner-aside" width="408px">
+    <el-aside class="inner-aside" width="290px">
       <tree-list
-        v-if="listMenuData.length > 0"
+        v-if="listMenuDataTag"
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
+        :current-id ="currentPlanId"
         showSearch
         @menu-click-handle="menuClickHandle"
       ></tree-list>
@@ -71,6 +72,9 @@
             label="检查时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.checkTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="content"
@@ -103,6 +107,9 @@
             label="复核时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.checkByTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="rectiRemark"
@@ -119,6 +126,9 @@
             label="治理时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.goverTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="goverReviUser"
@@ -131,6 +141,9 @@
             label="治理复核时间"
             align="center"
             width="115">
+            <template slot-scope="scope">
+              {{scope.row.goverReviTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -198,6 +211,7 @@ export default {
         endTime: ''
       },
       listMenuData: [], // 计划清单列表数据
+      listMenuDataTag: false,
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
       queryDate: '',
@@ -228,8 +242,20 @@ export default {
     TableStep
   },
   created () {
-    this.fetchListMenuData()
-    this.fetchTableData()
+    let vm = this
+    vm.currentPlanId = vm.$route.query.id
+    vm.fetchListMenuData()
+    vm.fetchTableData()
+  },
+  filters: {
+    // 格式化日期格式
+    'time-filter' (value) {
+      if (value) {
+        return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
     checkQueryDate (val) {
@@ -249,7 +275,12 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.listMenuData = res.data.data
-            this.currentPlanId = this.listMenuData[0].planId
+            this.listMenuDataTag = true
+            if (this.$route.query.id) {
+              this.currentPlanId = this.$route.query.id
+            } else {
+              this.currentPlanId = this.listMenuData[0].planId
+            }
             this.fetchTableData()
           }
         })
@@ -285,40 +316,7 @@ export default {
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.formatTableData = res.data.data
-            this.formatTableData.forEach(item => {
-              // 治理复核时间
-              if (item.goverReviTime) {
-                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverReviTime = ''
-              }
-              // 检查时间
-              if (item.checkTime) {
-                item.checkTime = moment(item.checkTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.checkTime = ''
-              }
-              // 复核时间
-              if (item.checkByTime) {
-                item.checkByTime = moment(item.checkByTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.checkByTime = ''
-              }
-              // 治理时间
-              if (item.goverTime) {
-                item.goverTime = moment(item.goverTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverTime = ''
-              }
-              // 治理复核时间
-              if (item.goverReviTime) {
-                item.goverReviTime = moment(item.goverReviTime).format('YYYY-MM-DD  HH: mm: ss')
-              } else {
-                item.goverReviTime = ''
-              }
-            })
-            this.tableData = this.formatTableData
+            this.tableData = res.data.data
           }
         })
         .finally(() => {
