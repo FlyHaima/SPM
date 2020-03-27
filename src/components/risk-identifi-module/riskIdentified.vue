@@ -758,7 +758,7 @@ export default {
     },
     saveStepOne () {
       let vm = this
-      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
         let saveData = {
           oneName: vm.stepObjA.pointA,
           twoName: vm.stepObjA.pointB,
@@ -774,7 +774,7 @@ export default {
         return true
       } else {
         vm.$message({
-          message: '所有信息均为必填项',
+          message: '除作业步骤以外，其他为必填项',
           type: 'warning'
         })
         return false
