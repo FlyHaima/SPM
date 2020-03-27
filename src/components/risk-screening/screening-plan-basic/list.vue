@@ -203,6 +203,7 @@
               class="list-tips-confirm-item"
               v-for="(item, index) in multipleSelectionPushed"
               :key="index">
+                排查目标：{{item.investTarget}}<span>，</span>
                 {{item.message}}
               </div>
           </div>
