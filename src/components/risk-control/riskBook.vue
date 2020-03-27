@@ -67,7 +67,7 @@
               </el-table-column>
               <el-table-column
                 label="风险等级"
-                width="100"
+                width="110"
                 align="center">
                 <template slot-scope="scope">
                   <el-tag
@@ -107,17 +107,20 @@
               <el-table-column
                 prop="riskSourceName"
                 label="危险源名称"
-                align="center">
+                align="center"
+                width="100">
               </el-table-column>
               <el-table-column
                 prop="bmp"
                 label="风险管控措施"
-                align="center">
+                align="center"
+                width="200">
               </el-table-column>
               <el-table-column
                 prop="rate"
                 label="检查频次"
-                align="center">
+                align="center"
+                width="120">
               </el-table-column>
             </el-table>
             <div class="el-pagination__wrap text-right">

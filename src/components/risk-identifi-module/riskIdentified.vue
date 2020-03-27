@@ -669,6 +669,7 @@ export default {
     },
     openDialog (d) {
       this.currentData = d
+      console.log(this.currentData)
       if (d.speed === '4') {
         this.activeStep = 'step-4'
       } else {
@@ -865,6 +866,7 @@ export default {
       let vm = this
       if (vm.stepObjC.managerLevel && vm.stepObjC.manager) {
         let saveData = {}
+        console.log(vm.currentData.ram)
         if (vm.currentData.ram === 'LEC') {
           saveData = {
             l: vm.stepObjC.LEC.L,

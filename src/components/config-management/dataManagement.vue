@@ -117,6 +117,13 @@
         @submit.native.prevent= "submitForm"
       >
         <el-form-item
+          label="注意：">
+          <p>关于建立排查周期的"月度"，"日"，"小时"周期的提示：
+如每隔一个月发送一次，请填写"月度-1";
+如每天发送三次，请填写"日-3";
+如每隔5小时发送一次，请填写"小时-5";</p>
+        </el-form-item>
+        <el-form-item
           label="名称"
           prop="content">
           <el-input
