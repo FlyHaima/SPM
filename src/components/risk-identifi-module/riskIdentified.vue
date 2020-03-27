@@ -669,7 +669,7 @@ export default {
     },
     openDialog (d) {
       this.currentData = d
-      console.log(this.currentData)
+      // console.log(this.currentData)
       if (d.speed === '4') {
         this.activeStep = 'step-4'
       } else {
@@ -771,6 +771,7 @@ export default {
           riskType: vm.stepObjA.riskPointType,
           ram: vm.stepObjA.identifierWay
         }
+        // console.log(saveData)
         vm.updateDescribe(saveData, '1')
         return true
       } else {
@@ -783,9 +784,7 @@ export default {
     },
     changeStepOne () {
       let vm = this
-      if (!vm.saveStepOne()) {
-        return
-      }
+      if (!vm.saveStepOne()) return
       vm.showDialog = false
     },
     closeDialog () {
@@ -866,8 +865,7 @@ export default {
       let vm = this
       if (vm.stepObjC.managerLevel && vm.stepObjC.manager) {
         let saveData = {}
-        console.log(vm.currentData.ram)
-        if (vm.currentData.ram === 'LEC') {
+        if (vm.stepObjA.identifierWay === 'LEC') {
           saveData = {
             l: vm.stepObjC.LEC.L,
             e: vm.stepObjC.LEC.E,
