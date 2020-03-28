@@ -102,8 +102,8 @@
       <div class="login-box">
         <div class="login-box-inner">
           <div class="login-title">
-            <div class="login-title-en">ANGUANTONG SYSTEM <span class="txt-bold">PLATFORM</span></div>
-            <div class="login-title-txt">安管通系统平台</div>
+            <div class="login-title-en">SAFETY PRODUCTION <span class="txt-bold">SYSTEM</span></div>
+            <div class="login-title-txt">安全生产管理系统</div>
           </div>
           <div class="login-form-box">
             <div class="login-form-header">
@@ -335,7 +335,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  width: 136px;
+  width: 278px;
   height: 43px;
   margin: 36px 30px 0;
   background-image: url('../assets/img/login/login-logo.png');
@@ -413,7 +413,7 @@ export default {
   }
 }
 .login-title-txt{
-  font-size: 42px;
+  font-size: 36px;
   letter-spacing: 9px;
   color: #282828;
 }
