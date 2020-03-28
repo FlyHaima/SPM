@@ -45,12 +45,13 @@
                       <div
                         v-for = "(itemImg, index) in item.spmHiddenInstanceHis.hiddenPhotos"
                         :key = index
-                        class="attachment-list-item">
-                        <img
+                        class="attachment-list-item"
+                        @click.prevent= onPreview(index,itemImg)>
+                        <el-image
                           v-show="item.spmHiddenInstanceHis.hiddenPhotos"
                           class="attachment-img"
-                          :src="itemImg"
-                          alt="上传的图片" />
+                          :src="itemImg">
+                        </el-image>
                       </div>
                     </div>
                   </el-col>
@@ -100,12 +101,15 @@
                       <div
                         v-for = "(itemImg, index) in item.spmHiddenInstanceHis.rectiPhotos"
                         :key = index
-                        class="attachment-list-item">
-                        <img
+                        class="attachment-list-item"
+                        @click.prevent= onPreview(index,itemImg)
+                        >
+                        <el-image
                           v-show="item.spmHiddenInstanceHis.rectiPhotos"
                           class="attachment-img"
                           :src="itemImg"
-                          alt="上传的图片" />
+                          >
+                        </el-image>
                       </div>
                     </div>
                   </el-col>
@@ -135,12 +139,15 @@
                       <div
                         v-for = "(itemImg, index) in item.spmHiddenInstanceHis.goverReviPhotos"
                         :key = index
-                        class="attachment-list-item">
-                        <img
+                        class="attachment-list-item"
+                        @click.prevent= onPreview(index,itemImg)>
+                        <el-image
                           v-show="item.spmHiddenInstanceHis.goverReviPhotos.length > 0"
                           class="attachment-img"
                           :src="itemImg"
-                          alt="上传的图片" />
+                          alt="上传的图片"
+                          >
+                        </el-image>
                       </div>
                     </div>
                   </el-col>
@@ -152,12 +159,17 @@
         </div>
       </div>
     </div>
+    <el-image-viewer
+      v-if="showViewer"
+      :on-close="closeViewer"
+      :url-list="srcList" />
   </el-dialog>
 </template>
 
 <script>
 import axios from '@/api/axios'
 import moment from 'moment'
+import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
 export default {
   name: '',
   props: {
@@ -175,8 +187,14 @@ export default {
       show: false,
       detailsData: null,
       listStepData: null,
-      currentId: ''
+      currentId: '',
+      nowIndex: '',
+      showViewer: false, // 显示查看器
+      srcList: [] // 存放预览图
     }
+  },
+  components: {
+    ElImageViewer
   },
   filters: {
     // 格式化日期格式
@@ -193,6 +211,18 @@ export default {
     this.fetchDetailsData()
   },
   methods: {
+    onPreview (index, itemImg) {
+      let vm = this
+      vm.srcList = []
+      vm.showViewer = true
+      vm.nowIndex = index
+      vm.srcList.push(itemImg)
+      console.log(vm.showViewer)
+    },
+    // 关闭查看器
+    closeViewer () {
+      this.showViewer = false
+    },
     fetchDetailsData () {
       axios
         .get('hiddenAct/impleDetail', {
