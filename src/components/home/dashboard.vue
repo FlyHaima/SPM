@@ -409,10 +409,15 @@ export default {
         for (let j = 0; j < this.pieData.length; j++) {
           if (i === j) {
             this.pieOptions[i].pieData = this.pieData[j]
-            this.pieOptions[i].participationRate = Math.round(
-              (this.pieData[j][0].value /
-              (this.pieData[j][0].value +
-              this.pieData[j][1].value)) * 100)
+            if (this.pieData[j][0].value === 0 && this.pieData[j][1].value === 0) {
+              this.pieOptions[i].participationRate = 0
+            } else {
+              this.pieOptions[i].participationRate = Math.round(
+                (this.pieData[j][0].value /
+                (this.pieData[j][0].value +
+                this.pieData[j][1].value)) * 100)
+            }
+            console.log(this.pieOptions[i].participationRate)
           }
         }
       }
@@ -426,6 +431,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.pieData = res.data.data
+            console.log(this.pieData)
             this.initPieOptions()
           }
         }).finally(() => {

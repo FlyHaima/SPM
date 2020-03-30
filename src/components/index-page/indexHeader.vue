@@ -170,7 +170,8 @@ export default {
     position: absolute;
     top: 16px;
     left: 47px;
-    width: 136px;
+    width: 278px;
+    // width: 136px;
     height: 43px;
     background: url(../../assets/img/AGT-logo.png) no-repeat;
     vertical-align: middle;

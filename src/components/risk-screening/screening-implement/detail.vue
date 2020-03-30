@@ -31,20 +31,28 @@
           <div
             v-for = "(itemImg, index) in formData.hiddenPhotos"
             :key = index
-            class="attachment-list-item">
-            <img
+            class="attachment-list-item"
+            @click.prevent= onPreview(index,itemImg)>
+            <el-image
               class="attachment-img"
               :src="itemImg"
-              alt="上传的图片" />
+              alt="上传的图片"
+              >
+            </el-image>
           </div>
         </div>
       </el-form-item>
     </el-form>
+    <el-image-viewer
+      v-if="showViewer"
+      :on-close="closeViewer"
+      :url-list="srcList" />
   </el-dialog>
 </template>
 
 <script>
 import moment from 'moment'
+import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
 export default {
   name: '',
   props: {
@@ -63,6 +71,9 @@ export default {
   },
   created () {
   },
+  components: {
+    ElImageViewer
+  },
   filters: {
     // 格式化日期格式
     'time-filter' (value) {
@@ -76,10 +87,25 @@ export default {
   data () {
     return {
       show: false,
-      photos: null
+      photos: null,
+      nowIndex: '',
+      showViewer: false, // 显示查看器
+      srcList: [] // 存放预览图
     }
   },
   methods: {
+    onPreview (index, itemImg) {
+      let vm = this
+      vm.srcList = []
+      vm.showViewer = true
+      vm.nowIndex = index
+      vm.srcList.push(itemImg)
+      console.log(vm.showViewer)
+    },
+    // 关闭查看器
+    closeViewer () {
+      this.showViewer = false
+    },
     // 关闭弹框
     closeDialog (formName) {
       this.show = false

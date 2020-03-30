@@ -102,6 +102,7 @@
       </div>
     </el-main>
     <dialog-details
+      ref="dialogDetails"
       :dialogVisible = "dialogDetailsVisible"
       :id = "currentDetailsId"
       @on-dialog-change = "changeDetailsDialog"
@@ -174,6 +175,8 @@ export default {
     // 触发详情弹框
     detailsHandle (item) {
       this.currentDetailsId = item.procInstId
+      // 触发子组件的获取详情的数据接口
+      this.$refs.dialogDetails.fetchDetailsData()
       this.dialogDetailsVisible = true
     },
     changeDetailsDialog (val) {

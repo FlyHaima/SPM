@@ -669,6 +669,7 @@ export default {
     },
     openDialog (d) {
       this.currentData = d
+      // console.log(this.currentData)
       if (d.speed === '4') {
         this.activeStep = 'step-4'
       } else {
@@ -758,7 +759,7 @@ export default {
     },
     saveStepOne () {
       let vm = this
-      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.workStep && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
         let saveData = {
           oneName: vm.stepObjA.pointA,
           twoName: vm.stepObjA.pointB,
@@ -770,11 +771,12 @@ export default {
           riskType: vm.stepObjA.riskPointType,
           ram: vm.stepObjA.identifierWay
         }
+        // console.log(saveData)
         vm.updateDescribe(saveData, '1')
         return true
       } else {
         vm.$message({
-          message: '所有信息均为必填项',
+          message: '除作业步骤以外，其他为必填项',
           type: 'warning'
         })
         return false
@@ -782,9 +784,7 @@ export default {
     },
     changeStepOne () {
       let vm = this
-      if (!vm.saveStepOne()) {
-        return
-      }
+      if (!vm.saveStepOne()) return
       vm.showDialog = false
     },
     closeDialog () {
@@ -865,7 +865,7 @@ export default {
       let vm = this
       if (vm.stepObjC.managerLevel && vm.stepObjC.manager) {
         let saveData = {}
-        if (vm.currentData.ram === 'LEC') {
+        if (vm.stepObjA.identifierWay === 'LEC') {
           saveData = {
             l: vm.stepObjC.LEC.L,
             e: vm.stepObjC.LEC.E,
