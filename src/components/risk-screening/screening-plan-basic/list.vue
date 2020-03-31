@@ -140,6 +140,11 @@
             </el-table-column>
           </el-table-column>
           <el-table-column
+            prop="checkTime"
+            label="推送时间"
+            align="center">
+          </el-table-column>
+          <el-table-column
             prop="investContent"
             label="排查内容与排查标准"
             header-align="center">
