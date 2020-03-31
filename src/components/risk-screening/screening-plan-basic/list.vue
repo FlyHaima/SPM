@@ -120,12 +120,10 @@
               width="160px">
               <template slot="header">
                 <el-checkbox
-                style="margin-right: 0"
-                v-model="checkedAuto"
-                @change="autoCheckChangeHandle">
+                    style="margin-right: 0"
+                    @change="autoCheckChangeHandle">
                 自动推送</el-checkbox>
                 <el-checkbox
-                v-model="checkedManual"
                 @change="manualCheckChangeHandle">
                 手动推送</el-checkbox>
               </template>
@@ -142,6 +140,11 @@
             </el-table-column>
           </el-table-column>
           <el-table-column
+            prop="checkTime"
+            label="推送时间"
+            align="center">
+          </el-table-column>
+          <el-table-column
             prop="investContent"
             label="排查内容与排查标准"
             header-align="center">
@@ -155,7 +158,7 @@
             fixed="right"
             label="操作"
             align="center"
-            width="100px">
+            width="130px">
             <template slot-scope="scope">
               <a
                 href="javascript:;"
@@ -411,8 +414,8 @@ export default {
           return time.getTime() < Date.now() - 8.64e7
         }
       },
-      checkedAuto: null,
-      checkedManual: null,
+      // checkedAuto: false,
+      // checkedManual: false,
       investigationOptions: [], // 排查频率选项
       uploading: false, // 导入loading
       // uploadData: {
@@ -720,8 +723,8 @@ export default {
                 item.isPushDisabled = true
               } else {
                 item.isPushDisabled = false
-                this.checkedAuto = true
-                this.checkedManual = true
+                // this.checkedAuto = true
+                // this.checkedManual = true
               }
             })
             this.tableData = this.initTableData
