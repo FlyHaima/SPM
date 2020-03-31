@@ -70,10 +70,12 @@
             width="120">
           </el-table-column>
           <el-table-column
-            prop="setTime"
             label="发送时间"
             align="center"
             width="120">
+             <template slot-scope="scope">
+              {{scope.row.setTime | time-filter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="checkUser"
