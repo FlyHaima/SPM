@@ -70,6 +70,12 @@
             width="120">
           </el-table-column>
           <el-table-column
+            prop="setTime"
+            label="发送时间"
+            align="center"
+            width="120">
+          </el-table-column>
+          <el-table-column
             prop="checkUser"
             label="检查人员"
             align="center"

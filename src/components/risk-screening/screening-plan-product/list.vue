@@ -128,11 +128,6 @@
             </el-table-column>
           </el-table-column>
           <el-table-column
-            prop="checkTime"
-            label="推送时间"
-            align="center">
-          </el-table-column>
-          <el-table-column
             label="风险等级"
             width="100"
             align="center">
