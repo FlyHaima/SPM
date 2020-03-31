@@ -109,11 +109,9 @@
               <template slot="header">
                 <el-checkbox
                   style="margin-right: 0px;"
-                  v-model="checkedAuto"
                   @change="autoCheckChangeHandle">
                   自动推送</el-checkbox>
                 <el-checkbox
-                  v-model="checkedManual"
                   @change="manualCheckChangeHandle">
                   手动推送</el-checkbox>
               </template>
@@ -379,8 +377,8 @@ export default {
           return time.getTime() < Date.now() - 8.64e7
         }
       },
-      checkedAuto: null,
-      checkedManual: null,
+      // checkedAuto: null,
+      // checkedManual: null,
       investigationOptions: [], // 排查频率选项
       page: {
         total: 0, // 总条数
@@ -475,8 +473,8 @@ export default {
                 item.isPushDisabled = true
               } else {
                 item.isPushDisabled = false
-                this.checkedAuto = true
-                this.checkedManual = true
+                // this.checkedAuto = true
+                // this.checkedManual = true
               }
             })
             this.tableData = this.initTableData
