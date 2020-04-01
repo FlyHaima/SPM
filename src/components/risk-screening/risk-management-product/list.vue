@@ -212,7 +212,7 @@ export default {
     fetchTableData () {
       this.tablesLoading = true
       axios
-        .get('hiddenAct/dImpleList', {
+        .get('hiddenAct/cImpleList', {
           checkName: this.form.checkName,
           investType: this.type,
           startTime: this.form.startTime,
