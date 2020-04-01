@@ -12,10 +12,11 @@
               class="swiper-container">
               <swiper-slide
                 v-for="(item, index) in swiperSlides"
-                :key="index">
+                :key="index"
+                :name="item.url">
                   <img
                     :src="item.picUrl"
-                    class="swiper-img" />
+                    class="swiper-img"/>
                   <div class="swiper-info">
                     <div class="swiper-info-txt">{{item.picName}}</div>
                   </div>
@@ -280,6 +281,11 @@ export default {
         },
         lazy: {
           loadPrevNext: true
+        },
+        on: {
+          click: function (e) {
+            window.open(e.target.attributes.name.value, '_blank')
+          }
         }
         // on: {
         //   lazyImageLoad: function (slide, image) {
