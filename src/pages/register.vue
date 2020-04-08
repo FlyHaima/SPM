@@ -361,7 +361,7 @@ export default {
             .then((res) => {
               vm.pageLoading = true
               if (res.data.code === 200) {
-                vm.$notify.success('注册成功')
+                vm.$notify.success(res.data.message)
                 window.location = '/login'
               } else {
                 vm.$message({
@@ -681,6 +681,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 57px;
+  margin-bottom: 37px;
 }
 </style>
