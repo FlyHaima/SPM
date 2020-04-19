@@ -188,7 +188,7 @@
                             v-for="(item, index) in adminOptions"
                             :key="index"
                             :label="item.deptName"
-                            :value="item.deptName">
+                            :value="item.deptId">
                           </el-option>
                         </el-select>
                       </p>
