@@ -192,7 +192,7 @@
         </el-main>
             <el-dialog
             :close-on-click-modal="false"
-            title="编辑机构"
+            title="导出部门机构列表"
             :visible.sync="dialogOrganizationVisible"
             width="450px">
       <div style="height: 450px" v-loading="treeLoading">
@@ -200,7 +200,7 @@
           <tree-organization
               :tree-name="'组织机构'"
               :tree-data="departmentalTree"
-              @tree-click-handle="departmentalTreeClickHandle"
+              @handleNodeClick="departmentalTreeClickHandle"
           >
           <el-button
             class="btn-sync"
@@ -363,17 +363,15 @@ export default {
     // 部门树的点击出来事件
     departmentalTreeClickHandle (data) {
       let vm = this
-      vm.departmentalTreeId = data.riskId
-      vm.level = data.level
-      vm.treeLevel = data.treeLevel
-      console.log(vm.departmentalTreeId)
+      vm.departmentalTreeId = data
+      // console.log(vm.departmentalTreeId)
     },
     closeLoading () {
       this.pageLoading = false
     },
     // 导出部门列表
-    exportOrganizationData (data) {
-      console.log(this.departmentalTreeId)
+    exportOrganizationData () {
+      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.departmentalTreeId)
     },
     // 导出excel
     exportEexcelHandel () {
