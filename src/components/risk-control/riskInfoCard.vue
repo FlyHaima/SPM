@@ -122,23 +122,23 @@
                     <div class="custom-tr">
                       <div class="custom-th-label">潜在的事故及职业危害类型</div>
                       <div class="custom-td-value">
-                        <el-select
-                          v-model="form.riskResult"
-                          multiple
-                          placeholder="请选择潜在的事故及职业危害类型"
-                          @change="selChangeRiskResult">
-                          <el-option
-                            v-for="(item,index) in options"
-                            :key="'riskResult' + index"
-                            :label="item.label"
-                            :value="item.value"
-                            >
-                          </el-option>
-                        </el-select>
+                        <el-input
+                          maxlength="120"
+                          v-model.trim="form.hazardType"
+                          placeholder=""></el-input>
                       </div>
                     </div>
                     <div class="custom-tr">
                       <div class="custom-th-label">异常状况应急处置</div>
+                      <div class="custom-td-value">
+                        <el-input
+                          maxlength="120"
+                          v-model.trim="form.emergencyResponse"
+                          placeholder=""></el-input>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label"></div>
                       <div class="custom-td-value">
                         <el-select
                           v-model="form.emergency"
@@ -214,7 +214,9 @@ export default {
         centerRisk: '', // 主要风险源
         factor: '', // 因素
         riskResult: [], // 事故后果
-        emergency: [] // 措施
+        emergency: [], // 措施
+        hazardType: [], // 职业危害类型
+        emergencyResponse: [] // 应急处置
       },
       organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据

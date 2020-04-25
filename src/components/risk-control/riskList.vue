@@ -15,7 +15,6 @@
             @close-loading="closeLoading" >
           </tree-read-only>
         </el-aside>
-
         <el-main class="inner-content">
           <div class="container-box">
             <div class="content-tools is-flex-end">
@@ -45,6 +44,14 @@
                   size="medium"
                   icon="el-icon-download"
                   @click="exportEexcelHandel">
+                   导出</el-button>
+                   <el-button
+                  v-if="organizationVisible"
+                  class="tools-popup"
+                  type="success"
+                  size="medium"
+                  icon="el-icon-download"
+                  @click="dialogOrganizationVisible= true">
                    导出</el-button>
               </div>
             </div>
@@ -183,6 +190,28 @@
             </div>
           </div>
         </el-main>
+            <el-dialog
+            :close-on-click-modal="false"
+            title="编辑机构"
+            :visible.sync="dialogOrganizationVisible"
+            width="450px">
+      <div style="height: 450px" v-loading="treeLoading">
+        <template>
+          <tree-organization
+              :tree-name="'组织机构'"
+              :showEditor= 'flase'
+              :tree-data="departmentalTree"
+              @editTreeData="editOrgTreeData"
+          >
+          <el-button
+            class="btn-sync"
+            type="primary"
+            size="small"
+            @click="exportOrganizationData">导出</el-button>
+          </tree-organization>
+        </template>
+      </div>
+    </el-dialog>
       </el-container>
     </el-main>
   </el-container>
@@ -190,6 +219,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
+import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
 import base from '@/api/baseUrl'
@@ -201,6 +231,7 @@ export default {
       breadcrumb: ['风险分级管控', '风险点清单'],
       pageLoading: false,
       organizationTree: [], // tree data
+      departmentalTree: [], // 部门树
       riskId: '', // id
       level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
@@ -208,10 +239,12 @@ export default {
       tableVisible: false, // table显示切换开关
       tagVisible: false, // tag显示开关
       tableData: [],
+      dialogOrganizationVisible: false, // 组织机构开关
+      organizationVisible: false, // 前三级组织机构导出开关
       riskList: {
         riskBh: '', // 风险点编号
         threeName: '', // 风险点名称
-        riskPlace: '', // 风险点位置
+        riskPlace: '', // 风险点位置o
         riskYs: '', // 风险因素
         riskGkrs: '', // 管控人
         riskDjCode: '', // 风险等级code
@@ -229,6 +262,7 @@ export default {
   created () {
     this.fetchTreeData()
     this.fetchTableData()
+    this.fetchPlanOrganizationData()
   },
   methods: {
     // 导入接口地址
@@ -257,6 +291,20 @@ export default {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
             this.currentPlanId = this.organizationTree[0].riskId
+          }
+        })
+    },
+    fetchPlanOrganizationData () {
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.departmentalTree = res.data.data
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
           }
         })
     },
@@ -304,6 +352,11 @@ export default {
       } else {
         vm.importVisible = false
       }
+      if (vm.treeLevel === '5' || vm.treeLevel === '1') {
+        vm.organizationVisible = false
+      } else {
+        vm.organizationVisible = true
+      }
     },
     closeLoading () {
       this.pageLoading = false
@@ -331,7 +384,8 @@ export default {
   },
   components: {
     TreeReadOnly,
-    BreadCrumb
+    BreadCrumb,
+    TreeOrganization
   }
 }
 </script>
