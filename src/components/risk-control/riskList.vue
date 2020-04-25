@@ -203,6 +203,11 @@
               :tree-data="departmentalTree"
               @editTreeData="editOrgTreeData"
           >
+          <el-button
+            class="btn-sync"
+            type="primary"
+            size="small"
+            @click="exportOrganizationData">导出</el-button>
           </tree-organization>
         </template>
       </div>
