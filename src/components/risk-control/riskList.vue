@@ -199,9 +199,8 @@
         <template>
           <tree-organization
               :tree-name="'组织机构'"
-              :showEditor= 'flase'
               :tree-data="departmentalTree"
-              @editTreeData="editOrgTreeData"
+              @tree-click-handle="departmentalTreeClickHandle"
           >
           <el-button
             class="btn-sync"
@@ -232,6 +231,7 @@ export default {
       pageLoading: false,
       organizationTree: [], // tree data
       departmentalTree: [], // 部门树
+      treeLoading: false,
       riskId: '', // id
       level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
@@ -256,7 +256,8 @@ export default {
         riskId: ''
       }, // 上传数据
       fileList: [], // 导入列表
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      departmentalTreeId: '' // 当前选择部门树 部门id
     }
   },
   created () {
@@ -294,6 +295,7 @@ export default {
           }
         })
     },
+    // 获取部门树数据
     fetchPlanOrganizationData () {
       axios
         .get('basticHidden/getDeptListSize')
@@ -358,8 +360,20 @@ export default {
         vm.organizationVisible = true
       }
     },
+    // 部门树的点击出来事件
+    departmentalTreeClickHandle (data) {
+      let vm = this
+      vm.departmentalTreeId = data.riskId
+      vm.level = data.level
+      vm.treeLevel = data.treeLevel
+      console.log(vm.departmentalTreeId)
+    },
     closeLoading () {
       this.pageLoading = false
+    },
+    // 导出部门列表
+    exportOrganizationData (data) {
+      console.log(this.departmentalTreeId)
     },
     // 导出excel
     exportEexcelHandel () {
