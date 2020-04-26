@@ -371,11 +371,11 @@ export default {
     },
     // 导出部门列表
     exportOrganizationData () {
-      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.departmentalTreeId)
+      exportExcel(`riskLevel/exportRiskCard`, 'id=' + this.departmentalTreeId)
     },
     // 导出excel
     exportEexcelHandel () {
-      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.riskId)
+      exportExcel(`riskLevel/exportRiskCard`, 'id=' + this.riskId)
     }
   },
   computed: {
