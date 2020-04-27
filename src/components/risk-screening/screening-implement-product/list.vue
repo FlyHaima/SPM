@@ -297,6 +297,8 @@ export default {
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
     },
+
+    // 获取树数据
     fetchPlanOrganizationData () {
       axios
         .get('basticHidden/getDeptListSize')
@@ -312,11 +314,14 @@ export default {
         })
     },
     // 组织结构树点击事件
-    departmentalTreeClickHandle () {
-
+    departmentalTreeClickHandle (data) {
+      console.log(data)
+      let vm = this
+      vm.departmentalTreeId = data
     },
     exportOrganizationData () {
-
+      // exportExcel(`riskLevel/exportRisksInvest`, 'id=' + this.departmentalTreeId)
+      console.log(this.departmentalTreeId)
     }
 
   },
