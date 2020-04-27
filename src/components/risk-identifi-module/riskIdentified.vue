@@ -797,8 +797,7 @@ export default {
     },
     saveStepTwo () {
       let vm = this
-      let ad = 1
-      if (ad > 0) { // 暂无条件，后续补齐参数
+      if (vm.stepObjB.administrator !== '') { // 暂无条件，后续补齐参数
         let saveData = {
           responsibleBody: vm.stepObjB.administrator
         }
