@@ -190,7 +190,7 @@
             </div>
           </div>
         </el-main>
-            <el-dialog
+        <el-dialog
             :close-on-click-modal="false"
             title="导出部门机构列表"
             :visible.sync="dialogOrganizationVisible"

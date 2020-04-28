@@ -18,6 +18,17 @@
 
         <el-main class="inner-content">
           <div class="container-box">
+             <div class="content-tools is-flex-end">
+                <div class="tools-right">
+                  <el-button
+                    v-if="importVisible"
+                    type="success"
+                    size="medium"
+                    icon="el-icon-download"
+                    @click="exportExcelHandel">
+                    导出</el-button>
+                </div>
+              </div>
             <template v-if="tableVisible">
               <el-table
                 :data="tableData"
@@ -58,16 +69,7 @@
               </el-table>
             </template>
             <template v-else>
-              <div v-if="editData" class="content-tools is-flex-end">
-                <div class="tools-right">
-                  <el-button
-                    type="success"
-                    size="medium"
-                    icon="el-icon-download"
-                    @click="exportExcelHandel">
-                    导出</el-button>
-                </div>
-              </div>
+
               <el-form
                 :model = "form"
                 ref = "form"
@@ -205,6 +207,7 @@ export default {
       pageLoading: false, // 页面loading开关
       tableVisible: false, // table显示开关
       submitting: false, // 提交数据loading开关
+      importVisible: false, // 到处按钮显示开关
       riskId: '', // 风险点id
       form: {
         id: '', // 告知卡id
@@ -323,6 +326,7 @@ export default {
             if (res.data.code === 200) {
               this.$notify.success('提交成功')
               this.fetchTableData()
+              this.importVisible = true
             } else {
               this.$message({
                 message: res.data.message,
@@ -340,7 +344,13 @@ export default {
       let vm = this
       vm.riskId = data.riskId
       vm.form.riskId = data.riskId
+      vm.treeLevel = data.treeLevel
       vm.fetchTableData(data.treeLevel)
+      if (vm.treeLevel === '5' | vm.treeLevel === '1') {
+        vm.importVisible = false
+      } else {
+        vm.importVisible = true
+      }
     },
     closeLoading () {
       this.pageLoading = false

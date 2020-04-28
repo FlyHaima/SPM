@@ -315,13 +315,13 @@ export default {
     },
     // 组织结构树点击事件
     departmentalTreeClickHandle (data) {
-      console.log(data)
+      // console.log(data)
       let vm = this
       vm.departmentalTreeId = data
     },
     exportOrganizationData () {
-      // exportExcel(`riskLevel/exportRisksInvest`, 'id=' + this.departmentalTreeId)
-      console.log(this.departmentalTreeId)
+      exportExcel(`riskLevel/exportRisksInvest`, 'id=' + this.departmentalTreeId)
+      // console.log(this.departmentalTreeId)
     }
 
   },
