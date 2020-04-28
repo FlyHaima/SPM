@@ -101,23 +101,23 @@
                     <div class="custom-tr">
                       <div class="custom-th-label">主要管控措施</div>
                       <div class="custom-td-value">
-                        <el-select
-                          v-model="form.gkcs"
-                          multiple
-                          placeholder="请选择"
-                          @change="selChangeGkcs">
-                          <el-option
-                            v-for="(item, index) in options"
-                            :key="'gkcs'+index"
-                            :label="item.label"
-                            :value="item.value"
-                            >
-                          </el-option>
-                        </el-select>
+                        <el-input
+                          maxlength="120"
+                          v-model.trim="form.gkcs"
+                          placeholder=""></el-input>
                       </div>
                     </div>
                     <div class="custom-tr">
                       <div class="custom-th-label">主要应急措施</div>
+                      <div class="custom-td-value">
+                        <el-input
+                          maxlength="120"
+                          v-model.trim="form.contingencies"
+                          placeholder=""></el-input>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label"></div>
                       <div class="custom-td-value">
                         <el-select
                           v-model="form.emergency"
@@ -192,7 +192,8 @@ export default {
         factor: '',
         riskPlace: '',
         sgType: '',
-        gkcs: '',
+        gkcs: '', // 主要管控措施
+        contingencies: '', // 主要应急措施
         emergency: ''
       },
       organizationTree: [], // 组织结构树数据
