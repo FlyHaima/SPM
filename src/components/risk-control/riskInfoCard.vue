@@ -218,8 +218,10 @@ export default {
         factor: '', // 因素
         riskResult: [], // 事故后果
         emergency: [], // 措施
-        hazardType: [], // 职业危害类型
-        emergencyResponse: [] // 应急处置
+        hazardType: '',
+        emergencyResponse: '',
+        accidentHazard: '', // 职业危害类型
+        emergencyDispose: '' // 应急处置
       },
       organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据

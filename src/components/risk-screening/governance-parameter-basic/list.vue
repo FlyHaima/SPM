@@ -186,7 +186,7 @@
     </el-main>
     <el-dialog
         :close-on-click-modal='false'
-         title="隐患公式导出"
+         title="隐患公示导出"
         :visible.sync="dialogVisible"
          width="560px">
         <template>
