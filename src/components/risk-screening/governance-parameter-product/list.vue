@@ -385,7 +385,7 @@ export default {
     // 根据时间导出 隐患公式列表导出
     exportHiddenDangerDataTime () {
       // console.log(this.hiddenDangerForm.startTime, this.hiddenDangerForm.endTime, this.form.startTime, this.form.endTime)
-      exportExcel(`hiddenAct/exportManageLedgers`,
+      exportExcel(`hiddenAct/exportHiddenPublic`,
         'investType=' + this.type + '&' +
         'startTime=' + this.hiddenDangerForm.startTime + '&' +
         'endTime=' + this.hiddenDangerForm.endTime)
