@@ -49,6 +49,12 @@
               icon="el-icon-download"
               @click="exportEexcelHandel">
               导出</el-button>
+              <el-button
+              type="primary"
+              size="medium"
+              icon="el-icon-download"
+              @click="openDialogVisible">
+              隐患公示导出</el-button>
           </div>
         </div>
         <el-table
@@ -178,6 +184,31 @@
         </el-table>
       </div>
     </el-main>
+    <el-dialog
+        :close-on-click-modal='false'
+         title="隐患公式导出"
+        :visible.sync="dialogVisible"
+         width="560px">
+        <template>
+          <div class="block">
+          <span class="demonstration">选择时间段</span>
+          <el-date-picker
+          v-model="datetimeInterval"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          type="daterange"
+          @change="hiddencheckQueryDate"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+          </el-date-picker>
+          <el-button
+            class="btn-sync"
+           type="primary"
+          size="small"
+         @click="exportHiddenDangerDataTime">确定</el-button>
+        </div>
+        </template>
+      </el-dialog>
     <dialog-details
       ref="dialogDetails"
       :dialogVisible = "dialogDetailsVisible"
@@ -208,6 +239,12 @@ export default {
       pageLoading: false,
       tablesLoading: false,
       dialogDetailsVisible: false, // 详情弹框显示开关
+      dialogVisible: false, // 隐患公式导出显示开关
+      datetimeInterval: '', // 隐患公式开始日期，结尾日期 值
+      hiddenDangerForm: { // 隐患公式导出时间段
+        startTime: '',
+        endTime: ''
+      },
       form: {
         checkName: '',
         startTime: '',
@@ -268,6 +305,19 @@ export default {
       } else {
         this.form.startTime = this.form.endTime = ''
       }
+    },
+    hiddencheckQueryDate (val) {
+      if (val) {
+        this.hiddenDangerForm.startTime = val[0]
+        this.hiddenDangerForm.endTime = val[1]
+      } else {
+        this.hiddenDangerForm.startTime = this.form.endTime = ''
+      }
+    },
+    // 隐患公示显示弹窗 日期初始化
+    openDialogVisible () {
+      this.dialogVisible = true
+      this.datetimeInterval = ''
     },
     /** 左侧清单菜单 **/
     // 获取清单数据
@@ -341,6 +391,14 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+    // 根据时间导出 隐患公式列表导出
+    exportHiddenDangerDataTime () {
+      // console.log(this.hiddenDangerForm.startTime, this.hiddenDangerForm.endTime, this.form.startTime, this.form.endTime)
+      exportExcel(`hiddenAct/exportHiddenPublic`,
+        'investType=' + this.type + '&' +
+        'startTime=' + this.hiddenDangerForm.startTime + '&' +
+        'endTime=' + this.hiddenDangerForm.endTime)
     }
   },
   computed: { // vuex 参数引入

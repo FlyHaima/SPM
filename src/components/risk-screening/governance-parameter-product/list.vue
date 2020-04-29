@@ -52,7 +52,7 @@
               type="primary"
               size="medium"
               icon="el-icon-download"
-              @click="dialogVisible= true">
+              @click="openDialogVisible">
               隐患公示导出</el-button>
               <el-button
               type="primary"
@@ -193,7 +193,7 @@
         :close-on-click-modal='false'
          title="隐患公式导出"
         :visible.sync="dialogVisible"
-         width="600px">
+         width="560px">
         <template>
           <div class="block">
           <span class="demonstration">选择时间段</span>
@@ -317,6 +317,11 @@ export default {
         this.hiddenDangerForm.startTime = this.form.endTime = ''
       }
     },
+    // 隐患公示显示弹窗 日期初始化
+    openDialogVisible () {
+      this.dialogVisible = true
+      this.datetimeInterval = ''
+    },
     // 触发详情弹框
     detailsHandle (item) {
       this.currentDetailsId = item.procInstId
@@ -381,6 +386,7 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+      console.log(this.form)
     },
     // 根据时间导出 隐患公式列表导出
     exportHiddenDangerDataTime () {
@@ -392,6 +398,7 @@ export default {
     },
     // 重大隐患台账导出
     exportEexcelSignificantRisk () {
+      exportExcel(`hiddenAct/exportHiddenBigBook`, 'investType=' + this.type)
     }
   },
   computed: { // vuex 参数引入
