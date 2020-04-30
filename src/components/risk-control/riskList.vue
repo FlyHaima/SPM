@@ -140,7 +140,7 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">管控单位责任人</div>
                     <div class="custom-td-value">
-                      {{riskList.riskGkrs}}
+                      {{riskList.deptName}}
                     </div>
                   </div>
                 </div>
@@ -154,7 +154,7 @@
                   </div>
                 </div>
                 <div
-                  v-for=" item in riskTableData"
+                  v-for=" item in newRiskTableData"
                   :key="item.workNo"
                   class="custom-tbody">
                   <div class="custom-tr is-flex">
@@ -174,8 +174,8 @@
                       </div>
                     </div>
                     <div class="custom-td-value">
-                      <div class="custom-td-text">
-                        {{item.bmp}}
+                      <div class="custom-td-text" v-for="(item,index) in newRiskTableData.bmp" :key="index">
+                        {{item}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -248,9 +248,11 @@ export default {
         riskYs: '', // 风险因素
         riskGkrs: '', // 管控人
         riskDjCode: '', // 风险等级code
-        riskDj: '' // 风险等级
+        riskDj: '', // 风险等级
+        deptName: '' // 管控单位责任人
       },
-      riskTableData: [],
+      riskTableData: [], // 原数据
+      newRiskTableData: [], // 新数据
       uploading: false, // 导入loading
       uploadData: {
         riskId: ''
@@ -335,6 +337,39 @@ export default {
               } else {
                 this.tagVisible = false
               }
+              const newArr = []
+              if (this.riskTableData.bmp) {
+                newArr.push(this.riskTableData.bmp)
+              }
+              if (this.riskTableData.mustCs) {
+                newArr.push(this.riskTableData.mustCs)
+              }
+              if (this.riskTableData.technology) {
+                newArr.push(this.riskTableData.technology)
+              }
+              if (this.riskTableData.train) {
+                newArr.push(this.riskTableData.train)
+              }
+              if (this.riskTableData.individual) {
+                newArr.push(this.riskTableData.individual)
+              }
+              if (this.riskTableData.emergency) {
+                newArr.push(this.riskTableData.emergency)
+              }
+              if (this.riskTableData.cstand) {
+                newArr.push(this.riskTableData.cstand)
+              }
+              let itemO = {
+                workNo: this.riskTableData.workNo,
+                work: this.riskTableData.work,
+                rate: this.riskTableData.rate,
+                bmp: ''
+              }
+              for (let i = 1; i <= newArr.length; i++) {
+                let itemA = itemO
+                itemA.bmg = newArr[i - 1]
+                this.newRiskTableData.push(itemA)
+              }
             }
           }
         }).finally(() => {
@@ -349,6 +384,8 @@ export default {
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
+      console.log(vm.riskTableData)
+      console.log(vm.newRiskTableData.bmg)
       if (vm.treeLevel === '4') {
         vm.importVisible = true
       } else {

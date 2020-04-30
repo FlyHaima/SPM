@@ -126,7 +126,7 @@
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"
-                          v-model.trim="form.hazardType"
+                          v-model.trim="form.accidentHazard"
                           placeholder=""></el-input>
                       </div>
                     </div>
@@ -135,7 +135,7 @@
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"
-                          v-model.trim="form.emergencyResponse"
+                          v-model.trim="form.emergencyDispose"
                           placeholder=""></el-input>
                       </div>
                     </div>
@@ -320,7 +320,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.submitting = true
-        this.form.riskResult = JSON.stringify(this.form.riskResult)
+        // this.form.riskResult = JSON.stringify(this.form.riskResult)
         this.form.emergency = JSON.stringify(this.form.emergency)
         axios
           .post('riskCard/addCard', this.form)
@@ -348,6 +348,7 @@ export default {
       vm.form.riskId = data.riskId
       vm.treeLevel = data.treeLevel
       vm.fetchTableData(data.treeLevel)
+      console.log(vm.form)
       if (vm.treeLevel === '5' | vm.treeLevel === '1') {
         vm.importVisible = false
       } else {
