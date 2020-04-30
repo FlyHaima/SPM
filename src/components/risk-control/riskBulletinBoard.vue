@@ -297,7 +297,7 @@ export default {
       vm.form.riskId = data.riskId
       vm.treeLevel = data.treeLevel
       vm.fetchTableData(data.treeLevel)
-      console.log(vm.form)
+      // console.log(vm.form)
       if (vm.treeLevel === '5' | vm.treeLevel === '1') {
         vm.importVisible = false
       } else {

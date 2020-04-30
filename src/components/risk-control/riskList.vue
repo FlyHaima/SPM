@@ -174,7 +174,7 @@
                       </div>
                     </div>
                     <div class="custom-td-value">
-                      <div class="custom-td-text" v-for="(item,index) in newRiskTableData.bmp" :key="index">
+                      <div class="custom-td-text" v-for="(item,index) in newRiskTableData.bmg" :key="index">
                         {{item}}
                       </div>
                     </div>
@@ -266,8 +266,51 @@ export default {
     this.fetchTreeData()
     this.fetchTableData()
     this.fetchPlanOrganizationData()
+    this.newTable() // 重构岗位告知卡数据
   },
   methods: {
+    // 重构岗位告知卡新数据组
+    newTable () {
+      console.log(`-----------`)
+      const newArr = []
+      if (this.riskTableData[0].bmp) {
+        newArr.push(this.riskTableData[0].bmp)
+      }
+      if (this.riskTableData[0].mustCs) {
+        newArr.push(this.riskTableData[0].mustCs)
+      }
+      if (this.riskTableData[0].technology) {
+        newArr.push(this.riskTableData[0].technology)
+      }
+      if (this.riskTableData[0].train) {
+        newArr.push(this.riskTableData[0].train)
+      }
+      if (this.riskTableData[0].individual) {
+        newArr.push(this.riskTableData[0].individual)
+      }
+      if (this.riskTableData[0].emergency) {
+        newArr.push(this.riskTableData[0].emergency)
+      }
+      if (this.riskTableData[0].cstand) {
+        newArr.push(this.riskTableData[0].cstand)
+      }
+      // console.log(newArr)
+      let itemO = {
+        workNo: this.riskTableData[0].workNo,
+        work: this.riskTableData[0].work,
+        rate: this.riskTableData[0].rate,
+        bmg: ''
+      }
+      // console.log(itemO)
+      for (let i = 0; i < newArr.length; i++) {
+        let itemA = itemO
+        // console.log(itemA)
+        itemA.bmg = newArr[i]
+        console.log(itemA)
+        this.newRiskTableData[0].push(itemA)
+        // console.log(this.newRiskTableData)
+      }
+    },
     // 导入接口地址
     uploadUrl () {
       return base.baseUrl + '/riskLevel/importRisks'
@@ -337,39 +380,6 @@ export default {
               } else {
                 this.tagVisible = false
               }
-              const newArr = []
-              if (this.riskTableData.bmp) {
-                newArr.push(this.riskTableData.bmp)
-              }
-              if (this.riskTableData.mustCs) {
-                newArr.push(this.riskTableData.mustCs)
-              }
-              if (this.riskTableData.technology) {
-                newArr.push(this.riskTableData.technology)
-              }
-              if (this.riskTableData.train) {
-                newArr.push(this.riskTableData.train)
-              }
-              if (this.riskTableData.individual) {
-                newArr.push(this.riskTableData.individual)
-              }
-              if (this.riskTableData.emergency) {
-                newArr.push(this.riskTableData.emergency)
-              }
-              if (this.riskTableData.cstand) {
-                newArr.push(this.riskTableData.cstand)
-              }
-              let itemO = {
-                workNo: this.riskTableData.workNo,
-                work: this.riskTableData.work,
-                rate: this.riskTableData.rate,
-                bmp: ''
-              }
-              for (let i = 1; i <= newArr.length; i++) {
-                let itemA = itemO
-                itemA.bmg = newArr[i - 1]
-                this.newRiskTableData.push(itemA)
-              }
             }
           }
         }).finally(() => {
@@ -383,9 +393,9 @@ export default {
       vm.uploadData.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
-      vm.fetchTableData()
-      console.log(vm.riskTableData)
-      console.log(vm.newRiskTableData.bmg)
+      vm.fetchTableData()      
+      // console.log(vm.riskTableData)
+      // console.log(vm.newRiskTableData.bmg)
       if (vm.treeLevel === '4') {
         vm.importVisible = true
       } else {
