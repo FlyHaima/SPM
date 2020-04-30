@@ -393,7 +393,7 @@ export default {
       vm.uploadData.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
-      vm.fetchTableData()      
+      vm.fetchTableData()
       // console.log(vm.riskTableData)
       // console.log(vm.newRiskTableData.bmg)
       if (vm.treeLevel === '4') {
