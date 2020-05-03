@@ -154,8 +154,8 @@
                   </div>
                 </div>
                 <div
-                  v-for=" item in newRiskTableData"
-                  :key="item.workNo"
+                  v-for="(item, index) in newRiskTableData"
+                  :key="index"
                   class="custom-tbody">
                   <div class="custom-tr is-flex">
                     <div class="custom-td-value">
@@ -170,12 +170,12 @@
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.no}}
+                        {{(index+1)}}
                       </div>
                     </div>
                     <div class="custom-td-value">
-                      <div class="custom-td-text" v-for="(item,index) in newRiskTableData.bmg" :key="index">
-                        {{item}}
+                      <div class="custom-td-text">
+                        {{item.bmg}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -251,7 +251,6 @@ export default {
         riskDj: '', // 风险等级
         deptName: '' // 管控单位责任人
       },
-      riskTableData: [], // 原数据
       newRiskTableData: [], // 新数据
       uploading: false, // 导入loading
       uploadData: {
@@ -266,51 +265,8 @@ export default {
     this.fetchTreeData()
     this.fetchTableData()
     this.fetchPlanOrganizationData()
-    this.newTable() // 重构岗位告知卡数据
   },
   methods: {
-    // 重构岗位告知卡新数据组
-    newTable () {
-      console.log(`-----------`)
-      const newArr = []
-      if (this.riskTableData[0].bmp) {
-        newArr.push(this.riskTableData[0].bmp)
-      }
-      if (this.riskTableData[0].mustCs) {
-        newArr.push(this.riskTableData[0].mustCs)
-      }
-      if (this.riskTableData[0].technology) {
-        newArr.push(this.riskTableData[0].technology)
-      }
-      if (this.riskTableData[0].train) {
-        newArr.push(this.riskTableData[0].train)
-      }
-      if (this.riskTableData[0].individual) {
-        newArr.push(this.riskTableData[0].individual)
-      }
-      if (this.riskTableData[0].emergency) {
-        newArr.push(this.riskTableData[0].emergency)
-      }
-      if (this.riskTableData[0].cstand) {
-        newArr.push(this.riskTableData[0].cstand)
-      }
-      // console.log(newArr)
-      let itemO = {
-        workNo: this.riskTableData[0].workNo,
-        work: this.riskTableData[0].work,
-        rate: this.riskTableData[0].rate,
-        bmg: ''
-      }
-      // console.log(itemO)
-      for (let i = 0; i < newArr.length; i++) {
-        let itemA = itemO
-        // console.log(itemA)
-        itemA.bmg = newArr[i]
-        console.log(itemA)
-        this.newRiskTableData[0].push(itemA)
-        // console.log(this.newRiskTableData)
-      }
-    },
     // 导入接口地址
     uploadUrl () {
       return base.baseUrl + '/riskLevel/importRisks'
@@ -373,9 +329,42 @@ export default {
               }
             } else {
               this.tableVisible = false
+              this.newRiskTableData = [] // 清空
               this.riskList = res.data.data[0]
-              this.riskTableData = this.riskList.describes
-              if (this.riskList.riskDj) {
+              const riskTableData = this.riskList.describes[0]
+              if (this.riskList.riskDj) { // 当有危险等级的时候，需要显示内容
+                const newArr = []
+                if (riskTableData.bmp) {
+                  newArr.push(riskTableData.bmp)
+                }
+                if (riskTableData.mustCs) {
+                  newArr.push(riskTableData.mustCs)
+                }
+                if (riskTableData.technology) {
+                  newArr.push(riskTableData.technology)
+                }
+                if (riskTableData.train) {
+                  newArr.push(riskTableData.train)
+                }
+                if (riskTableData.individual) {
+                  newArr.push(riskTableData.individual)
+                }
+                if (riskTableData.emergency) {
+                  newArr.push(riskTableData.emergency)
+                }
+                if (riskTableData.cstand) {
+                  newArr.push(riskTableData.cstand)
+                }
+                // console.log(newArr)
+                for (let i = 0; i < newArr.length; i++) {
+                  let itemA = {
+                    workNo: riskTableData.workNo,
+                    work: riskTableData.work,
+                    rate: riskTableData.rate,
+                    bmg: newArr[i]
+                  }
+                  this.newRiskTableData.push(itemA)
+                }
                 this.tagVisible = true
               } else {
                 this.tagVisible = false
@@ -394,8 +383,6 @@ export default {
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
-      // console.log(vm.riskTableData)
-      // console.log(vm.newRiskTableData.bmg)
       if (vm.treeLevel === '4') {
         vm.importVisible = true
       } else {
@@ -450,4 +437,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.custom-tr{
+  background: #fff;
+}
 </style>

@@ -103,7 +103,7 @@
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"
-                          v-model.trim="form.gkcs"
+                          v-model.trim="form.control"
                           placeholder=""></el-input>
                       </div>
                     </div>
@@ -112,7 +112,7 @@
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"
-                          v-model.trim="form.contingencies"
+                          v-model.trim="form.worry"
                           placeholder=""></el-input>
                       </div>
                     </div>
@@ -194,7 +194,11 @@ export default {
         sgType: '',
         gkcs: '', // 主要管控措施
         contingencies: '', // 主要应急措施
-        emergency: ''
+        emergency: '',
+        control: '', // 主要管控措施
+        bmp: '',
+        worry: '', // 主要应急措施
+        should: ''
       },
       organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据
@@ -239,8 +243,13 @@ export default {
               vm.tableVisible = false
               vm.form = res.data.data[0]
               this.editData = this.form.id
-
-              vm.form.gkcs = JSON.parse(vm.form.gkcs)
+              if (!this.form.control) {
+                this.form.control = this.form.bmp
+              }
+              if (!this.form.control) {
+                this.form.worry = this.form.should
+              }
+              // vm.form.gkcs = JSON.parse(vm.form.gkcs)
               vm.form.emergency = JSON.parse(vm.form.emergency)
 
               if (vm.form.gkcs) {
@@ -303,6 +312,7 @@ export default {
       } else {
         vm.importVisible = true
       }
+      console.log(vm.form)
     },
     closeLoading () {
       this.pageLoading = false
