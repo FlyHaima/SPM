@@ -263,7 +263,7 @@ export default {
   },
   created () {
     this.fetchTreeData()
-    this.fetchTableData()
+    // this.fetchTableData()
     this.fetchPlanOrganizationData()
   },
   methods: {
@@ -294,6 +294,7 @@ export default {
             this.organizationTree = res.data.data
             this.currentPlanId = this.organizationTree[0].riskId
           }
+          this.fetchTableData()
         })
     },
     // 获取部门树数据
@@ -316,7 +317,7 @@ export default {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`riskLevel/getRiskCrad?&id=${vm.riskId}`)
+        .get(`riskLevel/getRiskCrad?&id=${vm.riskId || vm.currentPlanId}`)
         .then((res) => {
           if (res.data.code === 200) {
             if (res.data.data.length > 1 || res.data.data.length === 0) {
@@ -383,6 +384,8 @@ export default {
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
+      console.log(vm.currentPlanId)
+      console.log(vm.riskId)
       if (vm.treeLevel === '4') {
         vm.importVisible = true
       } else {
