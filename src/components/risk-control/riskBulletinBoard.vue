@@ -243,12 +243,6 @@ export default {
               vm.tableVisible = false
               vm.form = res.data.data[0]
               this.editData = this.form.id
-              if (!this.form.control) {
-                this.form.control = this.form.bmp
-              }
-              if (!this.form.control) {
-                this.form.worry = this.form.should
-              }
               // vm.form.gkcs = JSON.parse(vm.form.gkcs)
               vm.form.emergency = JSON.parse(vm.form.emergency)
 
