@@ -18,7 +18,7 @@
       <li class="skin-li">
         <div class="btn skin-btn"><i></i>皮肤</div>
         <ul class="theme-select">
-          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index + 1}`, item.color)">
+          <li class="themes" v-for="(item, index) in themes" :key="index" @click="changeTheme(`${index}`, item.color)">
             <i class="theme-i" :style="{ background: `${item.color}`}"></i>
             {{item.name}}
           </li>
@@ -102,12 +102,12 @@ export default {
       }
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
-      // const skin = theme + 1
+      const skinVlaue = {skin: theme}
       axios
-        .post('user/updateSkin', theme)
+        .post('user/updateSkin', skinVlaue)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(theme, typeof theme)
+            console.log(skinVlaue, typeof skinVlaue)
           } else {
             this.$message({
               message: res.data.message,

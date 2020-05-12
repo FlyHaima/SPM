@@ -37,6 +37,9 @@ const mutations = {
   },
   TASK_NUM (state, data) {
     state.taskNum = data
+  },
+  SKIN_VALUE (state, data) {
+    state.skin = data
   }
 }
 
@@ -60,6 +63,8 @@ const actions = {
           commit('PASSWORD_LEVEL', res.data.aqjb)
           commit('MSG_NUM', res.data.msgNum)
           commit('TASK_NUM', res.data.taskNum)
+          commit('SKIN_VALUE', res.data.skin)
+          // console.log(res.data.data)
         }
       })
   }

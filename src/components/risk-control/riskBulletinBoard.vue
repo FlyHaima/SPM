@@ -103,7 +103,7 @@
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"
-                          v-model.trim="form.control"
+                          v-model.trim="form.bmp"
                           placeholder=""></el-input>
                       </div>
                     </div>
@@ -112,7 +112,7 @@
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"
-                          v-model.trim="form.worry"
+                          v-model.trim="form.should"
                           placeholder=""></el-input>
                       </div>
                     </div>
