@@ -102,6 +102,7 @@
                       <div class="custom-th-label">主要管控措施</div>
                       <div class="custom-td-value">
                         <el-input
+                          type='textarea'
                           maxlength="120"
                           v-model.trim="form.bmp"
                           placeholder=""></el-input>
@@ -111,6 +112,7 @@
                       <div class="custom-th-label">主要应急措施</div>
                       <div class="custom-td-value">
                         <el-input
+                          type='textarea'
                           maxlength="120"
                           v-model.trim="form.should"
                           placeholder=""></el-input>
