@@ -35,6 +35,8 @@
               <el-button type="text" @click="preview(scope.row)">预览</el-button>
               <el-button type="text" @click="edit(scope.row)">编辑</el-button>
               <el-button type="text" @click="deleteItem(scope.row.id)">删除</el-button>
+              <el-button type="text" @click="downloadItem(scope.row.id)">下载</el-button>
+
 <!--              <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>-->
             </template>
           </el-table-column>
@@ -106,6 +108,7 @@ import VueUeditorWrap from 'vue-ueditor-wrap'
 import base from '@/api/baseUrl'
 import {getConstructionList, editSystemFile, deleteSystemFile, resetSystemFile, addConstruction} from '@/api/organization'
 import {getQiNiuToken} from '@/api/upload'
+import exportExcel from '@/api/exportExcel'
 
 export default {
   name: 'systemConstruction',
@@ -280,6 +283,9 @@ export default {
           message: '已取消重置'
         })
       })
+    },
+    downloadItem (id) {
+      exportExcel('construction/export', 'id=' + id)
     },
     handlePreview () {},
     handleSuccess (response, file, fileList) {
