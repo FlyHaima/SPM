@@ -216,8 +216,8 @@ export default {
         gw: '', // 岗位
         centerRisk: '', // 主要风险源
         factor: '', // 因素
-        riskResult: [], // 事故后果
-        emergency: [], // 措施
+        riskResult: ['1', '2'], // 事故后果
+        emergency: ['1', '2'], // 措施
         hazardType: '',
         emergencyResponse: '',
         accidentHazard: '', // 职业危害类型
@@ -320,7 +320,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.submitting = true
-        // this.form.riskResult = JSON.stringify(this.form.riskResult)
+        this.form.riskResult = JSON.stringify(this.form.riskResult)
         this.form.emergency = JSON.stringify(this.form.emergency)
         axios
           .post('riskCard/addCard', this.form)
