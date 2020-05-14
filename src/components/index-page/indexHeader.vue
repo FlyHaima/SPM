@@ -84,9 +84,13 @@ export default {
     })
   },
   mounted () {
+    this.$store.dispatch('BASE_INFO_SET').then(() => {
+      console.log('33333', this.$store.state.skin)
+    })
   },
   methods: {
-    changeTheme (theme, color) {
+    initializeTheme (theme, color) {
+      this.$store.dispatch('BASE_INFO_SET').then()
       switch (theme) {
         case 1:
           console.log(1)
@@ -102,12 +106,30 @@ export default {
       }
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
+    },
+    changeTheme (theme, color) {
+      switch (theme) {
+        case 1:
+          console.log(1)
+          break
+        case 2:
+          console.log(2)
+          break
+        case 3:
+          console.log(3)
+          break
+        case 4:
+          console.log(4)
+      }
+      console.log('11111', this.$store.state.skin)
+      this.$store.dispatch('changeSetting', color)
+      window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
       const skinVlaue = {skin: theme}
       axios
         .post('user/updateSkin', skinVlaue)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(skinVlaue, typeof skinVlaue)
+            // console.log(skinVlaue, typeof skinVlaue)
           } else {
             this.$message({
               message: res.data.message,

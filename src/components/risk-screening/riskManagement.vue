@@ -15,7 +15,7 @@
           name="基础类排查清单"
           :key="'基础类排查清单'">
           <span slot="label">基础管理类隐患排查清单</span>
-          <basic-list v-if="isChildUpdate1" :type="type"></basic-list>
+          <basic-list v-if="isChildUpdate1" :type="type" :hiddInstanceId= 'hiddInstanceId'></basic-list>
         </el-tab-pane>
 
         <el-tab-pane
@@ -23,7 +23,7 @@
           name="现场类排查清单"
           :key="'现场类排查清单'">
           <span slot="label">生产现场类隐患排查清单</span>
-          <product-list v-if="isChildUpdate2" :type="type"></product-list>
+          <product-list v-if="isChildUpdate2" :type="type" :hiddInstanceId= 'hiddInstanceId'></product-list>
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -40,7 +40,8 @@ export default {
       breadcrumb: ['隐患排查治理', '隐患治理'],
       type: '基础类排查清单', // tab切换类型
       isChildUpdate1: true, // tab1切换开关，刷新
-      isChildUpdate2: false // tab2切换开关，刷新
+      isChildUpdate2: false, // tab2切换开关，刷新
+      hiddInstanceId: '' // businessKey
     }
   },
   components: {
@@ -50,6 +51,7 @@ export default {
   },
   created () {
     this.initData()
+    this.extractKey()
   },
   methods: {
     initData () {
@@ -77,6 +79,12 @@ export default {
       } else if (tab.name === '现场类排查清单') {
         this.isChildUpdate1 = false
         this.isChildUpdate2 = true
+      }
+    },
+    // 获取 路由的值
+    extractKey () {
+      if (this.$route.query.businessKey) {
+        this.hiddInstanceId = this.$route.query.businessKey
       }
     }
   }

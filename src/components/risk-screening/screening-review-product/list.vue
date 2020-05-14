@@ -150,6 +150,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    hiddInstanceId: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -257,7 +261,8 @@ export default {
           investType: vm.type,
           startTime: vm.form.startTime,
           endTime: vm.form.endTime,
-          leftId: vm.currentPlanId
+          leftId: vm.currentPlanId,
+          hiddInstanceId: this.hiddInstanceId
         })
         .then((res) => {
           if (res.data.code === 200) {

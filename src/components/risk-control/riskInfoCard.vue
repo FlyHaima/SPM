@@ -21,7 +21,7 @@
              <div class="content-tools is-flex-end">
                 <div class="tools-right">
                   <el-button
-                    v-if="importVisible"
+                    v-if="this.form.id"
                     type="success"
                     size="medium"
                     icon="el-icon-download"
@@ -125,6 +125,8 @@
                       <div class="custom-th-label">潜在的事故及职业危害类型</div>
                       <div class="custom-td-value">
                         <el-input
+                          type='textarea'
+                          autosize
                           maxlength="120"
                           v-model.trim="form.accidentHazard"
                           placeholder=""></el-input>
@@ -134,6 +136,8 @@
                       <div class="custom-th-label">异常状况应急处置</div>
                       <div class="custom-td-value">
                         <el-input
+                          type='textarea'
+                          autosize
                           maxlength="120"
                           v-model.trim="form.emergencyDispose"
                           placeholder=""></el-input>

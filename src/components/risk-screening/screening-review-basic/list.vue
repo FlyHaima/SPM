@@ -152,6 +152,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    hiddInstanceId: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -171,7 +175,8 @@ export default {
       tableData: [], // 基础类清单列表数据
       queryDate: '', // 查询日期
       currentDetailsId: '',
-      postReviewData: null // 复核时传的对象
+      postReviewData: null// 复核时传的对象
+      // hiddInstanceId: '' // 接受待办的 businessKey 值
     }
   },
   components: {
@@ -190,6 +195,7 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     vm.fetchListMenuData()
     vm.fetchTableData()
+    // vm.extractRouter()
   },
   filters: {
     // 格式化日期格式
@@ -265,7 +271,8 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          hiddInstanceId: this.hiddInstanceId
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -289,6 +296,12 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+    // 提取路由中的 businessKey 值
+    extractRouter () {
+      if (this.$route.query.businessKey) {
+        this.hiddInstanceId = this.$route.query.businessKey
+      }
     }
   }
 }

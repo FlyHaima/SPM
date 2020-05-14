@@ -165,7 +165,7 @@
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.work}}
+                        {{item.sourceName}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -362,6 +362,7 @@ export default {
                     workNo: riskTableData.workNo,
                     work: riskTableData.work,
                     rate: riskTableData.rate,
+                    sourceName: riskTableData.riskSourceName,
                     bmg: newArr[i]
                   }
                   this.newRiskTableData.push(itemA)

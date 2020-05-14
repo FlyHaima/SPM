@@ -102,7 +102,9 @@
                       <div class="custom-th-label">主要管控措施</div>
                       <div class="custom-td-value">
                         <el-input
+                          class='textarea'
                           type='textarea'
+                          autosize
                           maxlength="120"
                           v-model.trim="form.bmp"
                           placeholder=""></el-input>
@@ -112,7 +114,9 @@
                       <div class="custom-th-label">主要应急措施</div>
                       <div class="custom-td-value">
                         <el-input
+                          class='textarea'
                           type='textarea'
+                          autosize
                           maxlength="120"
                           v-model.trim="form.should"
                           placeholder=""></el-input>
@@ -357,13 +361,13 @@ export default {
 
   .el-input__inner,
   .el-select .el-input__inner:focus,
-  .el-select .el-input.is-focus .el-input__inner{
+  .el-select .el-input.is-focus .el-input__inner {
     border-color: #ffffff !important;
   }
   .el-input__icon{
     line-height: 28px;
   }
-  .el-input--suffix .el-input__inner{
+  .el-input--suffix .el-input__inner {
     padding-left: 0;
   }
 }

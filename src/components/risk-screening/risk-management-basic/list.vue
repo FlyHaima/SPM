@@ -123,6 +123,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    hiddInstanceId: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -219,7 +223,8 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          hiddInstanceId: this.hiddInstanceId
         })
         .then((res) => {
           if (res.data.code === 200) {

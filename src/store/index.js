@@ -13,7 +13,8 @@ const state = { // 要设置的全局访问的state对象
   msgNum: '', // 信息数量
   taskNum: '', // 待办数量
   count: 1,
-  theme: '#1a6fba'
+  theme: '#1a6fba',
+  skin: ''
 }
 
 const getters = { // 实时监听state值的变化(最新状态)
@@ -46,6 +47,7 @@ const mutations = {
 const actions = {
   changeSetting ({ commit }, data) {
     commit('CHANGE_SETTING', data)
+    console.log(data)
   },
   increment ({ commit }) {
     commit('increment')
@@ -63,8 +65,8 @@ const actions = {
           commit('PASSWORD_LEVEL', res.data.aqjb)
           commit('MSG_NUM', res.data.msgNum)
           commit('TASK_NUM', res.data.taskNum)
-          commit('SKIN_VALUE', res.data.skin)
-          // console.log(res.data.data)
+          commit('SKIN_VALUE', res.data.data.skin)
+          console.log('222', res.data.data, res.data.data.skin)
         }
       })
   }
