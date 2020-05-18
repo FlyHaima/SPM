@@ -224,7 +224,7 @@ export default {
     // 获取树的数据
     fetchTreeData () {
       axios
-        .get('riskia/getRiskTree')
+        .get('riskia/getZdRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
