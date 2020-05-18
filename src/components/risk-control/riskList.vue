@@ -140,7 +140,7 @@
                   <div class="custom-tr">
                     <div class="custom-th-label">管控单位责任人</div>
                     <div class="custom-td-value">
-                      {{riskList.deptName}}
+                      {{riskList.riskGkrs}}
                     </div>
                   </div>
                 </div>
@@ -248,8 +248,7 @@ export default {
         riskYs: '', // 风险因素
         riskGkrs: '', // 管控人
         riskDjCode: '', // 风险等级code
-        riskDj: '', // 风险等级
-        deptName: '' // 管控单位责任人
+        riskDj: '' // 风险等级
       },
       newRiskTableData: [], // 新数据
       uploading: false, // 导入loading

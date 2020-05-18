@@ -1132,7 +1132,7 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 490px;
+        height: 600px;
         .step-box{
           width: 100%;
           height: 100%;
@@ -1334,7 +1334,7 @@ export default {
     height: 100%;
   }
   .el-tabs--border-card>.el-tabs__content{
-    height: 435px;
+    height: 500px;
   }
 }
 
