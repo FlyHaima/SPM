@@ -114,6 +114,17 @@
                         </el-select>
                       </p>
                       <p class="step-1-p">
+                        <span class="label">作业类型：</span>
+                        <el-select v-model="stepObjA.jobTypeVal" placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in jobType"
+                            :key="item"
+                            :label="item"
+                            :value="item">
+                          </el-option>
+                        </el-select>
+                      </p>
+                      <p class="step-1-p">
                         <span class="label">风险因素：</span>
                         <el-cascader
                           size="medium"
@@ -428,7 +439,8 @@ export default {
         riskType: [],
         riskReason: '',
         riskPointType: '',
-        identifierWay: ''
+        identifierWay: '',
+        jobTypeVal: ''
       },
       // 辨识范围 options
       rangeOptions: [
@@ -459,6 +471,7 @@ export default {
       riskTypeOptions: ['触电', '淹溺', '灼烫', '火灾', '坍塌', '透水', '放炮', '物体打击', '高处坠落',
         '车辆伤害', '机械伤害', '起重伤害', '冒顶片帮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸', '其它爆炸', '中毒和窒息', '其它伤害'],
       // 风险因素
+      jobType: ['普通作业', '特殊作业'],
       reasonOptions: [
         {
           value: '人的因素',
