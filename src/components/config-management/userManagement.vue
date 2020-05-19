@@ -8,7 +8,33 @@
       <el-container class="inner-main-content">
         <el-main class="inner-content">
           <div class="container-box">
-            <div class="content-tools is-flex-end">
+            <div class="content-tools">
+              <div class="tools-left">
+                <el-form
+                    size="medium"
+                  :inline="true"
+                  :model="form"
+                  class="demo-form-inline">
+                  <el-form-item label="用户名称">
+                    <el-input v-model='searchForm.user_name' placeholder="请输入用户名称"></el-input>
+                  </el-form-item>
+                  <el-form-item label="账号名">
+                    <el-input v-model='searchForm.account_name' placeholder="请输入账号名"></el-input>
+                  </el-form-item>
+                  <el-form-item label="角色">
+                    <el-input v-model='searchForm.telephone' placeholder="请输入角色"></el-input>
+                  </el-form-item>
+                  <el-form-item label="电话">
+                    <el-input v-model='searchForm.role_name' placeholder="请输入电话"></el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="tableSearchHandler">查询</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
               <div class="tools-right">
                 <el-button
                   type="primary"
@@ -321,6 +347,12 @@ export default {
         roleId: '', // 角色
         isWork: '1' // 在职状态
       },
+      searchForm: {
+        user_name: '',
+        account_name: '',
+        telephone: '',
+        role_name: ''
+      },
       multipleSelection: [],
       submitting: false,
       editData: '',
@@ -531,6 +563,23 @@ export default {
         })
         .catch(() => {
           this.submitting = false
+        })
+    },
+    // 查询
+    tableSearchHandler () {
+      const newSearchForm = Object.assign(this.tables.form, this.searchForm)
+      // console.log(newSearchForm)
+      axios
+        .get('user/getUserList', newSearchForm)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tables.data = res.data.data
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
         })
     },
     handleSelectionChange (val) {
