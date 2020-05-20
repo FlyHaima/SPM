@@ -193,7 +193,7 @@ export default {
                 newBmp += '/' + item.individual
               }
               if (item.emergency) {
-                newBmp += '/' + item.emergency
+                newBmp += item.emergency
               }
               if (item.newCs) {
                 newBmp += '/' + item.newCs
