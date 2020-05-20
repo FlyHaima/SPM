@@ -228,6 +228,20 @@
         <el-button type="primary" @click="confirmAdd()" :loading="addConfirming">确定</el-button>
       </div>
     </el-dialog>
+    <el-dialog :close-on-click-modal="false" title="修改节点" :visible.sync="changeTreeVisible" width="620px">
+      <el-form :model="addOrgData">
+        <el-form-item label="请输入节点编号：" :label-width="'140px'">
+          <el-input v-model.trim="changeTreeVal.orderNo" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="请输入节点名称：" :label-width="'140px'">
+          <el-input v-model.trim="changeTreeVal.deptName" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelChage()">取 消</el-button>
+        <el-button type="primary" @click="confirmChage()" :loading="false">确定</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -289,6 +303,11 @@ export default {
         pageSize: 10,
         currentPageNo: 1
       },
+      changeTreeVal: {
+        orderNo: '',
+        deptName: '',
+        deptId: ''
+      },
       activeName: 'tab_a',
       dutyVisible: false,
       dutyPostData: '',
@@ -303,7 +322,8 @@ export default {
       },
       addTreeVisible: false,
       minLevel: 2,
-      addConfirming: false
+      addConfirming: false,
+      changeTreeVisible: false
     }
   },
   created () {
@@ -443,6 +463,49 @@ export default {
         this.addConfirming = false
       })
     },
+    confirmChage (fid) {
+      let rex = /^.{1,12}$/
+      let rex1 = /^.{1,30}$/
+      if (!rex.test(this.changeTreeVal.orderNo)) {
+        this.$message({
+          type: 'error',
+          message: '节点名称不能为空,且不超过12个字'
+        })
+        return
+      }
+      if (!rex1.test(this.changeTreeVal.deptName)) {
+        this.$message({
+          type: 'error',
+          message: '社会信用代码不能为空,且不超过30个字符'
+        })
+        return
+      }
+      this.addConfirming = true
+      editTreeData(this.changeTreeVal).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: 'success',
+            message: '节点设置成功'
+          })
+          this.getOrgTree(true)
+          this.getLeaderTree()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+        this.addTreeVisible = false
+        this.addConfirming = false
+      })
+    },
+    cancelChage () {
+      this.changeTreeVisible = false
+      this.minLevel = 2
+      this.addOrgData.pId = ''
+      this.addOrgData.deptName = ''
+      this.addOrgData.level = 2
+    },
     cancelAdd () {
       this.addTreeVisible = false
       this.minLevel = 2
@@ -451,31 +514,34 @@ export default {
       this.addOrgData.level = 2
     },
     // 编辑orgTree的节点
-    editTreeData (fid) {
-      this.pageLoading = true
-      this.editOrgData.deptId = fid
-      this.$prompt('请修改节点名称', '编辑节点', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputPattern: /^.{1,12}$/, // 输入正则
-        inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
-      }).then(({ value }) => {
-        this.editOrgData.deptName = value
-        editTreeData(this.editOrgData).then((res) => {
-          if (res.code === 200) {
-            this.pageLoading = false
-            this.$message({
-              type: 'success',
-              message: '节点设置成功'
-            })
-            this.getOrgTree(true)
-            this.getLeaderTree()
-          }
-        })
-      }).catch(() => {
-        // after cancel
-        this.pageLoading = false
-      })
+    editTreeData (fid, fnuw, fdtname) {
+      // this.pageLoading = true
+      this.changeTreeVal.deptId = fid
+      this.changeTreeVisible = true
+      this.changeTreeVal.orderNo = fnuw
+      this.changeTreeVal.deptName = fdtname
+      // this.$prompt('请修改节点名称', '编辑节点', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   inputPattern: /^.{1,12}$/, // 输入正则
+      //   inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
+      // }).then(({ value }) => {
+      //   this.editOrgData.deptName = value
+      //   editTreeData(this.editOrgData).then((res) => {
+      //     if (res.code === 200) {
+      //       this.pageLoading = false
+      //       this.$message({
+      //         type: 'success',
+      //         message: '节点设置成功'
+      //       })
+      //       this.getOrgTree(true)
+      //       this.getLeaderTree()
+      //     }
+      //   })
+      // }).catch(() => {
+      //   // after cancel
+      //   this.pageLoading = false
+      // })
     },
     // 删除orgTree的节点，包括下属节点
     confirmRemove (id) {

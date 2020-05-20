@@ -185,7 +185,7 @@ export default {
   name: 'riskBulletinBoard',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['风险辨识评估', '重大安全风险点公告栏'],
       pageLoading: false, // 页面loading开关
       tableVisible: false, // table显示开关
       submitting: false, // 提交数据loading开关

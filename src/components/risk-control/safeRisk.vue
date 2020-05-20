@@ -144,7 +144,7 @@ export default {
   mixins: [Tables],
   data () {
     return {
-      breadcrumb: ['风险分级管控', '风险点分级管控台账'],
+      breadcrumb: ['风险分级管控', '重大安全风险'],
       tables: {
         api: 'riskLevel/getRiskZd'
       }

@@ -66,7 +66,7 @@ const actions = {
           commit('MSG_NUM', res.data.msgNum)
           commit('TASK_NUM', res.data.taskNum)
           commit('SKIN_VALUE', res.data.data.skin)
-          console.log('222', res.data.data, res.data.data.skin)
+          // console.log('222', res.data.data, res.data.data.skin)
         }
       })
   }

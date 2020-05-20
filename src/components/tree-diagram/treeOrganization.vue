@@ -144,6 +144,7 @@ export default {
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
       console.log('节点deptID：' + data.invDeptId)
+      console.log(data)
       this.$emit('handleNodeClick', data.invDeptId)
     },
     addNode (node, data) {

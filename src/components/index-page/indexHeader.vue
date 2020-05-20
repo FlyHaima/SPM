@@ -54,6 +54,7 @@ export default {
       showTaskB: true,
       showTaskC: true,
       showTaskD: true,
+      localStorageSkin: window.localStorage.getItem('localStorageSkin'), // 皮肤缓存序号值
       themes: [
         {
           color: '#1a6fba',
@@ -83,14 +84,30 @@ export default {
       taskNum: (state) => state.taskNum
     })
   },
+  // watch: {
+  //   localStorageSkin: {
+  //     deep: true,
+  //     handler: function (val) {
+  //       window.localStorage.setItem('localStorageSkin', val)
+  //     }
+  //   }
+  // },
   mounted () {
-    this.$store.dispatch('BASE_INFO_SET').then(() => {
-      console.log('33333', this.$store.state.skin)
-    })
+    console.log('1111', this.localStorageSkin)
+    // console.log('加载时skin的值', this.$store.state.skin)
+    if (this.localStorageSkin === null) {
+      this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
+      console.log('执行了')
+    } else {
+      this.initializeTheme(this.localStorageSkin, this.themes[this.localStorageSkin].color)
+      console.log('执行了11')
+    }
+  },
+  beforeUpdate () {
+    // this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
   },
   methods: {
     initializeTheme (theme, color) {
-      this.$store.dispatch('BASE_INFO_SET').then()
       switch (theme) {
         case 1:
           console.log(1)
@@ -121,9 +138,11 @@ export default {
         case 4:
           console.log(4)
       }
-      console.log('11111', this.$store.state.skin)
+      // console.log('skin的值', this.$store.state.skin)
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
+      localStorage.setItem('localStorageSkin', theme)
+      console.log('123123', this.localStorageSkin)
       const skinVlaue = {skin: theme}
       axios
         .post('user/updateSkin', skinVlaue)

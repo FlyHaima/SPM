@@ -12,7 +12,8 @@ export default {
   name: 'App',
   data () {
     return {
-      hasNet: true // 网络状态
+      hasNet: true, // 网络状态
+      loading: true
     }
   },
   computed: { // vuex 参数引入

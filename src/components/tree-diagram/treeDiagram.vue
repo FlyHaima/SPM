@@ -140,6 +140,7 @@ export default {
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
       // console.log('节点deptID：' + data.deptId)
       // console.log(data)
+      console.log(data)
       this.$emit('handleNodeClick', data.deptId, data.position, data)
     },
     addNode (node, data) {
@@ -153,7 +154,7 @@ export default {
       }
     },
     edit (node, data) {
-      this.$emit('editTreeData', data.deptId)
+      this.$emit('editTreeData', data.deptId, data.orderNo, data.deptName)
     },
     remove (node, data) {
       this.$emit('confirmRemove', data.deptId)
