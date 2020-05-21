@@ -100,7 +100,7 @@
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model.trim="addPlanData.need"></el-input>
+                        <el-input type="textarea" class="textarea" v-model.trim="addPlanData.need"></el-input>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
@@ -185,7 +185,7 @@
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model.trim="editData.need"></el-input>
+                        <el-input type="textarea" class="textarea" v-model.trim="editData.need"></el-input>
                       </div>
                     </div>
                     <div class="dialog-inner-all">
@@ -1298,10 +1298,11 @@ export default {
             height: 97px;
             .el-textarea{
               height: 100%;
+            }
               .el-textarea__inner{
                 height: 100%;
+                border-color: #d4d4d4 !important
               }
-            }
           }
         }
       }

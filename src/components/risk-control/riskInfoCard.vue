@@ -379,7 +379,7 @@ export default {
 
 /deep/.el-select {
   width: 100%;
-
+}
   .el-input__inner,
   .el-select .el-input__inner:focus,
   .el-select .el-input.is-focus .el-input__inner{
@@ -391,5 +391,8 @@ export default {
   .el-input--suffix .el-input__inner{
     padding-left: 0;
   }
+
+.custom-table .custom-tr el-textarea{
+  border-color: #ffffff !important;
 }
 </style>

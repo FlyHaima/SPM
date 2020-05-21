@@ -146,6 +146,29 @@ export default {
               lineStyle: {
                 color: ['#1f668e']
               }
+            },
+            axisLabel: {
+              interval: 0,
+              // formatter: function (value) {
+              //   // debugger
+              //   var ret = ''
+              //   var maxLength = 2
+              //   var valLength = value.length
+              //   var rowN = Math.ceil(valLength / maxLength)
+              //   if (rowN > 1) {
+              //     for (var i = 0; i < rowN; i++) {
+              //       var temp = '' // 每次截取的字符串
+              //       var start = i * maxLength
+              //       var end = start + maxLength
+              //       temp = value.substring(start, end) + '\n'
+              //       ret += temp
+              //     }
+              //     return ret
+              //   } else {
+              //     return value
+              //   }
+              // }
+              rotate: 40
             }
           }
         ],
@@ -274,7 +297,7 @@ export default {
 }
 .legend-text{
   display: inline-block;
-  font-size: 12px;
+  font-size: 6px;
   line-height: 14px;
   color: #666666;
   vertical-align: top;
