@@ -371,4 +371,9 @@ export default {
     padding-left: 0;
   }
 }
+/deep/.custom-table  {
+    .el-textarea__inner {
+    border-color: #ffffff;
+}
+}
 </style>
