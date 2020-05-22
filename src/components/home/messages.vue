@@ -184,10 +184,11 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="推送方式" prop="sendType">
-              <el-select v-model="messageForm.sendType" placeholder="请选择推送方式">
+              <!-- <el-select v-model="messageForm.sendType" placeholder="请选择推送方式" disabled="">
                 <el-option label="全员推送" value="1"></el-option>
                 <el-option label="选择推送" value="2"></el-option>
-              </el-select>
+              </el-select> -->
+              <el-input v-model="messageForm.sendType" disabled=""></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -480,7 +481,7 @@ export default {
         this.messageForm.textContent = '' // 文本内容
         this.messageForm.fileList = '' // 附件上传
         this.messageForm.type = '' // 消息类型
-        this.messageForm.sendType = '' // 推送方式
+        this.messageForm.sendType = '全员推送' // 推送方式
         this.messageForm.sendList = '' // 推送名单列表
       })
     },
