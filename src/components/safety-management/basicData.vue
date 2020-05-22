@@ -19,7 +19,8 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <el-button size="medium" type="primary" @click="addDate"><i class="el-icon-upload2"></i>上传</el-button>
+              <!-- 权限显示 -->
+              <el-button size="medium" type="primary" @click="addDate" class="function-btn upload-btn" v-if="true"><i class="el-icon-upload2"></i>上传</el-button>
             </p>
 
             <el-dialog title="上传" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
@@ -85,7 +86,7 @@
                 fixed="right"
                 label="操作"
                 align="center">
-                <template slot-scope="scope">
+                <template slot-scope="scope"> <!-- 权限显示 -->
                   <a type="text" :href="`${scope.row.path}?attname=${scope.row.fileName}`">下载</a>
                   <el-button type="text" @click="deleteItem(scope.row.id)" style="color: #f56c6c; margin-left: 8px;">删除</el-button>
                 </template>

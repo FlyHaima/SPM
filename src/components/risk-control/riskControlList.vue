@@ -113,6 +113,7 @@
                 </div>
                 <div class="custom-td-value">
                   <el-select v-model="frequencyVal.frequencyVal2" placeholder="请选择">
+                    <div class="custom-td-text">频次</div>
                     <el-option
                       v-for="(item, index) in frequency"
                       :key="index"
@@ -123,6 +124,7 @@
                 </div>
                 <div class="custom-td-value">
                   <el-select v-model="frequencyVal.frequencyVal3" placeholder="请选择">
+                    <div class="custom-td-text">频次</div>
                     <el-option
                       v-for="(item, index) in frequency"
                       :key="index"
@@ -133,6 +135,7 @@
                 </div>
                 <div class="custom-td-value">
                   <el-select v-model="frequencyVal.frequencyVal4" placeholder="请选择">
+                    <div class="custom-td-text">频次</div>
                     <el-option
                       v-for="(item, index) in frequency"
                       :key="index"
@@ -236,7 +239,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.custom-table{
+/deep/.custom-table{
   width: 100%;
 }
+
 </style>

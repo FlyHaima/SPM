@@ -47,13 +47,14 @@
               <i :class="classObj(data)"></i>
               {{ node.label }}
             </span>
+            <!-- 权限显示 -->
             <span class="right-btns" v-if="data.treeLevel == '4' && showBtns">
-              <i class="el-icon-plus" title="添加下级子节点" @click.stop="() =>appendChild(node, data)"></i>
+              <i class="el-icon-plus function-btn add-child-btn"  v-if="true" title="添加下级子节点" @click.stop="() =>appendChild(node, data)"></i>
             </span>
             <span class="right-btns" v-if="data.treeLevel == '5' && showBtns">
-              <i class="el-icon-plus" title="添加节点" @click.stop="() =>append(node, data)"></i>
-              <i class="el-icon-edit" title="修改节点" @click.stop="() =>edit(node, data)"></i>
-              <i class="el-icon-delete" title="删除节点"  @click.stop="() =>remove(node, data)"></i>
+              <i class="el-icon-plus function-btn add-btn" v-if="true" title="添加节点" @click.stop="() =>append(node, data)"></i>
+              <i class="el-icon-edit function-btn edit-btn" v-if="true" title="修改节点" @click.stop="() =>edit(node, data)"></i>
+              <i class="el-icon-delete function-btn del-btn" v-if="true" title="删除节点"  @click.stop="() =>remove(node, data)"></i>
             </span>
           </span>
       </el-tree>
