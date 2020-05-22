@@ -192,7 +192,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="推送名单" prop="sendList" v-show="messageForm.sendType === '2'">
+        <el-form-item label="推送名单" prop="sendList">
           <el-row>
             <el-col :span="21">
               <el-input v-model="messageForm.sendList" :disabled="true"></el-input>
@@ -481,7 +481,7 @@ export default {
         this.messageForm.textContent = '' // 文本内容
         this.messageForm.fileList = '' // 附件上传
         this.messageForm.type = '' // 消息类型
-        this.messageForm.sendType = '全员推送' // 推送方式
+        this.messageForm.sendType = '选择推送' // 推送方式
         this.messageForm.sendList = '' // 推送名单列表
       })
     },
