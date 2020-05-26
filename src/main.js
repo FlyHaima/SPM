@@ -14,7 +14,7 @@ import echarts from 'echarts'
 import BaseUrl from './api/baseUrl.js'
 import axios from 'axios'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
-import 'swiper/dist/css/swiper.css'
+import 'swiper/css/swiper.css'
 import decimal from './utils/js/validation'
 
 // 最后引入router，以实现覆盖组件内部样式的目的
