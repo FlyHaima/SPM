@@ -115,9 +115,9 @@
                       </p>
                       <p class="step-1-p">
                         <span class="label">作业类型：</span>
-                        <el-select v-model="stepObjA.jobTypeVal" placeholder="请选择" size="medium">
+                        <el-select v-model="stepObjA.workType" placeholder="请选择" size="medium">
                           <el-option
-                            v-for="item in jobType"
+                            v-for="item in workType"
                             :key="item"
                             :label="item"
                             :value="item">
@@ -440,7 +440,7 @@ export default {
         riskReason: '',
         riskPointType: '',
         identifierWay: '',
-        jobTypeVal: ''
+        workType: ''
       },
       // 辨识范围 options
       rangeOptions: [
@@ -471,7 +471,7 @@ export default {
       riskTypeOptions: ['触电', '淹溺', '灼烫', '火灾', '坍塌', '透水', '放炮', '物体打击', '高处坠落',
         '车辆伤害', '机械伤害', '起重伤害', '冒顶片帮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸', '其它爆炸', '中毒和窒息', '其它伤害'],
       // 风险因素
-      jobType: ['普通作业', '特殊作业'],
+      workType: ['普通作业', '特殊作业'], // 作业类型
       reasonOptions: [
         {
           value: '人的因素',
@@ -772,7 +772,7 @@ export default {
     },
     saveStepOne () {
       let vm = this
-      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay && vm.stepObjA.workType) {
         let saveData = {
           oneName: vm.stepObjA.pointA,
           twoName: vm.stepObjA.pointB,
@@ -782,7 +782,8 @@ export default {
           riskSourceType: vm.stepObjA.riskType.join(','),
           factor: vm.stepObjA.riskReason ? vm.stepObjA.riskReason.join('/') : '',
           riskType: vm.stepObjA.riskPointType,
-          ram: vm.stepObjA.identifierWay
+          ram: vm.stepObjA.identifierWay,
+          workType: vm.stepObjA.workType
         }
         // console.log(saveData)
         vm.updateDescribe(saveData, '1')

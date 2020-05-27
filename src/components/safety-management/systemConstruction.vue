@@ -7,7 +7,7 @@
     <el-main class="inner-main-container">
       <div class="table-container">
         <p class="btn-p">
-          <el-button size="medium" type="primary" @click="openAdd()"><i class="el-icon-plus" style="margin-right: 6px;"></i>新增</el-button>
+          <el-button size="medium" type="primary" @click="openAdd()"><i class="el-icon-plus function-btn add-btn" v-if="true" style="margin-right: 6px;"></i>新增</el-button>
         </p>
         <el-table ref="leaderTable"
                  border

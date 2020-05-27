@@ -43,12 +43,11 @@
                             @handleNodeClick="handleNodeClick">
               </tree-diagram>
             </el-aside>
-
             <el-main class="inner-content">
               <div class="container-box">
-                <p class="btn-p">
-                  <a class="export-btn" target="_blank" :href="`${baseUrl}/leadUser/exportGroup`"><i class></i>导出</a>
-                  <el-upload accept=".xls" class="import-btn"
+                <p class="btn-p"> <!-- 权限显示 -->
+                  <a class="export-btn function-btn export-btn" target="_blank" :href="`${baseUrl}/leadUser/exportGroup`" v-if="true"><i class></i>导出</a>
+                  <el-upload accept=".xls" class="function-btn import-btn" v-if= "true"
                             :action="`${baseUrl}/leadUser/importGroup`"
                             :data="uploadData"
                             :before-upload="handleBeforeUpload"
@@ -127,9 +126,9 @@
 
             <el-main class="inner-content">
               <div class="container-box">
-                <p class="btn-p">
-                  <a class="export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup`"><i class></i>导出</a>
-                  <el-upload accept=".xls" class="import-btn"
+                <p class="btn-p"> <!-- 权限显示 -->
+                  <a class="function-btn export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup`" v-if="true"><i class></i>导出</a>
+                  <el-upload accept=".xls" class="function-btn import-btn" v-if="true"
                             :action="`${baseUrl}/workUser/importGroup`"
                             :data="uploadData"
                             :before-upload="handleBeforeUpload"

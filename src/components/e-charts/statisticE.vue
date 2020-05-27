@@ -21,7 +21,7 @@
           <span class="legend-text">低风险</span>
         </div>
       </div>
-      <div v-show="filterDateSwitch" class="select-date">
+      <!-- <div v-show="filterDateSwitch" class="select-date">
         <el-select
           v-model="selValue"
           @change="selChange"
@@ -33,7 +33,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

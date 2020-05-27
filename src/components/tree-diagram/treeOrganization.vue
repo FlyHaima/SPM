@@ -54,17 +54,17 @@
             <span>{{ node.label }}</span>
             <span class="right-btns">
               <i
-                v-show="addVisible"
-                class="el-icon-plus"
+                v-if="fucBtns.includes('add-btn')"
+                class="el-icon-plus add-btn"
                 title="添加节点"
                 @click.stop="addNode(node, data)"></i>
               <i
-                v-show="editVisible"
-                class="el-icon-edit"
+                v-if="fucBtns.includes('edit-btn')"
+                class="el-icon-edit edit-btn"
                 title="修改节点"
                 @click.stop="edit(node, data)"></i>
               <i
-                v-show="delVisible"
+                v-if="false"
                 class="el-icon-delete"
                 title="删除节点"
                 @click.stop="remove(node, data)"></i>
@@ -143,8 +143,8 @@ export default {
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      console.log('节点deptID：' + data.invDeptId)
-      console.log(data)
+      // console.log('节点deptID：' + data.invDeptId)
+      // console.log(data)
       this.$emit('handleNodeClick', data.invDeptId)
     },
     addNode (node, data) {

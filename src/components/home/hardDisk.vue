@@ -81,7 +81,8 @@ export default {
         {name: '文档', id: '0', active: true},
         {name: '视频', id: '1', active: false},
         {name: '图片', id: '2', active: false},
-        {name: '其他', id: '3', active: false}
+        {name: '其他', id: '3', active: false},
+        {name: '导入模板', id: '5', active: false}
       ],
       currentTypeId: '0',
       dataList: [],
