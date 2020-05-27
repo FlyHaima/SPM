@@ -83,12 +83,7 @@
               <el-button size="medium" type="primary" @click="uploadNewMap()"><i class="el-icon-upload2"></i> 上传新图片</el-button>
             </div>
 
-            <!-- 暂无地图，需要新建新地图 -->
-            <div v-if="mapLists.length === 0" class="up-new-map">
-              <el-button size="medium" type="primary" @click="addMap()"><i class="el-icon-plus"></i> 添加位置</el-button>
-            </div>
-
-            <canvas id="myCanvas" v-else
+            <canvas id="myCanvas" v-if="mapLists.length > 0"
                     :width="currentImage.width" :height="currentImage.height"
                     style="background-color: #fff;"
                     @mousedown="mousedown"
@@ -101,6 +96,11 @@
               Your browser does not support the HTML5 canvas tag.<br>
               您所使用浏览器不支持CANVAS标签，请使用Chrome浏览器、火狐浏览器或IE11版本以上的浏览器
             </canvas>
+
+            <!-- 暂无地图，需要新建新地图 -->
+            <div v-else class="up-new-map">
+              <el-button size="medium" type="primary" @click="addMap()"><i class="el-icon-plus"></i> 添加位置</el-button>
+            </div>
 
             <div class="mouse-menu" v-show="showMenu" v-bind:style="`top: ${menuPosition.top}px; left: ${menuPosition.left}px`">
               <template v-if="!bound">
@@ -379,11 +379,13 @@ export default {
       detailVisible: false,
       detailData: {},
       unitAble: false, // 是否激活“添加风险单元”
-      pointAble: false // 是否激活“添加添加风险点”
+      pointAble: false, // 是否激活“添加添加风险点”
+      pointGroup: [], // 新增的风险点图层
+      oldPointGroup: [] // 之前存在的风险点图层
     }
   },
   mounted () {
-    // this.canvas_init()
+    this.canvas_init()
   },
   created () {
     let vm = this
@@ -721,6 +723,16 @@ export default {
         ctx.stroke()
       })
 
+      let points = [
+        { x1: 10, y1: 10, width: 40, height: 40 }
+      ]
+      let image = new Image()
+      image.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACkUlEQVRIS72VQWwMYRTH/68jlmBmu7P0YmfbWAciERykvWhdOCHBjXBRCXrngOLAHU3UhXBDok5ctC5tHFQkgsRKu7MuZb+134awje2Tmd3q7uzszM7uMpfJ9733/r/vfXn/fIT//FEzvDddXausuq1zcz+C1gcGzuqrN3VAeWGBFlDc1S2+vw8CDQw0dfUxQPtLEB4zRP7APwOaEXUPiJ5WAZj3Gtn8s0ahgTpM6do0AdsqxRl4HRdye9uBqYh2ggijbsLMGIxn5e1GoA11+DGB0Iqc9pkZUTdRImR+heX6jUkU/KANAc1o+DKYz3uKEV0xMrkLLQPNddoGFJH0E7LjChLGF/nJK9e3Q1NX7wB0bFGEGKOxrDxprdMR7RYTBpcAfNcQ+eNNA2ei4X6FebxagG4YIjdk7Zl6+DrAZyrjRaKBnkxuoh7Us8OUrj0nYKCymIBHMSEP2R3q2kMGDjpsMh4XcndgYFpXjzDonrOQgam4kH3WfkrXJgnodeYQ+GhM5O+7TrTbpmWD0DftLYCES3zWELKndKXaDIBul5xkoVNucbOJ65Wmde0sA1ddTQ7MG0KuLAN/ErC8TifnYkJeq+3esVO2wTvUEbLSO1iJWf8FKqY9JnIeCjY7bVLToalrNwGc8h5t3mnFGfTSKw/AiCHkacfQLS3dbVArSYQHNpBx2AcIp02qOjR1dQygfX4iABZ91u+fy08MkS+/n8BfYD0b1NiC+VI8mx+2bRFRh4nooh+00iY2sGyDSQC+7xo3AQQwXeiUfZZNbKCXDeqcPsCVlhQIsG1CZRtMAVjrdzUtxr9CQS81YoMWQZXlIxbQeg0amLa2YCfoQzS6JoTfO9oi5yNSwLJXvg9wuw/yBz9A4bAbyovyAAAAAElFTkSuQmCC'
+      points.forEach(item => {
+        ctx.beginPath()
+        ctx.drawImage(image, 0, 0, 28, 28)
+      })
+
       vm.op = 0 // 在旧节点上，无拖动、放大操作
     },
     // 绘制图形（擦除后重绘 or 第一遍加载时绘制）
@@ -831,64 +843,76 @@ export default {
         console.log('mousedown: menu')
         return
       }
-      if (!this.unitAble) {
-        console.log('unit paint')
-        return
-      }
       let vm = this
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
 
-      vm.startx = e.layerX / vm.scale
-      vm.starty = e.layerY / vm.scale
-      vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
-      if (vm.currentR) {
-        vm.leftDistance = vm.startx - vm.currentR.x1
-        vm.topDistance = vm.starty - vm.currentR.y1
+      // 添加风险点的绘制
+      if (this.unitAble) {
+        vm.startx = e.layerX / vm.scale
+        vm.starty = e.layerY / vm.scale
+        vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
+        if (vm.currentR) {
+          vm.leftDistance = vm.startx - vm.currentR.x1
+          vm.topDistance = vm.starty - vm.currentR.y1
+        }
+        ctx.strokeRect(vm.x, vm.y, 0, 0)
+        ctx.strokeStyle = '#0000ff'
+        vm.flag = 1
+      } else if (this.pointAble) {
+        console.log('start paint point')
+
+        let image = new Image()
+        image.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACkUlEQVRIS72VQWwMYRTH/68jlmBmu7P0YmfbWAciERykvWhdOCHBjXBRCXrngOLAHU3UhXBDok5ctC5tHFQkgsRKu7MuZb+134awje2Tmd3q7uzszM7uMpfJ9733/r/vfXn/fIT//FEzvDddXausuq1zcz+C1gcGzuqrN3VAeWGBFlDc1S2+vw8CDQw0dfUxQPtLEB4zRP7APwOaEXUPiJ5WAZj3Gtn8s0ahgTpM6do0AdsqxRl4HRdye9uBqYh2ggijbsLMGIxn5e1GoA11+DGB0Iqc9pkZUTdRImR+heX6jUkU/KANAc1o+DKYz3uKEV0xMrkLLQPNddoGFJH0E7LjChLGF/nJK9e3Q1NX7wB0bFGEGKOxrDxprdMR7RYTBpcAfNcQ+eNNA2ei4X6FebxagG4YIjdk7Zl6+DrAZyrjRaKBnkxuoh7Us8OUrj0nYKCymIBHMSEP2R3q2kMGDjpsMh4XcndgYFpXjzDonrOQgam4kH3WfkrXJgnodeYQ+GhM5O+7TrTbpmWD0DftLYCES3zWELKndKXaDIBul5xkoVNucbOJ65Wmde0sA1ddTQ7MG0KuLAN/ErC8TifnYkJeq+3esVO2wTvUEbLSO1iJWf8FKqY9JnIeCjY7bVLToalrNwGc8h5t3mnFGfTSKw/AiCHkacfQLS3dbVArSYQHNpBx2AcIp02qOjR1dQygfX4iABZ91u+fy08MkS+/n8BfYD0b1NiC+VI8mx+2bRFRh4nooh+00iY2sGyDSQC+7xo3AQQwXeiUfZZNbKCXDeqcPsCVlhQIsG1CZRtMAVjrdzUtxr9CQS81YoMWQZXlIxbQeg0amLa2YCfoQzS6JoTfO9oi5yNSwLJXvg9wuw/yBz9A4bAbyovyAAAAAElFTkSuQmCC'
+        vm.startx = (e.layerX / vm.scale) - 14
+        vm.starty = (e.layerY / vm.scale) - 14
+        ctx.beginPath()
+        ctx.drawImage(image, vm.startx, vm.starty, 28, 28)
+      } else {
+        console.log('no paint')
       }
-      ctx.strokeRect(vm.x, vm.y, 0, 0)
-      ctx.strokeStyle = '#0000ff'
-      vm.flag = 1
     },
     mousemove (e) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
+      // if (this.unitAble) {
+        const c = document.getElementById('myCanvas')
+        const ctx = c.getContext('2d')
 
-      vm.x = e.layerX / vm.scale
-      vm.y = e.layerY / vm.scale
-      ctx.save()
-      ctx.setLineDash([5])
-      c.style.cursor = 'default'
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      if (vm.flag && vm.op === 1) {
-        ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
-      }
-      ctx.restore()
-      vm.showOld(vm.x, vm.y)
-      vm.reshow(vm.x, vm.y)
+        vm.x = e.layerX / vm.scale
+        vm.y = e.layerY / vm.scale
+        ctx.save()
+        ctx.setLineDash([5])
+        c.style.cursor = 'default'
+        ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+        if (vm.flag && vm.op === 1) {
+          ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
+        }
+        ctx.restore()
+        vm.showOld(vm.x, vm.y)
+        vm.reshow(vm.x, vm.y)
+      // }
     },
     mouseup (e) {
-      // console.log('mouseup:', e)
       let vm = this
-
-      if (vm.op === 1) {
-        vm.layers.push(vm.fixPosition({
-          x1: vm.startx,
-          y1: vm.starty,
-          x2: vm.x,
-          y2: vm.y,
-          type: vm.type,
-          level: 0,
-          bindId: '', // 绑定的点的id
-          picid: vm.currentMap // 绑定的map的id
-        }))
-      } else if (vm.op >= 3) {
-        vm.fixPosition(vm.currentR)
+      if (this.unitAble) {
+        if (vm.op === 1) {
+          vm.layers.push(vm.fixPosition({
+            x1: vm.startx,
+            y1: vm.starty,
+            x2: vm.x,
+            y2: vm.y,
+            type: vm.type,
+            level: 0,
+            bindId: '', // 绑定的点的id
+            picid: vm.currentMap // 绑定的map的id
+          }))
+        } else if (vm.op >= 3) {
+          vm.fixPosition(vm.currentR)
+        }
+        vm.currentR = null
+        vm.flag = 0
+        vm.reshow(vm.x, vm.y)
       }
-      vm.currentR = null
-      vm.flag = 0
-      vm.reshow(vm.x, vm.y)
       vm.op = 0
     },
     openMenu (e) {
