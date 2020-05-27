@@ -9,6 +9,7 @@
 // const baseUrl = 'http://1.62.120.34:4447/spm'
 // const baseUrl = 'http://139.9.130.245:8808/spm'
 const baseUrl = 'http://192.168.137.39:8808/spm'
+// const baseUrl = 'http://192.168.137.27:8086/spm'
 
 // 设置七牛云服务器路径
 const uploadQiniuAdr = 'http://upload-z1.qiniu.com'

@@ -18,8 +18,8 @@
           v-model="filterText">
         </el-input>
       </div>
-      <div class="slide-btns">
-        <el-upload accept=".xls" style="display: inline-block" v-show="hasUpload"
+      <div class="slide-btns"> <!-- 权限显示 -->
+        <el-upload accept=".xls" style="display: inline-block" class="function-btn upload-btn" v-if="true"
                   :action="`${baseUrl}/dept/importDept`"
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
@@ -47,9 +47,10 @@
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
             <span class="right-btns" v-if="showBtns">
-              <i class="el-icon-plus" title="添加节点" @click.stop="addNode(node, data)"></i>
-              <i class="el-icon-edit" title="修改节点" @click.stop="edit(node, data)"></i>
-              <i class="el-icon-delete" title="删除节点"  @click.stop="remove(node, data)"></i>
+              <!-- 权限显示 -->
+              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="false"></i>
+              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="false"></i>
+              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="false"></i>
             </span>
           </span>
       </el-tree>

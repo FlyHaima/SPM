@@ -19,12 +19,12 @@
 
             <el-main class="inner-content">
               <div class="container-box">
-                <p class="btn-p">
-                  <a class="copy-btn" @click="copyPlan"><i class="el-icon-document-copy"></i>计划复制</a>
-                  <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
-                  <a class="release-btn" @click="openReleasePlan"><i class="el-icon-plus"></i>计划发布</a>
+                <p class="btn-p"> <!-- 权限显示 -->
+                  <a class="function-btn copy-btn" @click="copyPlan" v-if="true"><i class="el-icon-document-copy"></i>计划复制</a>
+                  <a class="function-btn delete-btn" @click="showRemoveDialog" v-if="true"><i class="el-icon-delete"></i>计划删除</a>
+                  <a class="function-btn release-btn" @click="openReleasePlan" v-if="true"><i class="el-icon-plus"></i>计划发布</a>
                   <el-upload style="float: right;"
-                    class="tools-item"
+                    class="tools-item function-btn function-btn" v-if="true"
                     accept=".xls, .xlsx"
                     :multiple="false"
                     :limit="1"

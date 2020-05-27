@@ -122,37 +122,28 @@
       :close-on-click-modal="false"
       title="分配"
       :visible.sync="dialogRoleVisible"
+      width="60%"
       >
-      <el-collapse v-loading="pageLoading" v-model="activeNames" >
-        <el-collapse-item
-          v-for="(item, index) in roleOptions"
-          :key = index
-          name="1">
-          <template slot="title">
-            <el-checkbox
-              :indeterminate="isIndeterminate"
-              v-model="item.checkAll"
-              @change="handleCheckAllChange(item)">{{item.name}}</el-checkbox>
-          </template>
-          <el-checkbox-group
-            v-model="item.checkedRoles"
-            @change="handleCheckedChildrensChange(item)">
-            <el-checkbox
-              v-for="(itemList) in item.list"
-              :label="itemList.name"
-              :key="itemList.pid">{{itemList.name}}</el-checkbox>
+    <el-tree
+      :data="roleOptions.menus"
+      show-checkbox
+      node-key="menuId"
+      default-expand-all
+      :props='treeLabel'
+      :expand-on-click-node="false">
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span>{{ node.label }}</span>
+        <!-- <span>{{ data }}</span> -->
+        <span class="custom-tree-btn">
+          <el-checkbox-group v-model="checkedbtns" @change="handleCheckedCitiesChange">
+            <el-checkbox v-for="(item, index) in data.btnControl"
+            :label="item.name"
+            :disabled='item.disabled'
+            :key="index">{{item.name}}</el-checkbox>
           </el-checkbox-group>
-        </el-collapse-item>
-      </el-collapse>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="submitFormRole()">确 定</el-button>
-        <el-button
-          size="small"
-          @click="dialogRoleVisible = false">取 消</el-button>
-      </div>
+        </span>
+      </span>
+    </el-tree>
     </el-dialog>
     <!-- 旧版分配弹窗 -->
     <!-- <el-dialog
@@ -220,6 +211,11 @@ export default {
           { required: true, message: '请输入角色名称', trigger: 'blur' }
         ]
       },
+      treeLabel: { // 属性结构名
+        label: 'name',
+        children: 'list'
+      },
+      checkedCities: '',
       multipleSelection: [],
       pageLoading: false,
       submitting: false,
@@ -230,7 +226,8 @@ export default {
       isIndeterminate: true,
       roleId: '',
       menuList: [],
-      newMenuList: []
+      newMenuList: [],
+      checkedbtns: [] // 按钮值
     }
   },
   mounted () {
@@ -245,6 +242,7 @@ export default {
     // 页面初始化数据
     initPage () {
       this.initMenuList()
+      console.log('itemListBtnControl', this.newMenuList)
     },
     // 初始化菜单
     initMenuList () {
@@ -254,7 +252,6 @@ export default {
           if (res.data.code === 200) {
             this.menuList = res.data.menuList
             this.newMenuList = []
-            console(res.data.menuList)
             this.menuList.forEach(item => {
               if (!item.list) {
                 this.newMenuList.push(item.menuId)
@@ -277,6 +274,9 @@ export default {
           if (res.data.code === 200) {
             this.pageLoading = false
             this.roleOptions = res.data.data
+            console.log(this.roleOptions)
+            console.log(this.newMenuList)
+            console.log('itemListBtnControl', this.newMenuList)
             for (let i = 0; i < this.roleOptions.length; i++) {
               for (let j = 0; j < this.newMenuList.length; j++) {
                 if (this.roleOptions[i].menuId === this.newMenuList[j]) {
@@ -311,6 +311,7 @@ export default {
       })
       return newRoleOptions
     },
+    // 提交保存
     submitFormRole () {
       this.postDataChecked = this.filterRoleOptions(this.roleOptions)
       this.postDataChecked = this.postDataChecked.join(',')
@@ -486,39 +487,11 @@ export default {
 
 <style scoped lang="scss">
 @import '@/utils/css/tools/_variables.scss';
-/deep/.el-collapse{
-  border: 0;
-  .el-collapse-item__header{
-    background: #f6f9fd;
-    border-bottom: 0;
-    margin: 0 -18px;
-    padding-left: 60px;
-    height: 35px;
-    line-height: 35px;
-    font-size: 16px;
-  }
-  .el-collapse-item__arrow{
-    display: none;
-  }
-  .el-collapse-item__wrap{
-    border-bottom: 0;
-    padding-left: 130px;
-    margin: 0 -18px;
-  }
-  .el-collapse-item__content{
-    padding-top: 15px;
-    padding-bottom: 0px;
-  }
-  .el-checkbox-group{
-    display: flex;
-    flex-wrap: wrap;
-    .el-checkbox{
-      margin-bottom: 15px;
-    }
-  }
-  .el-checkbox{
-    flex: 0 0 25%;
-    margin-right: 0;
-  }
+.el-tree{
+  font-weight: 500;
+}
+.custom-tree-btn{
+  position: absolute;
+  right: 50px;
 }
 </style>

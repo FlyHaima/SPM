@@ -146,7 +146,7 @@ export default {
               this.messageData = res.data.data
               this.page.total = res.data.total
               this.todoNum = res.data.total
-              this.businessKey = res.data.businessKey
+              // this.businessKey = res.data.data.businessKey
               // console.log(res.data.data)
             }
           })
@@ -190,7 +190,7 @@ export default {
           query: {
             tabType: item.investType,
             id: item.leftId,
-            businessKey: this.businessKey
+            hiddInstanceId: item.businessKey
           }
         })
       } else if (item.name === '排查复核') {
@@ -199,7 +199,7 @@ export default {
           query: {
             tabType: item.investType,
             id: item.leftId,
-            businessKey: this.businessKey
+            hiddInstanceId: item.businessKey
           }
         })
       } else if (item.name === '隐患治理') {
@@ -208,7 +208,7 @@ export default {
           query: {
             tabType: item.investType,
             id: item.leftId,
-            businessKey: this.businessKey
+            hiddInstanceId: item.businessKey
           }
         })
       } else if (item.name === '治理复核') {
@@ -217,7 +217,7 @@ export default {
           query: {
             tabType: item.investType,
             id: item.leftId,
-            businessKey: this.businessKey
+            hiddInstanceId: item.businessKey
           }
         })
       }

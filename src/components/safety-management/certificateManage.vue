@@ -9,8 +9,8 @@
 
         <div class="container-box">
           <p class="btn-p">
-            <el-button size="medium" type="primary" @click="openUpload()">
-              <i class="el-icon-upload2"></i>上传
+            <el-button size="medium" type="primary" @click="openUpload()"> <!-- 权限显示 -->
+              <i class="el-icon-upload2 upload-btn" v-if='true'></i>上传
             </el-button>
           </p>
 
@@ -79,7 +79,7 @@
               fixed="right"
               label="操作"
               align="center">
-              <template slot-scope="scope">
+              <template slot-scope="scope"> <!-- 权限显示 -->
                 <a target="_blank" :href="`${scope.row.path}?attname=${scope.row.documentName}.${scope.row.category}`" style="margin-right: 8px;">下载</a>
                 <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
               </template>
