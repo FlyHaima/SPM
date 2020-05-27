@@ -83,8 +83,9 @@ export default {
     },
     // 获取 路由的值
     extractKey () {
-      if (this.$route.query.businessKey) {
-        this.hiddInstanceId = this.$route.query.businessKey
+      if (this.$route.query.hiddInstanceId) {
+        this.hiddInstanceId = this.$route.query.hiddInstanceId
+        // console.log(this.hiddInstanceId)
       }
     }
   }

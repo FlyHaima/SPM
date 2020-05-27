@@ -82,8 +82,8 @@ export default {
       }
     },
     extractKey () {
-      if (this.$route.query.businessKey) {
-        this.hiddInstanceId = this.$route.query.businessKey
+      if (this.$route.query.hiddInstanceId) {
+        this.hiddInstanceId = this.$route.query.hiddInstanceId
       }
     }
   }
