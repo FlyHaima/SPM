@@ -125,7 +125,7 @@
         <el-row>
           <el-col :span="14">
             <el-form-item label="标题" prop="title">
-              <el-input v-model="messageForm.title"></el-input>
+              <el-input v-model.trim="messageForm.title"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10">
@@ -241,13 +241,13 @@ export default {
   name: 'messages',
   data () {
     // 校验修改的绑定手机号码
-    var validateSendType = (rule, value, callback) => {
-      if (this.messageForm.sendType === '2' && value === '') {
-        callback(new Error('请选择推送名单'))
-      } else {
-        callback()
-      }
-    }
+    // var validateSendType = (rule, value, callback) => {
+    //   if (this.messageForm.sendType === '2' && value === '') {
+    //     callback(new Error('请选择推送名单'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       submitting: false,
       pageLoading: false,
@@ -283,13 +283,13 @@ export default {
         ],
         textContent: [
           { required: true, message: '请输入文本内容', trigger: 'blur' }
-        ],
-        sendType: [
-          { required: true, message: '请选择推动方式', trigger: 'change' }
-        ],
-        sendList: [
-          { validator: validateSendType, trigger: 'change' }
         ]
+        // sendType: [
+        //   { required: true, message: '请选择推动方式', trigger: 'change' }
+        // ],
+        // sendList: [
+        //   { validator: validateSendType, trigger: 'change' }
+        // ]
       },
       page: {
         total: 0, // 总条数
@@ -475,20 +475,15 @@ export default {
     // 发布消息
     handleSendMessage () {
       this.dialogFormMessageVisible = true
-      Object.keys(this.messageForm).forEach(key => {
-        // this.form[key] = ''
-        this.messageForm.title = '' // 标题
-        this.messageForm.textContent = '' // 文本内容
-        this.messageForm.fileList = '' // 附件上传
-        this.messageForm.type = '' // 消息类型
-        this.messageForm.sendType = '选择推送' // 推送方式
-        this.messageForm.sendList = '' // 推送名单列表
-      })
+      console.log(this.messageForm)
     },
     // 提交发布消息事件
     submitMessageForm () {
       let vm = this
-      this.messageForm.fileList = JSON.stringify(this.uploadList)
+      // this.messageForm = this.messageForm
+      vm.messageForm.fileList = JSON.stringify(this.uploadList)
+      debugger
+      console.log(vm.messageForm)
       vm.$refs.messageForm.validate((valid) => {
         if (valid) {
           vm.dialogFormMessageVisible = false
