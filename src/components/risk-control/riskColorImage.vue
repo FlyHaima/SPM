@@ -25,6 +25,24 @@
           <div class="line-out">
             <div class="line"></div>
           </div>
+          <div class="menu-item" @click="addPoint" :class="pointAble ? 'active' : ''">
+            <div class="menu-icon menu-icon-1">
+              <i class="el-icon-map-location"></i>
+            </div>
+            <p>添加风险点</p>
+          </div>
+          <div class="line-out">
+            <div class="line"></div>
+          </div>
+          <div class="menu-item" @click="addUnit" :class="unitAble ? 'active' : ''">
+            <div class="menu-icon menu-icon-1">
+              <i class="el-icon-edit-outline"></i>
+            </div>
+            <p>添加风险单元</p>
+          </div>
+          <div class="line-out">
+            <div class="line"></div>
+          </div>
           <div class="menu-item" @click="cancel">
             <div class="menu-icon menu-icon-1">
               <i class="el-icon-refresh-left"></i>
@@ -359,7 +377,9 @@ export default {
       slidLoading: false,
       starshMenu: null, // 暂存右键的值
       detailVisible: false,
-      detailData: {}
+      detailData: {},
+      unitAble: false, // 是否激活“添加风险单元”
+      pointAble: false // 是否激活“添加添加风险点”
     }
   },
   mounted () {
@@ -376,6 +396,16 @@ export default {
     vm.getPlaceSelector(0) // 初始化时，获取map列表
   },
   methods: {
+    // 点击 添加风险点
+    addPoint () {
+      this.unitAble = false
+      this.pointAble = true
+    },
+    // 点击 添加风险单元
+    addUnit () {
+      this.pointAble = false
+      this.unitAble = true
+    },
     // 获取风险点选项列表，绑定和重新绑定是一个方法
     getRiskSelector () {
       let vm = this
@@ -801,6 +831,10 @@ export default {
         console.log('mousedown: menu')
         return
       }
+      if (!this.unitAble) {
+        console.log('unit paint')
+        return
+      }
       let vm = this
       const c = document.getElementById('myCanvas')
       const ctx = c.getContext('2d')
@@ -1153,6 +1187,12 @@ export default {
           width: 100%;
           color: #646464;
           cursor: pointer;
+          &.active{
+            color: #409eff;
+            .menu-icon{
+              background: #e4edf7;
+            }
+          }
           .menu-icon{
             width: 47px;
             height: 44px;
