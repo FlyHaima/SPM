@@ -131,13 +131,16 @@
       default-expand-all
       :props='treeLabel'
       @check-change="nodeCheckHandle"
-      :expand-on-click-node="false">
+      :default-checked-keys="menuCheckList"
+      >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
         <!-- <span>{{ data }}</span> -->
         <span class="custom-tree-btn">
-          <el-checkbox-group v-model="checkedbtns" @change="handleCheckedCitiesChange(data)">
-            <el-checkbox v-for="(item, index) in data.btnControl"
+          <el-checkbox-group v-model="data.checkedRoles">
+            <el-checkbox
+            @change="handleCheckedCitiesChange(data)"
+            v-for="(item, index) in data.btnControl"
             :label="item.name"
             :disabled='item.disabled'
             :key="index">{{item.name}}</el-checkbox>
@@ -145,6 +148,10 @@
         </span>
       </span>
     </el-tree>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="saveCheckData">确 定</el-button>
+    </span>
     </el-dialog>
     <!-- 旧版分配弹窗 -->
     <!-- <el-dialog
@@ -221,14 +228,21 @@ export default {
       pageLoading: false,
       submitting: false,
       editData: '',
-      roleOptions: [], // 角色
+      roleOptions: [], // 角色tree的data
       postDataChecked: [],
       activeNames: ['1'],
       isIndeterminate: true,
       roleId: '',
       menuList: [],
       newMenuList: [],
-      checkedbtns: [] // 按钮值
+      menuCheckList: [], // 选中的菜单项集合
+      postMenuCheckList: '', // 传给后台的选中的菜单项
+      menuCheckListCurrent: [], // 回显选中的菜单项集合
+      filterBtnCheckedList: [], // 筛选选中的btn元素的id的集合
+      postBtnCheckedList: [], // 传给后台的选中的btn元素的集合
+      data: [], // tree的data
+      dialogVisible: false
+      // checkedbtns: [] // 按钮值
     }
   },
   mounted () {
@@ -448,43 +462,112 @@ export default {
       })
     },
     saveForm (post, tip) {
-      let vm = this
-      vm
-        .$confirm(`确定【${tip}】该角色吗？`, '提示', {
-          type: 'warning'
-        })
-        .then(() => {
-          vm.submitting = true
-          axios
-            .post(`role/${post}Role`, vm.form)
-            .then((res) => {
-              vm.submitting = true
-              if (res.data.code === 200) {
-                vm.$notify.success(tip + '成功')
-                vm.dialogAddVisible = false
-                vm.tablesFetchList()
-              } else {
-                vm.$message({
-                  message: res.data.message,
-                  type: 'warning'
-                })
-              }
-            })
-            .finally(() => {
-              vm.submitting = false
-            })
-        })
-        .catch(() => {})
+      // let vm = this
+      // vm
+      //   .$confirm(`确定【${tip}】该角色吗？`, '提示', {
+      //     type: 'warning'
+      //   })
+      //   .then(() => {
+      //     vm.submitting = true
+      //     axios
+      //       .post(`role/${post}Role`, vm.form)
+      //       .then((res) => {
+      //         vm.submitting = true
+      //         if (res.data.code === 200) {
+      //           vm.$notify.success(tip + '成功')
+      //           vm.dialogAddVisible = false
+      //           vm.tablesFetchList()
+      //         } else {
+      //           vm.$message({
+      //             message: res.data.message,
+      //             type: 'warning'
+      //           })
+      //         }
+      //       })
+      //       .finally(() => {
+      //         vm.submitting = false
+      //       })
+      //   })
+      //   .catch(() => {})
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
     // 分配权限选择
-    nodeCheckHandle () {
+    nodeCheckHandle (data, currentChecked) {
+      console.log('1111list', data)
+      if (currentChecked && data.btnControl) {
+        console.log('33', currentChecked, data.btnControl)
+        data.btnControl.forEach(item => {
+          item.disabled = false
+          // console.log('33', item, item.disabled)
+        })
+      } else if (data.btnControl) {
+        data.btnControl.forEach(item => {
+          item.disabled = true
+          console.log('44', currentChecked, data.btnControl)
+        })
+      }
+      // console.log('111', data, currentChecked)
     },
     // 弹窗权限分配
     handleCheckedCitiesChange (data) {
-      console.log('111')
+      // console.log('111', data)
+    },
+    // 保存
+    saveCheckData () {
+      const vm = this
+      vm.postMenuCheckList = vm.filterMenuCheckedNodes()
+      vm.postBtnCheckedList = vm.filterBtnChecked(vm.data).join(',')
+      const sendData = {
+        roleId: this.roleId,
+        authIds: vm.postMenuCheckList + ',' + vm.postBtnCheckedList
+      }
+      vm
+        .$confirm('确定修改该菜单吗？', '提示', {
+          type: 'warning'
+        })
+        .then(() => {
+          const vm = this
+          vm.submitting = true
+          axiosApi.assignMenuData(sendData).then(res => {
+            vm.$notify.success('分配成功')
+            vm.$router.go(-1)
+            vm.submitting = false
+          })
+        })
+        .catch(() => {
+          this.submitting = false
+        })
+    },
+    // 筛选选中的btn元素
+    filterBtnChecked (fData) {
+      this.filterBtnCheckedList = []
+      fData.forEach(item => {
+        if (item.list !== null) {
+          item.list.forEach(itemChildren => {
+            itemChildren.btnControl.forEach(itemList => {
+              itemChildren.checkList.forEach(itemChecked => {
+                if (itemList.authName === itemChecked && itemList.disabled === false) {
+                  this.filterBtnCheckedList.push(itemList.authId)
+                }
+              })
+            })
+          })
+        }
+      })
+      return this.filterBtnCheckedList
+    },
+    // 筛选选中的菜单项
+    filterMenuCheckedNodes () {
+      const vm = this
+      vm.menuCheckListCurrent = this.$refs.tree.getCheckedNodes()
+      vm.menuCheckList = []
+      vm.menuCheckListCurrent.forEach(item => {
+        vm.menuCheckList.push(item.authId)
+      })
+      vm.postMenuCheckList = vm.menuCheckList.join(',')
+      return vm.postMenuCheckList
     }
   },
   components: {
