@@ -122,7 +122,7 @@
       :close-on-click-modal="false"
       title="分配"
       :visible.sync="dialogRoleVisible"
-      width="60%"
+      width="70%"
       >
     <el-tree
       :data="roleOptions.menus"
@@ -136,7 +136,7 @@
         <span>{{ node.label }}</span>
         <!-- <span>{{ data }}</span> -->
         <span class="custom-tree-btn">
-          <el-checkbox-group v-model="checkedbtns" @change="handleCheckedCitiesChange">
+          <el-checkbox-group v-model="checkedbtns" @change="handleCheckedCitiesChange(data)">
             <el-checkbox v-for="(item, index) in data.btnControl"
             :label="item.name"
             :disabled='item.disabled'
@@ -481,6 +481,9 @@ export default {
     },
     // 分配权限选择
     nodeCheckHandle () {
+    },
+    // 弹窗权限分配
+    handleCheckedCitiesChange (data) {
       console.log('111')
     }
   },

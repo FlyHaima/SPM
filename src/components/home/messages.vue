@@ -557,7 +557,8 @@ export default {
     confirmChooseList () {
       this.messageForm.sendList = ''
       this.chooseList.forEach(item => {
-        this.messageForm.sendList += `${item.nameStr}; `
+        console.log(item)
+        this.messageForm.sendList += `${item.id}; `
       })
       this.showTreeTransfer = false
     }
