@@ -735,7 +735,8 @@ export default {
         riskType: d.riskSourceType ? d.riskSourceType.split(',') : '',
         riskReason: d.factor ? d.factor.split('/') : '',
         riskPointType: d.riskType ? d.riskType : '',
-        identifierWay: d.ram ? d.ram : ''
+        identifierWay: d.ram ? d.ram : '',
+        workType: d.workType ? d.workType : ''
       }
       this.stepObjB = {
         levelNameA: d.oneName ? d.oneName : '',
