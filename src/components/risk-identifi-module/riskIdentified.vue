@@ -1126,7 +1126,7 @@ export default {
     uploadUrl () {
       // console.log('2222', this.currentTreeData.riskId)
       // console.log('1111', this.parameterData)
-      return base.baseUrl + '/riskia/importRisk'
+      return base.baseUrl + '/riskia/importRisks'
     },
     handleBeforeUploadBase (file) {
       this.uploadData = {riskId: this.currentTreeData.riskId, type: '设备设施'}
@@ -1151,8 +1151,9 @@ export default {
     handleSuccess (response, file, fileList) {
       this.uploading = false
       if (response.code === 200) {
-        this.fetchTableData()
         this.$notify.success('导入成功')
+        this.getRiskDeptList()
+        console.log('刷新了')
       } else {
         this.$notify.warning(response.message)
       }
