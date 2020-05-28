@@ -84,12 +84,13 @@
             </div>
 
             <!-- 暂无地图，需要新建新地图 -->
-            <div v-if="mapLists.length === 0" class="up-new-map">
+            <div v-show="mapLists.length === 0" class="up-new-map">
               <el-button size="medium" type="primary" @click="addMap()"><i class="el-icon-plus"></i> 添加位置</el-button>
             </div>
 
-            <canvas id="myCanvas" v-else
-                    :width="currentImage.width" :height="currentImage.height"
+            <canvas id="myCanvas" ref="canvas" v-show="mapLists.length > 0"
+                    :width="currentImage.width"
+                    :height="currentImage.height"
                     style="background-color: #fff;"
                     @mousedown="mousedown"
                     @mousemove="mousemove"
@@ -379,21 +380,26 @@ export default {
       detailVisible: false,
       detailData: {},
       unitAble: false, // 是否激活“添加风险单元”
-      pointAble: false // 是否激活“添加添加风险点”
+      pointAble: false, // 是否激活“添加添加风险点”
+      ctx: {}, // 提前设置canvas对象
+      canvas: {}
     }
   },
   mounted () {
-    // this.canvas_init()
+    let vm = this
+    vm.canvas = this.$refs.canvas
+    vm.ctx = vm.canvas.getContext('2d') // 直接全局设置canvas活动对象
+    document.onclick = function () {
+      vm.showMenu = false // 关闭自定义右键menu
+    }
+    vm.getRiskSelector()
+    vm.getPlaceSelector(0)// 初始化时，获取map列表
+    vm.showOld()
   },
   created () {
     let vm = this
     vm.baseUrl = base.uploadQiniuAdr
     vm.fileAddress = base.fileQiniuAddr
-    document.onclick = function () {
-      vm.showMenu = false // 关闭自定义右键menu
-    }
-    vm.getRiskSelector()
-    vm.getPlaceSelector(0) // 初始化时，获取map列表
   },
   methods: {
     // 点击 添加风险点
@@ -431,14 +437,12 @@ export default {
           vm.mapLists = res.data
           if (type === 0) {
             vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
-            vm.getOldLayers()
           } else if (type === 1) {
             vm.currentMap = vm.mapLists[vm.mapLists.length - 1].value
-            vm.getOldLayers()
           } else if (type === 2) {
             vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
-            vm.getOldLayers()
           }
+          vm.getOldLayers()
         } else {
           vm.$message({
             type: 'warning',
@@ -448,7 +452,8 @@ export default {
         vm.pageLoading = false
       })
     },
-    getOldLayers () { // 获取当前map下原有记录的layers，顺便重绘
+    /** 获取当前map下原有记录的layers & points，顺便使用showOld()方法重绘 **/
+    getOldLayers () {
       let vm = this
       vm.pageLoading = true
       if (vm.currentMap) {
@@ -457,15 +462,22 @@ export default {
             vm.oldLayers = res.data
             vm.currentImage.url = res.map.backgroundUrl
             if (vm.currentImage.url) {
+              /** 获取图片尺寸 **/
               getImageSize(vm.currentImage.url).then(res => {
                 vm.currentImage.width = res.width
                 vm.currentImage.height = res.height
+                vm.canvas.width = res.width
+                vm.canvas.height = res.height
+                vm.$nextTick(() => {
+                  vm.showOld() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
+                })
+                /**
+                 * 这里存在的问题，当前定位到：
+                 * 触发了vue的flushCallbacks()方法，绘制的图被清空了。
+                 * 解决办法，使用 $nextTick 保证canvas相关dom能够即时更新
+                 * **/
               })
-            } else {
-              vm.currentImage.width = 0
-              vm.currentImage.height = 0
             }
-            vm.showOld()
           } else {
             vm.$message({
               type: 'warning',
@@ -476,20 +488,14 @@ export default {
         })
       }
     },
-    canvas_init () { // 初始化，以及初始化时的判断
-      this.showOld() // 初始化的时候，先把旧有数据加载遍
-    },
     zoomUp () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-
-      if (c.width <= vm.maxWidth && c.height <= vm.maxHeight) {
-        c.width *= vm.scaleStep
-        c.height *= vm.scaleStep
-        vm.scale = c.height / vm.currentImage.height
-        ctx.scale(vm.scale, vm.scale)
-        c.style.backgroundSize = `${c.width}px ${c.height}px`
+      if (vm.canvas.width <= vm.maxWidth && vm.canvas.height <= vm.maxHeight) {
+        vm.canvas.width *= vm.scaleStep
+        vm.canvas.height *= vm.scaleStep
+        vm.scale = vm.canvas.height / vm.currentImage.height
+        vm.ctx.scale(vm.scale, vm.scale)
+        vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
         vm.showOld()
         vm.reshow()
       }
@@ -497,34 +503,28 @@ export default {
     zoomDown () {
       let vm = this
       const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
 
-      // debugger
-      if (c.width >= vm.currentImage.width && c.height >= vm.currentImage.height) {
-        c.width /= vm.scaleStep
-        c.height /= vm.scaleStep
+      if (vm.canvas.width >= vm.currentImage.width && vm.canvas.height >= vm.currentImage.height) {
+        vm.canvas.width /= vm.scaleStep
+        vm.canvas.height /= vm.scaleStep
         vm.scale = c.height / vm.currentImage.height
-        ctx.scale(vm.scale, vm.scale)
-        c.style.backgroundSize = `${c.width}px ${c.height}px`
+        vm.ctx.scale(vm.scale, vm.scale)
+        vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
         vm.showOld()
         vm.reshow()
       }
     },
     cancel () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
       vm.layers.pop()
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.showOld()
       vm.reshow()
     },
     clear () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
       vm.layers = []
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.showOld()
       vm.reshow()
     },
@@ -553,9 +553,7 @@ export default {
     },
     resizeLeft (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'w-resize'
+      vm.canvas.style.cursor = 'w-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 3
       }
@@ -569,9 +567,7 @@ export default {
     },
     resizeTop (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 's-resize'
+      vm.canvas.style.cursor = 's-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 4
       }
@@ -585,9 +581,7 @@ export default {
     },
     resizeWidth (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'w-resize'
+      vm.canvas.style.cursor = 'w-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 5
       }
@@ -601,9 +595,7 @@ export default {
     },
     resizeHeight (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 's-resize'
+      vm.canvas.style.cursor = 's-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 6
       }
@@ -617,9 +609,7 @@ export default {
     },
     resizeLT (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'se-resize'
+      vm.canvas.style.cursor = 'se-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 7
       }
@@ -635,9 +625,7 @@ export default {
     },
     resizeWH (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'se-resize'
+      vm.canvas.style.cursor = 'se-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 8
       }
@@ -653,9 +641,7 @@ export default {
     },
     resizeLH (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'ne-resize'
+      vm.canvas.style.cursor = 'ne-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 9
       }
@@ -671,9 +657,7 @@ export default {
     },
     resizeWT (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'ne-resize'
+      vm.canvas.style.cursor = 'ne-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 10
       }
@@ -687,38 +671,33 @@ export default {
         vm.currentR.width = vm.currentR.x2 - vm.currentR.x1
       }
     },
-    drawImage () { // 后期需要把后台传过来的图片宽高作为参数使用，前台读取图片的宽高有onload的顺序问题
-      const canvas = document.getElementById('myCanvas')
-      const ctx = canvas.getContext('2d')
+    drawImage () {
       let vm = this
       if (vm.currentImage.url) {
         let img = new Image()
         img.src = vm.currentImage.url
-        // console.log('draw', vm.currentImage.width, vm.currentImage.height)
-        ctx.drawImage(img, 0, 0, vm.currentImage.width, vm.currentImage.height)
+        vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
       }
     },
     // 绘制原有图形，包括背景图
     showOld () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
       vm.oldLayers.forEach(item => {
-        ctx.beginPath()
-        ctx.rect(item.x1, item.y1, item.width, item.height)
-        ctx.strokeStyle = vm.fillStyles[item.level]
-        ctx.fillStyle = vm.fillStyles[item.level]
-        ctx.globalAlpha = 0.7
-        ctx.fill()
-        ctx.stroke()
-        ctx.font = '20px Georgia'
-        ctx.fillStyle = 'black'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
-        ctx.stroke()
+        vm.ctx.beginPath()
+        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+        vm.ctx.strokeStyle = vm.fillStyles[item.level]
+        vm.ctx.fillStyle = vm.fillStyles[item.level]
+        vm.ctx.globalAlpha = 0.7
+        vm.ctx.fill()
+        vm.ctx.stroke()
+        vm.ctx.font = '20px Georgia'
+        vm.ctx.fillStyle = 'black'
+        vm.ctx.textAlign = 'center'
+        vm.ctx.textBaseline = 'middle'
+        vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
+        vm.ctx.stroke()
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
@@ -727,12 +706,10 @@ export default {
     reshow (x, y) {
       let vm = this
       let allNotIn = 1
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
 
       vm.layers.forEach(item => {
-        ctx.beginPath()
-        ctx.rect(item.x1, item.y1, item.width, item.height)
+        vm.ctx.beginPath()
+        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
         if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
           vm.resizeLeft(item)
         } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
@@ -750,15 +727,15 @@ export default {
         } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
           vm.resizeWT(item)
         }
-        if (ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
+        if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
           vm.render(item)
           allNotIn = 0
         }
-        ctx.strokeStyle = vm.fillStyles[item.level]
-        ctx.fillStyle = vm.fillStyles[item.level]
-        ctx.globalAlpha = 0.7
-        ctx.fill()
-        ctx.stroke()
+        vm.ctx.strokeStyle = vm.fillStyles[item.level]
+        vm.ctx.fillStyle = vm.fillStyles[item.level]
+        vm.ctx.globalAlpha = 0.7
+        vm.ctx.fill()
+        vm.ctx.stroke()
       })
       if (vm.flag && allNotIn && vm.op < 3) {
         vm.op = 1
@@ -766,9 +743,7 @@ export default {
     },
     render (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'move'
+      vm.canvas.style.cursor = 'move'
       if (vm.flag && vm.op === 0) {
         vm.op = 2
       }
@@ -836,9 +811,6 @@ export default {
         return
       }
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-
       vm.startx = e.layerX / vm.scale
       vm.starty = e.layerY / vm.scale
       vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
@@ -846,30 +818,26 @@ export default {
         vm.leftDistance = vm.startx - vm.currentR.x1
         vm.topDistance = vm.starty - vm.currentR.y1
       }
-      ctx.strokeRect(vm.x, vm.y, 0, 0)
-      ctx.strokeStyle = '#0000ff'
+      vm.ctx.strokeRect(vm.x, vm.y, 0, 0)
+      vm.ctx.strokeStyle = '#0000ff'
       vm.flag = 1
     },
     mousemove (e) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-
       vm.x = e.layerX / vm.scale
       vm.y = e.layerY / vm.scale
-      ctx.save()
-      ctx.setLineDash([5])
-      c.style.cursor = 'default'
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.ctx.save()
+      vm.ctx.setLineDash([5])
+      vm.canvas.style.cursor = 'default'
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       if (vm.flag && vm.op === 1) {
-        ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
+        vm.ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
       }
-      ctx.restore()
-      vm.showOld(vm.x, vm.y)
+      vm.ctx.restore()
+      vm.showOld()
       vm.reshow(vm.x, vm.y)
     },
     mouseup (e) {
-      // console.log('mouseup:', e)
       let vm = this
 
       if (vm.op === 1) {
@@ -925,19 +893,16 @@ export default {
       this.showMenu = true
     },
     leaveCanvas () {
-      const c = document.getElementById('myCanvas')
-      c.onmousedown = null
-      c.onmousemove = null
-      c.onmouseup = null
+      this.canvas.onmousedown = null
+      this.canvas.onmousemove = null
+      this.canvas.onmouseup = null
     },
     enterCanvas () {
       document.onmouseup = this.mouseup()
     },
     optionChange () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.getOldLayers()
       vm.layers = []
       vm.showOld()
@@ -959,9 +924,7 @@ export default {
               message: '节点添加成功'
             })
             vm.getPlaceSelector(1) // 更新map列表
-            const c = document.getElementById('myCanvas')
-            const ctx = c.getContext('2d')
-            ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+            vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
             vm.getOldLayers() // 重绘
           }
           vm.pageLoading = false

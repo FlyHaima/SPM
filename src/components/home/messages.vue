@@ -283,10 +283,10 @@ export default {
         ],
         textContent: [
           { required: true, message: '请输入文本内容', trigger: 'blur' }
+        ],
+        sendType: [
+          { required: true, message: '请选择推动方式', trigger: 'change' }
         ]
-        // sendType: [
-        //   { required: true, message: '请选择推动方式', trigger: 'change' }
-        // ],
         // sendList: [
         //   { validator: validateSendType, trigger: 'change' }
         // ]
@@ -475,18 +475,16 @@ export default {
     // 发布消息
     handleSendMessage () {
       this.dialogFormMessageVisible = true
-      console.log(this.messageForm)
+      // console.log(this.messageForm)
+      this.messageForm.sendType = '全员推送'
     },
     // 提交发布消息事件
     submitMessageForm () {
       let vm = this
-      // this.messageForm = this.messageForm
-      vm.messageForm.fileList = JSON.stringify(this.uploadList)
-      debugger
-      console.log(vm.messageForm)
       vm.$refs.messageForm.validate((valid) => {
         if (valid) {
-          vm.dialogFormMessageVisible = false
+          // vm.dialogFormMessageVisible = false
+          vm.messageForm.fileList = JSON.stringify(this.uploadList)
           axios
             .post('msg/sendMsg', vm.messageForm)
             .then((res) => {

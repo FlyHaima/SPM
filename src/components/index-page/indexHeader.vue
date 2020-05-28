@@ -93,14 +93,11 @@ export default {
   //   }
   // },
   mounted () {
-    console.log('1111', this.localStorageSkin)
     // console.log('加载时skin的值', this.$store.state.skin)
     if (this.localStorageSkin === null) {
       this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
-      console.log('执行了')
     } else {
       this.initializeTheme(this.localStorageSkin, this.themes[this.localStorageSkin].color)
-      console.log('执行了11')
     }
   },
   beforeUpdate () {
@@ -108,47 +105,45 @@ export default {
   },
   methods: {
     initializeTheme (theme, color) {
-      switch (theme) {
-        case 1:
-          console.log(1)
-          break
-        case 2:
-          console.log(2)
-          break
-        case 3:
-          console.log(3)
-          break
-        case 4:
-          console.log(4)
-      }
+      // switch (theme) {
+      //   case 1:
+      //     console.log(1)
+      //     break
+      //   case 2:
+      //     console.log(2)
+      //     break
+      //   case 3:
+      //     console.log(3)
+      //     break
+      //   case 4:
+      //     console.log(4)
+      // }
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
     },
     changeTheme (theme, color) {
-      switch (theme) {
-        case 1:
-          console.log(1)
-          break
-        case 2:
-          console.log(2)
-          break
-        case 3:
-          console.log(3)
-          break
-        case 4:
-          console.log(4)
-      }
+      // switch (theme) {
+      //   case 1:
+      //     console.log(1)
+      //     break
+      //   case 2:
+      //     console.log(2)
+      //     break
+      //   case 3:
+      //     console.log(3)
+      //     break
+      //   case 4:
+      //     console.log(4)
+      // }
       // console.log('skin的值', this.$store.state.skin)
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
       localStorage.setItem('localStorageSkin', theme)
-      console.log('123123', this.localStorageSkin)
       const skinVlaue = {skin: theme}
       axios
         .post('user/updateSkin', skinVlaue)
         .then((res) => {
           if (res.data.code === 200) {
-            // console.log(skinVlaue, typeof skinVlaue)
           } else {
             this.$message({
               message: res.data.message,
