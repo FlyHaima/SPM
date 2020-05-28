@@ -31,7 +31,7 @@
                 class="tools-item"
                 accept=".xls"
                 :action='uploadUrl()'
-                :before-upload="handleBeforeUpload"
+                :before-upload="handleBeforeUploadBase"
                 :on-success="handleSuccess"
                 :on-error="handleError"
                 :show-file-list="false"
@@ -47,7 +47,7 @@
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
-                  :before-upload="handleBeforeUpload"
+                  :before-upload="handleBeforeUploadProduct"
                   :on-success="handleSuccess"
                   :on-error="handleError"
                   :show-file-list="false"
@@ -1127,9 +1127,18 @@ export default {
       // console.log('1111', this.parameterData)
       return base.baseUrl + '/riskia/importRisk'
     },
-    handleBeforeUpload (file) {
-      this.uploading = true
+    handleBeforeUploadBase (file) {
       this.uploadData = {riskId: this.currentTreeData.riskId, type: '设备设施'}
+      console.log(this.uploadData)
+      let promise = new Promise((resolve) => {
+        this.$nextTick(() => {
+          resolve(true)
+        })
+      })
+      return promise
+    },
+    handleBeforeUploadProduct (file) {
+      this.uploadData = {riskId: this.currentTreeData.riskId, type: '作业活动'}
       console.log(this.uploadData)
       let promise = new Promise((resolve) => {
         this.$nextTick(() => {
