@@ -28,6 +28,7 @@
               <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
               <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
               <el-upload
+                v-show="currentTreeData.treeLevel === '5'"
                 class="tools-item"
                 accept=".xls"
                 :action='uploadUrl()'
@@ -44,6 +45,7 @@
                 class="button-custom"
                 >导入设备设施</el-button></el-upload>
                 <el-upload
+                  v-show="currentTreeData.treeLevel === '5'"
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
