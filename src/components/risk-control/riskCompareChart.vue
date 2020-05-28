@@ -58,7 +58,7 @@ export default {
       let vm = this
       vm.pageLoading = true
       axios
-        .get('riskLevel/getWorkRisk', {
+        .get('riskLevel/getWorkRisk1', {
           time: vm.time
         })
         .then((res) => {
