@@ -1121,8 +1121,10 @@ export default {
     },
     checkDetail (id) {
       this.pageLoading = true
+      let token = sessionStorage.getItem('TOKEN_KEY')
+      // newId = JSON.stringify(newId)
       // get data, then, showDetailLog
-      getTrainStatistic(id).then((res) => {
+      getTrainStatistic(id, token).then((res) => {
         if (res.code && res.code === 200) {
           this.recordDetail.className = res.data.trainPlan.courseTitle
           this.recordDetail.department = res.data.trainPlan.deptName

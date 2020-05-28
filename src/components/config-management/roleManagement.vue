@@ -130,6 +130,7 @@
       node-key="menuId"
       default-expand-all
       :props='treeLabel'
+      @check-change="nodeCheckHandle"
       :expand-on-click-node="false">
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -477,6 +478,10 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    // 分配权限选择
+    nodeCheckHandle () {
+      console.log('111')
     }
   },
   components: {

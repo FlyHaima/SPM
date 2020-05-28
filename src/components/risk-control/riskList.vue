@@ -253,7 +253,8 @@ export default {
       newRiskTableData: [], // 新数据
       uploading: false, // 导入loading
       uploadData: {
-        riskId: ''
+        riskId: '',
+        token: ''
       }, // 上传数据
       fileList: [], // 导入列表
       currentPlanId: '', // 当前清单项的id
@@ -264,6 +265,7 @@ export default {
     this.fetchTreeData()
     // this.fetchTableData()
     this.fetchPlanOrganizationData()
+    this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
   },
   methods: {
     // 导入接口地址

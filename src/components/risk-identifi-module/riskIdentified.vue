@@ -24,9 +24,41 @@
           <div class="container-box">
             <p class="btn-p">
               <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&token=${localToken}&attname=风险辨识表.xls`"><i class></i>导出</a>
-              <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a>
+              <!-- <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a> -->
               <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
               <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
+              <el-upload
+                class="tools-item"
+                accept=".xls"
+                :action='uploadUrl()'
+                :before-upload="handleBeforeUpload"
+                :on-success="handleSuccess"
+                :on-error="handleError"
+                :show-file-list="false"
+                :file-list="fileList"
+                :data='uploadData'
+                ><el-button
+                type='warning'
+                icon='el-icon-upload2'
+                v-loading="uploading"
+                class="button-custom"
+                >导入设备设施</el-button></el-upload>
+                <el-upload
+                  class="tools-item"
+                  accept=".xls"
+                  :action='uploadUrl()'
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleSuccess"
+                  :on-error="handleError"
+                  :show-file-list="false"
+                  :file-list="fileList"
+                  :data='uploadData'
+                  ><el-button
+                  type='warning'
+                  icon='el-icon-upload2'
+                  v-loading="uploading"
+                  class="button-custom"
+                  >导入作业活动</el-button></el-upload>
             </p>
 
             <el-table ref="leaderTable"
@@ -442,6 +474,10 @@ export default {
         identifierWay: '',
         workType: ''
       },
+      // 导入
+      uploading: false,
+      uploadData: {}, // 导入传入参数
+      fileList: [],
       // 辨识范围 options
       rangeOptions: [
         {
@@ -1082,8 +1118,37 @@ export default {
         this.pageLoading = false
       })
     },
+    // 上传文件
     openImportDialog () {
-      // 不知道要干啥呢
+    },
+    // 上传地址
+    uploadUrl () {
+      // console.log('2222', this.currentTreeData.riskId)
+      // console.log('1111', this.parameterData)
+      return base.baseUrl + '/riskia/importRisk'
+    },
+    handleBeforeUpload (file) {
+      this.uploading = true
+      this.uploadData = {riskId: this.currentTreeData.riskId, type: '设备设施'}
+      console.log(this.uploadData)
+      let promise = new Promise((resolve) => {
+        this.$nextTick(() => {
+          resolve(true)
+        })
+      })
+      return promise
+    },
+    handleSuccess (response, file, fileList) {
+      this.uploading = false
+      if (response.code === 200) {
+        this.fetchTableData()
+        this.$notify.success('导入成功')
+      } else {
+        this.$notify.warning(response.message)
+      }
+    },
+    handleError (file, fileList) {
+
     }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
@@ -1116,6 +1181,18 @@ export default {
             width: 15px;
             height: 15px;
           }
+        }
+        .tools-item{
+          margin-right: 28px;
+          display: inline-block;
+           .el-button{
+            height: 36px;
+            width: 140px;
+           }
+        }
+        .tools-item2{
+          margin-left: 28px;
+          display: inline-block;
         }
         .import-btn{
           background: #e6a23c;
