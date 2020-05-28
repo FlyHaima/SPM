@@ -336,7 +336,6 @@ export default {
       currentMap: '', // 当前所选のmap
       layers: [], // 新建图层,包括新建的图标，用 type 作为区分
       oldLayers: [], // 之前存在的图层
-      oldPoints: [], // 之所以和oldLayers分开储存是因为，后台传的数据是分开传过来的
       fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
       imageStyles: [
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACOklEQVRIS9WVv2sUQRTHv28vp2AhYmnQP0CSuz0j7swc8UenYBAtrBRiJ1pYWqloaWWlWClodwghYKGNB97N7QYlu5tCxMaAYJk0igi3T3ZxdS/e3s5ejoBbzr73/cz3vTczhB3+aId5+D+Aq0osVpi+1Xq9VtkKlXYYKLkE8LkYxOAlW3vny0BLAX0pjxGxlwVYEQ7Puu4HU2gpYKDkBsD7suIM/mpr78DEgWFT3mbmu8OECbhS0+5TE6iRw3dzc9Xq7urPVJAY7aSHhJPp2sfpg1MXW61+EdQIGCgRA06kYlGEUw3XbQdKcLrGzI/tnnd128BAiAVYWM4KDQPG/ytWZM90VoJR0EKHoZLrDD5kAmSwb2uvMTYwUPIBwDe2CuQ5/H02L9vae54HzXXoSzlNxF+GJY4CxvFkTe2vdTobORM9fC++FMtEWBgHyMB9W7s3jYGhEosMPMkrS5HDJI+i4/XuytutGkNLGiixBmBmW0Dwq7r2ThcCfencI6JboyYtApIbxwLujD53fL2uvYfZmAGHq0rZFqIugD1FB9jsP2/2UbGPaL2exg8AQyWeMXCpSCzuYeLQwpuiWACP6tq99g/Qb4oLxHhhIACjockIWbDOzmr9MpmldD1UosuAMgGOEdOpa3f+D3Bt3qlFfRp5B44BGUghi4/WOt77xOEnx9n7vULxq238kJbcwOdo149Go+1v/i1pU5zpM5ySQkbhBNa29l4P9NAocwJBhc/TBBiDvZy0YJHeLwsl5B31eUctAAAAAElFTkSuQmCC',
@@ -691,22 +690,24 @@ export default {
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
       vm.oldLayers.forEach(item => {
-        vm.ctx.beginPath()
-        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
-        vm.ctx.strokeStyle = vm.fillStyles[item.level]
-        vm.ctx.fillStyle = vm.fillStyles[item.level]
-        vm.ctx.globalAlpha = 0.7
-        vm.ctx.fill()
-        vm.ctx.stroke()
-        vm.ctx.font = '20px Georgia'
-        vm.ctx.fillStyle = 'black'
-        vm.ctx.textAlign = 'center'
-        vm.ctx.textBaseline = 'middle'
-        vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
-        vm.ctx.stroke()
-      })
-      vm.oldPoints.forEach(item => {
+        /** 注：为了不影响代码运行，先改为type，后期需改为riskType **/
+        if (item.type === 0) {
+          vm.ctx.beginPath()
+          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+          vm.ctx.strokeStyle = vm.fillStyles[item.level]
+          vm.ctx.fillStyle = vm.fillStyles[item.level]
+          vm.ctx.globalAlpha = 0.7
+          vm.ctx.fill()
+          vm.ctx.stroke()
+          vm.ctx.font = '20px Georgia'
+          vm.ctx.fillStyle = 'black'
+          vm.ctx.textAlign = 'center'
+          vm.ctx.textBaseline = 'middle'
+          vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
+          vm.ctx.stroke()
+        } else {
 
+        }
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
@@ -719,7 +720,7 @@ export default {
       let allNotIn = 1
 
       vm.layers.forEach(item => {
-        if (item.type === 0) {
+        if (item.riskType === 0) {
           vm.ctx.beginPath()
           vm.ctx.rect(item.x1, item.y1, item.width, item.height)
           if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
@@ -756,11 +757,12 @@ export default {
               level: item.level,
               picid: item.picid,
               type: item.type,
+              riskType: item.riskType,
               width: 28,
               x1: item.x1,
-              x2: 0,
+              x2: item.x2,
               y1: item.y1,
-              y2: 0
+              y2: item.y2
             }
             vm.render(pointRact)
             allNotIn = 0
@@ -773,10 +775,10 @@ export default {
           } else {
             image.src = vm.imageStyles[2]
           }
-          vm.startx = (item.x1 / vm.scale) - 14
-          vm.starty = (item.y1 / vm.scale) - 14
+          vm.startx = (item.x1 / vm.scale)
+          vm.starty = (item.y1 / vm.scale)
           vm.ctx.beginPath()
-          vm.ctx.drawImage(image, vm.startx, vm.starty, 28, 28)
+          vm.ctx.drawImage(image, vm.startx, vm.starty, 28 / vm.scale, 28 / vm.scale)
         }
       })
       if (vm.flag && allNotIn && vm.op < 3) {
@@ -784,7 +786,7 @@ export default {
       }
     },
     render (rect) {
-      debugger
+      // debugger
       let vm = this
       vm.canvas.style.cursor = 'move'
       if (vm.flag && vm.op === 0) {
@@ -864,6 +866,7 @@ export default {
         vm.flag = true
       }
       /** 区别于矩形的绘制，需要记录两个点，添加点，只需要记录鼠标点击的点坐标
+        * 剩下的点，根据固定的28px宽高进行计算
         * 实时绘制风险点
         * 向layers里添加风险点
       **/
@@ -871,12 +874,15 @@ export default {
         let image = new Image()
         image.src = vm.imageStyles[2] // 默认使用灰色图标
         vm.layers.push({
-          x1: vm.x,
-          y1: vm.y,
-          type: 1,
+          x1: vm.x - 14,
+          y1: vm.y - 14,
+          x2: vm.x + 14,
+          y2: vm.y + 14,
+          type: vm.type,
           level: 0,
           bindId: '',
-          picid: vm.currentMap
+          picid: vm.currentMap,
+          riskType: 1
         })
       }
       console.log(vm.layers)
