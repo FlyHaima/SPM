@@ -27,7 +27,7 @@
                   :on-error="handleError"
                   :file-list="fileList"
                   :show-file-list="false">
-          <el-button type="text">上传</el-button>
+          <el-button type="text"  v-if="fucBtns.includes('upload-btn')">上传</el-button>
         </el-upload>
         <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
         <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
@@ -48,9 +48,9 @@
             <span>{{ node.label }}</span>
             <span class="right-btns" v-if="showBtns">
               <!-- 权限显示 -->
-              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="false"></i>
-              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="false"></i>
-              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="false"></i>
+              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="fucBtns.includes('add-btn')"></i>
+              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="fucBtns.includes('edit-btn')"></i>
+              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="fucBtns.includes('del-btn')"></i>
             </span>
           </span>
       </el-tree>
@@ -60,6 +60,7 @@
 
 <script>
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'treeDiagram',
@@ -96,12 +97,14 @@ export default {
       },
       baseUrl: '',
       fileList: [],
-      defaultOpenNode: [] // 默认展开节点的集合
+      defaultOpenNode: [], // 默认展开节点的集合
+      fucBtns: [] // 按钮权限数组
     }
   },
   created () {
     this.baseUrl = base.baseUrl
     this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
+    this.getBtnAuthority()
   },
   methods: {
     // 获取一节点集合
@@ -159,6 +162,21 @@ export default {
     },
     remove (node, data) {
       this.$emit('confirmRemove', data.deptId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '2-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   watch: {
@@ -172,6 +190,7 @@ export default {
         this.fetchTreeNodeId()
       }
     }
+
   }
 }
 </script>

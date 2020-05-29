@@ -9,8 +9,8 @@
 
         <div class="container-box">
           <p class="btn-p">
-            <el-button size="medium" type="primary" @click="openUpload()"> <!-- 权限显示 -->
-              <i class="el-icon-upload2 upload-btn" v-if='true'></i>上传
+            <el-button size="medium" type="primary" @click="openUpload()" v-if="fucBtns.includes('upload-btn')"> <!-- 权限显示 -->
+              <i class="el-icon-upload2 upload-btn"></i>上传
             </el-button>
           </p>
 
@@ -80,8 +80,8 @@
               label="操作"
               align="center">
               <template slot-scope="scope"> <!-- 权限显示 -->
-                <a target="_blank" :href="`${scope.row.path}?attname=${scope.row.documentName}.${scope.row.category}`" style="margin-right: 8px;">下载</a>
-                <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
+                <a target="_blank" :href="`${scope.row.path}?attname=${scope.row.documentName}.${scope.row.category}`" style="margin-right: 8px;" v-if="fucBtns.includes('down-btn')">下载</a>
+                <el-button type="text" @click="deleteItem(scope.row)" v-if="fucBtns.includes('del-btn')">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -97,6 +97,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import {getDocumentList, delDocument, addDocument} from '@/api/organization'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
+import axios from '@/api/axios'
 
 export default {
   name: 'certificateManage',
@@ -120,13 +121,15 @@ export default {
         size: 0
       },
       fileList: [],
-      fileCategory: ['通用型', '行业型', '认证型']
+      fileCategory: ['通用型', '行业型', '认证型'],
+      fucBtns: []
     }
   },
   created () {
     this.baseUrl = base.uploadQiniuAdr
     this.fileAddress = base.fileQiniuAddr
     this.getTableData()
+    this.getBtnAuthority()
   },
   methods: {
     formatTime (t) {
@@ -256,6 +259,24 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '2-5'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {BreadCrumb}

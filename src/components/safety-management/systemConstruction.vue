@@ -7,7 +7,7 @@
     <el-main class="inner-main-container">
       <div class="table-container">
         <p class="btn-p">
-          <el-button size="medium" type="primary" @click="openAdd()"><i class="el-icon-plus function-btn add-btn" v-if="true" style="margin-right: 6px;"></i>新增</el-button>
+          <el-button size="medium" type="primary" @click="openAdd()"><i class="el-icon-plus function-btn add-btn" v-if="fucBtns.includes('add-btn')" style="margin-right: 6px;"></i>新增</el-button>
         </p>
         <el-table ref="leaderTable"
                  border
@@ -32,9 +32,9 @@
             width="220"
             align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="preview(scope.row)">预览</el-button>
-              <el-button type="text" @click="edit(scope.row)">编辑</el-button>
-              <el-button type="text" @click="deleteItem(scope.row.id)">删除</el-button>
+              <el-button type="text" @click="preview(scope.row)" v-if="fucBtns.includes('preview-btn')">预览</el-button>
+              <el-button type="text" @click="edit(scope.row)" v-if="fucBtns.includes('edit-btn')">编辑</el-button>
+              <el-button type="text" @click="deleteItem(scope.row.id)" v-if="fucBtns.includes('del-btn')">删除</el-button>
               <el-button type="text" @click="downloadItem(scope.row.id)">下载</el-button>
 
 <!--              <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>-->
@@ -109,6 +109,7 @@ import base from '@/api/baseUrl'
 import {getConstructionList, editSystemFile, deleteSystemFile, resetSystemFile, addConstruction} from '@/api/organization'
 import {getQiNiuToken} from '@/api/upload'
 import exportExcel from '@/api/exportExcel'
+import axios from '@/api/axios'
 
 export default {
   name: 'systemConstruction',
@@ -164,13 +165,15 @@ export default {
       fileAddress: '',
       innerVisible: false,
       editor: null,
-      editorLoading: false
+      editorLoading: false,
+      fucBtns: []
     }
   },
   created () {
     this.baseUrl = base.uploadQiniuAdr
     this.fileAddress = base.fileQiniuAddr
     this.getConstructionList()
+    this.getBtnAuthority()
   },
   methods: {
     openAdd () {
@@ -371,6 +374,23 @@ export default {
         },
         null /* 指定添加到工具栏上的哪个位置，默认时追加到最后 */,
         editorId /* 指定这个 UI 是哪个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮 */)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '2-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {BreadCrumb, VueUeditorWrap}

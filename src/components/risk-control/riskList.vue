@@ -21,7 +21,7 @@
               <div class="tools-right">
                 <el-upload
                   class="tools-item"
-                  v-if="importVisible"
+                  v-if="importVisible && fucBtns.includes('import-btn')"
                   accept=".xls"
                   :action='uploadUrl()'
                   :data="uploadData"
@@ -38,7 +38,7 @@
                    导入</el-button>
                 </el-upload>
                 <el-button
-                  v-if="!tableVisible"
+                  v-if="!tableVisible && fucBtns.includes('export-btn')"
                   class="tools-item"
                   type="success"
                   size="medium"
@@ -46,7 +46,7 @@
                   @click="exportEexcelHandel">
                    导出</el-button>
                    <el-button
-                  v-if="organizationVisible"
+                  v-if="organizationVisible && fucBtns.includes('export-btn')"
                   class="tools-popup"
                   type="success"
                   size="medium"
@@ -258,7 +258,8 @@ export default {
       }, // 上传数据
       fileList: [], // 导入列表
       currentPlanId: '', // 当前清单项的id
-      departmentalTreeId: '' // 当前选择部门树 部门id
+      departmentalTreeId: '', // 当前选择部门树 部门id
+      fucBtns: []
     }
   },
   created () {
@@ -266,6 +267,7 @@ export default {
     // this.fetchTableData()
     this.fetchPlanOrganizationData()
     this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
+    this.getBtnAuthority()
   },
   methods: {
     // 导入接口地址
@@ -415,7 +417,25 @@ export default {
     // 导出excel
     exportEexcelHandel () {
       exportExcel(`riskLevel/exportRiskCard`, 'id=' + this.riskId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '4-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
+
   },
   computed: {
     // tag的class集合计算
