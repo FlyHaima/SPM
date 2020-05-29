@@ -334,20 +334,25 @@ export default {
       pageLoading: false,
       mapLists: [], // map 选项列表
       currentMap: '', // 当前所选のmap
-      layers: [], // 新建图层
+      layers: [], // 新建图层,包括新建的图标，用 type 作为区分
       oldLayers: [], // 之前存在的图层
       fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
+      imageStyles: [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACOklEQVRIS9WVv2sUQRTHv28vp2AhYmnQP0CSuz0j7swc8UenYBAtrBRiJ1pYWqloaWWlWClodwghYKGNB97N7QYlu5tCxMaAYJk0igi3T3ZxdS/e3s5ejoBbzr73/cz3vTczhB3+aId5+D+Aq0osVpi+1Xq9VtkKlXYYKLkE8LkYxOAlW3vny0BLAX0pjxGxlwVYEQ7Puu4HU2gpYKDkBsD7suIM/mpr78DEgWFT3mbmu8OECbhS0+5TE6iRw3dzc9Xq7urPVJAY7aSHhJPp2sfpg1MXW61+EdQIGCgRA06kYlGEUw3XbQdKcLrGzI/tnnd128BAiAVYWM4KDQPG/ytWZM90VoJR0EKHoZLrDD5kAmSwb2uvMTYwUPIBwDe2CuQ5/H02L9vae54HzXXoSzlNxF+GJY4CxvFkTe2vdTobORM9fC++FMtEWBgHyMB9W7s3jYGhEosMPMkrS5HDJI+i4/XuytutGkNLGiixBmBmW0Dwq7r2ThcCfencI6JboyYtApIbxwLujD53fL2uvYfZmAGHq0rZFqIugD1FB9jsP2/2UbGPaL2exg8AQyWeMXCpSCzuYeLQwpuiWACP6tq99g/Qb4oLxHhhIACjockIWbDOzmr9MpmldD1UosuAMgGOEdOpa3f+D3Bt3qlFfRp5B44BGUghi4/WOt77xOEnx9n7vULxq238kJbcwOdo149Go+1v/i1pU5zpM5ySQkbhBNa29l4P9NAocwJBhc/TBBiDvZy0YJHeLwsl5B31eUctAAAAAElFTkSuQmCC',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACFElEQVRIS9WVv2sUQRzF3zt/3VxAxEZQ8A8QkQuIguCPdAoG0cJKQTvJZTdYWaloaSW7MSGVgdiJEAIW2nigESwExcJWQbD0LHK7nt4+uctxZt3b3dmcHDjVsvu+77NvZr4zxIgHR8zD/wGUV74Cco1O8LjoDBVOKM8sgzjXAy3TCc4XgRYCyjNHQLyJAUrtA6y1PtpCiwF98w3Arpi58JVusPefAzVbvgXxzkDjkq6yFi7aQK0SagHb0DKtDYb13vOp/rs9wVZeRDsPagf0TB3EyT9mmqAT1uUb9d9JC3TDa0MD5VUmQa3EjQYAOwKVqnTX3mdBcxPKN58B7LcCAu/oBOObBso39wHMJA1SEnaFukwnfJQGTU2oebMPv/BlcGEWEMCW7bs59b3TQomRDvTMCojJTQGBe3SCG9bA3ln5MH0tchJ2Z1Yn6IYv//YYmFB++QPAg0MBoWd0wtO5QPmVu4BuZvZTpPUTp8Tb2X3HGp3m3EZNLKEejFURRasAKnkNbPm9AarK6bDTWt0RB/pmCcClfDNN9Mpf5GqJeU4HUwmgPHMBxJNcg/VeSx5tWYXiWbrNp7GEmjWrEI7ZAQuqhFd0g+N9oObGDqEdZZ6BBRFJecTDnGm+7a6hPOwETefWtr5IC/0A8Qk/d4zzeqPR3zTyK2cQRUcLGdmKqdd0fzxP7FLb+mF0udfTMOaDakcO/A38Z8gdevKgTAAAAABJRU5ErkJggg==',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACIElEQVRIS9WVPYgTURSFz50xjYWIpYKkSCUiWRAFwb9OwWXRIpWCNkG0kJCZ+5hCRavMfRAkhWK1gnYiLIKFNi7oChaCYmGrIFjuNkKQDFcmZJdsksm82UjAVw0z555vzvu5jzDnQXPm4f8AishVAL+Z+XnRGSqcUERWACylIFVdMcZcLAItBIzj+BgRfRwGqOohY8w3V2ghoLV2XVX3jgB/GWP2/3OgiNwBcC/D+BozP3GBOiWs1+ulSqXyZ8hwdfB8ZvNduVzeVavVkjyoE1BEUsDpTbMkSc5GUbQqIjoEeMzM12cGWmsXVfXlsFEGEL7vV5vN5pdp0NyEIvIDwEEXIIDPzLywY6CIPABwa9QgK2GqI6IrYRg+y4JmJmy32wd6vd7PSYXTgKk+SZJ9URStT6rNBIpIum6LOwECEGY2zsBBr1zOmpa8hIO6U8z8btRjYkIR+Qrg8CxAVX1tjDmXC4zj+D4R3Z6201S133GI6G6O7qYx5uGwZltCEakCWAOwO+8AO37f8DyvGgRBerT6YxT4FMDlPLN0DVON7/tv87QAHjHzjTFgHMeXiOiFg0G67Se1tsxSIroQhuGrbQmttWuqesIFWFRDRO/DMDy5BbTWHlHVqT2wKGRU73ne0SAIPvXXsNPp7Ol2u+mt7XyRFvyB76VSaaHRaGxsbZpWq3WeiI4XNHKSE9EHZn4ztkudqmcU5V5PM/qPlc8d+BciVeUd9MidXQAAAABJRU5ErkJggg=='
+      ],
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
       starty: 0, // 起始y坐标
-      flag: false, // 是否点击鼠标的标志
+      flag: false, // 是否是mousedown的状态
       x: 0,
       y: 0,
       leftDistance: 0,
       topDistance: 0,
-      op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框
+      op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框 -1 绘制点图标 -2 拖动点图标
       scale: 1,
-      type: 0,
+      type: 0, // 设置绘制图形类型：0 矩形， 1 点
       currentImage: {
         url: '',
         width: 0,
@@ -394,7 +399,7 @@ export default {
     }
     vm.getRiskSelector()
     vm.getPlaceSelector(0)// 初始化时，获取map列表
-    vm.showOld()
+    vm.drawOldLayers()
   },
   created () {
     let vm = this
@@ -452,7 +457,7 @@ export default {
         vm.pageLoading = false
       })
     },
-    /** 获取当前map下原有记录的layers & points，顺便使用showOld()方法重绘 **/
+    /** 获取当前map下原有记录的racts & points，顺便使用drawOldLayers()方法重绘 **/
     getOldLayers () {
       let vm = this
       vm.pageLoading = true
@@ -469,7 +474,7 @@ export default {
                 vm.canvas.width = res.width
                 vm.canvas.height = res.height
                 vm.$nextTick(() => {
-                  vm.showOld() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
+                  vm.drawOldLayers() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
                 })
                 /**
                  * 这里存在的问题，当前定位到：
@@ -496,8 +501,8 @@ export default {
         vm.scale = vm.canvas.height / vm.currentImage.height
         vm.ctx.scale(vm.scale, vm.scale)
         vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
-        vm.showOld()
-        vm.reshow()
+        vm.drawOldLayers()
+        vm.drawNewLayers()
       }
     },
     zoomDown () {
@@ -510,23 +515,23 @@ export default {
         vm.scale = c.height / vm.currentImage.height
         vm.ctx.scale(vm.scale, vm.scale)
         vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
-        vm.showOld()
-        vm.reshow()
+        vm.drawOldLayers()
+        vm.drawNewLayers()
       }
     },
     cancel () {
       let vm = this
       vm.layers.pop()
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.showOld()
-      vm.reshow()
+      vm.drawOldLayers()
+      vm.drawNewLayers()
     },
     clear () {
       let vm = this
       vm.layers = []
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.showOld()
-      vm.reshow()
+      vm.drawOldLayers()
+      vm.drawNewLayers()
     },
     saveChange () { // 保存修改
       let vm = this
@@ -679,73 +684,113 @@ export default {
         vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
       }
     },
-    // 绘制原有图形，包括背景图
-    showOld () {
+    // 绘制后台传过来的数据，包括背景图，oldLayers，oldPoints
+    drawOldLayers () {
       let vm = this
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
       vm.oldLayers.forEach(item => {
-        vm.ctx.beginPath()
-        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
-        vm.ctx.strokeStyle = vm.fillStyles[item.level]
-        vm.ctx.fillStyle = vm.fillStyles[item.level]
-        vm.ctx.globalAlpha = 0.7
-        vm.ctx.fill()
-        vm.ctx.stroke()
-        vm.ctx.font = '20px Georgia'
-        vm.ctx.fillStyle = 'black'
-        vm.ctx.textAlign = 'center'
-        vm.ctx.textBaseline = 'middle'
-        vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
-        vm.ctx.stroke()
+        /** 注：为了不影响代码运行，先改为type，后期需改为riskType **/
+        if (item.type === 0) {
+          vm.ctx.beginPath()
+          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+          vm.ctx.strokeStyle = vm.fillStyles[item.level]
+          vm.ctx.fillStyle = vm.fillStyles[item.level]
+          vm.ctx.globalAlpha = 0.7
+          vm.ctx.fill()
+          vm.ctx.stroke()
+          vm.ctx.font = '20px Georgia'
+          vm.ctx.fillStyle = 'black'
+          vm.ctx.textAlign = 'center'
+          vm.ctx.textBaseline = 'middle'
+          vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
+          vm.ctx.stroke()
+        } else {
+
+        }
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
     },
-    // 绘制图形（擦除后重绘 or 第一遍加载时绘制）
-    reshow (x, y) {
+    /** 绘制缓存里的layers图层
+     * 绘制图形（擦除后重绘 or 第一遍加载时绘制）
+     * **/
+    drawNewLayers (x, y) {
       let vm = this
       let allNotIn = 1
 
       vm.layers.forEach(item => {
-        vm.ctx.beginPath()
-        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
-        if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
-          vm.resizeLeft(item)
-        } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
-          vm.resizeWidth(item)
-        } else if (y >= (item.y1 - 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
-          vm.resizeTop(item)
-        } else if (y >= (item.y2 - 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
-          vm.resizeHeight(item)
-        } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
-          vm.resizeLT(item)
-        } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
-          vm.resizeWH(item)
-        } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
-          vm.resizeLH(item)
-        } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
-          vm.resizeWT(item)
+        if (item.riskType === 0) {
+          vm.ctx.beginPath()
+          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+          if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
+            vm.resizeLeft(item)
+          } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
+            vm.resizeWidth(item)
+          } else if (y >= (item.y1 - 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
+            vm.resizeTop(item)
+          } else if (y >= (item.y2 - 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
+            vm.resizeHeight(item)
+          } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
+            vm.resizeLT(item)
+          } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
+            vm.resizeWH(item)
+          } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
+            vm.resizeLH(item)
+          } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
+            vm.resizeWT(item)
+          }
+          if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
+            vm.render(item)
+            allNotIn = 0
+          }
+          vm.ctx.strokeStyle = vm.fillStyles[item.level]
+          vm.ctx.fillStyle = vm.fillStyles[item.level]
+          vm.ctx.globalAlpha = 0.7
+          vm.ctx.fill()
+          vm.ctx.stroke()
+        } else {
+          if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
+            let pointRact = {
+              bindId: item.bindId,
+              height: 28,
+              level: item.level,
+              picid: item.picid,
+              type: item.type,
+              riskType: item.riskType,
+              width: 28,
+              x1: item.x1,
+              x2: item.x2,
+              y1: item.y1,
+              y2: item.y2
+            }
+            vm.render(pointRact)
+            allNotIn = 0
+          }
+          let image = new Image()
+          if (item.level === 1) {
+            image.src = vm.imageStyles[0]
+          } else if (item.level === 2) {
+            image.src = vm.imageStyles[1]
+          } else {
+            image.src = vm.imageStyles[2]
+          }
+          vm.startx = (item.x1 / vm.scale)
+          vm.starty = (item.y1 / vm.scale)
+          vm.ctx.beginPath()
+          vm.ctx.drawImage(image, vm.startx, vm.starty, 28 / vm.scale, 28 / vm.scale)
         }
-        if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
-          vm.render(item)
-          allNotIn = 0
-        }
-        vm.ctx.strokeStyle = vm.fillStyles[item.level]
-        vm.ctx.fillStyle = vm.fillStyles[item.level]
-        vm.ctx.globalAlpha = 0.7
-        vm.ctx.fill()
-        vm.ctx.stroke()
       })
       if (vm.flag && allNotIn && vm.op < 3) {
         vm.op = 1
       }
     },
     render (rect) {
+      // debugger
       let vm = this
       vm.canvas.style.cursor = 'move'
       if (vm.flag && vm.op === 0) {
-        vm.op = 2
+        vm.op = 2 // 此时为拖动
       }
       if (vm.flag && vm.op === 2) {
         if (!vm.currentR) {
@@ -806,57 +851,84 @@ export default {
         console.log('mousedown: menu')
         return
       }
-      if (!this.unitAble) {
-        console.log('unit paint')
-        return
-      }
       let vm = this
-      vm.startx = e.layerX / vm.scale
-      vm.starty = e.layerY / vm.scale
-      vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
-      if (vm.currentR) {
-        vm.leftDistance = vm.startx - vm.currentR.x1
-        vm.topDistance = vm.starty - vm.currentR.y1
+      // 鼠标按下时，实时添加风险单元的绘制
+      if (vm.unitAble) {
+        vm.startx = e.layerX / vm.scale
+        vm.starty = e.layerY / vm.scale
+        vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
+        if (vm.currentR) {
+          vm.leftDistance = vm.startx - vm.currentR.x1
+          vm.topDistance = vm.starty - vm.currentR.y1
+        }
+        vm.ctx.strokeRect(vm.x, vm.y, 0, 0)
+        vm.ctx.strokeStyle = '#0000ff'
+        vm.flag = true
       }
-      vm.ctx.strokeRect(vm.x, vm.y, 0, 0)
-      vm.ctx.strokeStyle = '#0000ff'
-      vm.flag = 1
+      /** 区别于矩形的绘制，需要记录两个点，添加点，只需要记录鼠标点击的点坐标
+        * 剩下的点，根据固定的28px宽高进行计算
+        * 实时绘制风险点
+        * 向layers里添加风险点
+      **/
+      if (vm.pointAble) {
+        let image = new Image()
+        image.src = vm.imageStyles[2] // 默认使用灰色图标
+        vm.layers.push({
+          x1: vm.x - 14,
+          y1: vm.y - 14,
+          x2: vm.x + 14,
+          y2: vm.y + 14,
+          type: vm.type,
+          level: 0,
+          bindId: '',
+          picid: vm.currentMap,
+          riskType: 1
+        })
+      }
+      console.log(vm.layers)
     },
     mousemove (e) {
       let vm = this
       vm.x = e.layerX / vm.scale
       vm.y = e.layerY / vm.scale
-      vm.ctx.save()
-      vm.ctx.setLineDash([5])
-      vm.canvas.style.cursor = 'default'
-      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      if (vm.flag && vm.op === 1) {
-        vm.ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
+      if (vm.unitAble) {
+        vm.ctx.save()
+        vm.ctx.setLineDash([5])
+        vm.canvas.style.cursor = 'default'
+        vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+        if (vm.flag && vm.op === 1) {
+          vm.ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
+        }
+        vm.ctx.restore()
+        vm.drawOldLayers()
+        vm.drawNewLayers(vm.x, vm.y)
       }
-      vm.ctx.restore()
-      vm.showOld()
-      vm.reshow(vm.x, vm.y)
     },
     mouseup (e) {
       let vm = this
 
       if (vm.op === 1) {
-        vm.layers.push(vm.fixPosition({
-          x1: vm.startx,
-          y1: vm.starty,
-          x2: vm.x,
-          y2: vm.y,
-          type: vm.type,
-          level: 0,
-          bindId: '', // 绑定的点的id
-          picid: vm.currentMap // 绑定的map的id
-        }))
+        // 向此时的layers里注入新画的图层，point 或 rect
+        if (vm.unitAble) {
+          vm.layers.push(vm.fixPosition({
+            x1: vm.startx,
+            y1: vm.starty,
+            x2: vm.x,
+            y2: vm.y,
+            type: vm.type,
+            riskType: 0,
+            level: 0,
+            bindId: '', // 绑定的点的id
+            picid: vm.currentMap // 绑定的map的id
+          }))
+        }
       } else if (vm.op >= 3) {
         vm.fixPosition(vm.currentR)
       }
+
       vm.currentR = null
-      vm.flag = 0
-      vm.reshow(vm.x, vm.y)
+      vm.flag = false
+      vm.drawNewLayers(vm.x, vm.y)
       vm.op = 0
     },
     openMenu (e) {
@@ -905,7 +977,7 @@ export default {
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.getOldLayers()
       vm.layers = []
-      vm.showOld()
+      vm.drawOldLayers()
     },
     addMap () {
       let vm = this
@@ -1019,7 +1091,7 @@ export default {
               vm.layers.splice(i, 1)
             }
           }
-          vm.reshow()
+          vm.drawNewLayers()
         }
       }).catch(() => {
         this.$message({
