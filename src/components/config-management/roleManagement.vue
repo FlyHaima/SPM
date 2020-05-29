@@ -516,29 +516,29 @@ export default {
     },
     // 保存
     saveCheckData () {
-      const vm = this
-      vm.postMenuCheckList = vm.filterMenuCheckedNodes()
-      vm.postBtnCheckedList = vm.filterBtnChecked(vm.data).join(',')
-      const sendData = {
-        roleId: this.roleId,
-        authIds: vm.postMenuCheckList + ',' + vm.postBtnCheckedList
-      }
-      vm
-        .$confirm('确定修改该菜单吗？', '提示', {
-          type: 'warning'
-        })
-        .then(() => {
-          const vm = this
-          vm.submitting = true
-          axiosApi.assignMenuData(sendData).then(res => {
-            vm.$notify.success('分配成功')
-            vm.$router.go(-1)
-            vm.submitting = false
-          })
-        })
-        .catch(() => {
-          this.submitting = false
-        })
+      // const vm = this
+      // vm.postMenuCheckList = vm.filterMenuCheckedNodes()
+      // vm.postBtnCheckedList = vm.filterBtnChecked(vm.data).join(',')
+      // const sendData = {
+      //   roleId: this.roleId,
+      //   authIds: vm.postMenuCheckList + ',' + vm.postBtnCheckedList
+      // }
+      // vm
+      //   .$confirm('确定修改该菜单吗？', '提示', {
+      //     type: 'warning'
+      //   })
+      //   .then(() => {
+      //     const vm = this
+      //     vm.submitting = true
+      //     axiosApi.assignMenuData(sendData).then(res => {
+      //       vm.$notify.success('分配成功')
+      //       vm.$router.go(-1)
+      //       vm.submitting = false
+      //     })
+      //   })
+      //   .catch(() => {
+      //     this.submitting = false
+      //   })
     },
     // 筛选选中的btn元素
     filterBtnChecked (fData) {
