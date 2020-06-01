@@ -566,7 +566,6 @@ export default {
         id: vm.currentMap,
         layers: allLayers
       }
-      debugger
       bindLayer(postD).then(res => {
         if (res.code === 200) {
           vm.layers = [] // 因为修改的layers以及保存了，再次加载时，作为oldLayers加载，故layers清空
