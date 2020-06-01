@@ -150,6 +150,11 @@ export default {
             }
           }
         ],
+        dataZoom: [
+          {
+            show: true
+          }
+        ],
         yAxis: [
           {
             type: 'value',
