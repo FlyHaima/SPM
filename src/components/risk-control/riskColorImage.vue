@@ -116,12 +116,12 @@
             </div>
           </div>
 
-          <!-- 绑定节点 -->
-          <el-dialog title="绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+          <!-- 绑定风险点 -->
+          <el-dialog title="绑定风险点" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
                      :visible.sync="bindVisible"
                      width="480px" :append-to-body="true">
             <el-form label-width="120px">
-              <el-form-item label="区块名称：">
+              <el-form-item label="风险点名称：">
                 <el-select v-model="bindSelection"  placeholder="请选择" size="medium">
                   <el-option
                     v-for="item in bindOptions"
@@ -138,12 +138,12 @@
             </span>
           </el-dialog>
 
-          <!-- 重新绑定节点 -->
-          <el-dialog title="重新绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+          <!-- 重新绑定风险点 -->
+          <el-dialog title="重新绑定风险点" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
                      :visible.sync="rebindVisible"
                      width="480px" :append-to-body="true">
             <el-form label-width="120px">
-              <el-form-item label="区块名称：">
+              <el-form-item label="风险点名称：">
                 <el-select v-model="rebindSelection"  placeholder="请选择" size="medium">
                   <el-option
                     v-for="item in bindOptions"
@@ -307,6 +307,7 @@ import TreeDiagram from '../tree-diagram/treeDiagram'
 import {
   getPlaceSelector,
   getRiskSelector,
+  getUnitSelector,
   addPlace,
   bindLayer,
   getLayer,
@@ -314,6 +315,7 @@ import {
   delPoint,
   uploadPic,
   checkItemDetail,
+  checkUnitDetail,
   getImageSize
 } from '@/api/riskControl'
 import base from '@/api/baseUrl'
@@ -375,6 +377,8 @@ export default {
       slideTable: [],
       bindVisible: false,
       bindOptions: [],
+      pointOptions: [],
+      unitOptions: [],
       bindSelection: null, // 绑定的选项
       rebindVisible: false,
       rebindSelection: null, // 重新绑定的选项
@@ -397,9 +401,9 @@ export default {
     document.onclick = function () {
       vm.showMenu = false // 关闭自定义右键menu
     }
-    vm.getRiskSelector()
+    vm.getPointSelector()
+    vm.getUnitSelector()
     vm.getPlaceSelector(0)// 初始化时，获取map列表
-    vm.drawOldLayers()
   },
   created () {
     let vm = this
@@ -417,13 +421,29 @@ export default {
       this.pointAble = false
       this.unitAble = true
     },
-    // 获取风险点选项列表，绑定和重新绑定是一个方法
-    getRiskSelector () {
+    // 获取风险单元选项列表
+    getUnitSelector () {
+      let vm = this
+      vm.pageLoading = true
+      getUnitSelector().then(res => {
+        if (res.code === 200) {
+          vm.unitOptions = res.data
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '数据失败， 请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
+    // 获取风险点选项列表
+    getPointSelector () {
       let vm = this
       vm.pageLoading = true
       getRiskSelector().then(res => {
         if (res.code === 200) {
-          vm.bindOptions = res.data
+          vm.pointOptions = res.data
         } else {
           vm.$message({
             type: 'warning',
@@ -474,13 +494,8 @@ export default {
                 vm.canvas.width = res.width
                 vm.canvas.height = res.height
                 vm.$nextTick(() => {
-                  vm.drawOldLayers() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
+                  vm.initCanvas() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
                 })
-                /**
-                 * 这里存在的问题，当前定位到：
-                 * 触发了vue的flushCallbacks()方法，绘制的图被清空了。
-                 * 解决办法，使用 $nextTick 保证canvas相关dom能够即时更新
-                 * **/
               })
             }
           } else {
@@ -501,8 +516,7 @@ export default {
         vm.scale = vm.canvas.height / vm.currentImage.height
         vm.ctx.scale(vm.scale, vm.scale)
         vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
-        vm.drawOldLayers()
-        vm.drawNewLayers()
+        vm.initCanvas()
       }
     },
     zoomDown () {
@@ -515,23 +529,20 @@ export default {
         vm.scale = c.height / vm.currentImage.height
         vm.ctx.scale(vm.scale, vm.scale)
         vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
-        vm.drawOldLayers()
-        vm.drawNewLayers()
+        vm.initCanvas()
       }
     },
     cancel () {
       let vm = this
       vm.layers.pop()
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.drawOldLayers()
-      vm.drawNewLayers()
+      vm.initCanvas()
     },
     clear () {
       let vm = this
       vm.layers = []
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.drawOldLayers()
-      vm.drawNewLayers()
+      vm.initCanvas()
     },
     saveChange () { // 保存修改
       let vm = this
@@ -542,9 +553,9 @@ export default {
         id: vm.currentMap,
         layers: allLayers
       }
+      debugger
       bindLayer(postD).then(res => {
         if (res.code === 200) {
-          // console.log(res.data)
           vm.layers = [] // 因为修改的layers以及保存了，再次加载时，作为oldLayers加载，故layers清空
           vm.getOldLayers()
         } else {
@@ -676,6 +687,10 @@ export default {
         vm.currentR.width = vm.currentR.x2 - vm.currentR.x1
       }
     },
+    initCanvas () {
+      this.drawOldLayers()
+      this.drawNewLayers()
+    },
     drawImage () {
       let vm = this
       if (vm.currentImage.url) {
@@ -691,7 +706,7 @@ export default {
 
       vm.oldLayers.forEach(item => {
         /** 注：为了不影响代码运行，先改为type，后期需改为riskType **/
-        if (item.type === 0) {
+        if (item.riskType === 0) {
           vm.ctx.beginPath()
           vm.ctx.rect(item.x1, item.y1, item.width, item.height)
           vm.ctx.strokeStyle = vm.fillStyles[item.level]
@@ -706,7 +721,16 @@ export default {
           vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
           vm.ctx.stroke()
         } else {
-
+          let image = new Image()
+          if (item.level === 1) {
+            image.src = vm.imageStyles[0]
+          } else if (item.level === 2) {
+            image.src = vm.imageStyles[1]
+          } else {
+            image.src = vm.imageStyles[2]
+          }
+          vm.ctx.beginPath()
+          vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
         }
       })
 
@@ -750,6 +774,10 @@ export default {
           vm.ctx.fill()
           vm.ctx.stroke()
         } else {
+          /* 绘制点图标，无需resize功能
+           * 但需要对点图标的矩形位置进行重新定位
+           * 使用矩形中心进行定位
+          */
           if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
             let pointRact = {
               bindId: item.bindId,
@@ -775,10 +803,8 @@ export default {
           } else {
             image.src = vm.imageStyles[2]
           }
-          vm.startx = (item.x1 / vm.scale)
-          vm.starty = (item.y1 / vm.scale)
           vm.ctx.beginPath()
-          vm.ctx.drawImage(image, vm.startx, vm.starty, 28 / vm.scale, 28 / vm.scale)
+          vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
         }
       })
       if (vm.flag && allNotIn && vm.op < 3) {
@@ -786,7 +812,6 @@ export default {
       }
     },
     render (rect) {
-      // debugger
       let vm = this
       vm.canvas.style.cursor = 'move'
       if (vm.flag && vm.op === 0) {
@@ -807,8 +832,15 @@ export default {
       let vm = this
       let len = vm.layers.length
       for (let i = 0; i < len; i++) {
-        if (vm.layers[i].x1 < x && x < vm.layers[i].x2 && vm.layers[i].y1 < y && y < vm.layers[i].y2) {
-          return vm.layers[i]
+        let itemLayer = vm.layers[i]
+        if (itemLayer.riskType === 0) {
+          if (itemLayer.x1 < x && x < itemLayer.x2 && itemLayer.y1 < y && y < itemLayer.y2) {
+            return itemLayer
+          }
+        } else {
+          if ((itemLayer.x1 - 14) < x && x < (itemLayer.x1 + 14) && (itemLayer.y1 - 14) < y && y < (itemLayer.y1 + 14)) {
+            return itemLayer
+          }
         }
       }
     },
@@ -817,8 +849,15 @@ export default {
       let vm = this
       let len = vm.oldLayers.length
       for (let i = 0; i < len; i++) {
-        if (vm.oldLayers[i].x1 < x && x < vm.oldLayers[i].x2 && vm.oldLayers[i].y1 < y && y < vm.oldLayers[i].y2) {
-          return vm.oldLayers[i]
+        let itemLayer = vm.oldLayers[i]
+        if (itemLayer.riskType === 0) {
+          if (itemLayer.x1 < x && x < itemLayer.x2 && itemLayer.y1 < y && y < itemLayer.y2) {
+            return itemLayer
+          }
+        } else {
+          if ((itemLayer.x1 - 14) < x && x < (itemLayer.x1 + 14) && (itemLayer.y1 - 14) < y && y < (itemLayer.y1 + 14)) {
+            return itemLayer
+          }
         }
       }
     },
@@ -865,7 +904,7 @@ export default {
         vm.ctx.strokeStyle = '#0000ff'
         vm.flag = true
       }
-      /** 区别于矩形的绘制，需要记录两个点，添加点，只需要记录鼠标点击的点坐标
+      /** 区别于矩形的绘制，需要记录两个点，添加点，只需要记录鼠标点击的点坐标(x1, y1)
         * 剩下的点，根据固定的28px宽高进行计算
         * 实时绘制风险点
         * 向layers里添加风险点
@@ -874,10 +913,10 @@ export default {
         let image = new Image()
         image.src = vm.imageStyles[2] // 默认使用灰色图标
         vm.layers.push({
-          x1: vm.x - 14,
-          y1: vm.y - 14,
-          x2: vm.x + 14,
-          y2: vm.y + 14,
+          x1: vm.x,
+          y1: vm.y,
+          x2: vm.x,
+          y2: vm.y,
           type: vm.type,
           level: 0,
           bindId: '',
@@ -1043,19 +1082,35 @@ export default {
       let vm = this
       vm.slidLoading = true
       vm.slideOpen = true
-      checkItemDetail(vm.starshMenu.bindId).then(res => {
-        if (res.code === 200) {
-          vm.slideTable = res.data
-          vm.slidLoading = false
-        } else {
-          vm.slidLoading = false
-          vm.slideOpen = false
-          vm.$message({
-            type: 'warning',
-            message: '数据获取失败，请稍后重试'
-          })
-        }
-      })
+      if (vm.currentR.riskType === 0) {
+        checkUnitDetail(vm.starshMenu.bindId).then(res => {
+          if (res.code === 200) {
+            vm.slideTable = res.data
+            vm.slidLoading = false
+          } else {
+            vm.slidLoading = false
+            vm.slideOpen = false
+            vm.$message({
+              type: 'warning',
+              message: '数据获取失败，请稍后重试'
+            })
+          }
+        })
+      } else {
+        checkItemDetail(vm.starshMenu.bindId).then(res => {
+          if (res.code === 200) {
+            vm.slideTable = res.data
+            vm.slidLoading = false
+          } else {
+            vm.slidLoading = false
+            vm.slideOpen = false
+            vm.$message({
+              type: 'warning',
+              message: '数据获取失败，请稍后重试'
+            })
+          }
+        })
+      }
     },
     deleteItem () {
       let vm = this
@@ -1091,7 +1146,7 @@ export default {
               vm.layers.splice(i, 1)
             }
           }
-          vm.drawNewLayers()
+          vm.initCanvas()
         }
       }).catch(() => {
         this.$message({
@@ -1113,17 +1168,26 @@ export default {
     },
     bind () {
       let vm = this
+      if (vm.currentR.riskType === 0) { // 绑定风险单元，切换选项
+        vm.bindOptions = vm.unitOptions
+      } else {
+        vm.bindOptions = vm.pointOptions
+      }
       vm.bindVisible = true
     },
     rebind () {
       let vm = this
+      if (vm.currentR.riskType === 0) { // 绑定风险单元
+        vm.bindOptions = vm.unitOptions
+      } else {
+        vm.bindOptions = vm.pointOptions
+      }
       vm.rebindVisible = true
     },
     uploadNewMap () {
       this.uploadVisible = true
     },
     checkOutDetail (data) {
-      // console.log(data)
       this.detailVisible = true
       this.detailData = data
     }, // 点击查看详情
