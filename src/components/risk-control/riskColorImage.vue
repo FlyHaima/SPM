@@ -344,6 +344,9 @@ export default {
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACFElEQVRIS9WVv2sUQRzF3zt/3VxAxEZQ8A8QkQuIguCPdAoG0cJKQTvJZTdYWaloaSW7MSGVgdiJEAIW2nigESwExcJWQbD0LHK7nt4+uctxZt3b3dmcHDjVsvu+77NvZr4zxIgHR8zD/wGUV74Cco1O8LjoDBVOKM8sgzjXAy3TCc4XgRYCyjNHQLyJAUrtA6y1PtpCiwF98w3Arpi58JVusPefAzVbvgXxzkDjkq6yFi7aQK0SagHb0DKtDYb13vOp/rs9wVZeRDsPagf0TB3EyT9mmqAT1uUb9d9JC3TDa0MD5VUmQa3EjQYAOwKVqnTX3mdBcxPKN58B7LcCAu/oBOObBso39wHMJA1SEnaFukwnfJQGTU2oebMPv/BlcGEWEMCW7bs59b3TQomRDvTMCojJTQGBe3SCG9bA3ln5MH0tchJ2Z1Yn6IYv//YYmFB++QPAg0MBoWd0wtO5QPmVu4BuZvZTpPUTp8Tb2X3HGp3m3EZNLKEejFURRasAKnkNbPm9AarK6bDTWt0RB/pmCcClfDNN9Mpf5GqJeU4HUwmgPHMBxJNcg/VeSx5tWYXiWbrNp7GEmjWrEI7ZAQuqhFd0g+N9oObGDqEdZZ6BBRFJecTDnGm+7a6hPOwETefWtr5IC/0A8Qk/d4zzeqPR3zTyK2cQRUcLGdmKqdd0fzxP7FLb+mF0udfTMOaDakcO/A38Z8gdevKgTAAAAABJRU5ErkJggg==',
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACIElEQVRIS9WVPYgTURSFz50xjYWIpYKkSCUiWRAFwb9OwWXRIpWCNkG0kJCZ+5hCRavMfRAkhWK1gnYiLIKFNi7oChaCYmGrIFjuNkKQDFcmZJdsksm82UjAVw0z555vzvu5jzDnQXPm4f8AishVAL+Z+XnRGSqcUERWACylIFVdMcZcLAItBIzj+BgRfRwGqOohY8w3V2ghoLV2XVX3jgB/GWP2/3OgiNwBcC/D+BozP3GBOiWs1+ulSqXyZ8hwdfB8ZvNduVzeVavVkjyoE1BEUsDpTbMkSc5GUbQqIjoEeMzM12cGWmsXVfXlsFEGEL7vV5vN5pdp0NyEIvIDwEEXIIDPzLywY6CIPABwa9QgK2GqI6IrYRg+y4JmJmy32wd6vd7PSYXTgKk+SZJ9URStT6rNBIpIum6LOwECEGY2zsBBr1zOmpa8hIO6U8z8btRjYkIR+Qrg8CxAVX1tjDmXC4zj+D4R3Z6201S133GI6G6O7qYx5uGwZltCEakCWAOwO+8AO37f8DyvGgRBerT6YxT4FMDlPLN0DVON7/tv87QAHjHzjTFgHMeXiOiFg0G67Se1tsxSIroQhuGrbQmttWuqesIFWFRDRO/DMDy5BbTWHlHVqT2wKGRU73ne0SAIPvXXsNPp7Ol2u+mt7XyRFvyB76VSaaHRaGxsbZpWq3WeiI4XNHKSE9EHZn4ztkudqmcU5V5PM/qPlc8d+BciVeUd9MidXQAAAABJRU5ErkJggg=='
       ],
+      imageIcon1: {},
+      imageIcon2: {},
+      imageIcon3: {},
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
       starty: 0, // 起始y坐标
@@ -396,6 +399,15 @@ export default {
   },
   mounted () {
     let vm = this
+    // 将所有图片的image生成提前，避免渲染顺序问题
+    vm.imageIcon1 = new Image()
+    vm.imageIcon1.src = vm.imageStyles[0]
+    vm.imageIcon2 = new Image()
+    vm.imageIcon2.src = vm.imageStyles[1]
+    vm.imageIcon3 = new Image()
+    vm.imageIcon3.src = vm.imageStyles[2]
+    let image = new Image()
+    image.src = vm.imageStyles[0]
     vm.canvas = this.$refs.canvas
     vm.ctx = vm.canvas.getContext('2d') // 直接全局设置canvas活动对象
     document.onclick = function () {
@@ -538,6 +550,7 @@ export default {
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.initCanvas()
     },
+    /* 清空画板，顺便再initCanvas，根据当前的数据重绘 */
     clear () {
       let vm = this
       vm.layers = []
@@ -723,11 +736,11 @@ export default {
         } else {
           let image = new Image()
           if (item.level === 1) {
-            image.src = vm.imageStyles[0]
+            image = vm.imageIcon1
           } else if (item.level === 2) {
-            image.src = vm.imageStyles[1]
+            image = vm.imageIcon2
           } else {
-            image.src = vm.imageStyles[2]
+            image = vm.imageIcon3
           }
           vm.ctx.beginPath()
           vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
@@ -795,13 +808,13 @@ export default {
             vm.render(pointRact)
             allNotIn = 0
           }
-          let image = new Image()
+          let image = {}
           if (item.level === 1) {
-            image.src = vm.imageStyles[0]
+            image = vm.imageIcon1
           } else if (item.level === 2) {
-            image.src = vm.imageStyles[1]
+            image = vm.imageIcon2
           } else {
-            image.src = vm.imageStyles[2]
+            image = vm.imageIcon3
           }
           vm.ctx.beginPath()
           vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
@@ -924,7 +937,6 @@ export default {
           riskType: 1
         })
       }
-      console.log(vm.layers)
     },
     mousemove (e) {
       let vm = this
@@ -971,7 +983,6 @@ export default {
       vm.op = 0
     },
     openMenu (e) {
-      // console.log('右键：', e)
       let vm = this
       vm.startx = e.layerX / vm.scale
       vm.starty = e.layerY / vm.scale
@@ -1114,13 +1125,11 @@ export default {
     },
     deleteItem () {
       let vm = this
-
       vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // console.log(vm.currentR, vm.bound)
         if (vm.bound) { // 是odlData，需要请求后台，删除该点
           let postD = {
             id: vm.currentR.id
@@ -1146,7 +1155,7 @@ export default {
               vm.layers.splice(i, 1)
             }
           }
-          vm.initCanvas()
+          vm.clear()
         }
       }).catch(() => {
         this.$message({
@@ -1368,6 +1377,7 @@ export default {
           width: 500px;
           border: 1px solid #ddd;
           height: 100%;
+          overflow: auto;
           background: #fff;
           padding: 20px;
           box-shadow: -1px 2px 5px #c0c4cc;
