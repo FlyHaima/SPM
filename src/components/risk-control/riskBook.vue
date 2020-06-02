@@ -145,6 +145,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import exportExcel from '@/api/exportExcel'
 import axios from 'axios'
+import myaxios from '@/api/axios'
 export default {
   name: 'riskBook',
   mixins: [Tables],
@@ -173,7 +174,7 @@ export default {
   methods: {
     getBtnAuthority () {
       const authId = {authId: '4-3'}
-      axios
+      myaxios
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
@@ -242,7 +243,7 @@ export default {
       } else if (data.riskLevelCode === '1') {
         return 'tag-danger'
       }
-    },
+    }
     // 获取按钮权限方法
   },
   components: {
