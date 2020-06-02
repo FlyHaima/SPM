@@ -166,7 +166,7 @@
                   <el-button
                   type="primary"
                   :loading="submitting"
-                  native-type="submit">保存</el-button>
+                  native-type="submit" v-if="fucBtns.includes('save-btn')">保存</el-button>
                 </div>
               </el-form>
             </template>
@@ -350,7 +350,7 @@ export default {
     // 获取按钮权限方法
     getBtnAuthority () {
       const authId = {authId: '4-5'}
-      debugger
+
       axios
         .get('user/getBtnArray', authId)
         .then((res) => {

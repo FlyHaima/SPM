@@ -51,6 +51,7 @@
               @click="exportEexcelHandel">
               导出</el-button>
               <el-button
+              v-if="fucBtns.includes('export-yh-btn')"
               type="primary"
               size="medium"
               icon="el-icon-download"

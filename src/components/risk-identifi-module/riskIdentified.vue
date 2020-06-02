@@ -28,12 +28,12 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&token=${localToken}&attname=风险辨识表.xls`"><i class></i>导出</a>
+              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&token=${localToken}&attname=风险辨识表.xls`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
               <!-- <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a> -->
-              <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
-              <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
+              <a class="delete-btn" v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('del-btn')" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
+              <a class="add-btn" v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('add-btn')" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
               <el-upload
-                v-show="currentTreeData.treeLevel === '5'"
+                v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('import-ss-btn')"
                 class="tools-item"
                 accept=".xls"
                 :action='uploadUrl()'
@@ -50,7 +50,7 @@
                 class="button-custom"
                 >导入设备设施</el-button></el-upload>
                 <el-upload
-                  v-show="currentTreeData.treeLevel === '5'"
+                  v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('import-zh-btn')"
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
@@ -106,8 +106,8 @@
                 align="center"
                 fixed="right">
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row)">辨识</el-button>
-                  <el-button v-else size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>
+                  <el-button v-if="scope.row.state-1 < 2 && fucBtns.includes('bs-btn')" size="mini" type="text" @click="openDialog(scope.row)" >辨识</el-button>
+                  <el-button v-else size="mini" type="text" @click="openDialog(scope.row)" v-if="fucBtns.includes('update-btn')">修改</el-button>
                 </template>
               </el-table-column>
             </el-table>

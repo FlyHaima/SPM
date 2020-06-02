@@ -147,7 +147,7 @@
                     :value="item">
                   </el-option>
                 </el-select>
-                <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
+                <a class="export-btn" @click="exportTable()" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
               </p>
               <div class="table-box">
                 <el-table

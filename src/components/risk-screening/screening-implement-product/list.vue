@@ -46,6 +46,7 @@
               type="primary"
               size="medium"
               @click="dialogOrganizationVisible= true"
+              v-if = "fucBtns.includes('export-btn')"
               >
               隐患排查清单</el-button>
             <el-button

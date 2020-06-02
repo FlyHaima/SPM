@@ -33,7 +33,7 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="btnDisabledProductSend"
+              v-if="btnDisabledProductSend && fucBtns.includes('fb-btn')"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"

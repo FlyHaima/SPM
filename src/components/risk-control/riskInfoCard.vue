@@ -187,7 +187,7 @@
                   <el-button
                   type="primary"
                   :loading="submitting"
-                  native-type="submit">保存</el-button>
+                  native-type="submit" v-if="fucBtns.includes('save-btn')">保存</el-button>
                 </div>
               </el-form>
             </template>

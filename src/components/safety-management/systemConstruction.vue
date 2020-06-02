@@ -35,7 +35,7 @@
               <el-button type="text" @click="preview(scope.row)" v-if="fucBtns.includes('preview-btn')">预览</el-button>
               <el-button type="text" @click="edit(scope.row)" v-if="fucBtns.includes('edit-btn')">编辑</el-button>
               <el-button type="text" @click="deleteItem(scope.row.id)" v-if="fucBtns.includes('del-btn')">删除</el-button>
-              <el-button type="text" @click="downloadItem(scope.row.id)">下载</el-button>
+              <el-button type="text" @click="downloadItem(scope.row.id)"  v-if="fucBtns.includes('down-btn')">下载</el-button>
 
 <!--              <el-button type="text" @click="resetItem(scope.row.id)">重置</el-button>-->
             </template>
