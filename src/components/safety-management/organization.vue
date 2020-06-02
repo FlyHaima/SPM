@@ -17,7 +17,12 @@
                             @openAppendBox="addTreeData"
                             @editTreeData="editTreeData"
                             @confirmRemove="confirmRemove"
-                            @refreshing="refreshing">
+                            @refreshing="refreshing"
+                            :showEditBtn="fucBtns.includes('edit-btn')"
+                            :showAddBtn="fucBtns.includes('add-btn')"
+                            :showDelBtn="fucBtns.includes('del-btn')"
+                            :showLoadBtn="fucBtns.includes('import-btn')"
+                            >
               </tree-diagram>
             </el-aside>
 

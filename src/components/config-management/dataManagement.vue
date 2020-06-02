@@ -17,6 +17,7 @@
                 </el-input>
               </el-form-item>
               <el-button
+              v-if="fucBtns.includes('addcate-btn')"
                 type="text"
                 icon="el-icon-plus"
                 @click="addClassifyHandle"
@@ -51,6 +52,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
@@ -234,7 +236,8 @@ export default {
           remark: '', // 备注
           pageNo: 1,
           pageSize: 10
-        }
+        },
+        fucBtns: []
       },
       groupId: '',
       rules: {
@@ -255,6 +258,7 @@ export default {
   },
   created () {
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   methods: {
     // 关闭添加弹框
@@ -386,6 +390,23 @@ export default {
     },
     closeLoading () {
       this.pageLoading = false
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

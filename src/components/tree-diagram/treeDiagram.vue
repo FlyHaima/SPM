@@ -27,7 +27,7 @@
                   :on-error="handleError"
                   :file-list="fileList"
                   :show-file-list="false">
-          <el-button type="text"  v-if="fucBtns.includes('upload-btn')">上传</el-button>
+          <el-button type="text"  v-if="showLoadBtn">上传</el-button>
         </el-upload>
         <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
         <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
@@ -48,9 +48,9 @@
             <span>{{ node.label }}</span>
             <span class="right-btns" v-if="showBtns">
               <!-- 权限显示 -->
-              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="fucBtns.includes('add-btn')"></i>
-              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="fucBtns.includes('edit-btn')"></i>
-              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="fucBtns.includes('del-btn')"></i>
+              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="showAddBtn"></i>
+              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="showEditBtn"></i>
+              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="showDelBtn"></i>
             </span>
           </span>
       </el-tree>
@@ -80,6 +80,22 @@ export default {
     showBtns: {
       type: Boolean,
       default: false
+    },
+    showEditBtn: {
+      type: Boolean,
+      default: false
+    },
+    showAddBtn: {
+      type: Boolean,
+      default: false
+    },
+    showDelBtn: {
+      type: Boolean,
+      default: false
+    },
+    showLoadBtn: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -104,7 +120,7 @@ export default {
   created () {
     this.baseUrl = base.baseUrl
     this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
-    this.getBtnAuthority()
+    // this.getBtnAuthority()
   },
   methods: {
     // 获取一节点集合

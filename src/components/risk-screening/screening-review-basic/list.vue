@@ -45,6 +45,7 @@
           </div>
           <div class="tools-right">
             <el-button
+              v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -101,6 +102,7 @@
             align="center">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
@@ -114,6 +116,7 @@
             align="center">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('review-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="reviewHandle(scope.row)">复核
@@ -175,8 +178,9 @@ export default {
       tableData: [], // 基础类清单列表数据
       queryDate: '', // 查询日期
       currentDetailsId: '',
-      postReviewData: null// 复核时传的对象
+      postReviewData: null, // 复核时传的对象
       // hiddInstanceId: '' // 接受待办的 businessKey 值
+      fucBtns: []
     }
   },
   components: {
@@ -196,6 +200,9 @@ export default {
     vm.fetchListMenuData()
     vm.fetchTableData()
     // vm.extractRouter()
+  },
+  created () {
+    this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -302,6 +309,21 @@ export default {
       if (this.$route.query.businessKey) {
         this.hiddInstanceId = this.$route.query.businessKey
       }
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }

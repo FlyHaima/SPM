@@ -57,10 +57,12 @@
           {{item.planName}}</div>
         <div v-if="showOperation" class="tree-list-operation">
           <i
+            v-show="showEditBtn"
             class="el-icon-edit"
             title="修改菜单项"
             @click="editMenuHandle(item.planId)"></i>
           <i
+            v-show="showDelBtn"
             class="el-icon-delete"
             title="删除菜单项"
             @click="delMenuHandle(item.planId)"></i>
@@ -102,7 +104,15 @@ export default {
     showOperation: {
       type: Boolean,
       default: false
-    } // 计划清单菜单操作栏是否显示开关
+    }, // 计划清单菜单操作栏是否显示开关
+    showEditBtn: {
+      type: Boolean,
+      default: false
+    },
+    showDelBtn: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {

@@ -43,6 +43,7 @@
           </div>
           <div class="tools-right">
             <el-button
+            v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -159,7 +160,7 @@
                 v-if="scope.row.isHidden === '合格'"
               >完成</span>
               <a
-                v-else
+                v-else-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
@@ -227,7 +228,8 @@ export default {
           label: 'a',
           value: 4
         }
-      ]
+      ],
+      fucBtns: []
     }
   },
   components: {
@@ -238,6 +240,7 @@ export default {
   created () {
     this.fetchUnitTreeData()
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   methods: {
     checkQueryDate (val) {
@@ -345,6 +348,23 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-7'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   computed: { // vuex 参数引入

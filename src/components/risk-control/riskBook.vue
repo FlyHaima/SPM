@@ -11,6 +11,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                  v-if="fucBtns.includes('export-btn')"
                   type="success"
                   size="medium"
                   icon="el-icon-download"
@@ -161,10 +162,12 @@ export default {
           index: 1, // 当前页数
           sizes: [10, 20, 50] // 分页集合
         }
-      }
+      },
+      fucBtns: []
     }
   },
   created () {
+    this.getBtnAuthority()
     this.tablesFetchList()
   },
   methods: {
@@ -224,6 +227,22 @@ export default {
       } else if (data.riskLevelCode === '1') {
         return 'tag-danger'
       }
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '4-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

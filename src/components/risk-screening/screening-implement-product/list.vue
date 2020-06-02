@@ -49,6 +49,7 @@
               >
               隐患排查清单</el-button>
             <el-button
+              v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -107,6 +108,7 @@
             width="100px">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="talbe-links-del"
                 @click.prevent="editItem(scope.row)">详情
@@ -187,7 +189,8 @@ export default {
       },
       dialogOrganizationVisible: false, // 组织结构树开关
       treeLoading: false, // 组织结构树加载
-      departmentalTree: [] // 组织结构树数据
+      departmentalTree: [], // 组织结构树数据
+      fucBtns: []
     }
   },
   components: {
@@ -201,6 +204,7 @@ export default {
     this.fetchUnitTreeData()
     this.fetchTableData()
     this.fetchPlanOrganizationData()
+    this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -322,6 +326,21 @@ export default {
     exportOrganizationData () {
       exportExcel(`riskLevel/exportRisksInvest`, 'id=' + this.departmentalTreeId)
       // console.log(this.departmentalTreeId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
 
   },

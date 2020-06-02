@@ -11,6 +11,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                  v-if="fucBtns.includes('save-btn')"
                   type="primary"
                   size="medium"
                   @click.prevent="saveControlList">
@@ -178,11 +179,13 @@ export default {
         '每天一次'
       ],
       riskAversion: '', // 风险色度
-      controlLevel: '' // 管控层级
+      controlLevel: '', // 管控层级
+      fucBtns: ''
     }
   },
   created () {
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   methods: {
     // 获取table数据
@@ -230,7 +233,23 @@ export default {
       } else {
         this.$notify.error('频次不能为空')
       }
+    },
+    getBtnAuthority () {
+      const authId = {authId: '4-8'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
+
   },
   components: {
     BreadCrumb

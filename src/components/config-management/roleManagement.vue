@@ -11,12 +11,14 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
                   @click="addHandle">
                   添加</el-button>
                 <el-button
+                v-if="fucBtns.includes('dels-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -56,6 +58,7 @@
                 align="center">
                 <template slot-scope="scope">
                   <a
+                v-if="fucBtns.includes('dist-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="editRole(scope.row)">分配
@@ -132,6 +135,7 @@
       default-expand-all
       :props='treeLabel'
       @check-change="nodeCheckHandle"
+      :check-strictly= 'false'
       :default-checked-keys="roleOptions.menuCheckList"
       >
       <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -242,12 +246,14 @@ export default {
       filterBtnCheckedList: [], // 筛选选中的btn元素的id的集合
       postBtnCheckedList: [], // 传给后台的选中的btn元素的集合
       data: [], // tree的data
-      dialogVisible: false
+      dialogVisible: false,
       // checkedbtns: [] // 按钮值
+      fucBtns: []
     }
   },
   mounted () {
     this.initPage()
+    this.getBtnAuthority()
   },
   methods: {
     // 关闭弹框
@@ -463,33 +469,33 @@ export default {
       })
     },
     saveForm (post, tip) {
-      // let vm = this
-      // vm
-      //   .$confirm(`确定【${tip}】该角色吗？`, '提示', {
-      //     type: 'warning'
-      //   })
-      //   .then(() => {
-      //     vm.submitting = true
-      //     axios
-      //       .post(`role/${post}Role`, vm.form)
-      //       .then((res) => {
-      //         vm.submitting = true
-      //         if (res.data.code === 200) {
-      //           vm.$notify.success(tip + '成功')
-      //           vm.dialogAddVisible = false
-      //           vm.tablesFetchList()
-      //         } else {
-      //           vm.$message({
-      //             message: res.data.message,
-      //             type: 'warning'
-      //           })
-      //         }
-      //       })
-      //       .finally(() => {
-      //         vm.submitting = false
-      //       })
-      //   })
-      //   .catch(() => {})
+      let vm = this
+      vm
+        .$confirm(`确定【${tip}】该角色吗？`, '提示', {
+          type: 'warning'
+        })
+        .then(() => {
+          vm.submitting = true
+          axios
+            .post(`role/${post}Role`, vm.form)
+            .then((res) => {
+              vm.submitting = true
+              if (res.data.code === 200) {
+                vm.$notify.success(tip + '成功')
+                vm.dialogAddVisible = false
+                vm.tablesFetchList()
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+            .finally(() => {
+              vm.submitting = false
+            })
+        })
+        .catch(() => {})
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
@@ -578,6 +584,23 @@ export default {
       })
       vm.postMenuCheckList = vm.menuCheckList.join(',')
       return vm.postMenuCheckList
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {
