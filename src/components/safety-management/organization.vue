@@ -18,10 +18,10 @@
                             @editTreeData="editTreeData"
                             @confirmRemove="confirmRemove"
                             @refreshing="refreshing"
-                            :showEditBtn="fucBtns.includes('edit-btn')"
+                            :showEditBtn="fucBtns.includes('tree-edit-btn')"
                             :showAddBtn="fucBtns.includes('add-btn')"
                             :showDelBtn="fucBtns.includes('del-btn')"
-                            :showLoadBtn="fucBtns.includes('import-btn')"
+                            :showLoadBtn="fucBtns.includes('upload-btn')"
                             >
               </tree-diagram>
             </el-aside>
