@@ -167,10 +167,25 @@ export default {
     }
   },
   created () {
-    this.getBtnAuthority()
     this.tablesFetchList()
+    this.getBtnAuthority()
   },
   methods: {
+    getBtnAuthority () {
+      const authId = {authId: '4-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
     tablesFetchList () {
       this.tables.loading = true
       return axios
@@ -229,21 +244,6 @@ export default {
       }
     },
     // 获取按钮权限方法
-    getBtnAuthority () {
-      const authId = {authId: '4-3'}
-      axios
-        .get('user/getBtnArray', authId)
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.fucBtns = res.data.data.functionBtns
-          } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            })
-          }
-        })
-    }
   },
   components: {
     BreadCrumb
