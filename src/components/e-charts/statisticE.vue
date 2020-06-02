@@ -40,7 +40,7 @@
 
 <script>
 // 引入基本模板
-let echarts = require('echarts/lib/echarts')
+// let echarts = require('echarts/lib/echarts')
 
 export default {
   name: 'columnChart',
@@ -61,7 +61,8 @@ export default {
       selValue: '2', // 设定初始值，两周
       chartValue: [], // y轴坐标值
       chartxAxis: [], // x轴坐标值
-      colorList: [] // 图表色值 d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
+      colorList: [], // 图表色值 d13a38 红 / f4a028 橙 / fff223 黄 / 0568eb 蓝
+      allColors: ['#b9b9b9', '#d13a38', '#f4a028', '#fff223', '#0568eb']
     }
   },
   props: {
@@ -95,15 +96,7 @@ export default {
       vm.chartValue = []
       vm.chartxAxis = []
       vm.chartData.forEach(item => {
-        if (item.value <= 25) {
-          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
-        } else if (item.value > 25 && item.value <= 50) {
-          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
-        } else if (item.value > 50 && item.value <= 75) {
-          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
-        } else if (item.value > 75 && item.value <= 100) {
-          vm.colorList.push(['#d13a38', '#dd5c33', '#fcb725', '#fdba24', '#ffd723', '#ffec23', '#fff223', '#eeeb30', '#478eb7', '#0568eb'])
-        }
+        vm.colorList.push(vm.allColors[Number(item.color)])
         vm.chartValue.push(item.value)
         vm.chartxAxis.push(item.name)
       })
@@ -114,7 +107,6 @@ export default {
       // 基于准备好的dom，初始化echarts实例
       let chartDom = document.getElementById('columnA')
       let myChart = this.$echarts.init(chartDom)
-      let chartColorList = this.colorList
 
       // 绘制图表
       let option = {
@@ -148,28 +140,19 @@ export default {
               }
             },
             axisLabel: {
-              interval: 0,
-              // formatter: function (value) {
-              //   // debugger
-              //   var ret = ''
-              //   var maxLength = 2
-              //   var valLength = value.length
-              //   var rowN = Math.ceil(valLength / maxLength)
-              //   if (rowN > 1) {
-              //     for (var i = 0; i < rowN; i++) {
-              //       var temp = '' // 每次截取的字符串
-              //       var start = i * maxLength
-              //       var end = start + maxLength
-              //       temp = value.substring(start, end) + '\n'
-              //       ret += temp
-              //     }
-              //     return ret
-              //   } else {
-              //     return value
-              //   }
-              // }
+              // interval: 0,
+              textStyle: { // 文字样式
+                color: '#1f668e',
+                fontSize: 12,
+                fontFamily: 'Microsoft YaHei'
+              },
               rotate: 40
             }
+          }
+        ],
+        dataZoom: [
+          {
+            show: true
           }
         ],
         yAxis: [
@@ -197,27 +180,13 @@ export default {
           {
             type: 'bar',
             data: vm.chartValue,
+            // barMinWidth: 20,
             itemStyle: {
-              color: function (params) {
-                let index = params.dataIndex
-                if (params.dataIndex >= chartColorList.length) {
-                  index = params.dataIndex = chartColorList.length
+              normal: {
+                // 每根柱子颜色设置
+                color: function (params) {
+                  return vm.colorList[params.dataIndex]
                 }
-                return new echarts.graphic.LinearGradient(
-                  0, 0, 0, 1,
-                  [
-                    {offset: 0, color: chartColorList[index][0]},
-                    {offset: 0.1, color: chartColorList[index][1]},
-                    {offset: 0.2, color: chartColorList[index][2]},
-                    {offset: 0.3, color: chartColorList[index][3]},
-                    {offset: 0.4, color: chartColorList[index][4]},
-                    {offset: 0.5, color: chartColorList[index][5]},
-                    {offset: 0.6, color: chartColorList[index][6]},
-                    {offset: 0.7, color: chartColorList[index][7]},
-                    {offset: 0.8, color: chartColorList[index][8]},
-                    {offset: 1, color: chartColorList[index][9]}
-                  ]
-                )
               }
             }
           }
