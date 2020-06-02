@@ -66,9 +66,9 @@
               <el-option v-for="(item, index) in mapLists" :key="index" :label="item.label" :value="item.value"></el-option>
             </el-select>
 
-            <i class="el-icon-delete" title="删除" @click="deleteMap()"></i>
-            <i class="el-icon-upload2" title="上传新图片" @click="uploadNewMap()"></i>
-            <i class="el-icon-plus" title="添加位置" @click="addMap()"></i>
+            <i class="el-icon-delete del-btn" v-if="fucBtns.includes('del-btn')" title="删除" @click="deleteMap()"></i>
+            <i class="el-icon-upload2 upload-btn" v-if="fucBtns.includes('upload-btn')" title="上传新图片" @click="uploadNewMap()"></i>
+            <i class="el-icon-plus add-btn" v-if="fucBtns.includes('add-btn')" title="添加位置" @click="addMap()"></i>
           </div>
           <div class="canvas-box">
             <div style="display:none;" v-if="mapLists.length > 0 && currentImage.url !== ''">
@@ -320,6 +320,7 @@ import {
 } from '@/api/riskControl'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
+import axios from '@/api/axios'
 
 export default {
   name: 'riskColorImage',
@@ -394,7 +395,9 @@ export default {
       unitAble: false, // 是否激活“添加风险单元”
       pointAble: false, // 是否激活“添加添加风险点”
       ctx: {}, // 提前设置canvas对象
-      canvas: {}
+      canvas: {},
+      fucBtns: [] // 获取按钮权限
+
     }
   },
   mounted () {
@@ -421,6 +424,7 @@ export default {
     let vm = this
     vm.baseUrl = base.uploadQiniuAdr
     vm.fileAddress = base.fileQiniuAddr
+    this.getBtnAuthority()
   },
   methods: {
     // 点击 添加风险点
@@ -1264,6 +1268,24 @@ export default {
       })
       vm.uploadLoading = false
       vm.uploadVisible = false
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '4-6'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

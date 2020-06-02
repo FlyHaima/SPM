@@ -19,7 +19,7 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskUnit?id=${curentId}&token=${localToken}&attname=风险单元.xls`"><i class></i>导出</a>
+              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskUnit?id=${curentId}&token=${localToken}&attname=风险单元.xls`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
             </p>
             <div class="table-box">
               <el-table
@@ -76,6 +76,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import {getRiskTree, getRiskUnit} from '@/api/riskia'
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'riskUnit',
@@ -89,13 +90,15 @@ export default {
       baseUrl: '',
       curentId: '',
       localToken: '',
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: []
     }
   },
   created () {
     this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
+    this.getBtnAuthority()
   },
   methods: {
     openLoading () {
@@ -126,6 +129,23 @@ export default {
         }
         this.pageLoading = false
       })
+    },
+    getBtnAuthority () {
+      const authId = {authId: '3-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {TreeReadOnly, BreadCrumb}

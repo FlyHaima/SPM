@@ -11,6 +11,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('export-btn')"
                 class="tools-item"
                 type="success"
                 size="medium"
@@ -64,12 +65,14 @@
                 align="center">
                 <template slot-scope="scope">
                   <a
+                  v-if="fucBtns.includes('edit-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="editHandle(scope.row)">编辑
                   </a>
                   <span class="color-primary"> / </span>
                   <a
+                  v-if="fucBtns.includes('detail-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="detaileHandle(scope.row)">详情
@@ -162,10 +165,14 @@ export default {
       },
       submitting: false,
       editData: '',
-      postDetailData: null
+      postDetailData: null,
+      fucBtns: []
     }
   },
   mounted () {
+  },
+  created () {
+    this.getBtnAuthority()
   },
   methods: {
     validateMoney (key) {
@@ -226,6 +233,23 @@ export default {
             })
         })
         .catch(() => {})
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-6'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

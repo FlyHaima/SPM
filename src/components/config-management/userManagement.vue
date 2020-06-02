@@ -37,12 +37,14 @@
               </div>
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
                   @click="addHandle">
                   添加</el-button>
                 <el-button
+                v-if="fucBtns.includes('dels-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -50,6 +52,7 @@
                   :loading="submitting">
                   批量删除</el-button>
                 <el-upload
+                v-if="fucBtns.includes('import-btn')"
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
@@ -138,6 +141,7 @@
                 align="center">
                 <template slot-scope="scope">
                   <a
+                  v-if="fucBtns.includes('edit-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="editHandle(scope.row)">编辑
@@ -162,6 +166,7 @@
                     </el-button>
                   </el-popover> -->
                   <a
+                  v-if="fucBtns.includes('disable-btn')"
                     href="javascript:;"
                     :class="scope.row.state === '1' ? 'color-danger' : 'color-primary'"
                     @click="changeState(scope.row)">
@@ -383,13 +388,15 @@ export default {
       fileList: [], // 导入列表
       uploadHeader: {
         token: ''
-      }
+      },
+      fucBtns: []
     }
   },
   filters: {
     'account-status-filter': AccountStatusFilter
   },
   created () {
+    this.getBtnAuthority()
   },
   mounted () {
     // 设置题库上传的header 添加token
@@ -584,6 +591,23 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

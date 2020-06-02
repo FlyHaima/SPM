@@ -43,6 +43,7 @@
           </div>
           <div class="tools-right">
             <el-button
+            v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -180,6 +181,7 @@
             align="center">
             <template slot-scope="scope">
               <a
+              v-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
@@ -278,7 +280,8 @@ export default {
           label: 'a',
           value: 4
         }
-      ]
+      ],
+      fucBtns: []
     }
   },
   components: {
@@ -289,6 +292,7 @@ export default {
   created () {
     this.fetchUnitTreeData()
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -399,6 +403,23 @@ export default {
     // 重大隐患台账导出
     exportEexcelSignificantRisk () {
       exportExcel(`hiddenAct/exportHiddenBigBook`, 'investType=' + this.type)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-6'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   computed: { // vuex 参数引入

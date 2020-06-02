@@ -21,7 +21,7 @@
              <div class="content-tools is-flex-end">
                 <div class="tools-right">
                   <el-button
-                    v-if="this.form.id"
+                    v-if="this.form.id && fucBtns.includes('export-btn')"
                     type="success"
                     size="medium"
                     icon="el-icon-download"
@@ -235,12 +235,14 @@ export default {
       imgPathSelRiskResult: [], // 已选择的图片路径 - 潜在的事故及职业危害类型
       imgPathSelEmergency: [], // 已选择的图片路径 - 异常状况应急处置
       gwList: [], // 岗位选项列表
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: []
     }
   },
   created () {
     this.fetchTreeData()
     this.fetchTableData(1)
+    this.getBtnAuthority()
   },
   methods: {
     // 选择器change事件 - 潜在的事故及职业危害类型
@@ -365,12 +367,31 @@ export default {
     // 导出excel
     exportExcelHandel () {
       exportExcel(`riskCard/exportCards`, 'id=' + this.riskId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '4-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {
     TreeReadOnly,
     BreadCrumb
   }
+  // 按钮权限
+
 }
 </script>
 

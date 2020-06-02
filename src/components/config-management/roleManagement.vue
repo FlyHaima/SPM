@@ -11,12 +11,14 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
                   @click="addHandle">
                   添加</el-button>
                 <el-button
+                v-if="fucBtns.includes('dels-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -56,6 +58,7 @@
                 align="center">
                 <template slot-scope="scope">
                   <a
+                v-if="fucBtns.includes('dist-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="editRole(scope.row)">分配
@@ -126,12 +129,14 @@
       >
     <el-tree
       :data="roleOptions.menus"
+      ref="tree"
       show-checkbox
       node-key="menuId"
       default-expand-all
       :props='treeLabel'
       @check-change="nodeCheckHandle"
-      :default-checked-keys="menuCheckList"
+      :check-strictly= 'false'
+      :default-checked-keys="roleOptions.menuCheckList"
       >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -142,14 +147,14 @@
             @change="handleCheckedCitiesChange(data)"
             v-for="(item, index) in data.btnControl"
             :label="item.name"
-            :disabled='item.disabled'
+            :disabled='item.active'
             :key="index">{{item.name}}</el-checkbox>
           </el-checkbox-group>
         </span>
       </span>
     </el-tree>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="dialogRoleVisible = false">取 消</el-button>
       <el-button type="primary" @click="saveCheckData">确 定</el-button>
     </span>
     </el-dialog>
@@ -241,12 +246,14 @@ export default {
       filterBtnCheckedList: [], // 筛选选中的btn元素的id的集合
       postBtnCheckedList: [], // 传给后台的选中的btn元素的集合
       data: [], // tree的data
-      dialogVisible: false
+      dialogVisible: false,
       // checkedbtns: [] // 按钮值
+      fucBtns: []
     }
   },
   mounted () {
     this.initPage()
+    this.getBtnAuthority()
   },
   methods: {
     // 关闭弹框
@@ -257,7 +264,7 @@ export default {
     // 页面初始化数据
     initPage () {
       this.initMenuList()
-      console.log('itemListBtnControl', this.newMenuList)
+      // console.log('itemListBtnControl', this.newMenuList)
     },
     // 初始化菜单
     initMenuList () {
@@ -440,10 +447,10 @@ export default {
               }
             })
             .finally(() => {
-              this.submitting = false
+              // this.submitting = false
             })
         }).catch(() => {
-          this.submitting = false
+          // this.submitting = false
         })
       }
     },
@@ -462,83 +469,92 @@ export default {
       })
     },
     saveForm (post, tip) {
-      // let vm = this
-      // vm
-      //   .$confirm(`确定【${tip}】该角色吗？`, '提示', {
-      //     type: 'warning'
-      //   })
-      //   .then(() => {
-      //     vm.submitting = true
-      //     axios
-      //       .post(`role/${post}Role`, vm.form)
-      //       .then((res) => {
-      //         vm.submitting = true
-      //         if (res.data.code === 200) {
-      //           vm.$notify.success(tip + '成功')
-      //           vm.dialogAddVisible = false
-      //           vm.tablesFetchList()
-      //         } else {
-      //           vm.$message({
-      //             message: res.data.message,
-      //             type: 'warning'
-      //           })
-      //         }
-      //       })
-      //       .finally(() => {
-      //         vm.submitting = false
-      //       })
-      //   })
-      //   .catch(() => {})
+      let vm = this
+      vm
+        .$confirm(`确定【${tip}】该角色吗？`, '提示', {
+          type: 'warning'
+        })
+        .then(() => {
+          vm.submitting = true
+          axios
+            .post(`role/${post}Role`, vm.form)
+            .then((res) => {
+              vm.submitting = true
+              if (res.data.code === 200) {
+                vm.$notify.success(tip + '成功')
+                vm.dialogAddVisible = false
+                vm.tablesFetchList()
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+            .finally(() => {
+              vm.submitting = false
+            })
+        })
+        .catch(() => {})
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
     // 分配权限选择
     nodeCheckHandle (data, currentChecked) {
-      console.log('1111list', data)
+      // console.log('1111list', data)
       if (currentChecked && data.btnControl) {
-        console.log('33', currentChecked, data.btnControl)
+        // console.log('33', currentChecked, data.btnControl)
         data.btnControl.forEach(item => {
-          item.disabled = false
+          item.active = false
           // console.log('33', item, item.disabled)
         })
       } else if (data.btnControl) {
         data.btnControl.forEach(item => {
-          item.disabled = true
-          console.log('44', currentChecked, data.btnControl)
+          item.active = true
+          // console.log('44', currentChecked, data.btnControl)
         })
       }
       // console.log('111', data, currentChecked)
     },
-    // 弹窗权限分配
+    // data值改变
     handleCheckedCitiesChange (data) {
       // console.log('111', data)
     },
     // 保存
     saveCheckData () {
-      // const vm = this
-      // vm.postMenuCheckList = vm.filterMenuCheckedNodes()
-      // vm.postBtnCheckedList = vm.filterBtnChecked(vm.data).join(',')
-      // const sendData = {
-      //   roleId: this.roleId,
-      //   authIds: vm.postMenuCheckList + ',' + vm.postBtnCheckedList
-      // }
-      // vm
-      //   .$confirm('确定修改该菜单吗？', '提示', {
-      //     type: 'warning'
-      //   })
-      //   .then(() => {
-      //     const vm = this
-      //     vm.submitting = true
-      //     axiosApi.assignMenuData(sendData).then(res => {
-      //       vm.$notify.success('分配成功')
-      //       vm.$router.go(-1)
-      //       vm.submitting = false
-      //     })
-      //   })
-      //   .catch(() => {
-      //     this.submitting = false
-      //   })
+      const vm = this
+      vm.postMenuCheckList = vm.filterMenuCheckedNodes()
+      vm.postBtnCheckedList = vm.filterBtnChecked(vm.roleOptions.menus).join(',')
+      const sendData = {
+        roleId: this.roleId,
+        menuId: vm.postMenuCheckList + ',' + vm.postBtnCheckedList
+      }
+      vm
+        .$confirm('确定修改该菜单吗？', '提示', {
+          type: 'warning'
+        })
+        .then(() => {
+          const vm = this
+          vm.submitting = true
+          axios
+            .post('role/updateMenu', sendData)
+            .then((res) => {
+              if (res.data.code === 200) {
+                vm.$notify.success('提交成功')
+                vm.dialogRoleVisible = false
+                vm.tablesFetchList()
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+        })
+        .catch(() => {
+          this.submitting = false
+        })
     },
     // 筛选选中的btn元素
     filterBtnChecked (fData) {
@@ -547,9 +563,9 @@ export default {
         if (item.list !== null) {
           item.list.forEach(itemChildren => {
             itemChildren.btnControl.forEach(itemList => {
-              itemChildren.checkList.forEach(itemChecked => {
-                if (itemList.authName === itemChecked && itemList.disabled === false) {
-                  this.filterBtnCheckedList.push(itemList.authId)
+              itemChildren.checkedRoles.forEach(itemChecked => {
+                if (itemList.name === itemChecked && itemList.active === false) {
+                  this.filterBtnCheckedList.push(itemList.menuId)
                 }
               })
             })
@@ -564,10 +580,27 @@ export default {
       vm.menuCheckListCurrent = this.$refs.tree.getCheckedNodes()
       vm.menuCheckList = []
       vm.menuCheckListCurrent.forEach(item => {
-        vm.menuCheckList.push(item.authId)
+        vm.menuCheckList.push(item.menuId)
       })
       vm.postMenuCheckList = vm.menuCheckList.join(',')
       return vm.postMenuCheckList
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

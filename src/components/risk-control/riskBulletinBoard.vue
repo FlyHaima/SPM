@@ -21,7 +21,7 @@
             <div class="content-tools is-flex-end">
                 <div class="tools-right">
                   <el-button
-                    v-if="importVisible"
+                    v-if="importVisible && fucBtns.includes('export-btn')"
                     type="success"
                     size="medium"
                     icon="el-icon-download"
@@ -213,12 +213,14 @@ export default {
       imgPathColletion: [], // 所有图片路径集合
       imgPathSelGkcs: [], // 已选择的图片路径 - 主要管控措施
       imgPathSelEmergency: [], // 已选择的图片路径 - 主要应急措施
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: []
     }
   },
   created () {
     this.fetchTreeData()
     this.fetchTableData(1)
+    this.getBtnAuthority()
   },
   methods: {
     // 获取树的数据
@@ -344,6 +346,24 @@ export default {
           }
         })
       })
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '4-5'}
+      debugger
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            debugger
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

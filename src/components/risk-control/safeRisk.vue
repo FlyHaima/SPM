@@ -11,6 +11,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                  v-if="fucBtns.includes('export-btn')"
                   type="success"
                   size="medium"
                   icon="el-icon-download"
@@ -139,6 +140,7 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import exportExcel from '@/api/exportExcel'
+import axios from '@/api/axios'
 export default {
   name: 'safeRisk',
   mixins: [Tables],
@@ -147,8 +149,12 @@ export default {
       breadcrumb: ['风险分级管控', '重大安全风险'],
       tables: {
         api: 'riskLevel/getRiskZd'
-      }
+      },
+      fucBtns: []
     }
+  },
+  created () {
+    this.getBtnAuthority()
   },
   methods: {
     // 导出excel
@@ -166,6 +172,21 @@ export default {
       } else if (data.riskLevelCode === '1') {
         return 'tag-danger'
       }
+    },
+    getBtnAuthority () {
+      const authId = {authId: '4-4'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

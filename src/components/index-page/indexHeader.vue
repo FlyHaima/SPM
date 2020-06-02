@@ -81,61 +81,34 @@ export default {
       userName: (state) => state.userInfo.userName,
       accountName: (state) => state.userInfo.accountName,
       msgNum: (state) => state.msgNum,
-      taskNum: (state) => state.taskNum
+      taskNum: (state) => state.taskNum,
+      skin: (state) => state.skin
     })
   },
-  // watch: {
-  //   localStorageSkin: {
-  //     deep: true,
-  //     handler: function (val) {
-  //       window.localStorage.setItem('localStorageSkin', val)
-  //     }
-  //   }
-  // },
-  mounted () {
-    // console.log('加载时skin的值', this.$store.state.skin)
-    if (this.localStorageSkin === null) {
-      this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
-    } else {
+  watch: {
+    skin (val) {
+      this.$nextTick(() => {
+        if (!this.localStorageSkin) {
+          this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
+        }
+      })
+    }
+  },
+  created () {
+    if (this.localStorageSkin) {
       this.initializeTheme(this.localStorageSkin, this.themes[this.localStorageSkin].color)
     }
   },
+  mounted () {
+  },
   beforeUpdate () {
-    // this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
   },
   methods: {
     initializeTheme (theme, color) {
-      // switch (theme) {
-      //   case 1:
-      //     console.log(1)
-      //     break
-      //   case 2:
-      //     console.log(2)
-      //     break
-      //   case 3:
-      //     console.log(3)
-      //     break
-      //   case 4:
-      //     console.log(4)
-      // }
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
     },
     changeTheme (theme, color) {
-      // switch (theme) {
-      //   case 1:
-      //     console.log(1)
-      //     break
-      //   case 2:
-      //     console.log(2)
-      //     break
-      //   case 3:
-      //     console.log(3)
-      //     break
-      //   case 4:
-      //     console.log(4)
-      // }
-      // console.log('skin的值', this.$store.state.skin)
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
       localStorage.setItem('localStorageSkin', theme)

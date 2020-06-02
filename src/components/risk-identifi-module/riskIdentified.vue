@@ -17,7 +17,12 @@
             @tree-edit-item="editTreeNode"
             @tree-del-item="delTreeNode"
             @open-loading="openLoading"
-            @close-loading="closeLoading">
+            @close-loading="closeLoading"
+            :showAddChlidBtn = "fucBtns.includes('add-child-btn')"
+            :showAddBtn="fucBtns.includes('add-btn')"
+            :showEditBtn= "fucBtns.includes('edit-btn')"
+            :showDelBtn= "fucBtns.includes('del-btn')"
+            >
           </tree-read-only>
         </el-aside>
         <el-main class="inner-content">
@@ -446,6 +451,7 @@ import {
   getRiskDeptList
 } from '@/api/riskia'
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'riskIdentified',
@@ -650,7 +656,8 @@ export default {
       },
       currentData: {},
       localToken: '',
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: ''
     }
   },
   created () {
@@ -658,6 +665,7 @@ export default {
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
     this.getRiskDeptList()
+    this.getBtnAuthority()
   },
   methods: {
     getRiskTree (create) {
@@ -1162,6 +1170,21 @@ export default {
     },
     handleError (file, fileList) {
 
+    },
+    getBtnAuthority () {
+      const authId = {authId: '3-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}

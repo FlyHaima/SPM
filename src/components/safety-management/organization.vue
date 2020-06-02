@@ -10,14 +10,19 @@
           <span slot="label">组织机构</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="true" :show-btns="true"
+              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="false" :show-btns="true"
                             @open-loading="openLoading"
                             @close-loading="closeLoading"
                             @handleNodeClick="handleNodeClick"
                             @openAppendBox="addTreeData"
                             @editTreeData="editTreeData"
                             @confirmRemove="confirmRemove"
-                            @refreshing="refreshing">
+                            @refreshing="refreshing"
+                            :showEditBtn="fucBtns.includes('edit-btn')"
+                            :showAddBtn="fucBtns.includes('add-btn')"
+                            :showDelBtn="fucBtns.includes('del-btn')"
+                            :showLoadBtn="fucBtns.includes('import-btn')"
+                            >
               </tree-diagram>
             </el-aside>
 
@@ -46,8 +51,9 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p"> <!-- 权限显示 -->
-                  <a class="export-btn function-btn export-btn" target="_blank" :href="`${baseUrl}/leadUser/exportGroup`" v-if="true"><i class></i>导出</a>
-                  <el-upload accept=".xls" class="function-btn import-btn" v-if= "true"
+                  <a class="export-btn function-btn export-btn" target="_blank" :href="`${baseUrl}/leadUser/exportGroup`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
+                  <el-upload accept=".xls" class="function-btn import-btn"
+                            v-if= "fucBtns.includes('import-btn')"
                             :action="`${baseUrl}/leadUser/importGroup`"
                             :data="uploadData"
                             :before-upload="handleBeforeUpload"
@@ -93,7 +99,7 @@
                     width="80px"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="openUpdateBox(scope.row.id)">编辑</el-button>
+                      <el-button type="text" @click="openUpdateBox(scope.row.id)" v-if="fucBtns.includes('edit-btn')">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -127,8 +133,9 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p"> <!-- 权限显示 -->
-                  <a class="function-btn export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup`" v-if="true"><i class></i>导出</a>
-                  <el-upload accept=".xls" class="function-btn import-btn" v-if="true"
+                  <a class="function-btn export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
+                  <el-upload accept=".xls" class="function-btn import-btn"
+                            v-if="fucBtns.includes('import-btn')"
                             :action="`${baseUrl}/workUser/importGroup`"
                             :data="uploadData"
                             :before-upload="handleBeforeUpload"
@@ -173,7 +180,7 @@
                     width="80px"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="openUpdateBox(scope.row.id)">编辑</el-button>
+                      <el-button type="text" @click="openUpdateBox(scope.row.id)" v-if="fucBtns.includes('edit-btn')">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -261,6 +268,7 @@ import {getOrgTree,
 } from '@/api/organization'
 import {mapState} from 'vuex'
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'organization',
@@ -322,7 +330,8 @@ export default {
       addTreeVisible: false,
       minLevel: 2,
       addConfirming: false,
-      changeTreeVisible: false
+      changeTreeVisible: false,
+      fucBtns: [] // 权限按钮数组
     }
   },
   created () {
@@ -330,6 +339,7 @@ export default {
     this.baseUrl = base.baseUrl
     this.getOrgTree(true)
     this.getLeaderTree(true)
+    this.getBtnAuthority()
   },
   mounted () {
   },
@@ -662,6 +672,22 @@ export default {
     },
     refreshing () {
       this.getOrgTree(true)
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '2-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

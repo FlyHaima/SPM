@@ -12,6 +12,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('export-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -88,6 +89,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('export-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -164,6 +166,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('export-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -255,11 +258,15 @@ export default {
         form: {
           tabType: '1'
         }
-      }
+      },
+      fucBtns: []
     }
   },
   components: {
     BreadCrumb
+  },
+  created () {
+    this.getBtnAuthority()
   },
   methods: {
     // 删除当页信息
@@ -299,6 +306,23 @@ export default {
       this.tables.form.pageNo = 1
       this.tables.page.index = 1
       this.tablesFetchList()
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-4'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }
