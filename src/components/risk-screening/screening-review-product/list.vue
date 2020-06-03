@@ -190,6 +190,7 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
