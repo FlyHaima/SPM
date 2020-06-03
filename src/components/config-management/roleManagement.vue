@@ -127,36 +127,36 @@
       :visible.sync="dialogRoleVisible"
       width="70%"
       >
-    <el-tree
-      :data="roleOptions.menus"
-      ref="tree"
-      show-checkbox
-      node-key="menuId"
-      default-expand-all
-      :props='treeLabel'
-      @check-change="nodeCheckHandle"
-      :check-strictly= 'false'
-      :default-checked-keys="roleOptions.menuCheckList"
-      >
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
-        <!-- <span>{{ data }}</span> -->
-        <span class="custom-tree-btn">
-          <el-checkbox-group v-model="data.checkedRoles">
-            <el-checkbox
-            @change="handleCheckedCitiesChange(data)"
-            v-for="(item, index) in data.btnControl"
-            :label="item.name"
-            :disabled='item.active'
-            :key="index">{{item.name}}</el-checkbox>
-          </el-checkbox-group>
+      <el-tree
+        :data="roleOptions.menus"
+        ref="tree"
+        show-checkbox
+        node-key="menuId"
+        default-expand-all
+        :props='treeLabel'
+        @check-change="nodeCheckHandle"
+        :check-strictly= 'false'
+        :default-checked-keys="roleOptions.menuCheckList"
+        >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span>{{ node.label }}</span>
+          <!-- <span>{{ data }}</span> -->
+          <span class="custom-tree-btn">
+            <el-checkbox-group v-model="data.checkedRoles">
+              <el-checkbox @change="checkPageBtn(data)"
+                          v-for="(item, index) in data.btnControl"
+                          :label="item.name"
+                          :disabled='item.active'
+                          :key="index">{{item.name}}
+              </el-checkbox>
+            </el-checkbox-group>
+          </span>
         </span>
+      </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogRoleVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveCheckData">确 定</el-button>
       </span>
-    </el-tree>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="dialogRoleVisible = false">取 消</el-button>
-      <el-button type="primary" @click="saveCheckData">确 定</el-button>
-    </span>
     </el-dialog>
     <!-- 旧版分配弹窗 -->
     <!-- <el-dialog
@@ -248,7 +248,8 @@ export default {
       data: [], // tree的data
       dialogVisible: false,
       // checkedbtns: [] // 按钮值
-      fucBtns: []
+      fucBtns: [],
+      selectAll: true
     }
   },
   mounted () {
@@ -264,7 +265,6 @@ export default {
     // 页面初始化数据
     initPage () {
       this.initMenuList()
-      // console.log('itemListBtnControl', this.newMenuList)
     },
     // 初始化菜单
     initMenuList () {
@@ -296,9 +296,6 @@ export default {
           if (res.data.code === 200) {
             this.pageLoading = false
             this.roleOptions = res.data.data
-            console.log(this.roleOptions)
-            console.log(this.newMenuList)
-            console.log('itemListBtnControl', this.newMenuList)
             for (let i = 0; i < this.roleOptions.length; i++) {
               for (let j = 0; j < this.newMenuList.length; j++) {
                 if (this.roleOptions[i].menuId === this.newMenuList[j]) {
@@ -502,24 +499,31 @@ export default {
     },
     // 分配权限选择
     nodeCheckHandle (data, currentChecked) {
-      // console.log('1111list', data)
       if (currentChecked && data.btnControl) {
-        // console.log('33', currentChecked, data.btnControl)
         data.btnControl.forEach(item => {
           item.active = false
-          // console.log('33', item, item.disabled)
         })
       } else if (data.btnControl) {
         data.btnControl.forEach(item => {
           item.active = true
-          // console.log('44', currentChecked, data.btnControl)
         })
       }
-      // console.log('111', data, currentChecked)
+      let vm = this
+      if (currentChecked && data.btnControl) {
+        vm.roleOptions.menus.forEach(item => {
+          if (item.list) {
+            item.list.forEach(iList => {
+              iList.checkedRoles = []
+              iList.btnControl.forEach(btnitem => {
+                iList.checkedRoles.push(btnitem.name)
+              })
+            })
+          }
+        })
+      }
     },
     // data值改变
-    handleCheckedCitiesChange (data) {
-      // console.log('111', data)
+    checkPageBtn (data) {
     },
     // 保存
     saveCheckData () {
