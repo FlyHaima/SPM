@@ -25,6 +25,24 @@
           <div class="line-out">
             <div class="line"></div>
           </div>
+          <div class="menu-item" @click="addPoint" :class="pointAble ? 'active' : ''">
+            <div class="menu-icon menu-icon-1">
+              <i class="el-icon-map-location"></i>
+            </div>
+            <p>添加风险点</p>
+          </div>
+          <div class="line-out">
+            <div class="line"></div>
+          </div>
+          <div class="menu-item" @click="addUnit" :class="unitAble ? 'active' : ''">
+            <div class="menu-icon menu-icon-1">
+              <i class="el-icon-edit-outline"></i>
+            </div>
+            <p>添加风险单元</p>
+          </div>
+          <div class="line-out">
+            <div class="line"></div>
+          </div>
           <div class="menu-item" @click="cancel">
             <div class="menu-icon menu-icon-1">
               <i class="el-icon-refresh-left"></i>
@@ -48,9 +66,9 @@
               <el-option v-for="(item, index) in mapLists" :key="index" :label="item.label" :value="item.value"></el-option>
             </el-select>
 
-            <i class="el-icon-delete" title="删除" @click="deleteMap()"></i>
-            <i class="el-icon-upload2" title="上传新图片" @click="uploadNewMap()"></i>
-            <i class="el-icon-plus" title="添加位置" @click="addMap()"></i>
+            <i class="el-icon-delete del-btn" v-if="fucBtns.includes('del-btn')" title="删除" @click="deleteMap()"></i>
+            <i class="el-icon-upload2 upload-btn" v-if="fucBtns.includes('upload-btn')" title="上传新图片" @click="uploadNewMap()"></i>
+            <i class="el-icon-plus add-btn" v-if="fucBtns.includes('add-btn')" title="添加位置" @click="addMap()"></i>
           </div>
           <div class="canvas-box">
             <div style="display:none;" v-if="mapLists.length > 0 && currentImage.url !== ''">
@@ -66,12 +84,13 @@
             </div>
 
             <!-- 暂无地图，需要新建新地图 -->
-            <div v-if="mapLists.length === 0" class="up-new-map">
+            <div v-show="mapLists.length === 0" class="up-new-map">
               <el-button size="medium" type="primary" @click="addMap()"><i class="el-icon-plus"></i> 添加位置</el-button>
             </div>
 
-            <canvas id="myCanvas" v-else
-                    :width="currentImage.width" :height="currentImage.height"
+            <canvas id="myCanvas" ref="canvas" v-show="mapLists.length > 0"
+                    :width="currentImage.width"
+                    :height="currentImage.height"
                     style="background-color: #fff;"
                     @mousedown="mousedown"
                     @mousemove="mousemove"
@@ -97,12 +116,12 @@
             </div>
           </div>
 
-          <!-- 绑定节点 -->
-          <el-dialog title="绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+          <!-- 绑定风险点 -->
+          <el-dialog title="绑定风险点" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
                      :visible.sync="bindVisible"
                      width="480px" :append-to-body="true">
             <el-form label-width="120px">
-              <el-form-item label="区块名称：">
+              <el-form-item label="风险点名称：">
                 <el-select v-model="bindSelection"  placeholder="请选择" size="medium">
                   <el-option
                     v-for="item in bindOptions"
@@ -119,12 +138,12 @@
             </span>
           </el-dialog>
 
-          <!-- 重新绑定节点 -->
-          <el-dialog title="重新绑定区块" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
+          <!-- 重新绑定风险点 -->
+          <el-dialog title="重新绑定风险点" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
                      :visible.sync="rebindVisible"
                      width="480px" :append-to-body="true">
             <el-form label-width="120px">
-              <el-form-item label="区块名称：">
+              <el-form-item label="风险点名称：">
                 <el-select v-model="rebindSelection"  placeholder="请选择" size="medium">
                   <el-option
                     v-for="item in bindOptions"
@@ -288,6 +307,7 @@ import TreeDiagram from '../tree-diagram/treeDiagram'
 import {
   getPlaceSelector,
   getRiskSelector,
+  getUnitSelector,
   addPlace,
   bindLayer,
   getLayer,
@@ -295,10 +315,12 @@ import {
   delPoint,
   uploadPic,
   checkItemDetail,
+  checkUnitDetail,
   getImageSize
 } from '@/api/riskControl'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
+import axios from '@/api/axios'
 
 export default {
   name: 'riskColorImage',
@@ -315,20 +337,28 @@ export default {
       pageLoading: false,
       mapLists: [], // map 选项列表
       currentMap: '', // 当前所选のmap
-      layers: [], // 新建图层
+      layers: [], // 新建图层,包括新建的图标，用 type 作为区分
       oldLayers: [], // 之前存在的图层
       fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
+      imageStyles: [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACOklEQVRIS9WVv2sUQRTHv28vp2AhYmnQP0CSuz0j7swc8UenYBAtrBRiJ1pYWqloaWWlWClodwghYKGNB97N7QYlu5tCxMaAYJk0igi3T3ZxdS/e3s5ejoBbzr73/cz3vTczhB3+aId5+D+Aq0osVpi+1Xq9VtkKlXYYKLkE8LkYxOAlW3vny0BLAX0pjxGxlwVYEQ7Puu4HU2gpYKDkBsD7suIM/mpr78DEgWFT3mbmu8OECbhS0+5TE6iRw3dzc9Xq7urPVJAY7aSHhJPp2sfpg1MXW61+EdQIGCgRA06kYlGEUw3XbQdKcLrGzI/tnnd128BAiAVYWM4KDQPG/ytWZM90VoJR0EKHoZLrDD5kAmSwb2uvMTYwUPIBwDe2CuQ5/H02L9vae54HzXXoSzlNxF+GJY4CxvFkTe2vdTobORM9fC++FMtEWBgHyMB9W7s3jYGhEosMPMkrS5HDJI+i4/XuytutGkNLGiixBmBmW0Dwq7r2ThcCfencI6JboyYtApIbxwLujD53fL2uvYfZmAGHq0rZFqIugD1FB9jsP2/2UbGPaL2exg8AQyWeMXCpSCzuYeLQwpuiWACP6tq99g/Qb4oLxHhhIACjockIWbDOzmr9MpmldD1UosuAMgGOEdOpa3f+D3Bt3qlFfRp5B44BGUghi4/WOt77xOEnx9n7vULxq238kJbcwOdo149Go+1v/i1pU5zpM5ySQkbhBNa29l4P9NAocwJBhc/TBBiDvZy0YJHeLwsl5B31eUctAAAAAElFTkSuQmCC',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACFElEQVRIS9WVv2sUQRzF3zt/3VxAxEZQ8A8QkQuIguCPdAoG0cJKQTvJZTdYWaloaSW7MSGVgdiJEAIW2nigESwExcJWQbD0LHK7nt4+uctxZt3b3dmcHDjVsvu+77NvZr4zxIgHR8zD/wGUV74Cco1O8LjoDBVOKM8sgzjXAy3TCc4XgRYCyjNHQLyJAUrtA6y1PtpCiwF98w3Arpi58JVusPefAzVbvgXxzkDjkq6yFi7aQK0SagHb0DKtDYb13vOp/rs9wVZeRDsPagf0TB3EyT9mmqAT1uUb9d9JC3TDa0MD5VUmQa3EjQYAOwKVqnTX3mdBcxPKN58B7LcCAu/oBOObBso39wHMJA1SEnaFukwnfJQGTU2oebMPv/BlcGEWEMCW7bs59b3TQomRDvTMCojJTQGBe3SCG9bA3ln5MH0tchJ2Z1Yn6IYv//YYmFB++QPAg0MBoWd0wtO5QPmVu4BuZvZTpPUTp8Tb2X3HGp3m3EZNLKEejFURRasAKnkNbPm9AarK6bDTWt0RB/pmCcClfDNN9Mpf5GqJeU4HUwmgPHMBxJNcg/VeSx5tWYXiWbrNp7GEmjWrEI7ZAQuqhFd0g+N9oObGDqEdZZ6BBRFJecTDnGm+7a6hPOwETefWtr5IC/0A8Qk/d4zzeqPR3zTyK2cQRUcLGdmKqdd0fzxP7FLb+mF0udfTMOaDakcO/A38Z8gdevKgTAAAAABJRU5ErkJggg==',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACIElEQVRIS9WVPYgTURSFz50xjYWIpYKkSCUiWRAFwb9OwWXRIpWCNkG0kJCZ+5hCRavMfRAkhWK1gnYiLIKFNi7oChaCYmGrIFjuNkKQDFcmZJdsksm82UjAVw0z555vzvu5jzDnQXPm4f8AishVAL+Z+XnRGSqcUERWACylIFVdMcZcLAItBIzj+BgRfRwGqOohY8w3V2ghoLV2XVX3jgB/GWP2/3OgiNwBcC/D+BozP3GBOiWs1+ulSqXyZ8hwdfB8ZvNduVzeVavVkjyoE1BEUsDpTbMkSc5GUbQqIjoEeMzM12cGWmsXVfXlsFEGEL7vV5vN5pdp0NyEIvIDwEEXIIDPzLywY6CIPABwa9QgK2GqI6IrYRg+y4JmJmy32wd6vd7PSYXTgKk+SZJ9URStT6rNBIpIum6LOwECEGY2zsBBr1zOmpa8hIO6U8z8btRjYkIR+Qrg8CxAVX1tjDmXC4zj+D4R3Z6201S133GI6G6O7qYx5uGwZltCEakCWAOwO+8AO37f8DyvGgRBerT6YxT4FMDlPLN0DVON7/tv87QAHjHzjTFgHMeXiOiFg0G67Se1tsxSIroQhuGrbQmttWuqesIFWFRDRO/DMDy5BbTWHlHVqT2wKGRU73ne0SAIPvXXsNPp7Ol2u+mt7XyRFvyB76VSaaHRaGxsbZpWq3WeiI4XNHKSE9EHZn4ztkudqmcU5V5PM/qPlc8d+BciVeUd9MidXQAAAABJRU5ErkJggg=='
+      ],
+      imageIcon1: {},
+      imageIcon2: {},
+      imageIcon3: {},
       currentR: null, // 当前点击的矩形{obj}
       startx: 0, // 起始x坐标
       starty: 0, // 起始y坐标
-      flag: false, // 是否点击鼠标的标志
+      flag: false, // 是否是mousedown的状态
       x: 0,
       y: 0,
       leftDistance: 0,
       topDistance: 0,
-      op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框
+      op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框 -1 绘制点图标 -2 拖动点图标
       scale: 1,
-      type: 0,
+      type: 0, // 设置绘制图形类型：0 矩形， 1 点
       currentImage: {
         url: '',
         width: 0,
@@ -351,6 +381,8 @@ export default {
       slideTable: [],
       bindVisible: false,
       bindOptions: [],
+      pointOptions: [],
+      unitOptions: [],
       bindSelection: null, // 绑定的选项
       rebindVisible: false,
       rebindSelection: null, // 重新绑定的选项
@@ -359,30 +391,75 @@ export default {
       slidLoading: false,
       starshMenu: null, // 暂存右键的值
       detailVisible: false,
-      detailData: {}
+      detailData: {},
+      unitAble: false, // 是否激活“添加风险单元”
+      pointAble: false, // 是否激活“添加添加风险点”
+      ctx: {}, // 提前设置canvas对象
+      canvas: {},
+      fucBtns: [] // 获取按钮权限
+
     }
   },
   mounted () {
-    // this.canvas_init()
+    let vm = this
+    // 将所有图片的image生成提前，避免渲染顺序问题
+    vm.imageIcon1 = new Image()
+    vm.imageIcon1.src = vm.imageStyles[0]
+    vm.imageIcon2 = new Image()
+    vm.imageIcon2.src = vm.imageStyles[1]
+    vm.imageIcon3 = new Image()
+    vm.imageIcon3.src = vm.imageStyles[2]
+    let image = new Image()
+    image.src = vm.imageStyles[0]
+    vm.canvas = this.$refs.canvas
+    vm.ctx = vm.canvas.getContext('2d') // 直接全局设置canvas活动对象
+    document.onclick = function () {
+      vm.showMenu = false // 关闭自定义右键menu
+    }
+    vm.getPointSelector()
+    vm.getUnitSelector()
+    vm.getPlaceSelector(0)// 初始化时，获取map列表
   },
   created () {
     let vm = this
     vm.baseUrl = base.uploadQiniuAdr
     vm.fileAddress = base.fileQiniuAddr
-    document.onclick = function () {
-      vm.showMenu = false // 关闭自定义右键menu
-    }
-    vm.getRiskSelector()
-    vm.getPlaceSelector(0) // 初始化时，获取map列表
+    this.getBtnAuthority()
   },
   methods: {
-    // 获取风险点选项列表，绑定和重新绑定是一个方法
-    getRiskSelector () {
+    // 点击 添加风险点
+    addPoint () {
+      this.unitAble = false
+      this.pointAble = true
+    },
+    // 点击 添加风险单元
+    addUnit () {
+      this.pointAble = false
+      this.unitAble = true
+    },
+    // 获取风险单元选项列表
+    getUnitSelector () {
+      let vm = this
+      vm.pageLoading = true
+      getUnitSelector().then(res => {
+        if (res.code === 200) {
+          vm.unitOptions = res.data
+        } else {
+          vm.$message({
+            type: 'warning',
+            message: '数据失败， 请稍后重试'
+          })
+        }
+        vm.pageLoading = false
+      })
+    },
+    // 获取风险点选项列表
+    getPointSelector () {
       let vm = this
       vm.pageLoading = true
       getRiskSelector().then(res => {
         if (res.code === 200) {
-          vm.bindOptions = res.data
+          vm.pointOptions = res.data
         } else {
           vm.$message({
             type: 'warning',
@@ -401,14 +478,12 @@ export default {
           vm.mapLists = res.data
           if (type === 0) {
             vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
-            vm.getOldLayers()
           } else if (type === 1) {
             vm.currentMap = vm.mapLists[vm.mapLists.length - 1].value
-            vm.getOldLayers()
           } else if (type === 2) {
             vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
-            vm.getOldLayers()
           }
+          vm.getOldLayers()
         } else {
           vm.$message({
             type: 'warning',
@@ -418,7 +493,8 @@ export default {
         vm.pageLoading = false
       })
     },
-    getOldLayers () { // 获取当前map下原有记录的layers，顺便重绘
+    /** 获取当前map下原有记录的racts & points，顺便使用drawOldLayers()方法重绘 **/
+    getOldLayers () {
       let vm = this
       vm.pageLoading = true
       if (vm.currentMap) {
@@ -427,15 +503,17 @@ export default {
             vm.oldLayers = res.data
             vm.currentImage.url = res.map.backgroundUrl
             if (vm.currentImage.url) {
+              /** 获取图片尺寸 **/
               getImageSize(vm.currentImage.url).then(res => {
                 vm.currentImage.width = res.width
                 vm.currentImage.height = res.height
+                vm.canvas.width = res.width
+                vm.canvas.height = res.height
+                vm.$nextTick(() => {
+                  vm.initCanvas() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
+                })
               })
-            } else {
-              vm.currentImage.width = 0
-              vm.currentImage.height = 0
             }
-            vm.showOld()
           } else {
             vm.$message({
               type: 'warning',
@@ -446,57 +524,42 @@ export default {
         })
       }
     },
-    canvas_init () { // 初始化，以及初始化时的判断
-      this.showOld() // 初始化的时候，先把旧有数据加载遍
-    },
     zoomUp () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-
-      if (c.width <= vm.maxWidth && c.height <= vm.maxHeight) {
-        c.width *= vm.scaleStep
-        c.height *= vm.scaleStep
-        vm.scale = c.height / vm.currentImage.height
-        ctx.scale(vm.scale, vm.scale)
-        c.style.backgroundSize = `${c.width}px ${c.height}px`
-        vm.showOld()
-        vm.reshow()
+      if (vm.canvas.width <= vm.maxWidth && vm.canvas.height <= vm.maxHeight) {
+        vm.canvas.width *= vm.scaleStep
+        vm.canvas.height *= vm.scaleStep
+        vm.scale = vm.canvas.height / vm.currentImage.height
+        vm.ctx.scale(vm.scale, vm.scale)
+        vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
+        vm.initCanvas()
       }
     },
     zoomDown () {
       let vm = this
       const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
 
-      // debugger
-      if (c.width >= vm.currentImage.width && c.height >= vm.currentImage.height) {
-        c.width /= vm.scaleStep
-        c.height /= vm.scaleStep
+      if (vm.canvas.width >= vm.currentImage.width && vm.canvas.height >= vm.currentImage.height) {
+        vm.canvas.width /= vm.scaleStep
+        vm.canvas.height /= vm.scaleStep
         vm.scale = c.height / vm.currentImage.height
-        ctx.scale(vm.scale, vm.scale)
-        c.style.backgroundSize = `${c.width}px ${c.height}px`
-        vm.showOld()
-        vm.reshow()
+        vm.ctx.scale(vm.scale, vm.scale)
+        vm.canvas.style.backgroundSize = `${vm.canvas.width}px ${vm.canvas.height}px`
+        vm.initCanvas()
       }
     },
     cancel () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
       vm.layers.pop()
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.showOld()
-      vm.reshow()
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.initCanvas()
     },
+    /* 清空画板，顺便再initCanvas，根据当前的数据重绘 */
     clear () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
       vm.layers = []
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.showOld()
-      vm.reshow()
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.initCanvas()
     },
     saveChange () { // 保存修改
       let vm = this
@@ -509,7 +572,6 @@ export default {
       }
       bindLayer(postD).then(res => {
         if (res.code === 200) {
-          // console.log(res.data)
           vm.layers = [] // 因为修改的layers以及保存了，再次加载时，作为oldLayers加载，故layers清空
           vm.getOldLayers()
         } else {
@@ -523,9 +585,7 @@ export default {
     },
     resizeLeft (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'w-resize'
+      vm.canvas.style.cursor = 'w-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 3
       }
@@ -539,9 +599,7 @@ export default {
     },
     resizeTop (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 's-resize'
+      vm.canvas.style.cursor = 's-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 4
       }
@@ -555,9 +613,7 @@ export default {
     },
     resizeWidth (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'w-resize'
+      vm.canvas.style.cursor = 'w-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 5
       }
@@ -571,9 +627,7 @@ export default {
     },
     resizeHeight (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 's-resize'
+      vm.canvas.style.cursor = 's-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 6
       }
@@ -587,9 +641,7 @@ export default {
     },
     resizeLT (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'se-resize'
+      vm.canvas.style.cursor = 'se-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 7
       }
@@ -605,9 +657,7 @@ export default {
     },
     resizeWH (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'se-resize'
+      vm.canvas.style.cursor = 'se-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 8
       }
@@ -623,9 +673,7 @@ export default {
     },
     resizeLH (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'ne-resize'
+      vm.canvas.style.cursor = 'ne-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 9
       }
@@ -641,9 +689,7 @@ export default {
     },
     resizeWT (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'ne-resize'
+      vm.canvas.style.cursor = 'ne-resize'
       if (vm.flag && vm.op === 0) {
         vm.op = 10
       }
@@ -657,78 +703,125 @@ export default {
         vm.currentR.width = vm.currentR.x2 - vm.currentR.x1
       }
     },
-    drawImage () { // 后期需要把后台传过来的图片宽高作为参数使用，前台读取图片的宽高有onload的顺序问题
-      const canvas = document.getElementById('myCanvas')
-      const ctx = canvas.getContext('2d')
+    initCanvas () {
+      this.drawOldLayers()
+      this.drawNewLayers()
+    },
+    drawImage () {
       let vm = this
       if (vm.currentImage.url) {
         let img = new Image()
         img.src = vm.currentImage.url
-        // console.log('draw', vm.currentImage.width, vm.currentImage.height)
-        ctx.drawImage(img, 0, 0, vm.currentImage.width, vm.currentImage.height)
+        vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
       }
     },
-    // 绘制原有图形，包括背景图
-    showOld () {
+    // 绘制后台传过来的数据，包括背景图，oldLayers，oldPoints
+    drawOldLayers () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
       vm.oldLayers.forEach(item => {
-        ctx.beginPath()
-        ctx.rect(item.x1, item.y1, item.width, item.height)
-        ctx.strokeStyle = vm.fillStyles[item.level]
-        ctx.fillStyle = vm.fillStyles[item.level]
-        ctx.globalAlpha = 0.7
-        ctx.fill()
-        ctx.stroke()
-        ctx.font = '20px Georgia'
-        ctx.fillStyle = 'black'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
-        ctx.stroke()
+        /** 注：为了不影响代码运行，先改为type，后期需改为riskType **/
+        if (item.riskType === 0) {
+          vm.ctx.beginPath()
+          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+          vm.ctx.strokeStyle = vm.fillStyles[item.level]
+          vm.ctx.fillStyle = vm.fillStyles[item.level]
+          vm.ctx.globalAlpha = 0.7
+          vm.ctx.fill()
+          vm.ctx.stroke()
+          vm.ctx.font = '20px Georgia'
+          vm.ctx.fillStyle = 'black'
+          vm.ctx.textAlign = 'center'
+          vm.ctx.textBaseline = 'middle'
+          vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
+          vm.ctx.stroke()
+        } else {
+          let image = new Image()
+          if (item.level === 1) {
+            image = vm.imageIcon1
+          } else if (item.level === 2) {
+            image = vm.imageIcon2
+          } else {
+            image = vm.imageIcon3
+          }
+          vm.ctx.beginPath()
+          vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
+        }
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
     },
-    // 绘制图形（擦除后重绘 or 第一遍加载时绘制）
-    reshow (x, y) {
+    /** 绘制缓存里的layers图层
+     * 绘制图形（擦除后重绘 or 第一遍加载时绘制）
+     * **/
+    drawNewLayers (x, y) {
       let vm = this
       let allNotIn = 1
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
 
       vm.layers.forEach(item => {
-        ctx.beginPath()
-        ctx.rect(item.x1, item.y1, item.width, item.height)
-        if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
-          vm.resizeLeft(item)
-        } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
-          vm.resizeWidth(item)
-        } else if (y >= (item.y1 - 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
-          vm.resizeTop(item)
-        } else if (y >= (item.y2 - 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
-          vm.resizeHeight(item)
-        } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
-          vm.resizeLT(item)
-        } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
-          vm.resizeWH(item)
-        } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
-          vm.resizeLH(item)
-        } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
-          vm.resizeWT(item)
+        if (item.riskType === 0) {
+          vm.ctx.beginPath()
+          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+          if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
+            vm.resizeLeft(item)
+          } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
+            vm.resizeWidth(item)
+          } else if (y >= (item.y1 - 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
+            vm.resizeTop(item)
+          } else if (y >= (item.y2 - 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && x <= (item.x2 - 25 / vm.scale) && x >= (item.x1 + 25 / vm.scale)) {
+            vm.resizeHeight(item)
+          } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
+            vm.resizeLT(item)
+          } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
+            vm.resizeWH(item)
+          } else if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 + 25 / vm.scale) && y >= (item.y2 - 25 / vm.scale)) {
+            vm.resizeLH(item)
+          } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y1 + 25 / vm.scale) && y >= (item.y1 - 25 / vm.scale)) {
+            vm.resizeWT(item)
+          }
+          if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
+            vm.render(item)
+            allNotIn = 0
+          }
+          vm.ctx.strokeStyle = vm.fillStyles[item.level]
+          vm.ctx.fillStyle = vm.fillStyles[item.level]
+          vm.ctx.globalAlpha = 0.7
+          vm.ctx.fill()
+          vm.ctx.stroke()
+        } else {
+          /* 绘制点图标，无需resize功能
+           * 但需要对点图标的矩形位置进行重新定位
+           * 使用矩形中心进行定位
+          */
+          if (vm.ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
+            let pointRact = {
+              bindId: item.bindId,
+              height: 28,
+              level: item.level,
+              picid: item.picid,
+              type: item.type,
+              riskType: item.riskType,
+              width: 28,
+              x1: item.x1,
+              x2: item.x2,
+              y1: item.y1,
+              y2: item.y2
+            }
+            vm.render(pointRact)
+            allNotIn = 0
+          }
+          let image = {}
+          if (item.level === 1) {
+            image = vm.imageIcon1
+          } else if (item.level === 2) {
+            image = vm.imageIcon2
+          } else {
+            image = vm.imageIcon3
+          }
+          vm.ctx.beginPath()
+          vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
         }
-        if (ctx.isPointInPath(x * vm.scale, y * vm.scale)) {
-          vm.render(item)
-          allNotIn = 0
-        }
-        ctx.strokeStyle = vm.fillStyles[item.level]
-        ctx.fillStyle = vm.fillStyles[item.level]
-        ctx.globalAlpha = 0.7
-        ctx.fill()
-        ctx.stroke()
       })
       if (vm.flag && allNotIn && vm.op < 3) {
         vm.op = 1
@@ -736,11 +829,9 @@ export default {
     },
     render (rect) {
       let vm = this
-      const c = document.getElementById('myCanvas')
-
-      c.style.cursor = 'move'
+      vm.canvas.style.cursor = 'move'
       if (vm.flag && vm.op === 0) {
-        vm.op = 2
+        vm.op = 2 // 此时为拖动
       }
       if (vm.flag && vm.op === 2) {
         if (!vm.currentR) {
@@ -757,8 +848,15 @@ export default {
       let vm = this
       let len = vm.layers.length
       for (let i = 0; i < len; i++) {
-        if (vm.layers[i].x1 < x && x < vm.layers[i].x2 && vm.layers[i].y1 < y && y < vm.layers[i].y2) {
-          return vm.layers[i]
+        let itemLayer = vm.layers[i]
+        if (itemLayer.riskType === 0) {
+          if (itemLayer.x1 < x && x < itemLayer.x2 && itemLayer.y1 < y && y < itemLayer.y2) {
+            return itemLayer
+          }
+        } else {
+          if ((itemLayer.x1 - 14) < x && x < (itemLayer.x1 + 14) && (itemLayer.y1 - 14) < y && y < (itemLayer.y1 + 14)) {
+            return itemLayer
+          }
         }
       }
     },
@@ -767,8 +865,15 @@ export default {
       let vm = this
       let len = vm.oldLayers.length
       for (let i = 0; i < len; i++) {
-        if (vm.oldLayers[i].x1 < x && x < vm.oldLayers[i].x2 && vm.oldLayers[i].y1 < y && y < vm.oldLayers[i].y2) {
-          return vm.oldLayers[i]
+        let itemLayer = vm.oldLayers[i]
+        if (itemLayer.riskType === 0) {
+          if (itemLayer.x1 < x && x < itemLayer.x2 && itemLayer.y1 < y && y < itemLayer.y2) {
+            return itemLayer
+          }
+        } else {
+          if ((itemLayer.x1 - 14) < x && x < (itemLayer.x1 + 14) && (itemLayer.y1 - 14) < y && y < (itemLayer.y1 + 14)) {
+            return itemLayer
+          }
         }
       }
     },
@@ -802,63 +907,85 @@ export default {
         return
       }
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-
-      vm.startx = e.layerX / vm.scale
-      vm.starty = e.layerY / vm.scale
-      vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
-      if (vm.currentR) {
-        vm.leftDistance = vm.startx - vm.currentR.x1
-        vm.topDistance = vm.starty - vm.currentR.y1
+      // 鼠标按下时，实时添加风险单元的绘制
+      if (vm.unitAble) {
+        vm.startx = e.layerX / vm.scale
+        vm.starty = e.layerY / vm.scale
+        vm.currentR = vm.isPointInRect(vm.startx, vm.starty)
+        if (vm.currentR) {
+          vm.leftDistance = vm.startx - vm.currentR.x1
+          vm.topDistance = vm.starty - vm.currentR.y1
+        }
+        vm.ctx.strokeRect(vm.x, vm.y, 0, 0)
+        vm.ctx.strokeStyle = '#0000ff'
+        vm.flag = true
       }
-      ctx.strokeRect(vm.x, vm.y, 0, 0)
-      ctx.strokeStyle = '#0000ff'
-      vm.flag = 1
-    },
-    mousemove (e) {
-      let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-
-      vm.x = e.layerX / vm.scale
-      vm.y = e.layerY / vm.scale
-      ctx.save()
-      ctx.setLineDash([5])
-      c.style.cursor = 'default'
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      if (vm.flag && vm.op === 1) {
-        ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
-      }
-      ctx.restore()
-      vm.showOld(vm.x, vm.y)
-      vm.reshow(vm.x, vm.y)
-    },
-    mouseup (e) {
-      // console.log('mouseup:', e)
-      let vm = this
-
-      if (vm.op === 1) {
-        vm.layers.push(vm.fixPosition({
-          x1: vm.startx,
-          y1: vm.starty,
+      /** 区别于矩形的绘制，需要记录两个点，添加点，只需要记录鼠标点击的点坐标(x1, y1)
+        * 剩下的点，根据固定的28px宽高进行计算
+        * 实时绘制风险点
+        * 向layers里添加风险点
+      **/
+      if (vm.pointAble) {
+        let image = new Image()
+        image.src = vm.imageStyles[2] // 默认使用灰色图标
+        vm.layers.push({
+          x1: vm.x,
+          y1: vm.y,
           x2: vm.x,
           y2: vm.y,
           type: vm.type,
           level: 0,
-          bindId: '', // 绑定的点的id
-          picid: vm.currentMap // 绑定的map的id
-        }))
+          bindId: '',
+          picid: vm.currentMap,
+          riskType: 1
+        })
+      }
+    },
+    mousemove (e) {
+      let vm = this
+      vm.x = e.layerX / vm.scale
+      vm.y = e.layerY / vm.scale
+      if (vm.unitAble) {
+        vm.ctx.save()
+        vm.ctx.setLineDash([5])
+        vm.canvas.style.cursor = 'default'
+        vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+        if (vm.flag && vm.op === 1) {
+          vm.ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
+        }
+        vm.ctx.restore()
+        vm.drawOldLayers()
+        vm.drawNewLayers(vm.x, vm.y)
+      }
+    },
+    mouseup (e) {
+      let vm = this
+
+      if (vm.op === 1) {
+        // 向此时的layers里注入新画的图层，point 或 rect
+        if (vm.unitAble) {
+          vm.layers.push(vm.fixPosition({
+            x1: vm.startx,
+            y1: vm.starty,
+            x2: vm.x,
+            y2: vm.y,
+            type: vm.type,
+            riskType: 0,
+            level: 0,
+            bindId: '', // 绑定的点的id
+            picid: vm.currentMap // 绑定的map的id
+          }))
+        }
       } else if (vm.op >= 3) {
         vm.fixPosition(vm.currentR)
       }
+
       vm.currentR = null
-      vm.flag = 0
-      vm.reshow(vm.x, vm.y)
+      vm.flag = false
+      vm.drawNewLayers(vm.x, vm.y)
       vm.op = 0
     },
     openMenu (e) {
-      // console.log('右键：', e)
       let vm = this
       vm.startx = e.layerX / vm.scale
       vm.starty = e.layerY / vm.scale
@@ -891,22 +1018,19 @@ export default {
       this.showMenu = true
     },
     leaveCanvas () {
-      const c = document.getElementById('myCanvas')
-      c.onmousedown = null
-      c.onmousemove = null
-      c.onmouseup = null
+      this.canvas.onmousedown = null
+      this.canvas.onmousemove = null
+      this.canvas.onmouseup = null
     },
     enterCanvas () {
       document.onmouseup = this.mouseup()
     },
     optionChange () {
       let vm = this
-      const c = document.getElementById('myCanvas')
-      const ctx = c.getContext('2d')
-      ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
       vm.getOldLayers()
       vm.layers = []
-      vm.showOld()
+      vm.drawOldLayers()
     },
     addMap () {
       let vm = this
@@ -925,9 +1049,7 @@ export default {
               message: '节点添加成功'
             })
             vm.getPlaceSelector(1) // 更新map列表
-            const c = document.getElementById('myCanvas')
-            const ctx = c.getContext('2d')
-            ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
+            vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
             vm.getOldLayers() // 重绘
           }
           vm.pageLoading = false
@@ -974,29 +1096,43 @@ export default {
       let vm = this
       vm.slidLoading = true
       vm.slideOpen = true
-      checkItemDetail(vm.starshMenu.bindId).then(res => {
-        if (res.code === 200) {
-          vm.slideTable = res.data
-          vm.slidLoading = false
-        } else {
-          vm.slidLoading = false
-          vm.slideOpen = false
-          vm.$message({
-            type: 'warning',
-            message: '数据获取失败，请稍后重试'
-          })
-        }
-      })
+      if (vm.currentR.riskType === 0) {
+        checkUnitDetail(vm.starshMenu.bindId).then(res => {
+          if (res.code === 200) {
+            vm.slideTable = res.data
+            vm.slidLoading = false
+          } else {
+            vm.slidLoading = false
+            vm.slideOpen = false
+            vm.$message({
+              type: 'warning',
+              message: '数据获取失败，请稍后重试'
+            })
+          }
+        })
+      } else {
+        checkItemDetail(vm.starshMenu.bindId).then(res => {
+          if (res.code === 200) {
+            vm.slideTable = res.data
+            vm.slidLoading = false
+          } else {
+            vm.slidLoading = false
+            vm.slideOpen = false
+            vm.$message({
+              type: 'warning',
+              message: '数据获取失败，请稍后重试'
+            })
+          }
+        })
+      }
     },
     deleteItem () {
       let vm = this
-
       vm.$confirm('此操作将永久删除该位置信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // console.log(vm.currentR, vm.bound)
         if (vm.bound) { // 是odlData，需要请求后台，删除该点
           let postD = {
             id: vm.currentR.id
@@ -1022,7 +1158,7 @@ export default {
               vm.layers.splice(i, 1)
             }
           }
-          vm.reshow()
+          vm.clear()
         }
       }).catch(() => {
         this.$message({
@@ -1044,17 +1180,26 @@ export default {
     },
     bind () {
       let vm = this
+      if (vm.currentR.riskType === 0) { // 绑定风险单元，切换选项
+        vm.bindOptions = vm.unitOptions
+      } else {
+        vm.bindOptions = vm.pointOptions
+      }
       vm.bindVisible = true
     },
     rebind () {
       let vm = this
+      if (vm.currentR.riskType === 0) { // 绑定风险单元
+        vm.bindOptions = vm.unitOptions
+      } else {
+        vm.bindOptions = vm.pointOptions
+      }
       vm.rebindVisible = true
     },
     uploadNewMap () {
       this.uploadVisible = true
     },
     checkOutDetail (data) {
-      // console.log(data)
       this.detailVisible = true
       this.detailData = data
     }, // 点击查看详情
@@ -1123,6 +1268,24 @@ export default {
       })
       vm.uploadLoading = false
       vm.uploadVisible = false
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '4-6'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {
@@ -1153,6 +1316,12 @@ export default {
           width: 100%;
           color: #646464;
           cursor: pointer;
+          &.active{
+            color: #409eff;
+            .menu-icon{
+              background: #e4edf7;
+            }
+          }
           .menu-icon{
             width: 47px;
             height: 44px;
@@ -1229,6 +1398,7 @@ export default {
           width: 500px;
           border: 1px solid #ddd;
           height: 100%;
+          overflow: auto;
           background: #fff;
           padding: 20px;
           box-shadow: -1px 2px 5px #c0c4cc;

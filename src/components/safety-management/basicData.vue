@@ -19,7 +19,8 @@
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <el-button size="medium" type="primary" @click="addDate"><i class="el-icon-upload2"></i>上传</el-button>
+              <!-- 权限显示 -->
+              <el-button size="medium" type="primary" @click="addDate" class="function-btn upload-btn" v-if="fucBtns.includes('upload-btn')"><i class="el-icon-upload2"></i>上传</el-button>
             </p>
 
             <el-dialog title="上传" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
@@ -85,9 +86,9 @@
                 fixed="right"
                 label="操作"
                 align="center">
-                <template slot-scope="scope">
-                  <a type="text" :href="`${scope.row.path}?attname=${scope.row.fileName}`">下载</a>
-                  <el-button type="text" @click="deleteItem(scope.row.id)" style="color: #f56c6c; margin-left: 8px;">删除</el-button>
+                <template slot-scope="scope"> <!-- 权限显示 -->
+                  <a type="text" :href="`${scope.row.path}?attname=${scope.row.fileName}`" v-if="fucBtns.includes('down-btn')">下载</a>
+                  <el-button type="text" @click="deleteItem(scope.row.id)" style="color: #f56c6c; margin-left: 8px;" v-if="fucBtns.includes('del-btn')">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -114,6 +115,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import {getBasicCategory, getBasicList, delBasicFile, addBasicFile} from '@/api/organization'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
+import axios from '@/api/axios'
 
 export default {
   name: 'basicData',
@@ -151,13 +153,15 @@ export default {
         fileName: '',
         size: 0
       },
-      fileList: []
+      fileList: [],
+      fucBtns: []
     }
   },
   created () {
     this.baseUrl = base.uploadQiniuAdr
     this.fileAddress = base.fileQiniuAddr
     this.getBasicCategory(true)
+    this.getBtnAuthority()
   },
   methods: {
     formatTime (t) {
@@ -325,6 +329,24 @@ export default {
       this.addData.url = ''
       this.addData.fileName = ''
       this.addData.size = 0
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '2-4'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {BreadCrumb}

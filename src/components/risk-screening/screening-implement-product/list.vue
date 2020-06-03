@@ -43,6 +43,14 @@
           </div>
           <div class="tools-right">
             <el-button
+              type="primary"
+              size="medium"
+              @click="dialogOrganizationVisible= true"
+              v-if = "fucBtns.includes('export-btn')"
+              >
+              隐患排查清单</el-button>
+            <el-button
+              v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -101,6 +109,7 @@
             width="100px">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="talbe-links-del"
                 @click.prevent="editItem(scope.row)">详情
@@ -110,6 +119,27 @@
         </el-table>
       </div>
     </el-main>
+      <el-dialog
+            :close-on-click-modal="false"
+            title="导出部门机构列表"
+            :visible.sync="dialogOrganizationVisible"
+            width="450px">
+      <div style="height: 450px" v-loading="treeLoading">
+        <template>
+          <tree-organization
+              :tree-name="'组织机构'"
+              :tree-data="departmentalTree"
+              @handleNodeClick="departmentalTreeClickHandle"
+          >
+          <el-button
+            class="btn-sync"
+            type="primary"
+            size="small"
+            @click="exportOrganizationData">导出</el-button>
+          </tree-organization>
+        </template>
+      </div>
+    </el-dialog>
     <dialog-detail
       :dialogVisible="dialogDetailVisible"
       :planId="currentPlanId"
@@ -122,6 +152,7 @@
 <script>
 import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
+import TreeOrganization from '@/components/tree-diagram/treeOrganization'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
 import { mapState } from 'vuex'
@@ -156,18 +187,25 @@ export default {
         checkTime: '', // 检查时间
         hiddenDesc: '', // 隐患描述
         hiddenPhotos: [] // 附件
-      }
+      },
+      dialogOrganizationVisible: false, // 组织结构树开关
+      treeLoading: false, // 组织结构树加载
+      departmentalTree: [], // 组织结构树数据
+      fucBtns: []
     }
   },
   components: {
     TreeReadOnly, // 风险单元树
-    DialogDetail // 详情
+    DialogDetail, // 详情
+    TreeOrganization // 部门树
   },
   created () {
     let vm = this
     vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
+    this.fetchPlanOrganizationData()
+    this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -263,7 +301,49 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+
+    // 获取树数据
+    fetchPlanOrganizationData () {
+      axios
+        .get('basticHidden/getDeptListSize')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.departmentalTree = res.data.data
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    // 组织结构树点击事件
+    departmentalTreeClickHandle (data) {
+      // console.log(data)
+      let vm = this
+      vm.departmentalTreeId = data
+    },
+    exportOrganizationData () {
+      exportExcel(`riskLevel/exportRisksInvest`, 'id=' + this.departmentalTreeId)
+      // console.log(this.departmentalTreeId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
+
   },
   computed: { // vuex 参数引入
     ...mapState({

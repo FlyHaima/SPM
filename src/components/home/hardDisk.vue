@@ -70,6 +70,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import {getDiskFileList} from '@/api/organization'
+import axios from '@/api/axios'
 
 export default {
   name: 'hardDisk',
@@ -81,7 +82,8 @@ export default {
         {name: '文档', id: '0', active: true},
         {name: '视频', id: '1', active: false},
         {name: '图片', id: '2', active: false},
-        {name: '其他', id: '3', active: false}
+        {name: '其他', id: '3', active: false},
+        {name: '导入模板', id: '5', active: false}
       ],
       currentTypeId: '0',
       dataList: [],
@@ -94,6 +96,7 @@ export default {
   },
   created () {
     this.getTable()
+    this.getBtnAuthority()
   },
   methods: {
     formatTime (t) {
@@ -147,6 +150,23 @@ export default {
         }
         vm.pageLoading = false
       })
+    },
+    getBtnAuthority () {
+      const authId = {authId: '3-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {BreadCrumb}

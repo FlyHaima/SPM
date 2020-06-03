@@ -140,5 +140,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.el-textarea{
+  border: 1px solid #d4d4d4;
+}
 </style>

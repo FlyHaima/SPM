@@ -36,7 +36,7 @@ export default {
   name: 'riskCompareChart',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['风险辨识评估', '作业安全风险比较图'],
       pageLoading: false,
       chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
@@ -58,7 +58,7 @@ export default {
       let vm = this
       vm.pageLoading = true
       axios
-        .get('riskLevel/getWorkRisk', {
+        .get('riskLevel/getWorkRisk1', {
           time: vm.time
         })
         .then((res) => {

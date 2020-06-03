@@ -18,8 +18,8 @@
           v-model="filterText">
         </el-input>
       </div>
-      <div class="slide-btns">
-        <el-upload accept=".xls" style="display: inline-block" v-show="hasUpload"
+      <div class="slide-btns"> <!-- 权限显示 -->
+        <el-upload accept=".xls" style="display: inline-block" class="function-btn upload-btn" v-if="true"
                   :action="`${baseUrl}/dept/importDept`"
                   :data="uploadData"
                   :before-upload="handleBeforeUpload"
@@ -27,7 +27,7 @@
                   :on-error="handleError"
                   :file-list="fileList"
                   :show-file-list="false">
-          <el-button type="text">上传</el-button>
+          <el-button type="text"  v-if="showLoadBtn">上传</el-button>
         </el-upload>
         <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
         <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
@@ -47,9 +47,10 @@
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
             <span class="right-btns" v-if="showBtns">
-              <i class="el-icon-plus" title="添加节点" @click.stop="addNode(node, data)"></i>
-              <i class="el-icon-edit" title="修改节点" @click.stop="edit(node, data)"></i>
-              <i class="el-icon-delete" title="删除节点"  @click.stop="remove(node, data)"></i>
+              <!-- 权限显示 -->
+              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="showAddBtn"></i>
+              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="showEditBtn"></i>
+              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="showDelBtn"></i>
             </span>
           </span>
       </el-tree>
@@ -59,6 +60,7 @@
 
 <script>
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'treeDiagram',
@@ -78,6 +80,22 @@ export default {
     showBtns: {
       type: Boolean,
       default: false
+    },
+    showEditBtn: {
+      type: Boolean,
+      default: false
+    },
+    showAddBtn: {
+      type: Boolean,
+      default: false
+    },
+    showDelBtn: {
+      type: Boolean,
+      default: false
+    },
+    showLoadBtn: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -95,12 +113,14 @@ export default {
       },
       baseUrl: '',
       fileList: [],
-      defaultOpenNode: [] // 默认展开节点的集合
+      defaultOpenNode: [], // 默认展开节点的集合
+      fucBtns: [] // 按钮权限数组
     }
   },
   created () {
     this.baseUrl = base.baseUrl
     this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
+    // this.getBtnAuthority()
   },
   methods: {
     // 获取一节点集合
@@ -140,6 +160,7 @@ export default {
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
       // console.log('节点deptID：' + data.deptId)
       // console.log(data)
+      console.log(data)
       this.$emit('handleNodeClick', data.deptId, data.position, data)
     },
     addNode (node, data) {
@@ -153,10 +174,25 @@ export default {
       }
     },
     edit (node, data) {
-      this.$emit('editTreeData', data.deptId)
+      this.$emit('editTreeData', data.deptId, data.orderNo, data.deptName)
     },
     remove (node, data) {
       this.$emit('confirmRemove', data.deptId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '2-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   watch: {
@@ -170,6 +206,7 @@ export default {
         this.fetchTreeNodeId()
       }
     }
+
   }
 }
 </script>

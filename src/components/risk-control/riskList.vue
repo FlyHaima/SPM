@@ -21,7 +21,7 @@
               <div class="tools-right">
                 <el-upload
                   class="tools-item"
-                  v-if="importVisible"
+                  v-if="importVisible && fucBtns.includes('import-btn')"
                   accept=".xls"
                   :action='uploadUrl()'
                   :data="uploadData"
@@ -38,7 +38,7 @@
                    导入</el-button>
                 </el-upload>
                 <el-button
-                  v-if="!tableVisible"
+                  v-if="!tableVisible && fucBtns.includes('export-btn')"
                   class="tools-item"
                   type="success"
                   size="medium"
@@ -46,7 +46,7 @@
                   @click="exportEexcelHandel">
                    导出</el-button>
                    <el-button
-                  v-if="organizationVisible"
+                  v-if="organizationVisible && fucBtns.includes('export-btn')"
                   class="tools-popup"
                   type="success"
                   size="medium"
@@ -154,8 +154,8 @@
                   </div>
                 </div>
                 <div
-                  v-for=" item in riskTableData"
-                  :key="item.workNo"
+                  v-for="(item, index) in newRiskTableData"
+                  :key="index"
                   class="custom-tbody">
                   <div class="custom-tr is-flex">
                     <div class="custom-td-value">
@@ -165,17 +165,17 @@
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.work}}
+                        {{item.sourceName}}
                       </div>
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.no}}
+                        {{(index+1)}}
                       </div>
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{item.bmp}}
+                        {{item.bmg}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -190,18 +190,17 @@
             </div>
           </div>
         </el-main>
-            <el-dialog
+        <el-dialog
             :close-on-click-modal="false"
-            title="编辑机构"
+            title="导出部门机构列表"
             :visible.sync="dialogOrganizationVisible"
             width="450px">
       <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
               :tree-name="'组织机构'"
-              :showEditor= 'flase'
               :tree-data="departmentalTree"
-              @editTreeData="editOrgTreeData"
+              @handleNodeClick="departmentalTreeClickHandle"
           >
           <el-button
             class="btn-sync"
@@ -232,6 +231,7 @@ export default {
       pageLoading: false,
       organizationTree: [], // tree data
       departmentalTree: [], // 部门树
+      treeLoading: false,
       riskId: '', // id
       level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
@@ -250,19 +250,24 @@ export default {
         riskDjCode: '', // 风险等级code
         riskDj: '' // 风险等级
       },
-      riskTableData: [],
+      newRiskTableData: [], // 新数据
       uploading: false, // 导入loading
       uploadData: {
-        riskId: ''
+        riskId: '',
+        token: ''
       }, // 上传数据
       fileList: [], // 导入列表
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      departmentalTreeId: '', // 当前选择部门树 部门id
+      fucBtns: []
     }
   },
   created () {
     this.fetchTreeData()
-    this.fetchTableData()
+    // this.fetchTableData()
     this.fetchPlanOrganizationData()
+    this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
+    this.getBtnAuthority()
   },
   methods: {
     // 导入接口地址
@@ -292,8 +297,10 @@ export default {
             this.organizationTree = res.data.data
             this.currentPlanId = this.organizationTree[0].riskId
           }
+          this.fetchTableData()
         })
     },
+    // 获取部门树数据
     fetchPlanOrganizationData () {
       axios
         .get('basticHidden/getDeptListSize')
@@ -313,7 +320,7 @@ export default {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`riskLevel/getRiskCrad?&id=${vm.riskId}`)
+        .get(`riskLevel/getRiskCrad?&id=${vm.riskId || vm.currentPlanId}`)
         .then((res) => {
           if (res.data.code === 200) {
             if (res.data.data.length > 1 || res.data.data.length === 0) {
@@ -326,9 +333,43 @@ export default {
               }
             } else {
               this.tableVisible = false
+              this.newRiskTableData = [] // 清空
               this.riskList = res.data.data[0]
-              this.riskTableData = this.riskList.describes
-              if (this.riskList.riskDj) {
+              const riskTableData = this.riskList.describes[0]
+              if (this.riskList.riskDj) { // 当有危险等级的时候，需要显示内容
+                const newArr = []
+                if (riskTableData.bmp) {
+                  newArr.push(riskTableData.bmp)
+                }
+                if (riskTableData.mustCs) {
+                  newArr.push(riskTableData.mustCs)
+                }
+                if (riskTableData.technology) {
+                  newArr.push(riskTableData.technology)
+                }
+                if (riskTableData.train) {
+                  newArr.push(riskTableData.train)
+                }
+                if (riskTableData.individual) {
+                  newArr.push(riskTableData.individual)
+                }
+                if (riskTableData.emergency) {
+                  newArr.push(riskTableData.emergency)
+                }
+                if (riskTableData.cstand) {
+                  newArr.push(riskTableData.cstand)
+                }
+                // console.log(newArr)
+                for (let i = 0; i < newArr.length; i++) {
+                  let itemA = {
+                    workNo: riskTableData.workNo,
+                    work: riskTableData.work,
+                    rate: riskTableData.rate,
+                    sourceName: riskTableData.riskSourceName,
+                    bmg: newArr[i]
+                  }
+                  this.newRiskTableData.push(itemA)
+                }
                 this.tagVisible = true
               } else {
                 this.tagVisible = false
@@ -347,6 +388,8 @@ export default {
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
+      console.log(vm.currentPlanId)
+      console.log(vm.riskId)
       if (vm.treeLevel === '4') {
         vm.importVisible = true
       } else {
@@ -358,13 +401,41 @@ export default {
         vm.organizationVisible = true
       }
     },
+    // 部门树的点击出来事件
+    departmentalTreeClickHandle (data) {
+      let vm = this
+      vm.departmentalTreeId = data
+      // console.log(vm.departmentalTreeId)
+    },
     closeLoading () {
       this.pageLoading = false
     },
+    // 导出部门列表
+    exportOrganizationData () {
+      exportExcel(`riskLevel/exportRiskCard`, 'id=' + this.departmentalTreeId)
+    },
     // 导出excel
     exportEexcelHandel () {
-      exportExcel(`riskLevel/exportRiskCrad`, 'id=' + this.riskId)
+      exportExcel(`riskLevel/exportRiskCard`, 'id=' + this.riskId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '4-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
+
   },
   computed: {
     // tag的class集合计算
@@ -391,4 +462,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.custom-tr{
+  background: #fff;
+}
 </style>

@@ -11,6 +11,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                  v-if="fucBtns.includes('export-btn')"
                   type="success"
                   size="medium"
                   icon="el-icon-download"
@@ -144,6 +145,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import Tables from '@/mixins/Tables'
 import exportExcel from '@/api/exportExcel'
 import axios from 'axios'
+import myaxios from '@/api/axios'
 export default {
   name: 'riskBook',
   mixins: [Tables],
@@ -161,13 +163,30 @@ export default {
           index: 1, // 当前页数
           sizes: [10, 20, 50] // 分页集合
         }
-      }
+      },
+      fucBtns: []
     }
   },
   created () {
     this.tablesFetchList()
+    this.getBtnAuthority()
   },
   methods: {
+    getBtnAuthority () {
+      const authId = {authId: '4-3'}
+      myaxios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
     tablesFetchList () {
       this.tables.loading = true
       return axios
@@ -193,7 +212,7 @@ export default {
                 newBmp += '/' + item.individual
               }
               if (item.emergency) {
-                newBmp += '/' + item.emergency
+                newBmp += item.emergency
               }
               if (item.newCs) {
                 newBmp += '/' + item.newCs
@@ -225,6 +244,7 @@ export default {
         return 'tag-danger'
       }
     }
+    // 获取按钮权限方法
   },
   components: {
     BreadCrumb

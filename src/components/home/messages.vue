@@ -125,7 +125,7 @@
         <el-row>
           <el-col :span="14">
             <el-form-item label="标题" prop="title">
-              <el-input v-model="messageForm.title"></el-input>
+              <el-input v-model.trim="messageForm.title"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10">
@@ -184,14 +184,15 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="推送方式" prop="sendType">
-              <el-select v-model="messageForm.sendType" placeholder="请选择推送方式">
+              <!-- <el-select v-model="messageForm.sendType" placeholder="请选择推送方式" disabled="">
                 <el-option label="全员推送" value="1"></el-option>
                 <el-option label="选择推送" value="2"></el-option>
-              </el-select>
+              </el-select> -->
+              <el-input v-model="messageForm.sendType" disabled=""></el-input>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="推送名单" prop="sendList" v-show="messageForm.sendType === '2'">
+        <el-form-item label="推送名单" prop="sendList">
           <el-row>
             <el-col :span="21">
               <el-input v-model="messageForm.sendList" :disabled="true"></el-input>
@@ -240,13 +241,13 @@ export default {
   name: 'messages',
   data () {
     // 校验修改的绑定手机号码
-    var validateSendType = (rule, value, callback) => {
-      if (this.messageForm.sendType === '2' && value === '') {
-        callback(new Error('请选择推送名单'))
-      } else {
-        callback()
-      }
-    }
+    // var validateSendType = (rule, value, callback) => {
+    //   if (this.messageForm.sendType === '2' && value === '') {
+    //     callback(new Error('请选择推送名单'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       submitting: false,
       pageLoading: false,
@@ -285,10 +286,10 @@ export default {
         ],
         sendType: [
           { required: true, message: '请选择推动方式', trigger: 'change' }
-        ],
-        sendList: [
-          { validator: validateSendType, trigger: 'change' }
         ]
+        // sendList: [
+        //   { validator: validateSendType, trigger: 'change' }
+        // ]
       },
       page: {
         total: 0, // 总条数
@@ -474,23 +475,16 @@ export default {
     // 发布消息
     handleSendMessage () {
       this.dialogFormMessageVisible = true
-      Object.keys(this.messageForm).forEach(key => {
-        // this.form[key] = ''
-        this.messageForm.title = '' // 标题
-        this.messageForm.textContent = '' // 文本内容
-        this.messageForm.fileList = '' // 附件上传
-        this.messageForm.type = '' // 消息类型
-        this.messageForm.sendType = '' // 推送方式
-        this.messageForm.sendList = '' // 推送名单列表
-      })
+      // console.log(this.messageForm)
+      this.messageForm.sendType = '全员推送'
     },
     // 提交发布消息事件
     submitMessageForm () {
       let vm = this
-      this.messageForm.fileList = JSON.stringify(this.uploadList)
       vm.$refs.messageForm.validate((valid) => {
         if (valid) {
-          vm.dialogFormMessageVisible = false
+          // vm.dialogFormMessageVisible = false
+          vm.messageForm.fileList = JSON.stringify(this.uploadList)
           axios
             .post('msg/sendMsg', vm.messageForm)
             .then((res) => {
@@ -563,7 +557,8 @@ export default {
     confirmChooseList () {
       this.messageForm.sendList = ''
       this.chooseList.forEach(item => {
-        this.messageForm.sendList += `${item.nameStr}; `
+        console.log(item)
+        this.messageForm.sendList += `${item.id}; `
       })
       this.showTreeTransfer = false
     }

@@ -18,6 +18,17 @@
 
         <el-main class="inner-content">
           <div class="container-box">
+            <div class="content-tools is-flex-end">
+                <div class="tools-right">
+                  <el-button
+                    v-if="importVisible && fucBtns.includes('export-btn')"
+                    type="success"
+                    size="medium"
+                    icon="el-icon-download"
+                    @click="exportExcelHandel">
+                    导出</el-button>
+                </div>
+              </div>
             <template v-if="tableVisible">
               <el-table
                 :data="tableData"
@@ -51,16 +62,6 @@
               </el-table>
             </template>
             <template v-else>
-              <div v-if="editData" class="content-tools is-flex-end">
-                <div class="tools-right">
-                  <el-button
-                    type="success"
-                    size="medium"
-                    icon="el-icon-download"
-                    @click="exportExcelHandel">
-                    导出</el-button>
-                </div>
-              </div>
               <el-form
                 :model = "form"
                 ref = "form"
@@ -100,23 +101,29 @@
                     <div class="custom-tr">
                       <div class="custom-th-label">主要管控措施</div>
                       <div class="custom-td-value">
-                        <el-select
-                          v-model="form.gkcs"
-                          multiple
-                          placeholder="请选择"
-                          @change="selChangeGkcs">
-                          <el-option
-                            v-for="(item, index) in options"
-                            :key="'gkcs'+index"
-                            :label="item.label"
-                            :value="item.value"
-                            >
-                          </el-option>
-                        </el-select>
+                        <el-input
+                          class='textarea'
+                          type='textarea'
+                          autosize
+                          maxlength="120"
+                          v-model.trim="form.bmp"
+                          placeholder=""></el-input>
                       </div>
                     </div>
                     <div class="custom-tr">
                       <div class="custom-th-label">主要应急措施</div>
+                      <div class="custom-td-value">
+                        <el-input
+                          class='textarea'
+                          type='textarea'
+                          autosize
+                          maxlength="120"
+                          v-model.trim="form.should"
+                          placeholder=""></el-input>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label"></div>
                       <div class="custom-td-value">
                         <el-select
                           v-model="form.emergency"
@@ -159,7 +166,7 @@
                   <el-button
                   type="primary"
                   :loading="submitting"
-                  native-type="submit">保存</el-button>
+                  native-type="submit" v-if="fucBtns.includes('save-btn')">保存</el-button>
                 </div>
               </el-form>
             </template>
@@ -178,10 +185,11 @@ export default {
   name: 'riskBulletinBoard',
   data () {
     return {
-      breadcrumb: ['风险辨识评估', '风险划分'],
+      breadcrumb: ['风险辨识评估', '重大安全风险点公告栏'],
       pageLoading: false, // 页面loading开关
       tableVisible: false, // table显示开关
       submitting: false, // 提交数据loading开关
+      importVisible: false, // 导出按钮显示开关
       riskId: '', // 风险点id
       treeLevel: '', // 树节点等级
       form: {
@@ -190,8 +198,13 @@ export default {
         factor: '',
         riskPlace: '',
         sgType: '',
-        gkcs: '',
-        emergency: ''
+        gkcs: '', // 主要管控措施
+        contingencies: '', // 主要应急措施
+        emergency: '',
+        control: '', // 主要管控措施
+        bmp: '',
+        worry: '', // 主要应急措施
+        should: ''
       },
       organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据
@@ -200,18 +213,20 @@ export default {
       imgPathColletion: [], // 所有图片路径集合
       imgPathSelGkcs: [], // 已选择的图片路径 - 主要管控措施
       imgPathSelEmergency: [], // 已选择的图片路径 - 主要应急措施
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: []
     }
   },
   created () {
     this.fetchTreeData()
     this.fetchTableData(1)
+    this.getBtnAuthority()
   },
   methods: {
     // 获取树的数据
     fetchTreeData () {
       axios
-        .get('riskia/getRiskTree')
+        .get('riskia/getZdRiskTree')
         .then((res) => {
           if (res.data.code === 200) {
             this.organizationTree = res.data.data
@@ -236,8 +251,7 @@ export default {
               vm.tableVisible = false
               vm.form = res.data.data[0]
               this.editData = this.form.id
-
-              vm.form.gkcs = JSON.parse(vm.form.gkcs)
+              // vm.form.gkcs = JSON.parse(vm.form.gkcs)
               vm.form.emergency = JSON.parse(vm.form.emergency)
 
               if (vm.form.gkcs) {
@@ -274,6 +288,7 @@ export default {
             if (res.data.code === 200) {
               vm.$notify.success('提交成功')
               vm.fetchTableData()
+              this.importVisible = true
             } else {
               vm.$message({
                 message: res.data.message,
@@ -291,7 +306,15 @@ export default {
       let vm = this
       vm.riskId = data.riskId
       vm.form.riskId = data.riskId
+      vm.treeLevel = data.treeLevel
       vm.fetchTableData(data.treeLevel)
+      // console.log(vm.form)
+      if (vm.treeLevel === '5' | vm.treeLevel === '1') {
+        vm.importVisible = false
+      } else {
+        vm.importVisible = true
+      }
+      console.log(vm.form)
     },
     closeLoading () {
       this.pageLoading = false
@@ -323,6 +346,24 @@ export default {
           }
         })
       })
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '4-5'}
+
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            debugger
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {
@@ -340,14 +381,19 @@ export default {
 
   .el-input__inner,
   .el-select .el-input__inner:focus,
-  .el-select .el-input.is-focus .el-input__inner{
+  .el-select .el-input.is-focus .el-input__inner {
     border-color: #ffffff !important;
   }
   .el-input__icon{
     line-height: 28px;
   }
-  .el-input--suffix .el-input__inner{
+  .el-input--suffix .el-input__inner {
     padding-left: 0;
   }
+}
+/deep/.custom-table  {
+    .el-textarea__inner {
+    border-color: #ffffff;
+}
 }
 </style>

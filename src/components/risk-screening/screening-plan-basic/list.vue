@@ -6,9 +6,11 @@
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
         :current-id ="currentPlanId"
-        showEditOrgBtn
-        showAddMenuBtn
-        showOperation
+        :showEditOrgBtn = "fucBtns.includes('edit-dept-btn')"
+        :showAddMenuBtn = "fucBtns.includes('create-btn')"
+        :showOperation = "true"
+        :showEditBtn = "fucBtns.includes('edit-menu-btn')"
+        :showDelBtn= "fucBtns.includes('del-menu-btn')"
         @add-menu-handle="addMenuHandle"
         @eidit-org-handle="eiditOrganizationHandle"
         @menu-click-handle="menuClickHandle"
@@ -22,6 +24,7 @@
         <div class="content-tools">
           <div class="tools-left">
             <el-button
+              v-if= "fucBtns.includes('type-btn')"
               type=""
               size="medium"
               icon="el-icon-menu"
@@ -30,19 +33,21 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="btnDisabledProductSend"
+              v-if="btnDisabledProductSend && fucBtns.includes('fb-btn')"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
               @click="handleSendMsg">
               计划发布</el-button>
             <el-button
+              v-if= "fucBtns.includes('add-btn')"
               type="primary"
               size="medium"
               icon="el-icon-plus"
               @click="handleAdd">
               添加</el-button>
             <el-upload
+              v-if= "fucBtns.includes('import-btn')"
               class="tools-item"
               accept=".xls"
               :action='uploadUrl()'
@@ -61,12 +66,14 @@
                 导入</el-button>
             </el-upload>
             <el-button
+              v-if= "fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
               @click="exportEexcelHandel">
               导出</el-button>
             <el-button
+              v-if= "fucBtns.includes('copy-btn')"
               type="primary"
               size="medium"
               icon="el-icon-document-copy"
@@ -156,11 +163,13 @@
             width="130px">
             <template slot-scope="scope">
               <a
+                v-if= "fucBtns.includes('del-btn')"
                 href="javascript:;"
                 class="color-danger talbe-links-del"
                 @click.prevent="delRowHandle(scope.row)">删除
               </a>
               <a
+                v-if= "fucBtns.includes('edit-btn')"
                 href="javascript:;"
                 class="talbe-links-del" style="margin-left: 5px;"
                 @click.prevent="editItem(scope.row)">编辑
@@ -430,7 +439,8 @@ export default {
       confirmEditing: false,
       uploadHeader: {
         token: ''
-      }
+      },
+      fucBtns: []
     }
   },
   components: {
@@ -446,6 +456,7 @@ export default {
     vm.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     vm.fetchListMenuData()
     vm.fetchPlanOrganizationData()
+    vm.getBtnAuthority()
   },
   methods: {
     // 切换分页数量
@@ -1035,6 +1046,21 @@ export default {
           })
         }
       })
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }

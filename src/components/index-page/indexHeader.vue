@@ -54,6 +54,7 @@ export default {
       showTaskB: true,
       showTaskC: true,
       showTaskD: true,
+      localStorageSkin: window.localStorage.getItem('localStorageSkin'), // 皮肤缓存序号值
       themes: [
         {
           color: '#1a6fba',
@@ -80,28 +81,49 @@ export default {
       userName: (state) => state.userInfo.userName,
       accountName: (state) => state.userInfo.accountName,
       msgNum: (state) => state.msgNum,
-      taskNum: (state) => state.taskNum
+      taskNum: (state) => state.taskNum,
+      skin: (state) => state.skin
     })
+  },
+  watch: {
+    skin (val) {
+      this.$nextTick(() => {
+        if (!this.localStorageSkin) {
+          this.initializeTheme(this.$store.state.skin, this.themes[this.$store.state.skin].color)
+        }
+      })
+    }
+  },
+  created () {
+    if (this.localStorageSkin) {
+      this.initializeTheme(this.localStorageSkin, this.themes[this.localStorageSkin].color)
+    }
   },
   mounted () {
   },
+  beforeUpdate () {
+  },
   methods: {
-    changeTheme (theme, color) {
-      switch (theme) {
-        case 0:
-          console.log(0)
-          break
-        case 1:
-          console.log(1)
-          break
-        case 2:
-          console.log(2)
-          break
-        case 3:
-          console.log(3)
-      }
+    initializeTheme (theme, color) {
       this.$store.dispatch('changeSetting', color)
       window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
+    },
+    changeTheme (theme, color) {
+      this.$store.dispatch('changeSetting', color)
+      window.document.documentElement.setAttribute('data-theme', 'theme' + theme)
+      localStorage.setItem('localStorageSkin', theme)
+      const skinVlaue = {skin: theme}
+      axios
+        .post('user/updateSkin', skinVlaue)
+        .then((res) => {
+          if (res.data.code === 200) {
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     },
     quitHandle () {
       let vm = this

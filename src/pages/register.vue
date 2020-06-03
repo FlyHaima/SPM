@@ -197,7 +197,7 @@
 <script>
 import axios from '@/api/axios'
 import moment from 'moment'
-import 'swiper/dist/css/swiper.css'
+import 'swiper/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 // INDUSTRY_NAME_LIST
 import { USE_INDUSTRY } from '@/constants/status'

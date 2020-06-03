@@ -44,6 +44,7 @@
           </div>
           <div class="tools-right">
             <el-button
+              v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -93,6 +94,7 @@
             align="center">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('edit-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
@@ -124,6 +126,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    hiddInstanceId: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -141,7 +147,8 @@ export default {
       currentPlanId: '', // 当前清单项的id
       tableData: [], // 基础类清单列表数据
       queryDate: '',
-      currentDetailsId: ''
+      currentDetailsId: '',
+      fucBtns: []
     }
   },
   components: {
@@ -153,6 +160,7 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     vm.fetchListMenuData()
     vm.fetchTableData()
+    vm.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -220,7 +228,8 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          hiddInstanceId: this.hiddInstanceId
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -244,6 +253,23 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-5'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   computed: { // vuex 参数引入
