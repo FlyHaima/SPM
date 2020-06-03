@@ -136,6 +136,7 @@ export default {
           if (res.data.code === 200) {
             sessionStorage.setItem('TOKEN_KEY', '')
             window.location = '/login'
+            localStorage.setItem('localStorageSkin', '')
           } else {
             vm.$message({
               message: res.data.message,
