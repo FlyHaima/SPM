@@ -1130,7 +1130,7 @@ export default {
       this.pageLoading = true
       let token = sessionStorage.getItem('TOKEN_KEY')
       // let userId = this.userId
-      console.log(userId)
+      // console.log(userId)
       // newId = JSON.stringify(newId)
       // get data, then, showDetailLog
       getTrainStatistic(userId, id, token).then((res) => {
@@ -1219,9 +1219,7 @@ export default {
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data)
             this.fucBtns = res.data.data.functionBtns
-            console.log(this.fucBtns)
           } else {
             this.$message({
               message: res.data.message,

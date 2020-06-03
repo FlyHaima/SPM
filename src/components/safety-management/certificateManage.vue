@@ -267,9 +267,7 @@ export default {
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data)
             this.fucBtns = res.data.data.functionBtns
-            console.log(this.fucBtns)
           } else {
             this.$message({
               message: res.data.message,
