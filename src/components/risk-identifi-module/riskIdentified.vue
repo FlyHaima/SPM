@@ -107,7 +107,7 @@
                 fixed="right">
                 <template slot-scope="scope">
                   <el-button v-if="scope.row.state-1 < 2 && fucBtns.includes('bs-btn')" size="mini" type="text" @click="openDialog(scope.row)" >辨识</el-button>
-                  <el-button v-else size="mini" type="text" @click="openDialog(scope.row)" v-if="fucBtns.includes('update-btn')">修改</el-button>
+                  <el-button v-if="scope.row.state-1 >= 2 && !fucBtns.includes('bs-btn') && fucBtns.includes('update-btn')" size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>
                 </template>
               </el-table-column>
             </el-table>

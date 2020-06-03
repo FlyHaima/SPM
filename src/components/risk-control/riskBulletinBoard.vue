@@ -357,7 +357,6 @@ export default {
           if (res.data.code === 200) {
             this.fucBtns = res.data.data.functionBtns
           } else {
-            debugger
             this.$message({
               message: res.data.message,
               type: 'warning'
