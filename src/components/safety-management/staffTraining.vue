@@ -464,7 +464,7 @@
                     width="105"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="checkDetail(scope.row.planId)" v-if="fucBtns.includes('detail-btn')" >详细</el-button>
+                      <el-button type="text" @click="checkDetail(scope.row.planId, scope.row.userId)" v-if="fucBtns.includes('detail-btn')" >详细</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -724,7 +724,8 @@ export default {
           return time.getTime() < Date.now() - 8.64e7
         }
       },
-      fucBtns: []
+      fucBtns: [],
+      userId: ''
     }
   },
   created () {
@@ -827,6 +828,8 @@ export default {
         if (res.code === 200) {
           this.recordList = res.data
           this.pageDataC.total = res.total
+          console.log(res.data)
+          this.userId = res.data.userId
         }
         this.pageLoading = false
       })
@@ -1123,12 +1126,14 @@ export default {
         }
       })
     },
-    checkDetail (id) {
+    checkDetail (id, userId) {
       this.pageLoading = true
       let token = sessionStorage.getItem('TOKEN_KEY')
+      // let userId = this.userId
+      console.log(userId)
       // newId = JSON.stringify(newId)
       // get data, then, showDetailLog
-      getTrainStatistic(id, token).then((res) => {
+      getTrainStatistic(userId, id, token).then((res) => {
         if (res.code && res.code === 200) {
           this.recordDetail.className = res.data.trainPlan.courseTitle
           this.recordDetail.department = res.data.trainPlan.deptName

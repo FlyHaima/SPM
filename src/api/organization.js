@@ -187,8 +187,8 @@ export function deletePlan (param) {
 }
 
 // 安全基础管理--全员培训--培训记录--详情
-export function getTrainStatistic (id, token) {
-  const url = `${baseUrl}/train/getTrainStatistic?id=${id}&token=${token}`
+export function getTrainStatistic (userId, id, token) {
+  const url = `${baseUrl}/train/getTrainStatistic?id=${id}&token=${token}&userId=${userId}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
