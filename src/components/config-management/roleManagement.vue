@@ -444,10 +444,10 @@ export default {
               }
             })
             .finally(() => {
-              // this.submitting = false
+              this.submitting = false
             })
         }).catch(() => {
-          // this.submitting = false
+          this.submitting = false
         })
       }
     },
