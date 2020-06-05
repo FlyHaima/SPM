@@ -33,7 +33,6 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="companyId === 'juechen'"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
@@ -1108,20 +1107,9 @@ export default {
       this.dialogExportTemplate = true
     },
     ExportTemplate (data) {
-      const companyId = {
-        companyId: data.companyId
-      }
-      axios
-        .get('/basticHidden/exportBigData', companyId)
-        .then((res) => {
-          if (res.date.code === 200) {
-          } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            })
-          }
-        })
+      let token = sessionStorage.getItem('TOKEN_KEY')
+      let api = 'basticHidden/exportBigData'
+      window.location.href = base.baseUrl + '/' + api + '?' + 'token=' + token + '&' + 'companyId=' + data.companyId
     },
     // 获取公司数组树
     getCompanyData () {
