@@ -33,7 +33,7 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="btnDisabledProductSend && fucBtns.includes('fb-btn')"
+              v-if="companyId === 'juechen'"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
@@ -478,7 +478,8 @@ export default {
         token: ''
       },
       fucBtns: [],
-      companyData: [] // 公司数据
+      companyData: [], // 公司数据
+      companyId: '' // 公司id
     }
   },
   components: {
@@ -492,6 +493,7 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     // 设置上传的header 添加token
     vm.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
+    vm.companyId = sessionStorage.getItem('companyId')
     vm.fetchListMenuData()
     vm.fetchPlanOrganizationData()
     vm.getBtnAuthority()

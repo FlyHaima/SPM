@@ -61,6 +61,7 @@ const actions = {
           commit('BASE_INFO_GET', res.data.data)
           sessionStorage.setItem('userId', res.data.data.userId)
           sessionStorage.setItem('userName', res.data.data.userName)
+          sessionStorage.setItem('companyId', res.data.data.companyId)
           commit('PASSWORD_LEVEL', res.data.aqjb)
           commit('MSG_NUM', res.data.msgNum)
           commit('TASK_NUM', res.data.taskNum)
