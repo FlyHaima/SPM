@@ -1113,7 +1113,6 @@ export default {
         .get('/basticHidden/exportBigData', companyId)
         .then((res) => {
           if (res.date.code === 200) {
-            console.log('1111111111111')
           } else {
             this.$message({
               message: res.data.message,
