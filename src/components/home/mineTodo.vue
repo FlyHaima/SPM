@@ -25,8 +25,8 @@
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.checkTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.checkTime | time-filter}}</span>
+                  <span class="list-info-date">{{item.checkTime | dateFilter}}</span>
+                  <span class="list-info-time">{{item.checkTime | timeFilter}}</span>
                   <span class="list-info-user">发布人：{{item.checkUserId}}</span>
                 </div>
               </li>
@@ -63,8 +63,8 @@
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.checkTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.checkTime | time-filter}}</span>
+                  <span class="list-info-date">{{item.checkTime | dateFilter}}</span>
+                  <span class="list-info-time">{{item.checkTime | timeFilter}}</span>
                   <span class="list-info-user">发布人：{{item.checkUserId}}</span>
                 </div>
               </li>
@@ -109,14 +109,14 @@ export default {
   },
   filters: {
     // 格式化日期格式
-    'date-filter' (value) {
+    'dateFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD')
       } else {
         return null
       }
     },
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('HH: mm: ss')
       } else {
