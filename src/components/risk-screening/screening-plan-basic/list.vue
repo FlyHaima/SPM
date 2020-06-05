@@ -37,6 +37,13 @@
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
+              @click="ExportTemplateVisible">
+              导出系统大数据模版</el-button>
+            <el-button
+              v-if="btnDisabledProductSend && fucBtns.includes('fb-btn')"
+              type="primary"
+              size="medium"
+              icon="el-icon-s-promotion"
               @click="handleSendMsg">
               计划发布</el-button>
             <el-button
@@ -298,6 +305,31 @@
         </template>
       </div>
     </el-dialog>
+    <el-dialog
+    title="导出系统大数据模版"
+    width="450px"
+    :close-on-click-modal="false"
+    :visible.sync="dialogExportTemplate"
+    >
+    <template>
+    <el-tree
+    :data="companyData"
+    :props="defaultPropsCompany"
+    node-key="companyId" >
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span>{{ node.label }}</span>
+        <span>
+          <el-button
+            type="text"
+            size="mini"
+            @click="ExportTemplate(data)">
+            导出
+          </el-button>
+        </span>
+      </span>
+    </el-tree>
+    </template>
+    </el-dialog>
     <dialog-add
       :dialogVisible="dialogAddVisible"
       :planId="currentPlanId"
@@ -386,6 +418,7 @@ export default {
       dialogAddVisible: false, // 添加弹框显示开关
       dialogOrganizationVisible: false, // 组织机构弹框显示开关
       dialogSortVisible: false, // 排查种类弹框显示开关
+      dialogExportTemplate: false, // 系统大数据模板开关
       organizationTree: [], // 组织机构
       editOrgData: {
         invDeptName: '',
@@ -418,6 +451,10 @@ export default {
           return time.getTime() < Date.now() - 8.64e7
         }
       },
+      defaultPropsCompany: {
+        children: 'children',
+        label: 'deptName'
+      },
       // checkedAuto: false,
       // checkedManual: false,
       investigationOptions: [], // 排查频率选项
@@ -440,7 +477,8 @@ export default {
       uploadHeader: {
         token: ''
       },
-      fucBtns: []
+      fucBtns: [],
+      companyData: [] // 公司数据
     }
   },
   components: {
@@ -457,6 +495,7 @@ export default {
     vm.fetchListMenuData()
     vm.fetchPlanOrganizationData()
     vm.getBtnAuthority()
+    vm.getCompanyData()
   },
   methods: {
     // 切换分页数量
@@ -1061,6 +1100,42 @@ export default {
             })
           }
         })
+    },
+    // 导出系统大数据模版
+    ExportTemplateVisible () {
+      this.dialogExportTemplate = true
+    },
+    ExportTemplate (data) {
+      const companyId = {
+        companyId: data.companyId
+      }
+      axios
+        .get('/basticHidden/exportBigData', companyId)
+        .then((res) => {
+          if (res.date.code === 200) {
+            console.log('1111111111111')
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    // 获取公司数组树
+    getCompanyData () {
+      axios
+        .get('/basticHidden/selectCompanyList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.companyData = res.data.data
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }
@@ -1207,4 +1282,12 @@ export default {
 .list-tips-confirm-item{
   line-height: 30px;
 }
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
 </style>

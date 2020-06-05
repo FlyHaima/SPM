@@ -617,5 +617,6 @@ export default {
 .custom-tree-btn{
   position: absolute;
   right: 50px;
+  white-space: normal;  word-break: break-all;
 }
 </style>
