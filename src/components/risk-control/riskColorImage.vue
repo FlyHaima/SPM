@@ -38,7 +38,7 @@
             <div class="menu-icon menu-icon-1">
               <i class="el-icon-edit-outline"></i>
             </div>
-            <p>添加风险单元</p>
+            <p>添加二级风险单元</p>
           </div>
           <div class="line-out">
             <div class="line"></div>

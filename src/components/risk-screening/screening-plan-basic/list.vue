@@ -33,7 +33,7 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="companyId === 'juechen'"
+              v-if="companyId === 'juechen' && accountName === 'admin'"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
@@ -388,7 +388,7 @@
 <script>
 import moment from 'moment'
 import TreeList from '@/components/tree-diagram/treeList'
-import TreeOrganization from '@/components/tree-diagram/treeOrganization'
+import TreeOrganization from '@/components/tree-diagram/treeOrganizationPlan'
 import axios from '@/api/axios'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import DialogAdd from '@/components/risk-screening/screening-plan/addDialog'
@@ -479,7 +479,8 @@ export default {
       },
       fucBtns: [],
       companyData: [], // 公司数据
-      companyId: '' // 公司id
+      companyId: '', // 公司id
+      accountName: '' // 登陆账号
     }
   },
   components: {
@@ -494,6 +495,7 @@ export default {
     // 设置上传的header 添加token
     vm.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
     vm.companyId = sessionStorage.getItem('companyId')
+    vm.accountName = sessionStorage.getItem('accountName')
     vm.fetchListMenuData()
     vm.fetchPlanOrganizationData()
     vm.getBtnAuthority()

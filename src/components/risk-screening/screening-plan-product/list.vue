@@ -329,7 +329,7 @@
 <script>
 import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
-import TreeOrganization from '@/components/tree-diagram/treeOrganization'
+import TreeOrganization from '@/components/tree-diagram/treeOrganizationPlan'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
