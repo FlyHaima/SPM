@@ -1109,21 +1109,49 @@ export default {
           postList.push(item.id)
         })
         let postData = {id: postList}
-        delDescribe(postData).then(res => {
-          if (res.code === 200) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            let data = {
-              riskId: this.currentTreeData.riskId,
-              level: this.currentTreeData.level,
-              treeLevel: this.currentTreeData.treeLevel
+        axios
+          .post('riskia/isHaveProduct', postData)
+          .then((res) => {
+            if (res.data.code === 200) {
+              delDescribe(postData).then(res => {
+                if (res.code === 200) {
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  })
+                  let data = {
+                    riskId: this.currentTreeData.riskId,
+                    level: this.currentTreeData.level,
+                    treeLevel: this.currentTreeData.treeLevel
+                  }
+                  this.getRiskTable(data)
+                }
+                this.pageLoading = false
+              })
+            } else {
+              this.$confirm('选择的数据中有已生成排查清单的数据，确认删除吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                delDescribe(postData).then(res => {
+                  if (res.code === 200) {
+                    this.$message({
+                      type: 'success',
+                      message: '删除成功!'
+                    })
+                    let data = {
+                      riskId: this.currentTreeData.riskId,
+                      level: this.currentTreeData.level,
+                      treeLevel: this.currentTreeData.treeLevel
+                    }
+                    this.getRiskTable(data)
+                  }
+                  this.pageLoading = false
+                })
+              })
             }
-            this.getRiskTable(data)
-          }
-          this.pageLoading = false
-        })
+          })
       }).catch(() => {
         // after cancel
         this.pageLoading = false
