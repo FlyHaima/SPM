@@ -1113,17 +1113,7 @@ export default {
       const companyId = {
         companyId: data.companyId
       }
-      axios
-        .get('/basticHidden/exportBigData', companyId)
-        .then((res) => {
-          if (res.date.code === 200) {
-          } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            })
-          }
-        })
+      exportExcel ('basticHidden/exportBigData','companyId=' + data.companyId)
     },
     // 获取公司数组树
     getCompanyData () {
