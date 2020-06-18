@@ -1110,10 +1110,7 @@ export default {
       this.dialogExportTemplate = true
     },
     ExportTemplate (data) {
-      const companyId = {
-        companyId: data.companyId
-      }
-      exportExcel ('basticHidden/exportBigData','companyId=' + data.companyId)
+      exportExcel('basticHidden/exportBigData', 'companyId=' + data.companyId)
     },
     // 获取公司数组树
     getCompanyData () {
