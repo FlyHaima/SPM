@@ -204,7 +204,10 @@ export default {
             }
           })
           // 设置渲染节点的文本 label-name， 添加换行
-          let content = cfg.name.replace(/(.{19})/g, '$1\n')
+          let content
+          if (cfg.name) {
+            content = cfg.name.replace(/(.{19})/g, '$1\n')
+          }
 
           let text = group.addShape('text', {
             attrs: {
@@ -345,11 +348,11 @@ export default {
           ]
         },
         defaultNode: {
-          shape: 'tree-node',
+          type: 'tree-node',
           anchorPoints: [[0, 0.5], [1, 0.5]]
         },
         defaultEdge: {
-          shape: 'cubic-horizontal'
+          type: 'cubic-horizontal'
         },
         edgeStyle: {
           default: {

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from '@/api/axios'
+import router from '@/router'
 
 Vue.use(Vuex)
 
@@ -52,23 +53,25 @@ const actions = {
     commit('increment')
   },
   BASE_INFO_SET ({ commit }) {
-    axios
-      .get('user/getUserBasicInfo', {
-        dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
-      })
-      .then((res) => {
-        if (res.data.success === true) {
-          commit('BASE_INFO_GET', res.data.data)
-          sessionStorage.setItem('userId', res.data.data.userId)
-          sessionStorage.setItem('userName', res.data.data.userName)
-          sessionStorage.setItem('companyId', res.data.data.companyId)
-          sessionStorage.setItem('accountName', res.data.data.accountName)
-          commit('PASSWORD_LEVEL', res.data.aqjb)
-          commit('MSG_NUM', res.data.msgNum)
-          commit('TASK_NUM', res.data.taskNum)
-          commit('SKIN_VALUE', res.data.data.skin)
-        }
-      })
+    if (router.app._route.fullPath === '/login') {
+      axios
+        .get('user/getUserBasicInfo', {
+          dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
+        })
+        .then((res) => {
+          if (res.data.success === true) {
+            commit('BASE_INFO_GET', res.data.data)
+            sessionStorage.setItem('userId', res.data.data.userId)
+            sessionStorage.setItem('userName', res.data.data.userName)
+            sessionStorage.setItem('companyId', res.data.data.companyId)
+            sessionStorage.setItem('accountName', res.data.data.accountName)
+            commit('PASSWORD_LEVEL', res.data.aqjb)
+            commit('MSG_NUM', res.data.msgNum)
+            commit('TASK_NUM', res.data.taskNum)
+            commit('SKIN_VALUE', res.data.data.skin)
+          }
+        })
+    }
   }
 }
 

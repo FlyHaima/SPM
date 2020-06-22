@@ -26,7 +26,7 @@ export default {
     this.getUserInfo()
     window.onload = function () {
       // 0.1秒后刷新
-      setTimeout(this.$store.dispatch('BASE_INFO_SET'), 100)
+      // setTimeout(this.$store.dispatch('BASE_INFO_SET'), 100)
     }
   },
   created () {
@@ -45,8 +45,8 @@ export default {
       // debugger
       return config
     }, (error) => {
-      console.log(error)
-      console.log('overtime')
+      // console.log(error)
+      // console.log('overtime')
       this.reload()
       return Promise.reject(error)
     })

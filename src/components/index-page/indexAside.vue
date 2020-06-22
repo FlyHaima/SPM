@@ -343,7 +343,7 @@ export default {
     },
     // 初始化应急指挥调度url
     initURL () {
-      let dmsfbsf = window.localStorage.getItem('TOKEN_KEY')
+      let dmsfbsf = sessionStorage.getItem('TOKEN_KEY')
       axios
         .get('sso/getEmergency', {
           dmsfbsf: dmsfbsf
