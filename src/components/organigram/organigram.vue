@@ -249,7 +249,7 @@ export default {
       let graphH = document.getElementById('mountNode').offsetHeight
 
       this.graph = new G6.TreeGraph({
-        // renderer: 'svg', // 渲染模式，可选svg，本组件用不上
+        // renderer: 'svg', // 渲染模式，可选svg，影响性能
         container: 'mountNode', // 容器id
         width: graphW,
         height: graphH,
@@ -275,7 +275,6 @@ export default {
               formatText(model) {
                 let list = model.workList
                 let text = ''
-                // debugger
                 if (list.length === 0) {
                   text = '<span style="font-weight: 600;">人员：</span>'
                     + '<br/><span style="font-weight: 600;">电话：</'

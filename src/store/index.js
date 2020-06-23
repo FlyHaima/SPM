@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from '@/api/axios'
-import router from '@/router'
+// import router from '@/router'
 
 Vue.use(Vuex)
 
@@ -53,7 +53,7 @@ const actions = {
     commit('increment')
   },
   BASE_INFO_SET ({ commit }) {
-    if (router.app._route.fullPath === '/login') {
+    if (sessionStorage.getItem('TOKEN_KEY')) {
       axios
         .get('user/getUserBasicInfo', {
           dmsfbsf: sessionStorage.getItem('TOKEN_KEY')
