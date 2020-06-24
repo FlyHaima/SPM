@@ -170,7 +170,7 @@
                     </div>
                     <div class="custom-td-value">
                       <div class="custom-td-text">
-                        {{(index+1)}}
+                        {{(item.indexNo)}}
                       </div>
                     </div>
                     <div class="custom-td-value">
@@ -335,44 +335,49 @@ export default {
               this.tableVisible = false
               this.newRiskTableData = [] // 清空
               this.riskList = res.data.data[0]
-              const riskTableData = this.riskList.describes[0]
-              if (this.riskList.riskDj) { // 当有危险等级的时候，需要显示内容
-                const newArr = []
-                if (riskTableData.bmp) {
-                  newArr.push(riskTableData.bmp)
-                }
-                if (riskTableData.mustCs) {
-                  newArr.push(riskTableData.mustCs)
-                }
-                if (riskTableData.technology) {
-                  newArr.push(riskTableData.technology)
-                }
-                if (riskTableData.train) {
-                  newArr.push(riskTableData.train)
-                }
-                if (riskTableData.individual) {
-                  newArr.push(riskTableData.individual)
-                }
-                if (riskTableData.emergency) {
-                  newArr.push(riskTableData.emergency)
-                }
-                if (riskTableData.cstand) {
-                  newArr.push(riskTableData.cstand)
-                }
-                // console.log(newArr)
-                for (let i = 0; i < newArr.length; i++) {
-                  let itemA = {
-                    workNo: riskTableData.workNo,
-                    work: riskTableData.work,
-                    rate: riskTableData.rate,
-                    sourceName: riskTableData.riskSourceName,
-                    bmg: newArr[i]
+              // const riskTableData = this.riskList.describes[0]
+              if (this.riskList.describes) {
+                this.riskList.describes.forEach(item => {
+                  if (this.riskList.riskDj) { // 当有危险等级的时候，需要显示内容
+                    const newArr = []
+                    if (item.bmp) {
+                      newArr.push(item.bmp)
+                    }
+                    if (item.mustCs) {
+                      newArr.push(item.mustCs)
+                    }
+                    if (item.technology) {
+                      newArr.push(item.technology)
+                    }
+                    if (item.train) {
+                      newArr.push(item.train)
+                    }
+                    if (item.individual) {
+                      newArr.push(item.individual)
+                    }
+                    if (item.emergency) {
+                      newArr.push(item.emergency)
+                    }
+                    if (item.csStand) {
+                      newArr.push(item.csStand)
+                    }
+                    // console.log(newArr)
+                    for (let i = 0; i < newArr.length; i++) {
+                      let itemA = {
+                        workNo: item.no,
+                        work: item.work,
+                        rate: item.rate,
+                        sourceName: item.riskSourceName,
+                        bmg: newArr[i],
+                        indexNo: 1 + i
+                      }
+                      this.newRiskTableData.push(itemA)
+                    }
+                    this.tagVisible = true
+                  } else {
+                    this.tagVisible = false
                   }
-                  this.newRiskTableData.push(itemA)
-                }
-                this.tagVisible = true
-              } else {
-                this.tagVisible = false
+                })
               }
             }
           }
