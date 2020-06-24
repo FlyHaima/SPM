@@ -15,7 +15,8 @@ const state = { // 要设置的全局访问的state对象
   taskNum: '', // 待办数量
   count: 1,
   theme: '#1a6fba',
-  skin: ''
+  skin: '',
+  pageLoading: false // 页面加载
 }
 
 const getters = { // 实时监听state值的变化(最新状态)
