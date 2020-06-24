@@ -969,13 +969,24 @@ export default {
       })
     },
     copyPlan () {
-      this.pageLoading = true
-      copyPlan().then((res) => {
-        if (res.code === 200) {
-          this.getPlanTable()
-        }
-        this.pageLoading = false
-      })
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: `请选中至少一条`
+        })
+      } else {
+        this.pageLoading = true
+        let copyArr = []
+        this.multipleSelection.forEach((item) => {
+          copyArr.push(item.id)
+        })
+        copyPlan(copyArr).then((res) => {
+          if (res.code === 200) {
+            this.getPlanTable()
+          }
+          this.pageLoading = false
+        })
+      }
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
