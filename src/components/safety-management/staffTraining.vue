@@ -104,7 +104,7 @@
                         <el-input type="textarea" class="textarea" v-model.trim="addPlanData.need"></el-input>
                       </div>
                     </div>
-                    <div class="dialog-inner-all">
+                    <div class="dialog-inner-all" v-if="addPlanData.planType === '1'">
                       <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload class="upload-demo"
@@ -189,7 +189,7 @@
                         <el-input type="textarea" class="textarea" v-model.trim="editData.need"></el-input>
                       </div>
                     </div>
-                    <div class="dialog-inner-all">
+                    <div class="dialog-inner-all" v-if="editData.planType === '1'">
                       <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload class="upload-demo"

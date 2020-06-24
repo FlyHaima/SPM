@@ -1009,13 +1009,14 @@ export default {
         return
       }
 
-      e.preventDefault()
+      e.preventDefault() // 阻止右键的默认窗口
 
       this.menuPosition = {
         top: e.offsetY,
         left: e.offsetX
       }
       this.showMenu = true
+      console.log('openMenu', vm.currentR)
     },
     leaveCanvas () {
       this.canvas.onmousedown = null
@@ -1023,7 +1024,7 @@ export default {
       this.canvas.onmouseup = null
     },
     enterCanvas () {
-      document.onmouseup = this.mouseup()
+      // document.onmouseup = this.mouseup()
     },
     optionChange () {
       let vm = this
@@ -1096,6 +1097,7 @@ export default {
       let vm = this
       vm.slidLoading = true
       vm.slideOpen = true
+      console.log('item', vm.currentR)
       if (vm.currentR.riskType === 0) {
         checkUnitDetail(vm.starshMenu.bindId).then(res => {
           if (res.code === 200) {

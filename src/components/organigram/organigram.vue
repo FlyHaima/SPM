@@ -145,7 +145,7 @@ export default {
       leaderDutyB: '',
       dialogVisibleEdit: false, // dialog显示开关
       organigramDataObj: [],
-      graph: null,
+      graph: {},
       subId: '',
       pageLoading: false
     }
@@ -204,7 +204,10 @@ export default {
             }
           })
           // 设置渲染节点的文本 label-name， 添加换行
-          let content = cfg.name.replace(/(.{19})/g, '$1\n')
+          let content
+          if (cfg.name) {
+            content = cfg.name.replace(/(.{19})/g, '$1\n')
+          }
 
           let text = group.addShape('text', {
             attrs: {
@@ -246,7 +249,7 @@ export default {
       let graphH = document.getElementById('mountNode').offsetHeight
 
       this.graph = new G6.TreeGraph({
-        // renderer: 'svg', // 渲染模式，可选svg，本组件用不上
+        // renderer: 'svg', // 渲染模式，可选svg，影响性能
         container: 'mountNode', // 容器id
         width: graphW,
         height: graphH,
@@ -272,8 +275,7 @@ export default {
               formatText(model) {
                 let list = model.workList
                 let text = ''
-                // debugger
-                if (list.length === 0) {
+                if (list === null || list.length === 0) {
                   text = '<span style="font-weight: 600;">人员：</span>'
                     + '<br/><span style="font-weight: 600;">电话：</'
                     + 'span><br/><span style="font-weight: 600;">主要职责：</span>'
@@ -345,11 +347,11 @@ export default {
           ]
         },
         defaultNode: {
-          shape: 'tree-node',
+          type: 'tree-node',
           anchorPoints: [[0, 0.5], [1, 0.5]]
         },
         defaultEdge: {
-          shape: 'cubic-horizontal'
+          type: 'cubic-horizontal'
         },
         edgeStyle: {
           default: {
@@ -436,11 +438,12 @@ export default {
       this.graph.on('node:contextmenu', (e) =>{
         this.filter(e.item._cfg.model.workList)
         this.subId = e.item._cfg.id
+        e.preventDefault()
         this.dialogVisibleEdit = true
       })
     },
     filter (list) {
-      if (list.length == 0 || !list) {
+      if (list === null || list.length === 0) {
         this.type = '1'
         this.workUsers = []
         this.leadUserA = []
