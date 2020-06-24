@@ -145,7 +145,7 @@ export default {
       leaderDutyB: '',
       dialogVisibleEdit: false, // dialog显示开关
       organigramDataObj: [],
-      graph: null,
+      graph: {},
       subId: '',
       pageLoading: false
     }
@@ -275,7 +275,7 @@ export default {
               formatText(model) {
                 let list = model.workList
                 let text = ''
-                if (list.length === 0) {
+                if (list === null || list.length === 0) {
                   text = '<span style="font-weight: 600;">人员：</span>'
                     + '<br/><span style="font-weight: 600;">电话：</'
                     + 'span><br/><span style="font-weight: 600;">主要职责：</span>'
@@ -438,11 +438,12 @@ export default {
       this.graph.on('node:contextmenu', (e) =>{
         this.filter(e.item._cfg.model.workList)
         this.subId = e.item._cfg.id
+        e.preventDefault()
         this.dialogVisibleEdit = true
       })
     },
     filter (list) {
-      if (list.length == 0 || !list) {
+      if (list === null || list.length === 0) {
         this.type = '1'
         this.workUsers = []
         this.leadUserA = []
