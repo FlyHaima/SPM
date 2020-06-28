@@ -117,7 +117,7 @@ export default {
             type: 'line' // 默认为直线，可选为：'line' | 'shadow'
           },
           formatter: function (params) {
-            return params[0].axisValue + '<br>' + params[0].data + '%'
+            return params[0].axisValue + '<br>' + params[0].data
           }
         },
         grid: {
@@ -165,7 +165,7 @@ export default {
               }
             },
             axisLabel: {
-              formatter: '{value} %'
+              formatter: '{value}'
             },
             // 坐标轴内线的样式
             splitLine: {
