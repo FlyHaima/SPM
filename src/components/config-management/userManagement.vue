@@ -581,6 +581,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.tables.data = res.data.data
+            this.tables.page.total = res.data.total
           } else {
             this.$message({
               message: res.data.message,
