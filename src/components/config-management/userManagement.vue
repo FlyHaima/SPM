@@ -22,10 +22,10 @@
                     <el-input v-model='searchForm.account_name' placeholder="请输入账号名"></el-input>
                   </el-form-item>
                   <el-form-item label="角色">
-                    <el-input v-model='searchForm.telephone' placeholder="请输入角色"></el-input>
+                    <el-input v-model='searchForm.role_name' placeholder="请输入角色"></el-input>
                   </el-form-item>
                   <el-form-item label="电话">
-                    <el-input v-model='searchForm.role_name' placeholder="请输入电话"></el-input>
+                    <el-input v-model='searchForm.telephone' placeholder="请输入电话"></el-input>
                   </el-form-item>
                   <el-form-item>
                     <el-button
@@ -581,6 +581,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.tables.data = res.data.data
+            this.tables.page.total = res.data.total
           } else {
             this.$message({
               message: res.data.message,
