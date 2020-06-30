@@ -51,7 +51,7 @@
                   type="success"
                   size="medium"
                   icon="el-icon-download"
-                  @click="dialogOrganizationVisible= true">
+                  @click="dialogOrganizationVisible1">
                    导出</el-button>
               </div>
             </div>
@@ -198,9 +198,10 @@
       <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
-              :tree-name="'组织机构'"
-              :tree-data="departmentalTree"
-              @handleNodeClick="departmentalTreeClickHandle"
+          :searchVisible="false"
+          :tree-name="'导出部门机构列表'"
+          :tree-data="departmentalTree"
+          @handleNodeClick ="departmentalTreeClickHandle"
           >
           <el-button
             class="btn-sync"
@@ -270,6 +271,12 @@ export default {
     this.getBtnAuthority()
   },
   methods: {
+    // 组织机构弹窗
+    dialogOrganizationVisible1 () {
+      this.fetchPlanOrganizationData()
+      this.dialogOrganizationVisible = true
+      console.log(this.departmentalTree)
+    },
     // 导入接口地址
     uploadUrl () {
       return base.baseUrl + '/riskLevel/importRisks'
@@ -463,4 +470,29 @@ export default {
 .custom-tr{
   background: #fff;
 }
+.tree-box{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 56px 10px 6px 10px;
+    overflow: auto;
+    .custom-tree-node{
+      font-size: 16px;
+      display: inline-block;
+      width: 15em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      .right-btns{
+        position: absolute;
+        right: 8px;
+        color: #5cb6ff;
+      }
+    }
+    .el-tree-node__content{
+      margin-top: 10px;
+    }
+  }
 </style>

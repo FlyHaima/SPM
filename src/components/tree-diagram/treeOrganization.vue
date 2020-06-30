@@ -52,19 +52,17 @@
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns">
+            <span class="right-btns" v-if="showBtn">
               <i
-                v-if="fucBtns.includes('add-btn')"
                 class="el-icon-plus add-btn"
                 title="添加节点"
                 @click.stop="addNode(node, data)"></i>
               <i
-                v-if="fucBtns.includes('edit-btn')"
+
                 class="el-icon-edit edit-btn"
                 title="修改节点"
                 @click.stop="edit(node, data)"></i>
               <i
-                v-if="false"
                 class="el-icon-delete"
                 title="删除节点"
                 @click.stop="remove(node, data)"></i>
@@ -77,6 +75,7 @@
 
 <script>
 export default {
+  // v-if="fucBtns.includes('add-btn')" edit-btn
   name: 'treeDiagram',
   props: {
     treeData: {
@@ -108,6 +107,10 @@ export default {
       default: false
     },
     shrinkVisible: {
+      type: Boolean,
+      default: false
+    },
+    showBtn: {
       type: Boolean,
       default: false
     }
