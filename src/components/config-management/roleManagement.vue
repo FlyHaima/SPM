@@ -11,12 +11,14 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
                   @click="addHandle">
                   添加</el-button>
                 <el-button
+                v-if="fucBtns.includes('dels-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -56,6 +58,7 @@
                 align="center">
                 <template slot-scope="scope">
                   <a
+                v-if="fucBtns.includes('dist-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="editRole(scope.row)">分配
@@ -122,6 +125,44 @@
       :close-on-click-modal="false"
       title="分配"
       :visible.sync="dialogRoleVisible"
+      width="70%"
+      >
+      <el-tree
+        :data="roleOptions.menus"
+        ref="tree"
+        show-checkbox
+        node-key="menuId"
+        default-expand-all
+        :props='treeLabel'
+        @check-change="nodeCheckHandle"
+        :check-strictly= 'false'
+        :default-checked-keys="roleOptions.menuCheckList"
+        >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span>{{ node.label }}</span>
+          <!-- <span>{{ data }}</span> -->
+          <span class="custom-tree-btn">
+            <el-checkbox-group v-model="data.checkedRoles">
+              <el-checkbox @change="checkPageBtn(data)"
+                          v-for="(item, index) in data.btnControl"
+                          :label="item.name"
+                          :disabled='item.active'
+                          :key="index">{{item.name}}
+              </el-checkbox>
+            </el-checkbox-group>
+          </span>
+        </span>
+      </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogRoleVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveCheckData">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 旧版分配弹窗 -->
+    <!-- <el-dialog
+      :close-on-click-modal="false"
+      title="分配"
+      :visible.sync=false
       >
       <el-collapse v-loading="pageLoading" v-model="activeNames" >
         <el-collapse-item
@@ -154,7 +195,7 @@
           size="small"
           @click="dialogRoleVisible = false">取 消</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </el-container>
 </template>
 <script>
@@ -183,21 +224,37 @@ export default {
           { required: true, message: '请输入角色名称', trigger: 'blur' }
         ]
       },
+      treeLabel: { // 属性结构名
+        label: 'name',
+        children: 'list'
+      },
+      checkedCities: '',
       multipleSelection: [],
       pageLoading: false,
       submitting: false,
       editData: '',
-      roleOptions: [], // 角色
+      roleOptions: [], // 角色tree的data
       postDataChecked: [],
       activeNames: ['1'],
       isIndeterminate: true,
       roleId: '',
       menuList: [],
-      newMenuList: []
+      newMenuList: [],
+      menuCheckList: [], // 选中的菜单项集合
+      postMenuCheckList: '', // 传给后台的选中的菜单项
+      menuCheckListCurrent: [], // 回显选中的菜单项集合
+      filterBtnCheckedList: [], // 筛选选中的btn元素的id的集合
+      postBtnCheckedList: [], // 传给后台的选中的btn元素的集合
+      data: [], // tree的data
+      dialogVisible: false,
+      // checkedbtns: [] // 按钮值
+      fucBtns: [],
+      selectAll: true
     }
   },
   mounted () {
     this.initPage()
+    this.getBtnAuthority()
   },
   methods: {
     // 关闭弹框
@@ -273,6 +330,7 @@ export default {
       })
       return newRoleOptions
     },
+    // 提交保存
     submitFormRole () {
       this.postDataChecked = this.filterRoleOptions(this.roleOptions)
       this.postDataChecked = this.postDataChecked.join(',')
@@ -438,6 +496,115 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    // 分配权限选择
+    nodeCheckHandle (data, currentChecked) {
+      if (currentChecked && data.btnControl) {
+        data.btnControl.forEach(item => {
+          item.active = false
+        })
+      } else if (data.btnControl) {
+        data.btnControl.forEach(item => {
+          item.active = true
+        })
+      }
+      let vm = this
+      if (currentChecked && data.btnControl) {
+        vm.roleOptions.menus.forEach(item => {
+          if (item.list) {
+            item.list.forEach(iList => {
+              iList.checkedRoles = []
+              iList.btnControl.forEach(btnitem => {
+                iList.checkedRoles.push(btnitem.name)
+              })
+            })
+          }
+        })
+      }
+    },
+    // data值改变
+    checkPageBtn (data) {
+    },
+    // 保存
+    saveCheckData () {
+      const vm = this
+      vm.postMenuCheckList = vm.filterMenuCheckedNodes()
+      vm.postBtnCheckedList = vm.filterBtnChecked(vm.roleOptions.menus).join(',')
+      const sendData = {
+        roleId: this.roleId,
+        menuId: vm.postMenuCheckList + ',' + vm.postBtnCheckedList
+      }
+      vm
+        .$confirm('确定修改该菜单吗？', '提示', {
+          type: 'warning'
+        })
+        .then(() => {
+          const vm = this
+          vm.submitting = true
+          axios
+            .post('role/updateMenu', sendData)
+            .then((res) => {
+              if (res.data.code === 200) {
+                vm.$notify.success('提交成功')
+                vm.dialogRoleVisible = false
+                vm.tablesFetchList()
+              } else {
+                vm.$message({
+                  message: res.data.message,
+                  type: 'warning'
+                })
+              }
+            })
+        })
+        .catch(() => {
+          this.submitting = false
+        })
+    },
+    // 筛选选中的btn元素
+    filterBtnChecked (fData) {
+      this.filterBtnCheckedList = []
+      fData.forEach(item => {
+        if (item.list !== null) {
+          item.list.forEach(itemChildren => {
+            itemChildren.btnControl.forEach(itemList => {
+              itemChildren.checkedRoles.forEach(itemChecked => {
+                if (itemList.name === itemChecked && itemList.active === false) {
+                  this.filterBtnCheckedList.push(itemList.menuId)
+                }
+              })
+            })
+          })
+        }
+      })
+      return this.filterBtnCheckedList
+    },
+    // 筛选选中的菜单项
+    filterMenuCheckedNodes () {
+      const vm = this
+      vm.menuCheckListCurrent = this.$refs.tree.getCheckedNodes()
+      vm.menuCheckList = []
+      vm.menuCheckListCurrent.forEach(item => {
+        vm.menuCheckList.push(item.menuId)
+      })
+      vm.postMenuCheckList = vm.menuCheckList.join(',')
+      return vm.postMenuCheckList
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            // console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {
@@ -448,39 +615,12 @@ export default {
 
 <style scoped lang="scss">
 @import '@/utils/css/tools/_variables.scss';
-/deep/.el-collapse{
-  border: 0;
-  .el-collapse-item__header{
-    background: #f6f9fd;
-    border-bottom: 0;
-    margin: 0 -18px;
-    padding-left: 60px;
-    height: 35px;
-    line-height: 35px;
-    font-size: 16px;
-  }
-  .el-collapse-item__arrow{
-    display: none;
-  }
-  .el-collapse-item__wrap{
-    border-bottom: 0;
-    padding-left: 130px;
-    margin: 0 -18px;
-  }
-  .el-collapse-item__content{
-    padding-top: 15px;
-    padding-bottom: 0px;
-  }
-  .el-checkbox-group{
-    display: flex;
-    flex-wrap: wrap;
-    .el-checkbox{
-      margin-bottom: 15px;
-    }
-  }
-  .el-checkbox{
-    flex: 0 0 25%;
-    margin-right: 0;
-  }
+.el-tree{
+  font-weight: 500;
+}
+.custom-tree-btn{
+  position: absolute;
+  right: 50px;
+  white-space: normal;  word-break: break-all;
 }
 </style>

@@ -11,46 +11,58 @@
     <div class="tree-title">
       <i class="double-line-icon"></i>
       {{treeName}}
-      <div class="tree-search">
+      <slot></slot>
+      <div v-show="searchVisible" class="tree-search">
         <el-input
           size="mini"
           placeholder="输入关键字进行过滤"
           v-model="filterText">
         </el-input>
       </div>
-      <div class="slide-btns"> <!-- 权限显示 -->
-        <el-upload accept=".xls" style="display: inline-block" class="function-btn upload-btn" v-if="true"
-                  :action="`${baseUrl}/dept/importDept`"
-                  :data="uploadData"
-                  :before-upload="handleBeforeUpload"
-                  :on-success="handleSuccess"
-                  :on-error="handleError"
-                  :file-list="fileList"
-                  :show-file-list="false">
-          <el-button type="text"  v-if="showLoadBtn">上传</el-button>
-        </el-upload>
-        <el-button type="text" @click="openAll" v-show="openState" style="margin-left: 0;">展开</el-button>
-        <el-button type="text" @click="closeAll" v-show="!openState" style="margin-left: 0;">收起</el-button>
+      <div class="slide-btns">
+        <el-button
+          type="text"
+          @click="openUpload"
+          v-show="hasUpload">上传</el-button>
+        <span v-show="shrinkVisible">
+          <el-button
+            type="text"
+            @click="openAll"
+            v-show="openState"
+            style="margin-left: 0;">展开</el-button>
+          <el-button
+            type="text"
+            @click="closeAll"
+            v-show="!openState"
+            style="margin-left: 0;">收起</el-button>
+        </span>
+
       </div>
     </div>
     <div class="tree-box">
       <el-tree
         class="filter-tree"
+        default-expand-all
+        node-key="invDeptId"
         :data="treeData"
         :props="defaultProps"
-        :default-expanded-keys="defaultOpenNode"
-        node-key="deptId"
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns" v-if="showBtns">
-              <!-- 权限显示 -->
-              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="showAddBtn"></i>
-              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="showEditBtn"></i>
-              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="showDelBtn"></i>
+            <span class="right-btns">
+              <i class="el-icon-plus add-btn"
+                title="添加节点"
+                @click.stop="addNode(node, data)"></i>
+              <i class="el-icon-edit edit-btn"
+                title="修改节点"
+                @click.stop="edit(node, data)"></i>
+              <i v-if="false"
+                class="el-icon-delete"
+                title="删除节点"
+                @click.stop="remove(node, data)"></i>
             </span>
           </span>
       </el-tree>
@@ -59,9 +71,6 @@
 </template>
 
 <script>
-import base from '@/api/baseUrl'
-import axios from '@/api/axios'
-
 export default {
   name: 'treeDiagram',
   props: {
@@ -77,23 +86,23 @@ export default {
       type: Boolean,
       default: false
     },
-    showBtns: {
+    searchVisible: {
       type: Boolean,
       default: false
     },
-    showEditBtn: {
+    addVisible: {
       type: Boolean,
       default: false
     },
-    showAddBtn: {
+    editVisible: {
       type: Boolean,
       default: false
     },
-    showDelBtn: {
+    delVisible: {
       type: Boolean,
       default: false
     },
-    showLoadBtn: {
+    shrinkVisible: {
       type: Boolean,
       default: false
     }
@@ -103,46 +112,17 @@ export default {
       filterText: '',
       defaultProps: {
         children: 'children',
-        label: 'deptName'
+        label: 'invDeptName'
       },
       openState: false,
       level: 7,
-      addBro: false,
-      uploadData: {
-        token: ''
-      },
-      baseUrl: '',
-      fileList: [],
-      defaultOpenNode: [], // 默认展开节点的集合
-      fucBtns: [] // 按钮权限数组
+      addBro: false
     }
   },
-  created () {
-    this.baseUrl = base.baseUrl
-    this.uploadData.token = sessionStorage.getItem('TOKEN_KEY')
-    // this.getBtnAuthority()
-  },
   methods: {
-    // 获取一节点集合
-    fetchTreeNodeId () {
-      this.treeData.forEach(item => {
-        this.defaultOpenNode.push(item.deptId)
-      })
-    },
-    handleBeforeUpload (file) {
-      this.uploading = true
-      this.$emit('open-loading')
-    },
-    // 导入成功
-    handleSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.$emit('refreshing')
-      this.$emit('close-loading')
-    },
-    // 导入失败
-    handleError (file, fileList) {
-      this.$notify.error('导入失败，请稍后重试')
-      this.$emit('close-loading')
+    openUpload () {},
+    uploadExcel () {
+
     },
     openAll () {
       this.openState = !this.openState
@@ -158,10 +138,9 @@ export default {
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      // console.log('节点deptID：' + data.deptId)
+      // console.log('节点deptID：' + data.invDeptId)
       // console.log(data)
-      console.log(data)
-      this.$emit('handleNodeClick', data.deptId, data.position, data)
+      this.$emit('handleNodeClick', data.invDeptId)
     },
     addNode (node, data) {
       if (node.level > this.level) {
@@ -170,43 +149,20 @@ export default {
           type: 'warning'
         })
       } else {
-        this.$emit('openAppendBox', data)
+        this.$emit('openAppendBox', data.invDeptId)
       }
     },
     edit (node, data) {
-      this.$emit('editTreeData', data.deptId, data.orderNo, data.deptName)
+      this.$emit('editTreeData', data.invDeptId)
     },
     remove (node, data) {
-      this.$emit('confirmRemove', data.deptId)
-    },
-    getBtnAuthority () {
-      const authId = {authId: '2-1'}
-      axios
-        .get('user/getBtnArray', authId)
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.fucBtns = res.data.data.functionBtns
-          } else {
-            this.$message({
-              message: res.data.message,
-              type: 'warning'
-            })
-          }
-        })
+      this.$emit('confirmRemove', data.invDeptId)
     }
   },
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
-    },
-    treeData: {
-      immediate: true,
-      handler (val) {
-        this.treeData = val
-        this.fetchTreeNodeId()
-      }
     }
-
   }
 }
 </script>
@@ -243,11 +199,8 @@ export default {
       vertical-align: top;
       left: 126px;
       top: 0;
-      // width: 180px;
+      width: 180px;
       margin-top: -1px;
-      >>> .el-input__inner{
-        padding: 0 5px;
-      }
     }
     .slide-btns{
       position: absolute;

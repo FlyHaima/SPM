@@ -25,8 +25,8 @@
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.checkTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.checkTime | time-filter}}</span>
+                  <span class="list-info-date">{{item.checkTime | dateFilter}}</span>
+                  <span class="list-info-time">{{item.checkTime | timeFilter}}</span>
                   <span class="list-info-user">发布人：{{item.checkUserId}}</span>
                 </div>
               </li>
@@ -63,8 +63,8 @@
                 </div>
                 <div class="list-info-right">
                   <i class="icon-clock"></i>
-                  <span class="list-info-date">{{item.checkTime | date-filter}}</span>
-                  <span class="list-info-time">{{item.checkTime | time-filter}}</span>
+                  <span class="list-info-date">{{item.checkTime | dateFilter}}</span>
+                  <span class="list-info-time">{{item.checkTime | timeFilter}}</span>
                   <span class="list-info-user">发布人：{{item.checkUserId}}</span>
                 </div>
               </li>
@@ -103,19 +103,20 @@ export default {
         pageSize: 10 // limit
       },
       tabType: '', // tab切换类型
-      todoNum: 0
+      todoNum: 0,
+      businessKey: '' // 跳转返回值
     }
   },
   filters: {
     // 格式化日期格式
-    'date-filter' (value) {
+    'dateFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD')
       } else {
         return null
       }
     },
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('HH: mm: ss')
       } else {
@@ -145,6 +146,8 @@ export default {
               this.messageData = res.data.data
               this.page.total = res.data.total
               this.todoNum = res.data.total
+              // this.businessKey = res.data.data.businessKey
+              // console.log(res.data.data)
             }
           })
       } else {
@@ -186,7 +189,8 @@ export default {
           name: 'screeningImplementation',
           query: {
             tabType: item.investType,
-            id: item.leftId
+            id: item.leftId,
+            hiddInstanceId: item.businessKey
           }
         })
       } else if (item.name === '排查复核') {
@@ -194,7 +198,8 @@ export default {
           name: 'screeningReview',
           query: {
             tabType: item.investType,
-            id: item.leftId
+            id: item.leftId,
+            hiddInstanceId: item.businessKey
           }
         })
       } else if (item.name === '隐患治理') {
@@ -202,7 +207,8 @@ export default {
           name: 'riskManagement',
           query: {
             tabType: item.investType,
-            id: item.leftId
+            id: item.leftId,
+            hiddInstanceId: item.businessKey
           }
         })
       } else if (item.name === '治理复核') {
@@ -210,7 +216,8 @@ export default {
           name: 'managementReview',
           query: {
             tabType: item.investType,
-            id: item.leftId
+            id: item.leftId,
+            hiddInstanceId: item.businessKey
           }
         })
       }

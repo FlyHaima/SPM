@@ -5,7 +5,7 @@
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
-        editOrgVisible
+        :editOrgVisible = "fucBtns.includes('edit-dept-btn')"
         @eidit-org="eiditOrganizationHandle"
         @tree-click-handle="treeClickHandle">
       </tree-read-only>
@@ -22,6 +22,7 @@
               @click="handleAddDanger">
               随机隐患添加</el-button> -->
             <el-button
+            v-if = "fucBtns.includes('type-btn')"
               type=""
               size="medium"
               icon="el-icon-menu"
@@ -30,19 +31,21 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="btnDisabledProductSend"
+              v-if="btnDisabledProductSend && fucBtns.includes('fb-btn')"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
               @click="handleSendMsg"
               >计划发布</el-button>
             <el-button
+              v-if = "fucBtns.includes('import-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
               @click="exportEexcelHandel"
               >导出</el-button>
             <el-button
+              v-if = "fucBtns.includes('copy-btn')"
               type="primary"
               size="medium"
               icon="el-icon-document-copy"
@@ -326,7 +329,7 @@
 <script>
 import moment from 'moment'
 import TreeReadOnly from '@/components/tree-diagram/treeReadOnly'
-import TreeOrganization from '@/components/tree-diagram/treeOrganization'
+import TreeOrganization from '@/components/tree-diagram/treeOrganizationPlan'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import axios from '@/api/axios'
 import exportExcel from '@/api/exportExcel'
@@ -389,7 +392,8 @@ export default {
       multipleSelection: [],
       dialogEditVisible: false,
       editFormVal: {},
-      confirmEditing: false
+      confirmEditing: false,
+      fucBtns: []
     }
   },
   components: {
@@ -400,6 +404,7 @@ export default {
   created () {
     this.fetchUnitTreeData()
     this.fetchPlanOrganizationData()
+    this.getBtnAuthority()
   },
   methods: {
     // 切换分页数量
@@ -867,6 +872,21 @@ export default {
           })
         }
       })
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }

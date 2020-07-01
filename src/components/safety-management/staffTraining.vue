@@ -19,12 +19,13 @@
 
             <el-main class="inner-content">
               <div class="container-box">
-                <p class="btn-p">
-                  <a class="copy-btn" @click="copyPlan"><i class="el-icon-document-copy"></i>计划复制</a>
-                  <a class="delete-btn" @click="showRemoveDialog"><i class="el-icon-delete"></i>计划删除</a>
-                  <a class="release-btn" @click="openReleasePlan"><i class="el-icon-plus"></i>计划发布</a>
+                <p class="btn-p"> <!-- 权限显示 -->
+                  <a class="function-btn copy-btn" @click="copyPlan" v-if="fucBtns.includes('copy-btn')" ><i class="el-icon-document-copy" ></i>计划复制</a>
+                  <a class="function-btn delete-btn" @click="showRemoveDialog" v-if="fucBtns.includes('del-btn')"><i class="el-icon-delete" ></i>计划删除</a>
+                  <a class="function-btn release-btn" @click="openReleasePlan" v-if="fucBtns.includes('release-btn')"><i class="el-icon-plus" ></i>计划发布</a>
                   <el-upload style="float: right;"
-                    class="tools-item"
+                    class="tools-item function-btn function-btn"
+                    v-if="fucBtns.includes('import-btn')"
                     accept=".xls, .xlsx"
                     :multiple="false"
                     :limit="1"
@@ -100,10 +101,10 @@
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model.trim="addPlanData.need"></el-input>
+                        <el-input type="textarea" class="textarea" v-model.trim="addPlanData.need"></el-input>
                       </div>
                     </div>
-                    <div class="dialog-inner-all">
+                    <div class="dialog-inner-all" v-if="addPlanData.planType === '1'">
                       <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload class="upload-demo"
@@ -185,10 +186,10 @@
                     <div class="dialog-inner-all">
                       <p class="title">培训需求</p>
                       <div class="val-div">
-                        <el-input type="textarea" v-model.trim="editData.need"></el-input>
+                        <el-input type="textarea" class="textarea" v-model.trim="editData.need"></el-input>
                       </div>
                     </div>
-                    <div class="dialog-inner-all">
+                    <div class="dialog-inner-all" v-if="editData.planType === '1'">
                       <p class="title">附件（ <span>仅支持上传</span><span class="red">.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .AVI, .mov, .rmvb, .rm, .FLV, .mp4, .3GP</span><span>格式的文件</span> ）</p>
                       <div class="val-div">
                         <el-upload class="upload-demo"
@@ -280,8 +281,8 @@
                     label="操作" width="110"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="checkPlan(scope.row.need)">查看</el-button>
-                      <el-button type="text" @click="openItemEditor(scope.row)">编辑</el-button>
+                      <el-button type="text" @click="checkPlan(scope.row.need)" v-if="fucBtns.includes('check-btn')">查看</el-button>
+                      <el-button type="text" @click="openItemEditor(scope.row)" v-if="fucBtns.includes('edit-btn')">编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -376,10 +377,10 @@
                   align="center">
                   <template slot-scope="scope">
 <!--                    1未学习2学习中3已学习-->
-                    <el-button v-if="scope.row.state == 0" type="text" @click="startLearn(scope.row.planPerId)">开始学习</el-button>
-                    <el-button v-else-if="scope.row.state == 1" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planPerId)">结束学习</el-button>
+                    <el-button v-if="scope.row.state == 0 && fucBtns.includes('begin-btn')" type="text" @click="startLearn(scope.row.planPerId)">开始学习</el-button>
+                    <el-button v-else-if="scope.row.state == 1 && fucBtns.includes('end-btn')" type="text" style="color: #f56c6c;" @click="endLearn(scope.row.planPerId)">结束学习</el-button>
                     <span v-else type="text" style="margin-right: 10px; color: #909399;">结束学习</span>
-                    <el-button type="text" @click="getPlanFileList(scope.row.planId)">附件</el-button>
+                    <el-button type="text" @click="getPlanFileList(scope.row.planId)" v-if="fucBtns.includes('file-btn')">附件</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -463,7 +464,7 @@
                     width="105"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="text" @click="checkDetail(scope.row.planId)">详细</el-button>
+                      <el-button type="text" @click="checkDetail(scope.row.planId, scope.row.userId)" v-if="fucBtns.includes('detail-btn')" >详细</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -607,6 +608,7 @@ import {
   getPlanFileList
 } from '@/api/organization'
 import {getQiNiuToken} from '@/api/upload'
+import axios from '@/api/axios'
 
 export default {
   name: 'staffTraining',
@@ -721,7 +723,9 @@ export default {
         disabledDate: (time) => {
           return time.getTime() < Date.now() - 8.64e7
         }
-      }
+      },
+      fucBtns: [],
+      userId: ''
     }
   },
   created () {
@@ -733,6 +737,7 @@ export default {
 
     this.getPlanDeptTree(true)
     this.getContentTable()
+    this.getBtnAuthority()
   },
   methods: {
     openLoading () {
@@ -823,6 +828,8 @@ export default {
         if (res.code === 200) {
           this.recordList = res.data
           this.pageDataC.total = res.total
+          console.log(res.data)
+          this.userId = res.data.userId
         }
         this.pageLoading = false
       })
@@ -962,13 +969,24 @@ export default {
       })
     },
     copyPlan () {
-      this.pageLoading = true
-      copyPlan().then((res) => {
-        if (res.code === 200) {
-          this.getPlanTable()
-        }
-        this.pageLoading = false
-      })
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: `请选中至少一条`
+        })
+      } else {
+        this.pageLoading = true
+        let copyArr = []
+        this.multipleSelection.forEach((item) => {
+          copyArr.push(item.id)
+        })
+        copyPlan(copyArr).then((res) => {
+          if (res.code === 200) {
+            this.getPlanTable()
+          }
+          this.pageLoading = false
+        })
+      }
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
@@ -1119,10 +1137,14 @@ export default {
         }
       })
     },
-    checkDetail (id) {
+    checkDetail (id, userId) {
       this.pageLoading = true
+      let token = sessionStorage.getItem('TOKEN_KEY')
+      // let userId = this.userId
+      // console.log(userId)
+      // newId = JSON.stringify(newId)
       // get data, then, showDetailLog
-      getTrainStatistic(id).then((res) => {
+      getTrainStatistic(userId, id, token).then((res) => {
         if (res.code && res.code === 200) {
           this.recordDetail.className = res.data.trainPlan.courseTitle
           this.recordDetail.department = res.data.trainPlan.deptName
@@ -1200,6 +1222,22 @@ export default {
     // 导入失败
     importError (file, fileList) {
       this.$notify.error('导入失败，请稍后重试')
+    },
+    // 获取按钮权限方法
+    getBtnAuthority () {
+      const authId = {authId: '2-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {TreeDiagram, BreadCrumb}
@@ -1298,10 +1336,11 @@ export default {
             height: 97px;
             .el-textarea{
               height: 100%;
+            }
               .el-textarea__inner{
                 height: 100%;
+                border-color: #d4d4d4 !important
               }
-            }
           }
         }
       }

@@ -3,6 +3,7 @@
     <div class="content-tools">
       <div class="tools-right">
         <el-button
+        v-if="fucBtns.includes('add-btn')"
           type="primary"
           size="medium"
           icon="el-icon-plus"
@@ -48,11 +49,13 @@
         align="center">
         <template slot-scope="scope">
           <a
+          v-if="fucBtns.includes('edit-btn')"
             href="javascript:;"
             class="color-primary"
             @click="editHandle(scope.row)">编辑
           </a>
           <a
+          v-if="fucBtns.includes('del-btn')"
             href="javascript:;"
             class="color-danger talbe-links-del"
             @click="delRowHandle(scope.row)">删除
@@ -183,11 +186,28 @@ export default {
           'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
           'help'
         ]]
-      }
+      },
+      delBtn: {
+        type: Boolean,
+        default: false
+      },
+      editBtn: {
+        type: Boolean,
+        default: false
+      },
+      addBtn: {
+        type: Boolean,
+        default: false
+      },
+      fucBtns: []
+
     }
   },
   filters: {
     'type-filter': NewsTypeFilter
+  },
+  created () {
+    this.getBtnAuthority()
   },
   methods: {
     // 关闭添加弹框
@@ -300,6 +320,23 @@ export default {
     // 自定义序号
     indexMethod (index) {
       return index + 1
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-5'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

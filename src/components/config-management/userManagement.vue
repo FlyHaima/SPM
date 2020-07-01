@@ -8,15 +8,43 @@
       <el-container class="inner-main-content">
         <el-main class="inner-content">
           <div class="container-box">
-            <div class="content-tools is-flex-end">
+            <div class="content-tools">
+              <div class="tools-left">
+                <el-form
+                    size="medium"
+                  :inline="true"
+                  :model="form"
+                  class="demo-form-inline">
+                  <el-form-item label="用户名称">
+                    <el-input v-model='searchForm.user_name' placeholder="请输入用户名称"></el-input>
+                  </el-form-item>
+                  <el-form-item label="账号名">
+                    <el-input v-model='searchForm.account_name' placeholder="请输入账号名"></el-input>
+                  </el-form-item>
+                  <el-form-item label="角色">
+                    <el-input v-model='searchForm.role_name' placeholder="请输入角色"></el-input>
+                  </el-form-item>
+                  <el-form-item label="电话">
+                    <el-input v-model='searchForm.telephone' placeholder="请输入电话"></el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="tableSearchHandler">查询</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
               <div class="tools-right">
                 <el-button
+                v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
                   @click="addHandle">
                   添加</el-button>
                 <el-button
+                v-if="fucBtns.includes('dels-btn')"
                   type="danger"
                   size="medium"
                   icon="el-icon-delete"
@@ -24,6 +52,7 @@
                   :loading="submitting">
                   批量删除</el-button>
                 <el-upload
+                v-if="fucBtns.includes('import-btn')"
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
@@ -112,6 +141,7 @@
                 align="center">
                 <template slot-scope="scope">
                   <a
+                  v-if="fucBtns.includes('edit-btn')"
                     href="javascript:;"
                     class="color-primary"
                     @click="editHandle(scope.row)">编辑
@@ -136,6 +166,7 @@
                     </el-button>
                   </el-popover> -->
                   <a
+                  v-if="fucBtns.includes('disable-btn')"
                     href="javascript:;"
                     :class="scope.row.state === '1' ? 'color-danger' : 'color-primary'"
                     @click="changeState(scope.row)">
@@ -321,6 +352,12 @@ export default {
         roleId: '', // 角色
         isWork: '1' // 在职状态
       },
+      searchForm: {
+        user_name: '',
+        account_name: '',
+        telephone: '',
+        role_name: ''
+      },
       multipleSelection: [],
       submitting: false,
       editData: '',
@@ -351,13 +388,15 @@ export default {
       fileList: [], // 导入列表
       uploadHeader: {
         token: ''
-      }
+      },
+      fucBtns: []
     }
   },
   filters: {
     'account-status-filter': AccountStatusFilter
   },
   created () {
+    this.getBtnAuthority()
   },
   mounted () {
     // 设置题库上传的header 添加token
@@ -533,8 +572,43 @@ export default {
           this.submitting = false
         })
     },
+    // 查询
+    tableSearchHandler () {
+      const newSearchForm = Object.assign(this.tables.form, this.searchForm)
+      // console.log(newSearchForm)
+      axios
+        .get('user/getUserList', newSearchForm)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tables.data = res.data.data
+            this.tables.page.total = res.data.total
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

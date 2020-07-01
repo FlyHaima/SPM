@@ -28,7 +28,7 @@
                     :value="item">
                   </el-option>
                 </el-select>
-                <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
+                <a class="export-btn" @click="exportTable()" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
               </p>
               <div class="table-box">
                 <el-table
@@ -147,7 +147,7 @@
                     :value="item">
                   </el-option>
                 </el-select>
-                <a class="export-btn" @click="exportTable()"><i class></i>导出</a>
+                <a class="export-btn" @click="exportTable()" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
               </p>
               <div class="table-box">
                 <el-table
@@ -268,6 +268,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import {getRiskTree, getRiskView} from '@/api/riskia'
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'evaluationRecord',
@@ -283,11 +284,14 @@ export default {
       methodA: 'LEC',
       methodB: 'LEC',
       methodOptions: ['LEC', 'LS'],
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: []
+
     }
   },
   created () {
     this.getRiskTree(true)
+    this.getBtnAuthority()
   },
   methods: {
     openLoading () {
@@ -346,6 +350,21 @@ export default {
     },
     changeTab () {
       this.getTabelData()
+    },
+    getBtnAuthority () {
+      const authId = {authId: '3-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {TreeReadOnly, BreadCrumb}

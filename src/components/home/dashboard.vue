@@ -308,7 +308,7 @@ export default {
         }, // 图形颜色集合
         {
           title: '隐患发生率',
-          tipsText: '隐患发生率 = 已参与人数/总人数',
+          tipsText: '隐患发生率 = 已排查实施人数/总人数',
           participationRate: 0,
           pieData: [],
           colorList: [
@@ -318,7 +318,7 @@ export default {
         },
         {
           title: '隐患符合率',
-          tipsText: '隐患符合率 = 已参与人数/总人数',
+          tipsText: '隐患符合率 = 已排查复核人数/总人数',
           participationRate: 0,
           pieData: [],
           colorList: [
@@ -328,7 +328,7 @@ export default {
         },
         {
           title: '隐患整改率',
-          tipsText: '隐患整改率 = 已参与人数/总人数',
+          tipsText: '隐患整改率 = 已隐患治理人数/总人数',
           participationRate: 0,
           pieData: [],
           colorList: [

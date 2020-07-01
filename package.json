@@ -14,7 +14,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "@antv/g6": "^3.1.9",
+    "@antv/g6": "^3.5.7",
     "@antv/g6-editor": "^1.2.0",
     "@antv/g6-plugins": "^1.0.9",
     "ajv": "^6.9.1",
@@ -37,6 +37,7 @@
     "qs": "^6.7.0",
     "save-file": "^2.3.1",
     "style-loader": "^0.23.1",
+    "swiper": "^5.3.7",
     "true-case-path": "^2.0.0",
     "video.js": "^7.6.0",
     "videojs-contrib-hls": "^5.15.0",

@@ -43,6 +43,7 @@
           </div>
           <div class="tools-right">
             <el-button
+              v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -99,6 +100,7 @@
             align="center">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="detailsHandle(scope.row)">详情
@@ -112,6 +114,7 @@
             align="center">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('review-btn')"
                 href="javascript:;"
                 class="color-primary"
                 @click="reviewHandle(scope.row)">复核
@@ -150,6 +153,10 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    hiddInstanceId: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -169,7 +176,8 @@ export default {
       tableData: [], // 生产类清单列表数据
       queryDate: '',
       currentDetailsId: '',
-      postReviewData: null // 复核时传的对象
+      postReviewData: null, // 复核时传的对象
+      fucBtns: []
     }
   },
   components: {
@@ -182,6 +190,7 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     this.fetchUnitTreeData()
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -257,7 +266,8 @@ export default {
           investType: vm.type,
           startTime: vm.form.startTime,
           endTime: vm.form.endTime,
-          leftId: vm.currentPlanId
+          leftId: vm.currentPlanId,
+          hiddInstanceId: this.hiddInstanceId
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -282,6 +292,21 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-3'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   computed: { // vuex 参数引入

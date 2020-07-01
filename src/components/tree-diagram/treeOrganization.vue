@@ -52,19 +52,17 @@
         ref="tree">
           <span class="custom-tree-node" slot-scope="{ node, data }" :title="node.label">
             <span>{{ node.label }}</span>
-            <span class="right-btns">
+            <span class="right-btns" v-if="showBtn">
               <i
-                v-show="addVisible"
-                class="el-icon-plus"
+                class="el-icon-plus add-btn"
                 title="添加节点"
                 @click.stop="addNode(node, data)"></i>
               <i
-                v-show="editVisible"
-                class="el-icon-edit"
+
+                class="el-icon-edit edit-btn"
                 title="修改节点"
                 @click.stop="edit(node, data)"></i>
               <i
-                v-show="delVisible"
                 class="el-icon-delete"
                 title="删除节点"
                 @click.stop="remove(node, data)"></i>
@@ -77,6 +75,7 @@
 
 <script>
 export default {
+  // v-if="fucBtns.includes('add-btn')" edit-btn
   name: 'treeDiagram',
   props: {
     treeData: {
@@ -108,6 +107,10 @@ export default {
       default: false
     },
     shrinkVisible: {
+      type: Boolean,
+      default: false
+    },
+    showBtn: {
       type: Boolean,
       default: false
     }
@@ -143,7 +146,8 @@ export default {
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      console.log('节点deptID：' + data.invDeptId)
+      // console.log('节点deptID：' + data.invDeptId)
+      // console.log(data)
       this.$emit('handleNodeClick', data.invDeptId)
     },
     addNode (node, data) {

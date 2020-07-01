@@ -17,16 +17,55 @@
             @tree-edit-item="editTreeNode"
             @tree-del-item="delTreeNode"
             @open-loading="openLoading"
-            @close-loading="closeLoading">
+            @close-loading="closeLoading"
+            :showAddChlidBtn = "fucBtns.includes('add-child-btn')"
+            :showAddBtn="fucBtns.includes('add-btn')"
+            :showEditBtn= "fucBtns.includes('edit-btn')"
+            :showDelBtn= "fucBtns.includes('del-btn')"
+            >
           </tree-read-only>
         </el-aside>
         <el-main class="inner-content">
           <div class="container-box">
             <p class="btn-p">
-              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&token=${localToken}&attname=风险辨识表.xls`"><i class></i>导出</a>
-              <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a>
-              <a class="delete-btn" v-show="currentTreeData.treeLevel === '5'" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
-              <a class="add-btn" v-show="currentTreeData.treeLevel === '5'" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
+              <a class="export-btn" target="_blank" :href="`${baseUrl}/riskia/exportRiskBs?riskId=${currentTreeData.riskId}&token=${localToken}&attname=风险辨识表.xls`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
+              <!-- <a class="import-btn" v-show="currentTreeData.treeLevel === '5'" @click="openImportDialog"><i></i>导入</a> -->
+              <a class="delete-btn" v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('del-btn')" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
+              <a class="add-btn" v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('add-btn')" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
+              <el-upload
+                v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('import-ss-btn')"
+                class="tools-item"
+                accept=".xls"
+                :action='uploadUrl()'
+                :before-upload="handleBeforeUploadBase"
+                :on-success="handleSuccess"
+                :on-error="handleError"
+                :show-file-list="false"
+                :file-list="fileList"
+                :data='uploadData'
+                ><el-button
+                type='warning'
+                icon='el-icon-upload2'
+                v-loading="uploading"
+                class="button-custom"
+                >导入设备设施</el-button></el-upload>
+                <el-upload
+                  v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('import-zh-btn')"
+                  class="tools-item"
+                  accept=".xls"
+                  :action='uploadUrl()'
+                  :before-upload="handleBeforeUploadProduct"
+                  :on-success="handleSuccess"
+                  :on-error="handleError"
+                  :show-file-list="false"
+                  :file-list="fileList"
+                  :data='uploadData'
+                  ><el-button
+                  type='warning'
+                  icon='el-icon-upload2'
+                  v-loading="uploading"
+                  class="button-custom"
+                  >导入作业活动</el-button></el-upload>
             </p>
 
             <el-table ref="leaderTable"
@@ -67,8 +106,8 @@
                 align="center"
                 fixed="right">
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.state-1 < 2" size="mini" type="text" @click="openDialog(scope.row)">辨识</el-button>
-                  <el-button v-else size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>
+                  <el-button v-if="scope.row.state-1 < 2 && fucBtns.includes('bs-btn')" size="mini" type="text" @click="openDialog(scope.row)" >辨识</el-button>
+                  <el-button v-if="scope.row.state-1 >= 2  && fucBtns.includes('update-btn')" size="mini" type="text" @click="openDialog(scope.row)">修改</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -107,6 +146,17 @@
                         <el-select v-model="stepObjA.riskType" multiple placeholder="请选择" size="medium">
                           <el-option
                             v-for="item in riskTypeOptions"
+                            :key="item"
+                            :label="item"
+                            :value="item">
+                          </el-option>
+                        </el-select>
+                      </p>
+                      <p class="step-1-p">
+                        <span class="label">作业类型：</span>
+                        <el-select v-model="stepObjA.workType" placeholder="请选择" size="medium">
+                          <el-option
+                            v-for="item in workType"
                             :key="item"
                             :label="item"
                             :value="item">
@@ -188,7 +238,7 @@
                             v-for="(item, index) in adminOptions"
                             :key="index"
                             :label="item.deptName"
-                            :value="item.deptName">
+                            :value="item.deptId">
                           </el-option>
                         </el-select>
                       </p>
@@ -401,6 +451,7 @@ import {
   getRiskDeptList
 } from '@/api/riskia'
 import base from '@/api/baseUrl'
+import axios from '@/api/axios'
 
 export default {
   name: 'riskIdentified',
@@ -428,8 +479,13 @@ export default {
         riskType: [],
         riskReason: '',
         riskPointType: '',
-        identifierWay: ''
+        identifierWay: '',
+        workType: ''
       },
+      // 导入
+      uploading: false,
+      uploadData: {}, // 导入传入参数
+      fileList: [],
       // 辨识范围 options
       rangeOptions: [
         {
@@ -459,6 +515,7 @@ export default {
       riskTypeOptions: ['触电', '淹溺', '灼烫', '火灾', '坍塌', '透水', '放炮', '物体打击', '高处坠落',
         '车辆伤害', '机械伤害', '起重伤害', '冒顶片帮', '火药爆炸', '瓦斯爆炸', '锅炉爆炸', '容器爆炸', '其它爆炸', '中毒和窒息', '其它伤害'],
       // 风险因素
+      workType: ['普通作业', '特殊作业'], // 作业类型
       reasonOptions: [
         {
           value: '人的因素',
@@ -599,7 +656,8 @@ export default {
       },
       currentData: {},
       localToken: '',
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: ''
     }
   },
   created () {
@@ -607,6 +665,7 @@ export default {
     this.baseUrl = base.baseUrl
     this.getRiskTree(true)
     this.getRiskDeptList()
+    this.getBtnAuthority()
   },
   methods: {
     getRiskTree (create) {
@@ -686,7 +745,8 @@ export default {
         riskType: d.riskSourceType ? d.riskSourceType.split(',') : '',
         riskReason: d.factor ? d.factor.split('/') : '',
         riskPointType: d.riskType ? d.riskType : '',
-        identifierWay: d.ram ? d.ram : ''
+        identifierWay: d.ram ? d.ram : '',
+        workType: d.workType ? d.workType : ''
       }
       this.stepObjB = {
         levelNameA: d.oneName ? d.oneName : '',
@@ -759,7 +819,7 @@ export default {
     },
     saveStepOne () {
       let vm = this
-      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay) {
+      if (vm.stepObjA.pointA && vm.stepObjA.pointB && vm.stepObjA.pointC && vm.stepObjA.identifierRange && vm.stepObjA.riskType.length > 0 && vm.stepObjA.riskReason && vm.stepObjA.riskPointType && vm.stepObjA.identifierWay && vm.stepObjA.workType) {
         let saveData = {
           oneName: vm.stepObjA.pointA,
           twoName: vm.stepObjA.pointB,
@@ -769,7 +829,8 @@ export default {
           riskSourceType: vm.stepObjA.riskType.join(','),
           factor: vm.stepObjA.riskReason ? vm.stepObjA.riskReason.join('/') : '',
           riskType: vm.stepObjA.riskPointType,
-          ram: vm.stepObjA.identifierWay
+          ram: vm.stepObjA.identifierWay,
+          workType: vm.stepObjA.workType
         }
         // console.log(saveData)
         vm.updateDescribe(saveData, '1')
@@ -797,8 +858,7 @@ export default {
     },
     saveStepTwo () {
       let vm = this
-      let ad = 1
-      if (ad > 0) { // 暂无条件，后续补齐参数
+      if (vm.stepObjB.administrator !== '') { // 暂无条件，后续补齐参数
         let saveData = {
           responsibleBody: vm.stepObjB.administrator
         }
@@ -1049,28 +1109,110 @@ export default {
           postList.push(item.id)
         })
         let postData = {id: postList}
-        delDescribe(postData).then(res => {
-          if (res.code === 200) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            let data = {
-              riskId: this.currentTreeData.riskId,
-              level: this.currentTreeData.level,
-              treeLevel: this.currentTreeData.treeLevel
+        axios
+          .post('riskia/isHaveProduct', postData)
+          .then((res) => {
+            if (res.data.code === 200) {
+              delDescribe(postData).then(res => {
+                if (res.code === 200) {
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  })
+                  let data = {
+                    riskId: this.currentTreeData.riskId,
+                    level: this.currentTreeData.level,
+                    treeLevel: this.currentTreeData.treeLevel
+                  }
+                  this.getRiskTable(data)
+                }
+                this.pageLoading = false
+              })
+            } else {
+              this.$confirm('选择的数据中有已生成排查清单的数据，确认删除吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                delDescribe(postData).then(res => {
+                  if (res.code === 200) {
+                    this.$message({
+                      type: 'success',
+                      message: '删除成功!'
+                    })
+                    let data = {
+                      riskId: this.currentTreeData.riskId,
+                      level: this.currentTreeData.level,
+                      treeLevel: this.currentTreeData.treeLevel
+                    }
+                    this.getRiskTable(data)
+                  }
+                  this.pageLoading = false
+                })
+              })
             }
-            this.getRiskTable(data)
-          }
-          this.pageLoading = false
-        })
+          })
       }).catch(() => {
         // after cancel
         this.pageLoading = false
       })
     },
+    // 上传文件
     openImportDialog () {
-      // 不知道要干啥呢
+    },
+    // 上传地址
+    uploadUrl () {
+      // console.log('2222', this.currentTreeData.riskId)
+      // console.log('1111', this.parameterData)
+      return base.baseUrl + '/riskia/importRisks'
+    },
+    handleBeforeUploadBase (file) {
+      this.uploadData = {riskId: this.currentTreeData.riskId, type: '设备设施'}
+      console.log(this.uploadData)
+      let promise = new Promise((resolve) => {
+        this.$nextTick(() => {
+          resolve(true)
+        })
+      })
+      return promise
+    },
+    handleBeforeUploadProduct (file) {
+      this.uploadData = {riskId: this.currentTreeData.riskId, type: '作业活动'}
+      console.log(this.uploadData)
+      let promise = new Promise((resolve) => {
+        this.$nextTick(() => {
+          resolve(true)
+        })
+      })
+      return promise
+    },
+    handleSuccess (response, file, fileList) {
+      this.uploading = false
+      if (response.code === 200) {
+        this.$notify.success('导入成功')
+        this.getRiskDeptList()
+        console.log('刷新了')
+      } else {
+        this.$notify.warning(response.message)
+      }
+    },
+    handleError (file, fileList) {
+
+    },
+    getBtnAuthority () {
+      const authId = {authId: '3-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {TreeReadOnly, BreadCrumb, TableStep}
@@ -1104,6 +1246,18 @@ export default {
             height: 15px;
           }
         }
+        .tools-item{
+          margin-right: 28px;
+          display: inline-block;
+           .el-button{
+            height: 36px;
+            width: 140px;
+           }
+        }
+        .tools-item2{
+          margin-left: 28px;
+          display: inline-block;
+        }
         .import-btn{
           background: #e6a23c;
           i{
@@ -1133,7 +1287,7 @@ export default {
         text-align: right;
       }
       .dialog-box{
-        height: 490px;
+        height: 600px;
         .step-box{
           width: 100%;
           height: 100%;
@@ -1335,7 +1489,7 @@ export default {
     height: 100%;
   }
   .el-tabs--border-card>.el-tabs__content{
-    height: 435px;
+    height: 500px;
   }
 }
 

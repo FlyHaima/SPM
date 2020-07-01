@@ -319,10 +319,15 @@ export default {
       if (this.innerWidth < 1440) {
         this.isCollapse = true
         // this.$refs.outLink.values = ''
-        this.$refs.sideNavDom.style.width = '64px'
+        /** 添加$nextTick解决由于渲染不及时导致的DOM undefined报错 **/
+        this.$nextTick(() => {
+          this.$refs.sideNavDom.style.width = '64px'
+        })
       } else {
         this.isCollapse = false
-        this.$refs.sideNavDom.style.width = '270px'
+        this.$nextTick(() => {
+          this.$refs.sideNavDom.style.width = '270px'
+        })
       }
     },
     // 初始化菜单
@@ -338,7 +343,7 @@ export default {
     },
     // 初始化应急指挥调度url
     initURL () {
-      let dmsfbsf = window.localStorage.getItem('TOKEN_KEY')
+      let dmsfbsf = sessionStorage.getItem('TOKEN_KEY')
       axios
         .get('sso/getEmergency', {
           dmsfbsf: dmsfbsf

@@ -33,6 +33,15 @@ export function getRiskSelector (riskName) {
   })
 }
 
+// 风险分级管控--风险四色图--获取现有风险单元下拉列表
+export function getUnitSelector () {
+  const url = `${baseUrl}/fourColor/getRiskSecondary`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 风险分级管控--风险四色图--新增地图
 export function addPlace (data) {
   const url = `${baseUrl}/fourColor/addPlace`
@@ -81,6 +90,15 @@ export function uploadPic (data) {
 // 风险分级管控--风险四色图--查看风险点详情
 export function checkItemDetail (bindId) {
   const url = `${baseUrl}/fourColor/getDescribelist?bindId=${bindId}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+// 风险分级管控--风险四色图--查看风险单元详情
+export function checkUnitDetail (bindId) {
+  const url = `${baseUrl}/fourColor/getSecondaryList?bindId=${bindId}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)

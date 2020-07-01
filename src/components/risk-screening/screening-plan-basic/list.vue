@@ -6,9 +6,11 @@
         :menu-name="'计划清单'"
         :list-data = "listMenuData"
         :current-id ="currentPlanId"
-        showEditOrgBtn
-        showAddMenuBtn
-        showOperation
+        :showEditOrgBtn = "fucBtns.includes('edit-dept-btn')"
+        :showAddMenuBtn = "fucBtns.includes('create-btn')"
+        :showOperation = "true"
+        :showEditBtn = "fucBtns.includes('edit-menu-btn')"
+        :showDelBtn= "fucBtns.includes('del-menu-btn')"
         @add-menu-handle="addMenuHandle"
         @eidit-org-handle="eiditOrganizationHandle"
         @menu-click-handle="menuClickHandle"
@@ -22,6 +24,7 @@
         <div class="content-tools">
           <div class="tools-left">
             <el-button
+              v-if= "fucBtns.includes('type-btn')"
               type=""
               size="medium"
               icon="el-icon-menu"
@@ -30,19 +33,28 @@
           </div>
           <div class="tools-right">
             <el-button
-              v-if="btnDisabledProductSend"
+              v-if="companyId === 'juechen' && accountName === 'admin'"
+              type="primary"
+              size="medium"
+              icon="el-icon-s-promotion"
+              @click="ExportTemplateVisible">
+              导出系统大数据模版</el-button>
+            <el-button
+              v-if="btnDisabledProductSend && fucBtns.includes('fb-btn')"
               type="primary"
               size="medium"
               icon="el-icon-s-promotion"
               @click="handleSendMsg">
               计划发布</el-button>
             <el-button
+              v-if= "fucBtns.includes('add-btn')"
               type="primary"
               size="medium"
               icon="el-icon-plus"
               @click="handleAdd">
               添加</el-button>
             <el-upload
+              v-if= "fucBtns.includes('import-btn')"
               class="tools-item"
               accept=".xls"
               :action='uploadUrl()'
@@ -61,12 +73,14 @@
                 导入</el-button>
             </el-upload>
             <el-button
+              v-if= "fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
               @click="exportEexcelHandel">
               导出</el-button>
             <el-button
+              v-if= "fucBtns.includes('copy-btn')"
               type="primary"
               size="medium"
               icon="el-icon-document-copy"
@@ -156,11 +170,13 @@
             width="130px">
             <template slot-scope="scope">
               <a
+                v-if= "fucBtns.includes('del-btn')"
                 href="javascript:;"
                 class="color-danger talbe-links-del"
                 @click.prevent="delRowHandle(scope.row)">删除
               </a>
               <a
+                v-if= "fucBtns.includes('edit-btn')"
                 href="javascript:;"
                 class="talbe-links-del" style="margin-left: 5px;"
                 @click.prevent="editItem(scope.row)">编辑
@@ -289,6 +305,31 @@
         </template>
       </div>
     </el-dialog>
+    <el-dialog
+    title="导出系统大数据模版"
+    width="450px"
+    :close-on-click-modal="false"
+    :visible.sync="dialogExportTemplate"
+    >
+    <template>
+    <el-tree
+    :data="companyData"
+    :props="defaultPropsCompany"
+    node-key="companyId" >
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span>{{ node.label }}</span>
+        <span>
+          <el-button
+            type="text"
+            size="mini"
+            @click="ExportTemplate(data)">
+            导出
+          </el-button>
+        </span>
+      </span>
+    </el-tree>
+    </template>
+    </el-dialog>
     <dialog-add
       :dialogVisible="dialogAddVisible"
       :planId="currentPlanId"
@@ -347,7 +388,7 @@
 <script>
 import moment from 'moment'
 import TreeList from '@/components/tree-diagram/treeList'
-import TreeOrganization from '@/components/tree-diagram/treeOrganization'
+import TreeOrganization from '@/components/tree-diagram/treeOrganizationPlan'
 import axios from '@/api/axios'
 import DialogSort from '@/components/risk-screening/screening-plan/dialogSort'
 import DialogAdd from '@/components/risk-screening/screening-plan/addDialog'
@@ -377,6 +418,7 @@ export default {
       dialogAddVisible: false, // 添加弹框显示开关
       dialogOrganizationVisible: false, // 组织机构弹框显示开关
       dialogSortVisible: false, // 排查种类弹框显示开关
+      dialogExportTemplate: false, // 系统大数据模板开关
       organizationTree: [], // 组织机构
       editOrgData: {
         invDeptName: '',
@@ -409,6 +451,10 @@ export default {
           return time.getTime() < Date.now() - 8.64e7
         }
       },
+      defaultPropsCompany: {
+        children: 'children',
+        label: 'deptName'
+      },
       // checkedAuto: false,
       // checkedManual: false,
       investigationOptions: [], // 排查频率选项
@@ -430,7 +476,11 @@ export default {
       confirmEditing: false,
       uploadHeader: {
         token: ''
-      }
+      },
+      fucBtns: [],
+      companyData: [], // 公司数据
+      companyId: '', // 公司id
+      accountName: '' // 登陆账号
     }
   },
   components: {
@@ -444,8 +494,12 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     // 设置上传的header 添加token
     vm.uploadHeader.token = sessionStorage.getItem('TOKEN_KEY')
+    vm.companyId = sessionStorage.getItem('companyId')
+    vm.accountName = sessionStorage.getItem('accountName')
     vm.fetchListMenuData()
     vm.fetchPlanOrganizationData()
+    vm.getBtnAuthority()
+    vm.getCompanyData()
   },
   methods: {
     // 切换分页数量
@@ -1035,6 +1089,43 @@ export default {
           })
         }
       })
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    // 导出系统大数据模版
+    ExportTemplateVisible () {
+      this.dialogExportTemplate = true
+    },
+    ExportTemplate (data) {
+      exportExcel('basticHidden/exportBigData', 'companyId=' + data.companyId)
+    },
+    // 获取公司数组树
+    getCompanyData () {
+      axios
+        .get('/basticHidden/selectCompanyList')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.companyData = res.data.data
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }
@@ -1181,4 +1272,12 @@ export default {
 .list-tips-confirm-item{
   line-height: 30px;
 }
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
 </style>

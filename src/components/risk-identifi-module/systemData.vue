@@ -6,7 +6,7 @@
     </el-header>
     <el-main class="inner-main-container">
       <p class="btn-p">
-        <el-button size="medium" type="primary" @click="addDate"><i class="el-icon-plus" style="margin-right: 5px"></i>新增</el-button>
+        <el-button size="medium" type="primary" @click="addDate" v-if="fucBtns.includes('add-btn')"><i class="el-icon-plus" style="margin-right: 5px" ></i>新增</el-button>
       </p>
 
       <el-dialog title="新增" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false"
@@ -90,9 +90,9 @@
           width="190"
           align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="editItem(scope.row)">编辑</el-button>
-            <el-button type="text" @click="deleteItem(scope.row)">删除</el-button>
-            <a :href="scope.row.url + '?attname=' + scope.row.fileName" target="_blank" style="margin-left: 10px;">下载</a>
+            <el-button type="text" @click="editItem(scope.row)" v-if="fucBtns.includes('edit-btn')">编辑</el-button>
+            <el-button type="text" @click="deleteItem(scope.row)" v-if="fucBtns.includes('del-btn')">删除</el-button>
+            <a :href="scope.row.url + '?attname=' + scope.row.fileName" target="_blank" style="margin-left: 10px;" v-if="fucBtns.includes('down-btn')">下载</a>
           </template>
         </el-table-column>
       </el-table>
@@ -116,6 +116,7 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import {getBdataList, addBdata, delBdata, updataBdata} from '@/api/riskia'
 import base from '@/api/baseUrl'
 import {getQiNiuToken} from '@/api/upload'
+import axios from '@/api/axios'
 
 export default {
   name: 'systemData',
@@ -150,13 +151,15 @@ export default {
         industry: '',
         url: '',
         fileName: ''
-      }
+      },
+      fucBtns: []
     }
   },
   created () {
     this.baseUrl = base.uploadQiniuAdr
     this.fileAddress = base.fileQiniuAddr
     this.getTable()
+    this.getBtnAuthority()
   },
   methods: {
     download (id) {},
@@ -319,6 +322,21 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    getBtnAuthority () {
+      const authId = {authId: '3-4'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {BreadCrumb}

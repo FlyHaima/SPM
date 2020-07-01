@@ -3,6 +3,7 @@
     <div class="content-tools">
       <div class="tools-right">
         <el-button
+        v-if="fucBtns.includes('add-btn')"
           type="primary"
           size="medium"
           icon="el-icon-plus"
@@ -59,11 +60,13 @@
         align="center">
         <template slot-scope="scope">
           <a
+          v-if="fucBtns.includes('edit-btn')"
             href="javascript:;"
             class="color-primary"
             @click="editHandle(scope.row)">编辑
           </a>
           <a
+          v-if="fucBtns.includes('del-btn')"
             href="javascript:;"
             class="color-danger talbe-links-del"
             @click="delRowHandle(scope.row)">删除
@@ -185,7 +188,8 @@ export default {
           { required: true, message: '请输上传图片', trigger: 'blur' }
         ]
       },
-      tableDataSwiper: [] // 轮播图列表数据
+      tableDataSwiper: [], // 轮播图列表数据
+      fucBtns: []
     }
   },
   filters: {
@@ -193,6 +197,7 @@ export default {
   },
   created () {
     this.fetchSwiperListData()
+    this.getBtnAuthority()
   },
   methods: {
     // 关闭添加弹框
@@ -336,6 +341,23 @@ export default {
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
+    },
+    getBtnAuthority () {
+      const authId = {authId: '7-5'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.fucBtns = res.data.data.functionBtns
+            console.log(this.fucBtns)
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {

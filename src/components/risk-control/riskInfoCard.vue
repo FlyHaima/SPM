@@ -18,6 +18,17 @@
 
         <el-main class="inner-content">
           <div class="container-box">
+             <div class="content-tools is-flex-end">
+                <div class="tools-right">
+                  <el-button
+                    v-if="this.form.id && fucBtns.includes('export-btn')"
+                    type="success"
+                    size="medium"
+                    icon="el-icon-download"
+                    @click="exportExcelHandel">
+                    导出</el-button>
+                </div>
+              </div>
             <template v-if="tableVisible">
               <el-table
                 :data="tableData"
@@ -58,16 +69,7 @@
               </el-table>
             </template>
             <template v-else>
-              <div v-if="editData" class="content-tools is-flex-end">
-                <div class="tools-right">
-                  <el-button
-                    type="success"
-                    size="medium"
-                    icon="el-icon-download"
-                    @click="exportExcelHandel">
-                    导出</el-button>
-                </div>
-              </div>
+
               <el-form
                 :model = "form"
                 ref = "form"
@@ -122,23 +124,27 @@
                     <div class="custom-tr">
                       <div class="custom-th-label">潜在的事故及职业危害类型</div>
                       <div class="custom-td-value">
-                        <el-select
-                          v-model="form.riskResult"
-                          multiple
-                          placeholder="请选择潜在的事故及职业危害类型"
-                          @change="selChangeRiskResult">
-                          <el-option
-                            v-for="(item,index) in options"
-                            :key="'riskResult' + index"
-                            :label="item.label"
-                            :value="item.value"
-                            >
-                          </el-option>
-                        </el-select>
+                        <el-input
+                          type='textarea'
+                          autosize
+                          maxlength="120"
+                          v-model.trim="form.accidentHazard"
+                          placeholder=""></el-input>
                       </div>
                     </div>
                     <div class="custom-tr">
                       <div class="custom-th-label">异常状况应急处置</div>
+                      <div class="custom-td-value">
+                        <el-input
+                          type='textarea'
+                          autosize
+                          maxlength="120"
+                          v-model.trim="form.emergencyDispose"
+                          placeholder=""></el-input>
+                      </div>
+                    </div>
+                    <div class="custom-tr">
+                      <div class="custom-th-label"></div>
                       <div class="custom-td-value">
                         <el-select
                           v-model="form.emergency"
@@ -181,7 +187,7 @@
                   <el-button
                   type="primary"
                   :loading="submitting"
-                  native-type="submit">保存</el-button>
+                  native-type="submit" v-if="fucBtns.includes('save-btn')">保存</el-button>
                 </div>
               </el-form>
             </template>
@@ -205,6 +211,7 @@ export default {
       pageLoading: false, // 页面loading开关
       tableVisible: false, // table显示开关
       submitting: false, // 提交数据loading开关
+      importVisible: false, // 到处按钮显示开关
       riskId: '', // 风险点id
       form: {
         id: '', // 告知卡id
@@ -214,7 +221,11 @@ export default {
         centerRisk: '', // 主要风险源
         factor: '', // 因素
         riskResult: [], // 事故后果
-        emergency: [] // 措施
+        emergency: [], // 措施
+        hazardType: '',
+        emergencyResponse: '',
+        accidentHazard: '', // 职业危害类型
+        emergencyDispose: '' // 应急处置
       },
       organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据
@@ -224,12 +235,14 @@ export default {
       imgPathSelRiskResult: [], // 已选择的图片路径 - 潜在的事故及职业危害类型
       imgPathSelEmergency: [], // 已选择的图片路径 - 异常状况应急处置
       gwList: [], // 岗位选项列表
-      currentPlanId: '' // 当前清单项的id
+      currentPlanId: '', // 当前清单项的id
+      fucBtns: []
     }
   },
   created () {
     this.fetchTreeData()
     this.fetchTableData(1)
+    this.getBtnAuthority()
   },
   methods: {
     // 选择器change事件 - 潜在的事故及职业危害类型
@@ -321,6 +334,7 @@ export default {
             if (res.data.code === 200) {
               this.$notify.success('提交成功')
               this.fetchTableData()
+              this.importVisible = true
             } else {
               this.$message({
                 message: res.data.message,
@@ -338,7 +352,14 @@ export default {
       let vm = this
       vm.riskId = data.riskId
       vm.form.riskId = data.riskId
+      vm.treeLevel = data.treeLevel
       vm.fetchTableData(data.treeLevel)
+      console.log(vm.form)
+      if (vm.treeLevel === '5' | vm.treeLevel === '1') {
+        vm.importVisible = false
+      } else {
+        vm.importVisible = true
+      }
     },
     closeLoading () {
       this.pageLoading = false
@@ -346,12 +367,29 @@ export default {
     // 导出excel
     exportExcelHandel () {
       exportExcel(`riskCard/exportCards`, 'id=' + this.riskId)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '4-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   components: {
     TreeReadOnly,
     BreadCrumb
   }
+  // 按钮权限
+
 }
 </script>
 
@@ -373,4 +411,10 @@ export default {
     padding-left: 0;
   }
 }
+/deep/.custom-table {
+    .el-textarea__inner{
+    border-color: #ffffff !important ;
+  }
+}
+
 </style>

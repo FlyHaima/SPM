@@ -45,6 +45,7 @@
           </div>
           <div class="tools-right">
             <el-button
+              v-if="fucBtns.includes('export-btn')"
               type="success"
               size="medium"
               icon="el-icon-download"
@@ -104,6 +105,7 @@
             width="100px">
             <template slot-scope="scope">
               <a
+                v-if="fucBtns.includes('detail-btn')"
                 href="javascript:;"
                 class="talbe-links-del"
                 @click.prevent="editItem(scope.row)">详情
@@ -158,7 +160,8 @@ export default {
         checkTime: '', // 检查时间
         hiddenDesc: '', // 隐患描述
         hiddenPhotos: [] // 附件
-      }
+      },
+      fucBtns: []
     }
   },
   components: {
@@ -170,6 +173,7 @@ export default {
     vm.currentPlanId = vm.$route.query.id
     vm.fetchListMenuData()
     vm.fetchTableData()
+    vm.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
@@ -267,6 +271,21 @@ export default {
         'checkName=' + this.form.checkName + '&' +
         'startTime=' + this.form.startTime + '&' +
         'endTime=' + this.form.endTime)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '5-2'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   computed: { // vuex 参数引入
