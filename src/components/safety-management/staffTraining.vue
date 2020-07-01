@@ -980,7 +980,9 @@ export default {
         this.multipleSelection.forEach((item) => {
           copyArr.push(item.id)
         })
-        copyPlan(copyArr).then((res) => {
+        let newCopyArr = {planId: copyArr.join(',')}
+        // const newCopyArr = JSON.stringify(copyArr)
+        copyPlan(newCopyArr).then((res) => {
           if (res.code === 200) {
             this.getPlanTable()
           }
