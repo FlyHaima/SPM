@@ -21,7 +21,7 @@
             <div class="content-tools is-flex-end">
                 <div class="tools-right">
                   <el-button
-                    v-if="importVisible && fucBtns.includes('export-btn')"
+                    v-if="form.id && fucBtns.includes('export-btn')"
                     type="success"
                     size="medium"
                     icon="el-icon-download"
@@ -254,7 +254,7 @@ export default {
               // vm.form.gkcs = JSON.parse(vm.form.gkcs)
               vm.form.emergency = JSON.parse(vm.form.emergency)
 
-              if (vm.form.gkcs) {
+              if (vm.form.gkcs && vm.form.gkcs !== 'null') {
                 vm.selChangeGkcs(vm.form.gkcs)
               } else {
                 vm.imgPathSelGkcs = []
@@ -309,7 +309,7 @@ export default {
       vm.treeLevel = data.treeLevel
       vm.fetchTableData(data.treeLevel)
       // console.log(vm.form)
-      if (vm.treeLevel === '5' | vm.treeLevel === '1') {
+      if (vm.treeLevel === '5' || vm.treeLevel === '1') {
         vm.importVisible = false
       } else {
         vm.importVisible = true
