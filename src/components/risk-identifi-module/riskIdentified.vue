@@ -81,12 +81,12 @@
               </el-table-column>
               <el-table-column
                 label="危险源名称"
-                width="300"
                 align="center">
                 <template slot-scope="scope">{{ scope.row.riskSourceName }}</template>
               </el-table-column>
               <el-table-column
                 label="进度"
+                width="300"
                 align="center">
                 <template slot-scope="scope">
                   <table-step :active="scope.row.speed * 1">
@@ -1296,7 +1296,6 @@ export default {
             padding-top: 8px;
             .step-1-p{
               line-height: 36px;
-              height: 36px;
               margin-bottom: 16px;
               position: relative;
               padding-left: 400px;
@@ -1489,7 +1488,7 @@ export default {
     height: 100%;
   }
   .el-tabs--border-card>.el-tabs__content{
-    height: 500px;
+    height: 520px;
   }
 }
 
