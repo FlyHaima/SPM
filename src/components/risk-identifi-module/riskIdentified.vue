@@ -1162,13 +1162,11 @@ export default {
     },
     // 上传地址
     uploadUrl () {
-      // console.log('2222', this.currentTreeData.riskId)
-      // console.log('1111', this.parameterData)
       return base.baseUrl + '/riskia/importRisks'
     },
     handleBeforeUploadBase (file) {
       this.uploadData = {riskId: this.currentTreeData.riskId, type: '设备设施'}
-      console.log(this.uploadData)
+      this.pageLoading = true
       let promise = new Promise((resolve) => {
         this.$nextTick(() => {
           resolve(true)
@@ -1178,7 +1176,7 @@ export default {
     },
     handleBeforeUploadProduct (file) {
       this.uploadData = {riskId: this.currentTreeData.riskId, type: '作业活动'}
-      console.log(this.uploadData)
+      this.pageLoading = true
       let promise = new Promise((resolve) => {
         this.$nextTick(() => {
           resolve(true)
@@ -1191,8 +1189,10 @@ export default {
       if (response.code === 200) {
         this.$notify.success('导入成功')
         this.getRiskDeptList()
+        this.pageLoading = false
         console.log('刷新了')
       } else {
+        this.pageLoading = false
         this.$notify.warning(response.message)
       }
     },
