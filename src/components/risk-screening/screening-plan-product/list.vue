@@ -466,7 +466,8 @@ export default {
       axios
         .get('productHidden/getProductHiddenList', {
           risk_id: this.currentPlanId,
-          pageSize: this.page.pageSize
+          pageSize: this.page.pageSize,
+          pageNo: this.page.pageNo
         })
         .then((res) => {
           if (res.data.code === 200) {
