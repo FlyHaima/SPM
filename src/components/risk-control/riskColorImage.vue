@@ -209,6 +209,7 @@
               </el-table-column>
               <el-table-column
                 label="风险等级"
+                width="100"
                 align="center">
                 <template slot-scope="scope">
                   <el-tag
@@ -227,10 +228,17 @@
               <el-table-column
                 label="管控措施"
                 align="center">
-                <template slot-scope="scope">{{ scope.row.technology + ';' + scope.row.bmp + ';' + scope.row.train + ';' + scope.row.individual + ';' + scope.row.emergency }}</template>
+                <template slot-scope="scope">
+                  {{ (scope.row.technology ? scope.row.technology + ';' : '')
+                    + (scope.row.bmp ? scope.row.bmp + ';' : '')
+                    + (scope.row.train? + scope.row.train + ';' : '')
+                    + (scope.row.individual ? scope.row.individual + ';' : '')
+                    + (scope.row.emergency ? scope.row.emergency + ';' : '') }}
+                </template>
               </el-table-column>
               <el-table-column
                 label="风险点详情"
+                width="110"
                 align="center">
                 <template slot-scope="scope">
                   <el-button type="text" @click="checkOutDetail(scope.row)">详情</el-button>
@@ -715,39 +723,52 @@ export default {
         vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
       }
     },
-    // 绘制后台传过来的数据，包括背景图，oldLayers，oldPoints
+    /** 绘制后台传过来的数据
+     * 包括背景图，风险单元，风险点 **/
     drawOldLayers () {
       let vm = this
       vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
+      const iconLayers = [] // 设置图标集合
+      const rectLayers = [] // 设置块集合
+
       vm.oldLayers.forEach(item => {
-        /** 注：为了不影响代码运行，先改为type，后期需改为riskType **/
         if (item.riskType === 0) {
-          vm.ctx.beginPath()
-          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
-          vm.ctx.strokeStyle = vm.fillStyles[item.level]
-          vm.ctx.fillStyle = vm.fillStyles[item.level]
-          vm.ctx.globalAlpha = 0.7
-          vm.ctx.fill()
-          vm.ctx.stroke()
-          vm.ctx.font = '20px Georgia'
-          vm.ctx.fillStyle = 'black'
-          vm.ctx.textAlign = 'center'
-          vm.ctx.textBaseline = 'middle'
-          vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
-          vm.ctx.stroke()
+          rectLayers.push(item)
         } else {
-          let image = new Image()
-          if (item.level === 1) {
-            image = vm.imageIcon1
-          } else if (item.level === 2) {
-            image = vm.imageIcon2
-          } else {
-            image = vm.imageIcon3
-          }
-          vm.ctx.beginPath()
-          vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
+          iconLayers.push(item)
         }
+      })
+
+      // 先绘制块，风险单元
+      rectLayers.forEach(item => {
+        vm.ctx.beginPath()
+        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+        vm.ctx.strokeStyle = vm.fillStyles[item.level]
+        vm.ctx.fillStyle = vm.fillStyles[item.level]
+        vm.ctx.globalAlpha = 0.7
+        vm.ctx.fill()
+        vm.ctx.stroke()
+        vm.ctx.font = '20px Georgia'
+        vm.ctx.fillStyle = 'black'
+        vm.ctx.textAlign = 'center'
+        vm.ctx.textBaseline = 'middle'
+        vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
+        vm.ctx.stroke()
+      })
+
+      // 再绘制点，风险点
+      iconLayers.forEach(item => {
+        let image = new Image()
+        if (item.level === 1) {
+          image = vm.imageIcon1
+        } else if (item.level === 2) {
+          image = vm.imageIcon2
+        } else {
+          image = vm.imageIcon3
+        }
+        vm.ctx.beginPath()
+        vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
@@ -843,7 +864,7 @@ export default {
         vm.currentR.y1 += vm.y - vm.topDistance - vm.currentR.y1
       }
     },
-    // 确定是否是在绘制的矩形中 (匹配 layers)
+    /** 确定是否是在绘制的矩形中 (匹配 layers) **/
     isPointInRect (x, y) {
       let vm = this
       let len = vm.layers.length
@@ -860,24 +881,31 @@ export default {
         }
       }
     },
-    // 匹配是否是在原有的矩形中 (匹配 oldLayers)
+    /** 匹配是否是在原有的矩形中 (匹配 oldLayers) **/
     isPointInOld (x, y) {
       let vm = this
       let len = vm.oldLayers.length
+      let rect = null
+      let point = null
       for (let i = 0; i < len; i++) {
         let itemLayer = vm.oldLayers[i]
-        if (itemLayer.riskType === 0) {
-          if (itemLayer.x1 < x && x < itemLayer.x2 && itemLayer.y1 < y && y < itemLayer.y2) {
-            return itemLayer
+        if (itemLayer.riskType !== 0) {
+          if ((itemLayer.x1 - 14) < x && x < (itemLayer.x1 + 14) && (itemLayer.y1 - 14) < y && y < (itemLayer.y1 + 14)) {
+            point = itemLayer
           }
         } else {
-          if ((itemLayer.x1 - 14) < x && x < (itemLayer.x1 + 14) && (itemLayer.y1 - 14) < y && y < (itemLayer.y1 + 14)) {
-            return itemLayer
+          if (itemLayer.x1 < x && x < itemLayer.x2 && itemLayer.y1 < y && y < itemLayer.y2) {
+            rect = itemLayer
           }
         }
       }
+      if (point) {
+        return point
+      } else {
+        return rect
+      }
     },
-    // 绘制矩形时，默认最小60*60
+    /** 绘制矩形时，默认最小60*60 **/
     fixPosition (position) {
       if (position.x1 > position.x2) {
         let x = position.x1
@@ -1201,10 +1229,11 @@ export default {
     uploadNewMap () {
       this.uploadVisible = true
     },
+    /** 点击查看详情 **/
     checkOutDetail (data) {
       this.detailVisible = true
       this.detailData = data
-    }, // 点击查看详情
+    },
     confirmBind () { // 提交绑定区域
       let vm = this
       vm.layers.forEach(item => {
@@ -1394,8 +1423,8 @@ export default {
         .slide-temp{
           position: absolute;
           top: 0;
-          right: -505px;
-          width: 500px;
+          right: -905px;
+          width: 900px;
           border: 1px solid #ddd;
           height: 100%;
           overflow: auto;
