@@ -318,7 +318,7 @@ export default {
         },
         {
           title: '隐患符合率',
-          tipsText: '隐患符合率 = 已排查复核人数/总人数',
+          tipsText: '隐患符合率 = 已排查复核个数/总排查项',
           participationRate: 0,
           pieData: [],
           colorList: [
@@ -328,7 +328,7 @@ export default {
         },
         {
           title: '隐患整改率',
-          tipsText: '隐患整改率 = 已隐患治理人数/总人数',
+          tipsText: '隐患整改率 = 已隐患治理个数/总排查项',
           participationRate: 0,
           pieData: [],
           colorList: [
