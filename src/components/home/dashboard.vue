@@ -211,8 +211,9 @@
                        <div class="pie-tips">
                          <p class="pie-tips-item">
                            <i class="pie-tips-sign">*</i>
-                           {{item.tipsText}}
+                           {{item.tipsTextA}}
                          </p>
+                         <p class="pie-tips-item">{{item.tipsTextB}}</p>
                          <p class="pie-tipdivs-item">
                            {{item.participationRate}}%
                          </p>
@@ -224,43 +225,6 @@
             </div>
           </el-col>
         </el-row>
-        <!-- <el-row>
-          <el-col :xl="24" :lg="24">
-            <div class="info-panel">
-              <div class="info-header">
-                <div class="info-title">
-                  <span class="info-title-txt">安全指数分析</span>
-                </div>
-              </div>
-              <div class="info-content">
-                <el-row type="flex" justify="space-around">
-                  <el-col
-                    v-for="item in pieOptions"
-                    :key="item.id"
-                    :xl="6" :lg="4"
-                    class="pie-box">
-                    <pie-c
-                      :return-data = "item.pieData"
-                      :title = "item.title"
-                      :color-list = "item.colorList"
-                      :pie-height = "pieHeight"
-                       >
-                       <div class="pie-tips">
-                         <p class="pie-tips-item">
-                           <i class="pie-tips-sign">*</i>
-                           {{item.tipsText}}
-                         </p>
-                         <p class="pie-tips-item">
-                           {{item.participationRate}}%
-                         </p>
-                       </div>
-                       </pie-c>
-                  </el-col>
-                </el-row>
-              </div>
-            </div>
-          </el-col>
-        </el-row> -->
       </div>
       <div class="home-showcase">
         <div class="info-panel">
@@ -298,7 +262,8 @@ export default {
       pieOptions: [
         {
           title: '全员参与率',
-          tipsText: '全员参与率 = 已参与人数/总人数',
+          tipsTextA: '全员参与率 =',
+          tipsTextB: '已参与人数/总人数',
           participationRate: 0,
           pieData: [], // 图形数据
           colorList: [
@@ -308,7 +273,8 @@ export default {
         }, // 图形颜色集合
         {
           title: '隐患发生率',
-          tipsText: '隐患发生率 = 已排查实施人数/总人数',
+          tipsTextA: '隐患发生率 =',
+          tipsTextB: '已排查实施人数/总人数',
           participationRate: 0,
           pieData: [],
           colorList: [
@@ -318,7 +284,8 @@ export default {
         },
         {
           title: '隐患符合率',
-          tipsText: '隐患符合率 = 已排查复核个数/总排查项',
+          tipsTextA: '隐患符合率 =',
+          tipsTextB: '已排查复核个数/总排查项',
           participationRate: 0,
           pieData: [],
           colorList: [
@@ -328,7 +295,8 @@ export default {
         },
         {
           title: '隐患整改率',
-          tipsText: '隐患整改率 = 已隐患治理个数/总排查项',
+          tipsTextA: '隐患整改率 =',
+          tipsTextB: '已隐患治理个数/总排查项',
           participationRate: 0,
           pieData: [],
           colorList: [
@@ -778,8 +746,10 @@ export default {
   }
   .pie-tips{
     position: absolute;
-    right: 0;
+    right: 9px;
     top: 50%;
+    text-align: left;
+    width: 140px;
   }
   .pie-tips-item{
     font-size: 12px;

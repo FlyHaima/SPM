@@ -44,7 +44,6 @@
                 :action="baseUrl"
                 :data="uploadData"
                 :limit="1"
-                accept=".xls"
                 :before-upload="handleBeforeUpload"
                 :on-success="handleSuccess"
                 :on-remove="handleRemove"
@@ -320,7 +319,6 @@ export default {
     },
     handleSuccess (response, file, fileList) {
       this.fileList = fileList
-      console.log(this.fileList)
       this.addData.url = this.fileAddress + fileList[0].response.key
       this.addData.fileName = file.name
       this.addData.size = fileList[0].size
