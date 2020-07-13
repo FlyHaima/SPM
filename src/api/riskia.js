@@ -15,6 +15,15 @@ export function getRiskTree () {
   })
 }
 
+// 风险辨识评估--风险单元--获取tree child
+export function getRiskTreeChild (level, riskId) {
+  const url = `${baseUrl}/riskia/getChildRiskTree?riskId=${riskId}&level=${level}`
+
+  return axios.get(url, {}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 // 风险辨识评估--风险单元--获取table
 export function getRiskUnit (id) {
   const url = `${baseUrl}/riskia/getRiskUnitById?id=${id}`
