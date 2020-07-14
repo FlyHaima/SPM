@@ -5,7 +5,7 @@
   -- 3、treeName：树的名称
  -->
 <template>
-  <div class="tree-diagram">
+  <div class="tree-diagram" v-loading="treeLoading">
     <div class="tree-title">
       <i class="double-line-icon"></i>
       {{treeName}}
@@ -23,16 +23,16 @@
       <div v-show="editOrgVisible" class="slide-btns">
         <el-button
           type="text"
-          @click="eiditOrgHandle()">编辑机构</el-button>
+          @click="editOrgHandle()">编辑机构</el-button>
       </div>
     </div>
     <div class="tree-box">
       <el-tree
+        lazy
         class="filter-tree"
-        :data="treeData"
         :props="defaultProps"
+        :load="loadNode"
         node-key="riskId"
-        default-expand-all
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         @node-click="handleNodeClick"
@@ -63,13 +63,10 @@
 </template>
 
 <script>
+import axios from '@/api/axios'
 export default {
   name: 'treeDiagram',
   props: {
-    treeData: {
-      type: Array,
-      default: null
-    },
     currentId: {
       type: String,
       default: ''
@@ -113,6 +110,14 @@ export default {
     showDelBtn: {
       type: Boolean,
       default: false
+    },
+    orgInterface: {
+      type: String,
+      default: ''
+    },
+    childInterface: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -121,46 +126,83 @@ export default {
       filterText: '',
       defaultProps: {
         children: 'children',
-        label: 'riskName'
+        label: 'riskName',
+        isLeaf: true
       },
       openState: false,
       level: 4,
       addBro: false,
-      defaultOpenNode: [] // 默认展开节点的集合
+      defaultOpenNode: [], // 默认展开节点的集合
+      orgData: [],
+      treeLoading: false
     }
   },
   created () {
   },
   methods: {
-    //  默认高亮显示一条数据
-    highLightTreeNode () {
-      let vm = this
-      this.$nextTick(function () {
-        vm.$refs.tree.setCurrentKey(vm.currentId)
-      })
+    // 节点刷新数据
+    refreshNodeBy (id) {
+      let node = this.$refs.tree.getNode(id) // 通过节点id找到对应树节点对象
+      node.loaded = false
+      node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
-    // 获取一节点集合
-    fetchTreeNodeId () {
-      this.treeData.forEach(item => {
-        this.defaultOpenNode.push(item.riskId)
-      })
+    // 异步加载数据
+    loadNode (node, resolve) {
+      if (node.level === 0) {
+        this.treeLoading = true
+        axios
+          .get(this.orgInterface)
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.orgData = res.data.data
+              this.treeLoading = false
+              this.returnId(res.data.data[0].riskId)
+              return resolve(this.orgData)
+            } else {
+              this.orgData = []
+              this.treeLoading = false
+              this.$message.error('获取数据失败，请稍后刷新页面重试')
+            }
+          })
+      // } else if (node.level === 1) {
+      //   // 直接取上一个节点获取的children
+      //   return resolve(this.orgData[0].children)
+      } else {
+        axios
+          .get(`${this.childInterface}`, {
+            riskId: node.data.riskId,
+            level: node.data.level
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              return resolve(res.data.data)
+            } else {
+              this.$message.error('获取数据失败，请稍后刷新页面重试')
+            }
+          })
+      }
     },
-    openUpload () {},
-    uploadExcel () {
+    // 返回给父组件初始ID，调用父组件方法
+    returnId (id) {
+      this.$emit('return-id', id)
     },
+    // open
     openAll () {
       this.openState = !this.openState
       this.$refs.tree.$children[0].expanded = true
     },
+    // close
     closeAll () {
       this.openState = !this.openState
       this.$refs.tree.$children[0].expanded = false
     },
+    // 筛选
     filterNode (value, data) {
       if (!value) return true
       return data.riskName.indexOf(value) !== -1
     },
-    handleNodeClick (data) { // 点击节点，切换右侧结构视图
+    // 点击节点，切换右侧结构视图
+    handleNodeClick (data) {
       this.$emit('tree-click-handle', {
         riskId: data.riskId,
         level: data.level,
@@ -168,6 +210,7 @@ export default {
         pId: data.pId
       })
     },
+    // 添加icon的class
     classObj (data) {
       if (data.riskLevelCode === '0') {
         return 'icon-disabled'
@@ -181,14 +224,17 @@ export default {
         return 'icon-danger'
       }
     },
+    // 添加
     append (node, data) {
       this.openAppendBox(data)
     },
-    appendChild (node, data) { // 向子节点添加节点
+    // 向子节点添加节点
+    appendChild (node, data) {
       this.$emit('tree-add-item', {
         pId: data.riskId
       })
     },
+    // 打开添加节点的窗口
     openAppendBox (data) {
       this.$emit('tree-add-item', {
         riskId: data.riskId,
@@ -197,6 +243,7 @@ export default {
         pId: data.pId
       })
     },
+    // 编辑
     edit (node, data) {
       this.$emit('tree-edit-item', {
         riskId: data.riskId,
@@ -205,6 +252,7 @@ export default {
         pId: data.pId
       })
     },
+    // 删除
     remove (node, data) {
       this.$emit('tree-del-item', {
         riskId: data.riskId,
@@ -214,21 +262,13 @@ export default {
       })
     },
     // 编辑机构
-    eiditOrgHandle () {
+    editOrgHandle () {
       this.$emit('eidit-org')
     }
   },
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
-    },
-    treeData: {
-      deep: true,
-      handler (val) {
-        this.treeData = val
-        this.fetchTreeNodeId()
-        this.highLightTreeNode()
-      }
     }
   }
 }

@@ -8,17 +8,20 @@
       <el-container class="inner-main-content">
         <el-aside class="inner-aside" width="408px">
           <tree-read-only
+            ref="tree"
             :tree-name="'风险单元'"
-            :tree-data="organizationTree"
             :current-id ="currentPlanId"
             :show-btns="true"
+            :org-interface="'/riskia/getRiskTree'"
+            :child-interface="'/riskia/getChildRiskTree'"
+            @return-id="returnId"
             @tree-click-handle="getRiskTable"
             @tree-add-item="addTreeNode"
             @tree-edit-item="editTreeNode"
             @tree-del-item="delTreeNode"
             @open-loading="openLoading"
             @close-loading="closeLoading"
-            :showAddChlidBtn = "fucBtns.includes('add-child-btn')"
+            :showAddChlidBtn="fucBtns.includes('add-child-btn')"
             :showAddBtn="fucBtns.includes('add-btn')"
             :showEditBtn= "fucBtns.includes('edit-btn')"
             :showDelBtn= "fucBtns.includes('del-btn')"
@@ -440,7 +443,6 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
 import TableStep from '../step/step'
 import {
-  getRiskTree,
   getDescribeList,
   addRiskTree,
   updateRiskTree,
@@ -463,6 +465,7 @@ export default {
       dialogLoading: false,
       breadcrumb: ['风险辨识评估', '风险辨识'],
       organizationTree: [],
+      loadNode: [],
       isEndPint: true, // 只有点击最尾节点，才会显示表格里的操作列
       riskList: [],
       riskStates: {0: '未辨识', 1: '辨识中', 2: '已辨识'},
@@ -663,28 +666,18 @@ export default {
   created () {
     this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
-    this.getRiskTree(true)
     this.getRiskDeptList()
     this.getBtnAuthority()
   },
   methods: {
-    getRiskTree (create) {
-      this.pageLoading = true
-      getRiskTree().then((res) => {
-        if (res.code === 200) {
-          this.organizationTree = res.data
-          this.currentPlanId = this.organizationTree[0].riskId
-        }
-        if (create) {
-          let data = {
-            riskId: res.data[0].riskId,
-            level: '1',
-            treeLevel: '1'
-          }
-          this.getRiskTable(data)
-        }
-        this.pageLoading = false
-      })
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1'
+      }
+      this.getRiskTable(data)
     },
     getRiskDeptList () {
       this.pageLoading = true
@@ -728,7 +721,6 @@ export default {
     },
     openDialog (d) {
       this.currentData = d
-      // console.log(this.currentData)
       if (d.speed === '4') {
         this.activeStep = 'step-4'
       } else {
@@ -803,7 +795,7 @@ export default {
             treeLevel: vm.currentTreeData.treeLevel
           }
           vm.getRiskTable(data)
-          vm.getRiskTree()
+          // vm.getRiskTree()
         }
         vm.pageLoading = false
       })
@@ -1001,7 +993,7 @@ export default {
               type: 'success',
               message: '节点设置成功'
             })
-            vm.getRiskTree()
+            vm.$refs.tree.refreshNodeBy(data.pId)
           }
           vm.pageLoading = false
         })
@@ -1027,7 +1019,7 @@ export default {
               type: 'success',
               message: '节点设置成功'
             })
-            vm.getRiskTree()
+            vm.$refs.tree.refreshNodeBy(data.pId)
           }
         })
         vm.pageLoading = false
@@ -1037,8 +1029,9 @@ export default {
       })
     },
     delTreeNode (data) {
-      this.pageLoading = true
-      this.$confirm('此操作将删除选中项, 是否继续?', '提示', {
+      let vm = this
+      vm.pageLoading = true
+      vm.$confirm('此操作将删除选中项, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -1046,17 +1039,18 @@ export default {
         let postData = {riskId: data.riskId}
         delRiskTree(postData).then(res => {
           if (res.code === 200) {
-            this.$message({
+            vm.$message({
               type: 'success',
               message: '删除成功!'
             })
-            this.getRiskTree()
+            // 在删除这里，刷新删除节点的父节点
+            vm.$refs.tree.refreshNodeBy(data.pId)
           }
-          this.pageLoading = false
+          vm.pageLoading = false
         })
       }).catch(() => {
         // after cancel
-        this.pageLoading = false
+        vm.pageLoading = false
       })
     },
     openAddConfirm () {
