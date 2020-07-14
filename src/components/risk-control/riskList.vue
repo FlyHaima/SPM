@@ -8,9 +8,12 @@
       <el-container class="inner-main-content">
         <el-aside class="inner-aside" width="408px">
           <tree-read-only
+            ref="tree"
             :tree-name="'风险单元'"
-            :tree-data="organizationTree"
             :current-id ="currentPlanId"
+            :org-interface="'/riskia/getRiskTree'"
+            :child-interface="'/riskia/getChildRiskTree'"
+            @return-id="returnId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
@@ -294,6 +297,10 @@ export default {
       } else {
         this.$notify.warning(response.message)
       }
+    },
+    returnId (id) {
+      this.currentPlanId = id
+      this.fetchTableData()
     },
     // 获取树的数据
     fetchTreeData () {

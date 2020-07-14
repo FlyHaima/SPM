@@ -8,8 +8,11 @@
       <el-container class="inner-main-content">
         <el-aside class="inner-aside" width="408px">
           <tree-read-only
+            ref="tree"
+            :org-interface="'/riskia/getRiskTree'"
+            :child-interface="'/riskia/getChildRiskTree'"
+            @return-id="returnId"
             :tree-name="'风险单元'"
-            :tree-data="organizationTree"
             :current-id ="currentPlanId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
@@ -227,7 +230,6 @@ export default {
         accidentHazard: '', // 职业危害类型
         emergencyDispose: '' // 应急处置
       },
-      organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据
       editData: null,
       options: [], // 下拉框选择项数据
@@ -240,8 +242,6 @@ export default {
     }
   },
   created () {
-    this.fetchTreeData()
-    this.fetchTableData(1)
     this.getBtnAuthority()
   },
   methods: {
@@ -270,22 +270,27 @@ export default {
       })
     },
     // 获取树的数据
-    fetchTreeData () {
-      axios
-        .get('riskia/getRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.organizationTree = res.data.data
-            this.currentPlanId = this.organizationTree[0].riskId
-          }
-        })
+    // fetchTreeData () {
+    //   axios
+    //     .get('riskia/getRiskTree')
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.organizationTree = res.data.data
+    //         this.currentPlanId = this.organizationTree[0].riskId
+    //       }
+    //     })
+    // },
+    returnId (id) {
+      this.currentPlanId = id
+      this.riskId = id
+      this.fetchTableData(1) // 这是初始加载时，自动调用，获取右侧table
     },
     // 获取table数据
     fetchTableData (treeLevel) {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`riskCard/getRiskCrad?&id=${vm.riskId}`)
+        .get(`riskCard/getRiskCrad?id=${vm.riskId}`)
         .then((res) => {
           if (res.data.code === 200) {
             this.options = res.data.selectList

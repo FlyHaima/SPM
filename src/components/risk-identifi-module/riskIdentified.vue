@@ -464,7 +464,6 @@ export default {
       pageLoading: false,
       dialogLoading: false,
       breadcrumb: ['风险辨识评估', '风险辨识'],
-      organizationTree: [],
       loadNode: [],
       isEndPint: true, // 只有点击最尾节点，才会显示表格里的操作列
       riskList: [],

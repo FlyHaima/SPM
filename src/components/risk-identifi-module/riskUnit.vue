@@ -8,9 +8,12 @@
       <el-container class="inner-main-content">
         <el-aside class="inner-aside" width="408px">
           <tree-read-only
+            ref="tree"
             :tree-name="'风险单元'"
-            :tree-data="organizationTree"
+            :org-interface="'/riskia/getRiskTree'"
+            :child-interface="'/riskia/getChildRiskTree'"
             :current-id ="currentPlanId"
+            @return-id="returnId"
             @open-loading="openLoading"
             @close-loading="closeLoading"
             @tree-click-handle="getTableData">
@@ -74,7 +77,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {getRiskTree, getRiskUnit} from '@/api/riskia'
+import {getRiskUnit} from '@/api/riskia'
 import base from '@/api/baseUrl'
 import axios from '@/api/axios'
 
@@ -84,7 +87,6 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '风险单元'],
-      organizationTree: [],
       tableData: [
       ],
       baseUrl: '',
@@ -97,7 +99,7 @@ export default {
   created () {
     this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
-    this.getRiskTree(true)
+    // this.getRiskTree(true)
     this.getBtnAuthority()
   },
   methods: {
@@ -107,18 +109,27 @@ export default {
     closeLoading () {
       this.pageLoading = false
     },
-    getRiskTree (create) {
-      this.pageLoading = true
-      getRiskTree().then((res) => {
-        if (res.code === 200) {
-          this.organizationTree = res.data
-          this.currentPlanId = this.organizationTree[0].riskId
-        }
-        if (create) {
-          this.getTableData(res.data[0])
-        }
-        this.pageLoading = false
-      })
+    // getRiskTree (create) {
+    //   this.pageLoading = true
+    //   getRiskTree().then((res) => {
+    //     if (res.code === 200) {
+    //       this.organizationTree = res.data
+    //       this.currentPlanId = this.organizationTree[0].riskId
+    //     }
+    //     if (create) {
+    //       this.getTableData(res.data[0])
+    //     }
+    //     this.pageLoading = false
+    //   })
+    // },
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1'
+      }
+      this.getTableData(data)
     },
     getTableData (data) {
       this.pageLoading = true

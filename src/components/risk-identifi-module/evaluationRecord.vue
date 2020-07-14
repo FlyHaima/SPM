@@ -8,9 +8,12 @@
       <el-container class="inner-main-content">
         <el-aside class="inner-aside" width="408px">
           <tree-read-only
+            ref="tree"
             :tree-name="'风险单元'"
-            :tree-data="organizationTree"
+            :org-interface="'/riskia/getRiskTree'"
+            :child-interface="'/riskia/getChildRiskTree'"
             :current-id ="currentPlanId"
+            @return-id="returnId"
             @open-loading="openLoading"
             @close-loading="closeLoading"
             @tree-click-handle="getTabelData">
@@ -266,7 +269,7 @@
 <script>
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import TreeReadOnly from '../tree-diagram/treeReadOnly'
-import {getRiskTree, getRiskView} from '@/api/riskia'
+import {getRiskView} from '@/api/riskia'
 import base from '@/api/baseUrl'
 import axios from '@/api/axios'
 
@@ -277,7 +280,6 @@ export default {
       pageLoading: false,
       breadcrumb: ['风险辨识评估', '评价记录'],
       activeName: '作业活动',
-      organizationTree: [],
       tableDataA: [],
       tableDataB: [],
       currentNode: {},
@@ -290,10 +292,18 @@ export default {
     }
   },
   created () {
-    this.getRiskTree(true)
     this.getBtnAuthority()
   },
   methods: {
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1'
+      }
+      this.getTabelData(data)
+    },
     openLoading () {
       this.pageLoading = true
     },
@@ -312,19 +322,6 @@ export default {
       }
       let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}&ram=${methodType}`
       location.href = `${hrefUrl}&attname=${vm.activeName}.xls`
-    },
-    getRiskTree (create) {
-      this.pageLoading = true
-      getRiskTree().then((res) => {
-        if (res.code === 200) {
-          this.organizationTree = res.data
-          this.currentPlanId = this.organizationTree[0].riskId
-        }
-        if (create) {
-          this.getTabelData(res.data[0])
-        }
-        this.pageLoading = false
-      })
     },
     getTabelData (data) {
       this.pageLoading = true
