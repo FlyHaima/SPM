@@ -8,9 +8,12 @@
       <el-container class="inner-main-content">
         <el-aside class="inner-aside" width="408px">
           <tree-read-only
+            ref="tree"
             :tree-name="'风险单元'"
-            :tree-data="organizationTree"
             :current-id ="currentPlanId"
+            :org-interface="'/riskia/getZdRiskTree'"
+            :child-interface="'/riskia/getChildRiskTree'"
+            @return-id="returnId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
           </tree-read-only>
@@ -206,7 +209,6 @@ export default {
         worry: '', // 主要应急措施
         should: ''
       },
-      organizationTree: [], // 组织结构树数据
       tableData: [], // table列表数据
       editData: null,
       options: [], // 下拉框选择项数据
@@ -218,21 +220,26 @@ export default {
     }
   },
   created () {
-    this.fetchTreeData()
-    this.fetchTableData(1)
+    // this.fetchTreeData()
+    // this.fetchTableData(1)
     this.getBtnAuthority()
   },
   methods: {
     // 获取树的数据
-    fetchTreeData () {
-      axios
-        .get('riskia/getZdRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.organizationTree = res.data.data
-            this.currentPlanId = this.organizationTree[0].riskId
-          }
-        })
+    // fetchTreeData () {
+    //   axios
+    //     .get('riskia/getZdRiskTree')
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.organizationTree = res.data.data
+    //         this.currentPlanId = this.organizationTree[0].riskId
+    //       }
+    //     })
+    // },
+    returnId (id) {
+      this.currentPlanId = id
+      this.riskId = id
+      this.fetchTableData(1)
     },
     // 获取table数据
     fetchTableData (treeLevel) {
