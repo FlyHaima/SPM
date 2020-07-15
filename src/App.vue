@@ -61,6 +61,7 @@ export default {
       // 对超时做单独处理
       if (err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1) {
         console.log('timeout of set time')
+        this.$message.error('请求链接超时，请您检查网络后，刷新页面并重试')
       }
       if (err && err.response) {
         switch (err.response.status) {

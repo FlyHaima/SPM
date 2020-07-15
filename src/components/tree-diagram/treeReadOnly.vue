@@ -164,9 +164,9 @@ export default {
               this.$message.error('获取数据失败，请稍后刷新页面重试')
             }
           })
-      // } else if (node.level === 1) {
-      //   // 直接取上一个节点获取的children
-      //   return resolve(this.orgData[0].children)
+      } else if (node.level === 1) {
+        // 直接取上一个节点获取的children
+        return resolve(this.orgData[0].children)
       } else {
         axios
           .get(`${this.childInterface}`, {
