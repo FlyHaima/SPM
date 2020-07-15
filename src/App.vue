@@ -45,8 +45,6 @@ export default {
       // debugger
       return config
     }, (error) => {
-      // console.log(error)
-      // console.log('overtime')
       this.reload()
       return Promise.reject(error)
     })
@@ -60,6 +58,10 @@ export default {
       }
       return response
     }, (err) => { // 这里是返回状态码不为200时候的错误处理
+      // 对超时做单独处理
+      if (err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1) {
+        console.log('timeout of set time')
+      }
       if (err && err.response) {
         switch (err.response.status) {
           case 400:

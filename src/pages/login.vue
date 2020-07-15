@@ -87,8 +87,8 @@
                     class="list-info-item">
                     <a :href="item.url" target="_blank">
                       <div class="list-info-title">
-                      <span class="list-info-txt">{{item.newsName}}</span>
-                    </div>
+                        <span class="list-info-txt">{{item.newsName}}</span>
+                      </div>
                     </a>
                     <div class="list-info-date">{{item.impTime | send-time-filter}}</div>
                   </li>
@@ -552,7 +552,8 @@ export default {
   }
 }
 .list-info-txt{
-  max-width: 430px;
+  display: block;
+  max-width: 630px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

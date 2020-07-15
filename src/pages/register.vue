@@ -154,7 +154,7 @@
               </el-input>
             </el-form-item>
             <el-form-item prop="industryName">
-              <el-select v-model="form.industryName" placeholder="请选择所属行业">
+              <el-select v-model="form.industryName" style="width: 100%" placeholder="请选择所属行业">
                 <i slot="prefix" class="icon-form icon-form-05"></i>
                 <el-option
                   v-for="item in industryOptions"
@@ -164,9 +164,9 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <div class="custom-form-item">
-              请选择是否使用所属行业大数据
-              <el-select v-model="form.useIndustry" placeholder="使用">
+            <el-form-item>
+<!--              请选择是否使用所属行业大数据-->
+              <el-select v-model="form.useIndustry" placeholder="是否使用所属行业大数据" style="width: 100%">
                 <el-option
                   v-for="item in useIndustryOptions"
                   :key="item.value"
@@ -174,7 +174,7 @@
                   :value="item.value">
                 </el-option>
               </el-select>
-            </div>
+            </el-form-item>
             <el-form-item class="form-links">
               <a class="form-links-item" href="/login">登录已有账号</a>
             </el-form-item>
@@ -356,6 +356,7 @@ export default {
       let vm = this
       vm.$refs.form.validate((valid) => {
         if (valid) {
+          vm.submitting = true
           axios
             .post('registerController/register', vm.form)
             .then((res) => {
@@ -370,8 +371,14 @@ export default {
                 })
               }
             })
+            .catch(err => {
+              console.log(err)
+              vm.pageLoading = false
+              vm.submitting = false
+            })
             .finally(() => {
               vm.pageLoading = false
+              vm.submitting = false
             })
         } else {
           return false
@@ -623,7 +630,8 @@ export default {
   }
 }
 .list-info-txt{
-  max-width: 430px;
+  display: block;
+  max-width: 630px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
