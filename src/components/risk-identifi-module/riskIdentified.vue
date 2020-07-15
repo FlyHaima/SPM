@@ -15,7 +15,7 @@
             :org-interface="'/riskia/getRiskTree'"
             :child-interface="'/riskia/getChildRiskTree'"
             @return-id="returnId"
-            @tree-click-handle="getRiskTable"
+            @tree-click-handle="handleTreeNode"
             @tree-add-item="addTreeNode"
             @tree-edit-item="editTreeNode"
             @tree-del-item="delTreeNode"
@@ -114,6 +114,16 @@
                 </template>
               </el-table-column>
             </el-table>
+            <div class="el-pagination__wrap text-right">
+              <el-pagination
+                background
+                layout="prev, pager, next"
+                :current-page="page.pageNo"
+                :page-sizes="page.sizes"
+                :total="page.total"
+                @current-change="handleCurrentChange">
+              </el-pagination>
+            </div>
 
             <el-dialog :visible.sync="showDialog" :close-on-click-modal="false" :close-on-press-escape="false"
                        :width="'1200px'"
@@ -659,7 +669,12 @@ export default {
       currentData: {},
       localToken: '',
       currentPlanId: '', // 当前清单项的id
-      fucBtns: ''
+      fucBtns: '',
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   created () {
@@ -674,9 +689,37 @@ export default {
       let data = {
         riskId: id,
         level: '1',
-        treeLevel: '1'
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
       }
-      this.getRiskTable(data)
+      this.handleTreeNode(data)
+    },
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.getRiskTable(this.currentTreeData)
+    },
+    handleTreeNode (data) {
+      let vm = this
+      vm.page.pageNo = 1 // tree节点点击，分页默认为第一页
+      vm.currentTreeData = data
+      vm.getRiskTable()
+    },
+    getRiskTable () {
+      let vm = this
+      vm.pageLoading = true
+      getDescribeList(vm.currentTreeData.riskId, vm.page.pageNo, vm.page.pageSize).then(res => {
+        if (res.code === 200) {
+          vm.riskList = res.data
+          vm.page.total = res.total
+        } else {
+          vm.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+        vm.pageLoading = false
+      })
     },
     getRiskDeptList () {
       this.pageLoading = true
@@ -690,23 +733,6 @@ export default {
           })
         }
         this.pageLoading = false
-      })
-    },
-    getRiskTable (data) {
-      let vm = this
-      vm.currentTreeData = data
-      vm.pageLoading = true
-      let riskId = data.riskId
-      getDescribeList(riskId).then(res => {
-        if (res.code === 200) {
-          vm.riskList = res.data
-        } else {
-          vm.$message({
-            message: res.message,
-            type: 'warning'
-          })
-        }
-        vm.pageLoading = false
       })
     },
     openLoading () {

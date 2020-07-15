@@ -460,6 +460,7 @@ export default {
             type: 'success',
             message: '节点设置成功'
           })
+          this.addTreeVisible = false
           this.getOrgTree(true)
           this.getLeaderTree()
         } else {

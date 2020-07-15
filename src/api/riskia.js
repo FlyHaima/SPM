@@ -43,8 +43,8 @@ export function getRiskView (riskId, type, methodType) {
 }
 
 // 风险辨识评估--风险辨识--获取风险源列表
-export function getDescribeList (riskId) {
-  const url = `${baseUrl}/riskia/getDescribeList?riskId=${riskId}`
+export function getDescribeList (riskId, pageNo, pageSize) {
+  const url = `${baseUrl}/riskia/getDescribeList?riskId=${riskId}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)

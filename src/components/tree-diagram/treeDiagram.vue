@@ -135,9 +135,14 @@ export default {
     },
     // 导入成功
     handleSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.$emit('refreshing')
-      this.$emit('close-loading')
+      if (response.code !== 200) {
+        this.$notify.error(response.message)
+        this.$emit('close-loading')
+      } else {
+        this.$notify.success('导入成功')
+        this.$emit('refreshing')
+        this.$emit('close-loading')
+      }
     },
     // 导入失败
     handleError (file, fileList) {

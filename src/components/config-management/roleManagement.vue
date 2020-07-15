@@ -158,44 +158,6 @@
         <el-button type="primary" @click="saveCheckData">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 旧版分配弹窗 -->
-    <!-- <el-dialog
-      :close-on-click-modal="false"
-      title="分配"
-      :visible.sync=false
-      >
-      <el-collapse v-loading="pageLoading" v-model="activeNames" >
-        <el-collapse-item
-          v-for="(item, index) in roleOptions"
-          :key = index
-          name="1">
-          <template slot="title">
-            <el-checkbox
-              :indeterminate="isIndeterminate"
-              v-model="item.checkAll"
-              @change="handleCheckAllChange(item)">{{item.name}}</el-checkbox>
-          </template>
-          <el-checkbox-group
-            v-model="item.checkedRoles"
-            @change="handleCheckedChildrensChange(item)">
-            <el-checkbox
-              v-for="(itemList) in item.list"
-              :label="itemList.name"
-              :key="itemList.pid">{{itemList.name}}</el-checkbox>
-          </el-checkbox-group>
-        </el-collapse-item>
-      </el-collapse>
-
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          size="small"
-          @click="submitFormRole()">确 定</el-button>
-        <el-button
-          size="small"
-          @click="dialogRoleVisible = false">取 消</el-button>
-      </div>
-    </el-dialog> -->
   </el-container>
 </template>
 <script>
