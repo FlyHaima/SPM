@@ -138,6 +138,18 @@
                     width="75">
                   </el-table-column>
                 </el-table>
+                <!--分页组件-->
+                <div class="el-pagination__wrap text-right">
+                  <el-pagination
+                    v-if="pageA.pageNo > 0"
+                    background
+                    layout="prev, pager, next"
+                    :current-page="pageA.pageNo"
+                    :page-sizes="pageA.sizes"
+                    :total="pageA.total"
+                    @current-change="handleCurrentChange">
+                  </el-pagination>
+                </div>
               </div>
             </el-tab-pane>
             <el-tab-pane label="设备设施类" name="设备设施">
@@ -257,6 +269,18 @@
                     width="75">
                   </el-table-column>
                 </el-table>
+                <!--分页组件-->
+                <div class="el-pagination__wrap text-right">
+                  <el-pagination
+                    v-if="pageB.pageNo > 0"
+                    background
+                    layout="prev, pager, next"
+                    :current-page="pageB.pageNo"
+                    :page-sizes="pageB.sizes"
+                    :total="pageB.total"
+                    @current-change="handleCurrentChange">
+                  </el-pagination>
+                </div>
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -287,8 +311,17 @@ export default {
       methodB: 'LEC',
       methodOptions: ['LEC', 'LS'],
       currentPlanId: '', // 当前清单项的id
-      fucBtns: []
-
+      fucBtns: [],
+      pageA: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      },
+      pageB: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   created () {
@@ -300,9 +333,27 @@ export default {
       let data = {
         riskId: id,
         level: '1',
-        treeLevel: '1'
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
       }
-      this.getTabelData(data)
+      this.handleTreeNode(data)
+    },
+    // 切换table翻页
+    handleCurrentChange (val) {
+      if (this.activeName === '作业活动') {
+        this.pageA.pageNo = val
+      } else {
+        this.pageB.pageNo = val
+      }
+      this.getTabelData()
+    },
+    handleTreeNode (data) {
+      let vm = this
+      vm.pageA.pageNo = 1 // tree节点点击，分页默认为第一页
+      vm.pageB.pageNo = 1
+      vm.currentNode = data
+      vm.getTabelData()
     },
     openLoading () {
       this.pageLoading = true
@@ -323,26 +374,29 @@ export default {
       let hrefUrl = `${baseUrl}/riskia/exportPjView?riskId=${vm.currentNode.riskId}&type=${vm.activeName}&token=${localToken}&ram=${methodType}`
       location.href = `${hrefUrl}&attname=${vm.activeName}.xls`
     },
-    getTabelData (data) {
-      this.pageLoading = true
-      if (data != null) {
-        this.currentNode = data
-      }
+    getTabelData () {
+      let vm = this
+      vm.pageLoading = true
       let methodType = ''
-      if (this.activeName === '作业活动') {
-        methodType = this.methodA
+      let page = {}
+      if (vm.activeName === '作业活动') {
+        methodType = vm.methodA
+        page = vm.pageA
       } else {
-        methodType = this.methodB
+        methodType = vm.methodB
+        page = vm.pageB
       }
-      getRiskView(this.currentNode.riskId, this.activeName, methodType).then((res) => {
+      getRiskView(vm.currentNode.riskId, vm.activeName, methodType, page.pageNo, page.pageSize).then((res) => {
         if (res.code === 200) {
-          if (this.activeName === '作业活动') {
-            this.tableDataA = res.data
+          if (vm.activeName === '作业活动') {
+            vm.tableDataA = res.data
+            vm.pageA.total = res.total
           } else {
-            this.tableDataB = res.data
+            vm.tableDataB = res.data
+            vm.pageB.total = res.total
           }
         }
-        this.pageLoading = false
+        vm.pageLoading = false
       })
     },
     changeTab () {

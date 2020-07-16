@@ -66,6 +66,19 @@
                   </el-table-column>
                 </el-table-column>
               </el-table>
+
+              <!--分页组件-->
+              <div class="el-pagination__wrap text-right">
+                <el-pagination
+                  v-if="page.pageNo > 0"
+                  background
+                  layout="prev, pager, next"
+                  :current-page="page.pageNo"
+                  :page-sizes="page.sizes"
+                  :total="page.total"
+                  @current-change="handleCurrentChange">
+                </el-pagination>
+              </div>
             </div>
           </div>
         </el-main>
@@ -93,13 +106,17 @@ export default {
       curentId: '',
       localToken: '',
       currentPlanId: '', // 当前清单项的id
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   created () {
     this.localToken = sessionStorage.getItem('TOKEN_KEY')
     this.baseUrl = base.baseUrl
-    // this.getRiskTree(true)
     this.getBtnAuthority()
   },
   methods: {
@@ -109,36 +126,37 @@ export default {
     closeLoading () {
       this.pageLoading = false
     },
-    // getRiskTree (create) {
-    //   this.pageLoading = true
-    //   getRiskTree().then((res) => {
-    //     if (res.code === 200) {
-    //       this.organizationTree = res.data
-    //       this.currentPlanId = this.organizationTree[0].riskId
-    //     }
-    //     if (create) {
-    //       this.getTableData(res.data[0])
-    //     }
-    //     this.pageLoading = false
-    //   })
-    // },
     returnId (id) {
       this.currentPlanId = id
       let data = {
         riskId: id,
         level: '1',
-        treeLevel: '1'
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
       }
-      this.getTableData(data)
+      this.handleTreeNode(data)
     },
-    getTableData (data) {
-      this.pageLoading = true
-      this.curentId = data.riskId
-      getRiskUnit(data.riskId).then((res) => {
+    // 切换table
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.getTableData()
+    },
+    handleTreeNode (data) {
+      let vm = this
+      vm.page.pageNo = 1 // tree节点点击，分页默认为第一页
+      vm.currentTreeData = data
+      vm.getTableData()
+    },
+    getTableData () {
+      let vm = this
+      vm.pageLoading = true
+      getRiskUnit(vm.currentTreeData.riskId, vm.page.pageNo, vm.page.pageSize).then((res) => {
         if (res.code === 200) {
-          this.tableData = res.data
+          vm.tableData = res.data
+          vm.page.total = res.total
         }
-        this.pageLoading = false
+        vm.pageLoading = false
       })
     },
     getBtnAuthority () {

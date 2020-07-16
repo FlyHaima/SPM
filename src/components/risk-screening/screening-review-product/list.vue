@@ -2,12 +2,16 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
+        ref="tree"
+        :org-interface="'/riskia/getRiskTree'"
+        :child-interface="'/riskia/getChildRiskTree'"
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
+        @return-id="returnId"
         searchVisible
         shrinkVisible
-        @tree-click-handle="treeClickHandle">
+        @tree-click-handle="handleTreeNode">
       </tree-read-only>
     </el-aside>
     <el-main class="inner-content">
@@ -77,7 +81,7 @@
             label="复核时间"
             align="center">
             <template slot-scope="scope">
-              {{scope.row.checkByTime | time-filter}}
+              {{scope.row.checkByTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -85,7 +89,7 @@
             label="整改时间"
             align="center">
             <template slot-scope="scope">
-              {{scope.row.rectiTime | time-filter}}
+              {{scope.row.rectiTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -122,6 +126,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            v-if="page.pageNo > 0"
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <dialog-details
@@ -177,7 +193,12 @@ export default {
       queryDate: '',
       currentDetailsId: '',
       postReviewData: null, // 复核时传的对象
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -194,7 +215,7 @@ export default {
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -229,10 +250,32 @@ export default {
     changeDetailsDialog (val) {
       this.dialogDetailsVisible = val
     },
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
+      }
+      this.handleTreeNode(data)
+    },
+    // 换页
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.fetchTableData()
+    },
     // 树节点，点击功能
-    treeClickHandle (item) {
+    // treeClickHandle (item) {
+    //   let vm = this
+    //   vm.currentPlanId = item.riskId
+    //   vm.fetchTableData()
+    // },
+    handleTreeNode (data) {
       let vm = this
-      vm.currentPlanId = item.riskId
+      vm.page.pageNo = 1 // tree节点点击，分页默认为第一页
+      vm.currentPlanId = data.riskId
       vm.fetchTableData()
     },
     // 获取风险单元树的数据
@@ -267,11 +310,14 @@ export default {
           startTime: vm.form.startTime,
           endTime: vm.form.endTime,
           leftId: vm.currentPlanId,
-          hiddInstanceId: this.hiddInstanceId
+          hiddInstanceId: this.hiddInstanceId,
+          pageNo: vm.page.pageNo,
+          pageSize: vm.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             vm.tableData = res.data.data
+            vm.page.total = res.data.total
           }
         })
         .finally(() => {

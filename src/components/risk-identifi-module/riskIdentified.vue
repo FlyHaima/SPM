@@ -114,8 +114,11 @@
                 </template>
               </el-table-column>
             </el-table>
+
+            <!--分页组件-->
             <div class="el-pagination__wrap text-right">
               <el-pagination
+                v-if="page.pageNo > 0"
                 background
                 layout="prev, pager, next"
                 :current-page="page.pageNo"
@@ -695,9 +698,10 @@ export default {
       }
       this.handleTreeNode(data)
     },
+    // 换页
     handleCurrentChange (val) {
       this.page.pageNo = val
-      this.getRiskTable(this.currentTreeData)
+      this.getRiskTable()
     },
     handleTreeNode (data) {
       let vm = this

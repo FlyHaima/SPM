@@ -25,8 +25,8 @@ export function getRiskTreeChild (level, riskId) {
 }
 
 // 风险辨识评估--风险单元--获取table
-export function getRiskUnit (id) {
-  const url = `${baseUrl}/riskia/getRiskUnitById?id=${id}`
+export function getRiskUnit (id, pageNo, pageSize) {
+  const url = `${baseUrl}/riskia/getRiskUnitById?id=${id}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
@@ -34,8 +34,8 @@ export function getRiskUnit (id) {
 }
 
 // 风险辨识评估--评价记录--获取table
-export function getRiskView (riskId, type, methodType) {
-  const url = `${baseUrl}/riskia/getRiskView?riskId=${riskId}&type=${type}&ram=${methodType}`
+export function getRiskView (riskId, type, methodType, pageNo, pageSize) {
+  const url = `${baseUrl}/riskia/getRiskView?riskId=${riskId}&type=${type}&ram=${methodType}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)

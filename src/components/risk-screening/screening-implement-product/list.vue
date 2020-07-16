@@ -2,11 +2,14 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
+        ref="tree"
+        :org-interface="'/riskia/getRiskTree'"
+        :child-interface="'/riskia/getChildRiskTree'"
         :tree-name="'风险单元'"
-        :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
         searchVisible
         shrinkVisible
+        @return-id="returnId"
         @tree-click-handle="treeClickHandle">
       </tree-read-only>
     </el-aside>
@@ -80,7 +83,7 @@
             align="center"
             width="120">
              <template slot-scope="scope">
-              {{scope.row.setTime | time-filter}}
+              {{scope.row.setTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -94,7 +97,7 @@
             align="center"
             width="120">
             <template slot-scope="scope">
-              {{scope.row.checkTime | time-filter}}
+              {{scope.row.checkTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -117,6 +120,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            v-if="page.pageNo > 0"
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
       <el-dialog
@@ -178,7 +193,6 @@ export default {
       },
       listMenuData: [], // 计划清单列表数据
       currentPlanId: '', // 当前清单项的id
-      riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
       queryDate: '', // 查询时间段
       detailData: {
@@ -191,7 +205,12 @@ export default {
       dialogOrganizationVisible: false, // 组织结构树开关
       treeLoading: false, // 组织结构树加载
       departmentalTree: [], // 组织结构树数据
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -202,14 +221,14 @@ export default {
   created () {
     let vm = this
     vm.currentPlanId = vm.$route.query.id
-    this.fetchUnitTreeData()
-    this.fetchTableData()
+    // this.fetchUnitTreeData()
+    // this.fetchTableData()
     this.fetchPlanOrganizationData()
     this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -241,32 +260,49 @@ export default {
         this.form.startTime = this.form.endTime = ''
       }
     },
-    // 树节点，点击功能
-    treeClickHandle (item) {
-      this.currentPlanId = item.riskId
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
+      }
+      this.treeClickHandle(data)
+    },
+    treeClickHandle (data) {
+      let vm = this
+      vm.page.pageNo = 1 // tree节点点击，分页默认为第一页
+      vm.currentPlanId = data.riskId
+      vm.fetchTableData()
+    },
+    // 切换table页
+    handleCurrentChange (val) {
+      this.page.pageNo = val
       this.fetchTableData()
     },
     // 获取风险单元树的数据
-    fetchUnitTreeData () {
-      let vm = this
-      this.pageLoading = true
-      axios
-        .get('riskia/getRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            if (vm.$route.query.id) {
-              vm.currentPlanId = vm.$route.query.id
-            } else {
-              vm.currentPlanId = this.riskUnitTree[0].riskId
-            }
-            this.fetchTableData()
-          }
-        })
-        .finally(() => {
-          this.pageLoading = false
-        })
-    },
+    // fetchUnitTreeData () {
+    //   let vm = this
+    //   this.pageLoading = true
+    //   axios
+    //     .get('riskia/getRiskTree')
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.riskUnitTree = res.data.data
+    //         if (vm.$route.query.id) {
+    //           vm.currentPlanId = vm.$route.query.id
+    //         } else {
+    //           vm.currentPlanId = this.riskUnitTree[0].riskId
+    //         }
+    //         this.fetchTableData()
+    //       }
+    //     })
+    //     .finally(() => {
+    //       this.pageLoading = false
+    //     })
+    // },
     // 获取排查隐患清单列表
     fetchTableData () {
       this.tablesLoading = true
@@ -276,11 +312,14 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.tableData = res.data.data
+            this.page.total = res.total
           }
         })
         .finally(() => {

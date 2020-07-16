@@ -85,6 +85,18 @@
               </template>
             </el-table-column>
           </el-table>
+
+          <!--分页组件-->
+          <div class="el-pagination__wrap text-right">
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :current-page="page.pageNo"
+              :page-sizes="page.sizes"
+              :total="page.total"
+              @current-change="handleCurrentChange">
+            </el-pagination>
+          </div>
         </div>
 
       </el-container>
@@ -122,7 +134,12 @@ export default {
       },
       fileList: [],
       fileCategory: ['通用型', '行业型', '认证型'],
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageSize: 10,
+        total: 0,
+        pageNo: 1
+      }
     }
   },
   created () {
@@ -154,12 +171,17 @@ export default {
 
       return `${tyear}-${tmonth}-${tday} ${thour}:${tmin}`
     },
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.getTableData()
+    },
     getTableData () {
       this.pageLoading = true
       let userId = sessionStorage.getItem('userId')
-      getDocumentList(userId).then(res => {
+      getDocumentList(userId, this.page.pageNo, this.page.pageSize).then(res => {
         if (res.code === 200) {
           this.dataList = res.data
+          this.page.total = res.total
         }
         this.pageLoading = false
       })

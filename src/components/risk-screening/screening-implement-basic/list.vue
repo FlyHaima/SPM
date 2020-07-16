@@ -75,7 +75,7 @@
             align="center"
             width="120">
              <template slot-scope="scope">
-              {{scope.row.setTime | time-filter}}
+              {{scope.row.setTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -90,7 +90,7 @@
             align="center"
             width="120">
             <template slot-scope="scope">
-              {{scope.row.checkTime | time-filter}}
+              {{scope.row.checkTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -113,6 +113,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            v-if="page.pageNo > 0"
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <dialog-detail
@@ -142,6 +154,7 @@ export default {
   data () {
     return {
       pageLoading: false,
+      tablesLoading: false,
       submmiting: false,
       dialogDetailVisible: false,
       form: {
@@ -161,7 +174,12 @@ export default {
         hiddenDesc: '', // 隐患描述
         hiddenPhotos: [] // 附件
       },
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -172,12 +190,12 @@ export default {
     let vm = this
     vm.currentPlanId = vm.$route.query.id
     vm.fetchListMenuData()
-    vm.fetchTableData()
+    // vm.fetchTableData()
     vm.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -222,9 +240,15 @@ export default {
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
             } else {
-              this.currentPlanId = this.listMenuData[0].planId
+              if (this.listMenuData.length > 0) {
+                this.currentPlanId = this.listMenuData[0].planId // 该情况，对应左侧菜单无数据
+              } else {
+                this.currentPlanId = ''
+              }
             }
-            this.fetchTableData()
+            if (this.currentPlanId) {
+              this.fetchTableData()
+            }
           }
         })
         .finally(() => {
@@ -236,6 +260,11 @@ export default {
       this.currentPlanId = item.planId
       this.fetchTableData()
     },
+    handleCurrentChange (val) {
+      let vm = this
+      vm.page.pageNo = val
+      vm.fetchTableData()
+    },
     /** 右侧列表内容 **/
     // 获取排查隐患清单列表
     fetchTableData () {
@@ -246,12 +275,15 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.tablesLoading = false
             this.tableData = res.data.data
+            this.page.total = res.total
           }
         })
         .finally(() => {

@@ -67,7 +67,7 @@
             label="治理时间"
             align="center">
             <template slot-scope="scope">
-              {{scope.row.goverTime | time-filter}}
+              {{scope.row.goverTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -101,6 +101,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            v-if="page.pageNo > 0"
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <dialog-details
@@ -147,7 +159,12 @@ export default {
       tableData: [], // 基础类清单列表数据
       queryDate: '',
       currentDetailsId: '',
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -163,7 +180,7 @@ export default {
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -180,6 +197,11 @@ export default {
         this.form.startTime = this.form.endTime = ''
       }
     },
+    // 换页
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.fetchTableData()
+    },
     /** 左侧清单菜单 **/
     // 获取清单数据
     fetchListMenuData () {
@@ -193,9 +215,15 @@ export default {
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
             } else {
-              this.currentPlanId = this.listMenuData[0].planId
+              if (this.listMenuData.length > 0) {
+                this.currentPlanId = this.listMenuData[0].planId
+              } else {
+                this.currentPlanId = ''
+              }
             }
-            this.fetchTableData()
+            if (this.currentPlanId) {
+              this.fetchTableData()
+            }
           }
         })
         .finally(() => {
@@ -215,6 +243,7 @@ export default {
     // 点击菜单项
     menuClickHandle (item) {
       this.currentPlanId = item.planId
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     /** 右侧列表内容 **/
@@ -228,11 +257,14 @@ export default {
           startTime: this.form.startTime,
           endTime: this.form.endTime,
           leftId: this.currentPlanId,
-          hiddInstanceId: this.hiddInstanceId
+          hiddInstanceId: this.hiddInstanceId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.tableData = res.data.data
+            this.page.total = res.data.total
           }
         })
         .finally(() => {

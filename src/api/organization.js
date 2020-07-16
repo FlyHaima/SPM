@@ -277,8 +277,8 @@ export function addBasicFile (data) {
 }
 
 // 安全基础管理--证件管理--获取证件列表
-export function getDocumentList (riskId) {
-  const url = `${baseUrl}/document/getDocumentList?risk_id=${riskId}`
+export function getDocumentList (riskId, pageNo, pageSize) {
+  const url = `${baseUrl}/document/getDocumentList?risk_id=${riskId}&pageNo=${pageNo}&pageSize=${pageSize}`
 
   return axios.get(url, {}).then((res) => {
     return Promise.resolve(res.data)
