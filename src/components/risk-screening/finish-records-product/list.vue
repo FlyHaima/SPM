@@ -2,12 +2,15 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
+        ref="tree"
         :tree-name="'风险单元'"
-        :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
+        :org-interface="'/riskia/getRiskTree'"
+        :child-interface="'/riskia/getChildRiskTree'"
+        @return-id="returnId"
+        @tree-click-handle="handleTreeNode"
         searchVisible
-        shrinkVisible
-        @tree-click-handle="treeClickHandle">
+        shrinkVisible>
       </tree-read-only>
     </el-aside>
     <el-main class="inner-content">
@@ -168,6 +171,18 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <dialog-details
@@ -207,7 +222,6 @@ export default {
       },
       listMenuData: [], // 计划清单列表数据
       currentPlanId: '', // 当前清单项的id
-      riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
       queryDate: '',
       currentDetailsId: '',
@@ -229,7 +243,12 @@ export default {
           value: 4
         }
       ],
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -238,8 +257,7 @@ export default {
     TableStep
   },
   created () {
-    this.fetchUnitTreeData()
-    this.fetchTableData()
+    // this.fetchTableData()
     this.getBtnAuthority()
   },
   methods: {
@@ -261,26 +279,27 @@ export default {
     changeDetailsDialog (val) {
       this.dialogDetailsVisible = val
     },
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
+      }
+      this.handleTreeNode(data)
+    },
     // 树节点，点击功能
-    treeClickHandle (item) {
+    handleTreeNode (item) {
+      this.page.pageNo = 1
       this.currentPlanId = item.riskId
       this.fetchTableData()
     },
-    // 获取风险单元树的数据
-    fetchUnitTreeData () {
-      this.pageLoading = true
-      axios
-        .get('riskia/getRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
-            this.fetchTableData()
-          }
-        })
-        .finally(() => {
-          this.pageLoading = false
-        })
+    // 换页
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.fetchTableData()
     },
     // 获取排查隐患清单列表
     fetchTableData () {
@@ -291,11 +310,14 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.formatTableData = res.data.data
+            this.page.total = res.total
             this.formatTableData.forEach(item => {
               // 治理复核时间
               if (item.goverReviTime) {

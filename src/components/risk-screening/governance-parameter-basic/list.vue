@@ -82,7 +82,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.checkTime | time-filter}}
+              {{scope.row.checkTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -118,7 +118,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.checkByTime | time-filter}}
+              {{scope.row.checkByTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -137,7 +137,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.goverTime | time-filter}}
+              {{scope.row.goverTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -152,7 +152,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.goverReviTime | time-filter}}
+              {{scope.row.goverReviTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -185,6 +185,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <el-dialog
@@ -277,7 +288,12 @@ export default {
           value: 4
         }
       ],
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -289,12 +305,12 @@ export default {
     let vm = this
     vm.currentPlanId = vm.$route.query.id
     vm.fetchListMenuData()
-    vm.fetchTableData()
+    // vm.fetchTableData()
     vm.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -337,9 +353,15 @@ export default {
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
             } else {
-              this.currentPlanId = this.listMenuData[0].planId
+              if (this.listMenuData.length > 0) {
+                this.currentPlanId = this.listMenuData[0].planId // 该情况，对应左侧菜单无数据
+              } else {
+                this.currentPlanId = ''
+              }
             }
-            this.fetchTableData()
+            if (this.currentPlanId) {
+              this.fetchTableData()
+            }
           }
         })
         .finally(() => {
@@ -359,6 +381,7 @@ export default {
     // 点击菜单项
     menuClickHandle (item) {
       this.currentPlanId = item.planId
+      this.page.pageNo = 0
       this.fetchTableData()
     },
     /** 右侧列表内容 **/

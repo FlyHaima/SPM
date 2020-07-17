@@ -168,6 +168,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <dialog-details
@@ -230,7 +241,12 @@ export default {
           value: 4
         }
       ],
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -254,6 +270,11 @@ export default {
         this.form.startTime = this.form.endTime = ''
       }
     },
+    handleCurrentChange (val) {
+      let vm = this
+      vm.page.pageNo = val
+      vm.fetchTableData()
+    },
     /** 左侧清单菜单 **/
     // 获取清单数据
     fetchListMenuData () {
@@ -267,9 +288,15 @@ export default {
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
             } else {
-              this.currentPlanId = this.listMenuData[0].planId
+              if (this.listMenuData.length > 0) {
+                this.currentPlanId = this.listMenuData[0].planId // 该情况，对应左侧菜单无数据
+              } else {
+                this.currentPlanId = ''
+              }
             }
-            this.fetchTableData()
+            if (this.currentPlanId) {
+              this.fetchTableData()
+            }
           }
         })
         .finally(() => {
@@ -301,11 +328,14 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.tablesLoading = false
+            this.page.total = res.total
             this.formatTableData = res.data.data
             this.formatTableData.forEach(item => {
               // 治理复核时间
