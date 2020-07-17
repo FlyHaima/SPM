@@ -150,6 +150,8 @@
             v-model.trim="tables.form.remark"
             placeholder="请输入备注"
             autocomplete
+            maxlength="200"
+            show-word-limit
           ></el-input>
         </el-form-item>
       </el-form>
