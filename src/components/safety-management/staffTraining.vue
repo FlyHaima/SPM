@@ -50,7 +50,7 @@
                     <div class="dialog-inner-line">
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>课程名称</p>
-                        <p class="val-p"><el-input size="medium" v-model.trim="addPlanData.className"></el-input></p>
+                        <p class="val-p"><el-input size="medium" v-model.trim="addPlanData.className" :maxlength="50"></el-input></p>
                       </div>
                       <div class="inner-item">
                         <p class="title"><span style="color: red;">* </span>类别</p>

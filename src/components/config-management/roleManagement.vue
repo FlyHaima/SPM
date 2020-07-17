@@ -155,7 +155,7 @@
       </el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogRoleVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveCheckData">确 定</el-button>
+        <el-button :loading="submitting" type="primary" @click="saveCheckData">确 定</el-button>
       </span>
     </el-dialog>
   </el-container>
@@ -249,12 +249,12 @@ export default {
     // 获取角色数据
     fetchRoleOptions (row) {
       this.roleId = row.roleId
-      this.pageLoading = true
       axios
         .get('role/getRoleMenus', {
           roleId: this.roleId
         })
         .then((res) => {
+          this.pageLoading = true
           if (res.data.code === 200) {
             this.pageLoading = false
             this.roleOptions = res.data.data
@@ -316,7 +316,7 @@ export default {
           }
         })
         .finally(() => {
-          vm.submitting = false
+          // vm.submitting = false
           this.postDataChecked = []
         })
     },
@@ -386,7 +386,6 @@ export default {
       if (!this.multipleSelection.length) {
         this.$message.warning('请选择要删除的行')
       } else {
-        this.submitting = true
         let sendDAta = { roleId: [] }
         this.multipleSelection.forEach(item => {
           sendDAta.roleId.push(item.roleId)
@@ -399,6 +398,7 @@ export default {
           axios
             .post('role/delRole', sendDAta)
             .then((res) => {
+              this.submitting = true
               if (res.data.code === 200) {
                 this.$notify.success('删除成功')
                 this.tablesFetchList()
@@ -434,7 +434,6 @@ export default {
           type: 'warning'
         })
         .then(() => {
-          vm.submitting = true
           axios
             .post(`role/${post}Role`, vm.form)
             .then((res) => {
@@ -502,11 +501,12 @@ export default {
         })
         .then(() => {
           const vm = this
-          vm.submitting = true
           axios
             .post('role/updateMenu', sendData)
             .then((res) => {
+              vm.submitting = true
               if (res.data.code === 200) {
+                vm.submitting = false
                 vm.$notify.success('提交成功')
                 vm.dialogRoleVisible = false
                 vm.tablesFetchList()
