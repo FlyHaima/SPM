@@ -2,12 +2,15 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
+        ref="tree"
         :tree-name="'风险单元'"
-        :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
+        :org-interface="'/riskia/getRiskTree'"
+        :child-interface="'/riskia/getChildRiskTree'"
+        @return-id="returnId"
         searchVisible
         shrinkVisible
-        @tree-click-handle="treeClickHandle">
+        @tree-click-handle="handleTreeNode">
       </tree-read-only>
     </el-aside>
     <el-main class="inner-content">
@@ -88,7 +91,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.checkTime | time-filter}}
+              {{scope.row.checkTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -124,7 +127,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.checkByTime | time-filter}}
+              {{scope.row.checkByTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -143,7 +146,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.goverTime | time-filter}}
+              {{scope.row.goverTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -158,7 +161,7 @@
             align="center"
             width="115">
             <template slot-scope="scope">
-              {{scope.row.goverReviTime | time-filter}}
+              {{scope.row.goverReviTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -191,6 +194,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
        <el-dialog
@@ -283,7 +297,12 @@ export default {
           value: 4
         }
       ],
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -292,13 +311,11 @@ export default {
     TableStep
   },
   created () {
-    this.fetchUnitTreeData()
-    this.fetchTableData()
     this.getBtnAuthority()
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -338,26 +355,27 @@ export default {
     changeDetailsDialog (val) {
       this.dialogDetailsVisible = val
     },
-    // 树节点，点击功能
-    treeClickHandle (item) {
-      this.currentPlanId = item.riskId
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
+      }
+      this.handleTreeNode(data)
+    },
+    // 换页
+    handleCurrentChange (val) {
+      this.page.pageNo = val
       this.fetchTableData()
     },
-    // 获取风险单元树的数据
-    fetchUnitTreeData () {
-      this.pageLoading = true
-      axios
-        .get('riskia/getRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
-            this.fetchTableData()
-          }
-        })
-        .finally(() => {
-          this.pageLoading = false
-        })
+    // 树节点，点击功能
+    handleTreeNode (item) {
+      this.page.pageNo = 1
+      this.currentPlanId = item.riskId
+      this.fetchTableData()
     },
     // 获取排查隐患清单列表
     fetchTableData () {
@@ -368,11 +386,14 @@ export default {
           investType: this.type,
           startTime: this.form.startTime,
           endTime: this.form.endTime,
-          leftId: this.currentPlanId
+          leftId: this.currentPlanId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.tableData = res.data.data
+            this.page.total = res.data.total
           }
         })
         .finally(() => {
