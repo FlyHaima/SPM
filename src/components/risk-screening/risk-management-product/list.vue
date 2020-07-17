@@ -2,12 +2,16 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="408px">
       <tree-read-only
+        ref="tree"
         :tree-name="'风险单元'"
         :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
+        :org-interface="'/riskia/getRiskTree'"
+        :child-interface="'/riskia/getChildRiskTree'"
+        @return-id="returnId"
         searchVisible
         shrinkVisible
-        @tree-click-handle="treeClickHandle">
+        @tree-click-handle="handleTreeNode">
       </tree-read-only>
     </el-aside>
     <el-main class="inner-content">
@@ -147,7 +151,12 @@ export default {
       tableData: [], // 生产类清单列表数据
       queryDate: '',
       currentDetailsId: '',
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   components: {
@@ -157,8 +166,6 @@ export default {
   created () {
     let vm = this
     vm.currentPlanId = vm.$route.query.id
-    this.fetchUnitTreeData()
-    this.fetchTableData()
     this.getBtnAuthority()
   },
   filters: {
@@ -190,32 +197,48 @@ export default {
     changeDetailsDialog (val) {
       this.dialogDetailsVisible = val
     },
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
+      }
+      this.handleTreeNode(data)
+    },
     // 树节点，点击功能
-    treeClickHandle (item) {
+    handleTreeNode (item) {
       this.currentPlanId = item.riskId
       this.fetchTableData()
     },
-    // 获取风险单元树的数据
-    fetchUnitTreeData () {
-      let vm = this
-      this.pageLoading = true
-      axios
-        .get('riskia/getRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            if (vm.$route.query.id) {
-              vm.currentPlanId = vm.$route.query.id
-            } else {
-              vm.currentPlanId = this.riskUnitTree[0].riskId
-            }
-            this.fetchTableData()
-          }
-        })
-        .finally(() => {
-          this.pageLoading = false
-        })
+    // 换页
+    handleCurrentChange (val) {
+      this.page.pageNo = val
+      this.fetchTableData()
     },
+    // 获取风险单元树的数据
+    // fetchUnitTreeData () {
+    //   let vm = this
+    //   this.pageLoading = true
+    //   axios
+    //     .get('riskia/getRiskTree')
+    //     .then((res) => {
+    //       if (res.data.code === 200) {
+    //         this.riskUnitTree = res.data.data
+    //         if (vm.$route.query.id) {
+    //           vm.currentPlanId = vm.$route.query.id
+    //         } else {
+    //           vm.currentPlanId = this.riskUnitTree[0].riskId
+    //         }
+    //         this.fetchTableData()
+    //       }
+    //     })
+    //     .finally(() => {
+    //       this.pageLoading = false
+    //     })
+    // },
     // 获取排查隐患清单列表
     fetchTableData () {
       this.tablesLoading = true
@@ -226,11 +249,14 @@ export default {
           startTime: this.form.startTime,
           endTime: this.form.endTime,
           leftId: this.currentPlanId,
-          hiddInstanceId: this.hiddInstanceId
+          hiddInstanceId: this.hiddInstanceId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
             this.tableData = res.data.data
+            this.page.total = res.data.total
           }
         })
         .finally(() => {

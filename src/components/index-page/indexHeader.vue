@@ -54,7 +54,7 @@ export default {
       showTaskB: true,
       showTaskC: true,
       showTaskD: true,
-      localStorageSkin: window.localStorage.getItem('localStorageSkin'), // 皮肤缓存序号值
+      localStorageSkin: '0', // 皮肤缓存序号值
       themes: [
         {
           color: '#1a6fba',
@@ -95,6 +95,7 @@ export default {
     }
   },
   created () {
+    this.localStorageSkin = window.localStorage.getItem('localStorageSkin') ? window.localStorage.getItem('localStorageSkin') : '0' // 设置初始值，去除console的报错
     if (this.localStorageSkin) {
       this.initializeTheme(this.localStorageSkin, this.themes[this.localStorageSkin].color)
     }
