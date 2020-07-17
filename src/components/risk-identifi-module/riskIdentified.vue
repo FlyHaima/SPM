@@ -116,9 +116,8 @@
             </el-table>
 
             <!--分页组件-->
-            <div class="el-pagination__wrap text-right">
+            <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
               <el-pagination
-                v-if="page.pageNo > 0"
                 background
                 layout="prev, pager, next"
                 :current-page="page.pageNo"

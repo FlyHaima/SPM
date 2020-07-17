@@ -71,7 +71,7 @@
             label="治理时间"
             align="center">
             <template slot-scope="scope">
-              {{scope.row.goverTime | time-filter}}
+              {{scope.row.goverTime | timeFilter}}
             </template>
           </el-table-column>
           <el-table-column
@@ -105,6 +105,18 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!--分页组件-->
+        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="page.pageNo"
+            :page-sizes="page.sizes"
+            :total="page.total"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
       </div>
     </el-main>
     <dialog-details
@@ -170,7 +182,7 @@ export default {
   },
   filters: {
     // 格式化日期格式
-    'time-filter' (value) {
+    'timeFilter' (value) {
       if (value) {
         return moment(value).format('YYYY-MM-DD HH:mm:ss')
       } else {
@@ -218,27 +230,6 @@ export default {
       this.page.pageNo = val
       this.fetchTableData()
     },
-    // 获取风险单元树的数据
-    // fetchUnitTreeData () {
-    //   let vm = this
-    //   this.pageLoading = true
-    //   axios
-    //     .get('riskia/getRiskTree')
-    //     .then((res) => {
-    //       if (res.data.code === 200) {
-    //         this.riskUnitTree = res.data.data
-    //         if (vm.$route.query.id) {
-    //           vm.currentPlanId = vm.$route.query.id
-    //         } else {
-    //           vm.currentPlanId = this.riskUnitTree[0].riskId
-    //         }
-    //         this.fetchTableData()
-    //       }
-    //     })
-    //     .finally(() => {
-    //       this.pageLoading = false
-    //     })
-    // },
     // 获取排查隐患清单列表
     fetchTableData () {
       this.tablesLoading = true
