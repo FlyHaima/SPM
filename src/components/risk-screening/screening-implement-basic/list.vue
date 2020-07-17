@@ -257,6 +257,7 @@ export default {
     // 点击菜单项
     menuClickHandle (item) {
       this.currentPlanId = item.planId
+      this.page.pageNo = 0
       this.fetchTableData()
     },
     handleCurrentChange (val) {
