@@ -402,6 +402,7 @@ export default {
     },
     // 查询table，表单提交响应事件
     tableSearchHandler () {
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     // 导出excel

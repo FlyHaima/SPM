@@ -316,6 +316,7 @@ export default {
     // 点击菜单项
     menuClickHandle (item) {
       this.currentPlanId = item.planId
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     /** 右侧列表内容 **/
@@ -378,6 +379,7 @@ export default {
     },
     // 查询table，表单提交响应事件
     tableSearchHandler () {
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     // 导出excel

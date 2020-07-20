@@ -2,10 +2,13 @@
   <el-container class="inner-main-content" v-loading="pageLoading">
     <el-aside class="inner-aside" width="368px">
       <tree-read-only
+        ref="tree"
         :tree-name="'风险单元'"
-        :tree-data="riskUnitTree"
         :current-id ="currentPlanId"
         :editOrgVisible = "fucBtns.includes('edit-dept-btn')"
+        :org-interface="'/riskia/getRiskTree'"
+        :child-interface="'/riskia/getChildRiskTree'"
+        @return-id="returnId"
         @eidit-org="eiditOrganizationHandle"
         @tree-click-handle="treeClickHandle">
       </tree-read-only>
@@ -189,7 +192,7 @@
             background
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="page.index"
+            :current-page="page.pageNo"
             layout="total, prev, pager, next, jumper"
             :total="page.total">
           </el-pagination>
@@ -355,7 +358,6 @@ export default {
       // dialogAddDangerVisible: false, // 添加随机隐患弹框开关
       dialogOrganizationVisible: false, // 组织机构弹框显示开关
       dialogSortVisible: false, // 排查种类弹框显示开关
-      riskUnitTree: [], // 风险单元机构树
       tableData: [], // 生产类清单列表数据
       organizationTree: [], // 组织机构
       editOrgData: {
@@ -385,7 +387,6 @@ export default {
       investigationOptions: [], // 排查频率选项
       page: {
         total: 0, // 总条数
-        index: 1, // 当前页面
         pageNo: 1,
         pageSize: 10 // limit
       },
@@ -402,7 +403,6 @@ export default {
     TreeOrganization // 组织机构树菜单
   },
   created () {
-    this.fetchUnitTreeData()
     this.fetchPlanOrganizationData()
     this.getBtnAuthority()
   },
@@ -413,7 +413,6 @@ export default {
     },
     // 切换当前页页数
     handleCurrentChange (val) {
-      this.page.index = val
       this.page.pageNo = val
       this.fetchTableData()
     },
@@ -434,8 +433,9 @@ export default {
       exportExcel(`productHidden/exportProductHidden`)
     },
     // 树节点，点击功能
-    treeClickHandle (item) {
-      this.currentPlanId = item.riskId
+    treeClickHandle (data) {
+      this.currentPlanId = data.riskId
+      this.page.pageNo = 1
       this.fetchTableData()
       this.fetchInvestigationOptions()
     },
@@ -443,22 +443,16 @@ export default {
     eiditOrganizationHandle () {
       this.dialogOrganizationVisible = true
     },
-    // 获取风险单元树的数据
-    fetchUnitTreeData (create) {
-      this.pageLoading = true
-      axios
-        .get('riskia/getRiskTree')
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.riskUnitTree = res.data.data
-            this.currentPlanId = this.riskUnitTree[0].riskId
-            this.fetchInvestigationOptions()
-            if (create) {
-              this.fetchTableData()
-            }
-            this.pageLoading = false
-          }
-        })
+    returnId (id) {
+      this.currentPlanId = id
+      let data = {
+        riskId: id,
+        level: '1',
+        treeLevel: '1',
+        pageNo: 1,
+        pageSize: 10
+      }
+      this.treeClickHandle(data)
     },
     // 获取生产现场类隐患排查清单
     fetchTableData () {
