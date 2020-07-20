@@ -126,7 +126,7 @@
         </el-table>
 
         <!--分页组件-->
-        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+        <div class="el-pagination__wrap text-right" v-if="page.total > page.pageSize">
           <el-pagination
             background
             layout="prev, pager, next"
@@ -324,6 +324,7 @@ export default {
     },
     // 查询table，表单提交响应事件
     tableSearchHandler () {
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     // 导出excel

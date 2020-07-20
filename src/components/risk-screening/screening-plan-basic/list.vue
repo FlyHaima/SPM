@@ -190,7 +190,7 @@
             background
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="page.index"
+            :current-page="page.pageNo"
             layout="total, prev, pager, next, jumper"
             :total="page.total">
           </el-pagination>
@@ -465,7 +465,6 @@ export default {
       fileList: [], // 导入列表
       page: {
         total: 0, // 总条数
-        index: 1, // 当前页面
         pageNo: 1,
         pageSize: 10 // limit
       },
@@ -508,7 +507,6 @@ export default {
     },
     // 切换当前页页数
     handleCurrentChange (val) {
-      this.page.index = val
       this.page.pageNo = val
       this.fetchTableData()
     },
@@ -766,21 +764,18 @@ export default {
           if (res.data.code === 200) {
             this.initTableData = res.data.data
             this.page.total = res.data.total
-
             this.initTableData.forEach(item => {
               if (item.autoPush === null) {
-                item.isPushDisabled = true
+                item['isPushDisabled'] = true
               } else {
-                item.isPushDisabled = false
-                // this.checkedAuto = true
-                // this.checkedManual = true
+                item['isPushDisabled'] = false
               }
             })
             this.tableData = this.initTableData
 
             this.btnDisabledProductSend = this.tableData.length > 0
 
-            this.selChange()
+            // this.selChange()
           }
         })
         .finally(() => {
@@ -837,6 +832,7 @@ export default {
     // 选择排查频率
     selChange (value, row, rows) {
       let vm = this
+      debugger
       // 启用推送按钮
       row.isPushDisabled = false
 

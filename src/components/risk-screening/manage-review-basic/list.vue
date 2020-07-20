@@ -103,7 +103,7 @@
           </el-table-column>
         </el-table>
         <!--分页组件-->
-        <div class="el-pagination__wrap text-right" v-if="page.pageNo > 1">
+        <div class="el-pagination__wrap text-right" v-if="page.total > page.pageSize">
           <el-pagination
             background
             layout="prev, pager, next"
@@ -238,6 +238,7 @@ export default {
     // 点击菜单项
     menuClickHandle (item) {
       this.currentPlanId = item.planId
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     handleCurrentChange (val) {
@@ -256,7 +257,9 @@ export default {
           startTime: this.form.startTime,
           endTime: this.form.endTime,
           leftId: this.currentPlanId,
-          hiddInstanceId: this.hiddInstanceId
+          hiddInstanceId: this.hiddInstanceId,
+          pageNo: this.page.pageNo,
+          pageSize: this.page.pageSize
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -269,6 +272,7 @@ export default {
     },
     // 查询table，表单提交响应事件
     tableSearchHandler () {
+      this.page.pageNo = 1
       this.fetchTableData()
     },
     // 导出excel
