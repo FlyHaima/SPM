@@ -12,7 +12,7 @@
             :tree-name="'风险单元'"
             :current-id ="currentPlanId"
             :org-interface="'/riskia/getZdRiskTree'"
-            :child-interface="'/riskia/getChildRiskTree'"
+            :child-interface="'/riskia/getZdChildRiskTree'"
             @return-id="returnId"
             @tree-click-handle="treeClickHandle"
             @close-loading="closeLoading" >
