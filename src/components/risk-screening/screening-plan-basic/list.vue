@@ -832,7 +832,6 @@ export default {
     // 选择排查频率
     selChange (value, row, rows) {
       let vm = this
-      debugger
       // 启用推送按钮
       row.isPushDisabled = false
 

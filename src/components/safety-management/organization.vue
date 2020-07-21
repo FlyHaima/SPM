@@ -51,7 +51,8 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p"> <!-- 权限显示 -->
-                  <a class="export-btn function-btn export-btn" target="_blank" :href="`${baseUrl}/leadUser/exportGroup?token=${uploadData.token}`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
+                  <a class="export-btn function-btn export-btn" target="_blank"
+                     :href="`${baseUrl}/leadUser/exportGroup?token=${uploadData.token}&deptId=${triggerLeaderId}`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
                   <el-upload accept=".xls" class="function-btn import-btn"
                             v-if= "fucBtns.includes('import-btn')"
                             :action="`${baseUrl}/leadUser/importGroup`"
@@ -133,7 +134,7 @@
             <el-main class="inner-content">
               <div class="container-box">
                 <p class="btn-p"> <!-- 权限显示 -->
-                  <a class="function-btn export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup?token=${uploadData.token}`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
+                  <a class="function-btn export-btn" target="_blank" :href="`${baseUrl}/workUser/exportGroup?token=${uploadData.token}&deptId=${triggerWorkId}`" v-if="fucBtns.includes('export-btn')"><i class></i>导出</a>
                   <el-upload accept=".xls" class="function-btn import-btn"
                             v-if="fucBtns.includes('import-btn')"
                             :action="`${baseUrl}/workUser/importGroup`"
