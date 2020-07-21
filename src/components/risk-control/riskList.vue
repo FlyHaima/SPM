@@ -311,7 +311,7 @@ export default {
             this.organizationTree = res.data.data
             this.currentPlanId = this.organizationTree[0].riskId
           }
-          this.fetchTableData()
+          // this.fetchTableData()
         })
     },
     // 获取部门树数据
@@ -407,8 +407,8 @@ export default {
       vm.level = data.level
       vm.treeLevel = data.treeLevel
       vm.fetchTableData()
-      console.log(vm.currentPlanId)
-      console.log(vm.riskId)
+      // console.log(vm.currentPlanId)
+      // console.log(vm.riskId)
       if (vm.treeLevel === '4') {
         vm.importVisible = true
       } else {

@@ -1212,7 +1212,6 @@ export default {
         this.$notify.success('导入成功')
         this.getRiskDeptList()
         this.pageLoading = false
-        console.log('刷新了')
       } else {
         this.pageLoading = false
         this.$notify.warning(response.message)
