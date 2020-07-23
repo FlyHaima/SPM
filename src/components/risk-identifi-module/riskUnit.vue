@@ -16,7 +16,7 @@
             @return-id="returnId"
             @open-loading="openLoading"
             @close-loading="closeLoading"
-            @tree-click-handle="getTableData">
+            @tree-click-handle="handleTreeNode">
           </tree-read-only>
         </el-aside>
         <el-main class="inner-content">

@@ -823,7 +823,11 @@ export default {
             treeLevel: vm.currentTreeData.treeLevel
           }
           vm.getRiskTable(data)
-          // vm.getRiskTree()
+          if (vm.currentTreeData.pid === '0') {
+            vm.$refs.tree.refreshNodeBy(vm.currentTreeData.riskId)
+          } else {
+            vm.$refs.tree.refreshNodeBy(vm.currentTreeData.pId)
+          }
         }
         vm.pageLoading = false
       })
