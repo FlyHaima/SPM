@@ -428,6 +428,7 @@ export default {
       vm.uploadData.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
+      vm.page.pageNo = 1
       vm.fetchTableData()
       console.log(vm.currentPlanId)
       console.log(vm.riskId)
