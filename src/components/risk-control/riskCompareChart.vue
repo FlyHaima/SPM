@@ -39,7 +39,7 @@ export default {
       breadcrumb: ['风险辨识评估', '作业安全风险比较图'],
       pageLoading: false,
       chartData: [], // 图表数据
-      chartHeight: '417px', // 图表高度
+      chartHeight: '3000px', // 图表高度
       time: '' // 筛选日期
     }
   },

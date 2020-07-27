@@ -206,7 +206,7 @@ export default {
           // 设置渲染节点的文本 label-name， 添加换行
           let content
           if (cfg.name) {
-            content = cfg.name.replace(/(.{19})/g, '$1\n')
+            content = cfg.name.replace(/(.{10})/g, '$1\n')
           }
 
           let text = group.addShape('text', {
