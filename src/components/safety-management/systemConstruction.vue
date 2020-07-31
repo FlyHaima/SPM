@@ -126,6 +126,8 @@ export default {
       },
       uploadToken: '',
       editorConfig: {
+        // 字数限制
+        wordCount: false,
         // 编辑器初始z-index
         zIndex: 3000,
         // 编辑器不自动被内容撑高

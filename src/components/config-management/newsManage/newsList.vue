@@ -91,7 +91,7 @@
           label-width="100px"
           label-position="right">
           <el-form-item label="文章标题" prop="newsName">
-            <el-input v-model.trim="form.newsName"></el-input>
+            <el-input :maxlength="20" v-model.trim="form.newsName"></el-input>
           </el-form-item>
           <el-form-item label="分类" prop="typeName">
             <el-select v-model="form.typeName" placeholder="请选择">
