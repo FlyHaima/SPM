@@ -397,7 +397,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .inner-page-container{
   height: 100%;
   .el-header{
@@ -424,9 +424,17 @@ export default {
       }
     }
   }
-  .preview-box{
+  /deep/.preview-box{
     height: 770px;
     overflow-y: auto;
+    table{
+      margin-bottom: 10px!important;
+      border-collapse: collapse!important;
+      display: table!important;
+    }
+    td, th{
+      border: 1px solid #DDD!important;
+    }
   }
   .edit-box{
     height: 770px;
