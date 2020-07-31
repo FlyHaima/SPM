@@ -90,6 +90,16 @@
                   label="风险等级">
                 </el-table-column>
               </el-table>
+              <div class="el-pagination__wrap text-right">
+                <el-pagination
+                  background
+                  layout="prev, pager, next"
+                  :current-page="page.pageNo"
+                  :page-sizes="page.sizes"
+                  :total="page.total"
+                  @current-change="handleCurrentChange">
+                </el-pagination>
+              </div>
             </template>
             <div v-else>
               <div class="custom-table">
@@ -198,23 +208,23 @@
             title="导出部门机构列表"
             :visible.sync="dialogOrganizationVisible"
             width="450px">
-      <div style="height: 450px" v-loading="treeLoading">
-        <template>
-          <tree-organization
-          :searchVisible="false"
-          :tree-name="'导出部门机构列表'"
-          :tree-data="departmentalTree"
-          @handleNodeClick ="departmentalTreeClickHandle"
-          >
-          <el-button
-            class="btn-sync"
-            type="primary"
-            size="small"
-            @click="exportOrganizationData">导出</el-button>
-          </tree-organization>
-        </template>
-      </div>
-    </el-dialog>
+          <div style="height: 450px" v-loading="treeLoading">
+            <template>
+              <tree-organization
+              :searchVisible="false"
+              :tree-name="'导出部门机构列表'"
+              :tree-data="departmentalTree"
+              @handleNodeClick ="departmentalTreeClickHandle"
+              >
+              <el-button
+                class="btn-sync"
+                type="primary"
+                size="small"
+                @click="exportOrganizationData">导出</el-button>
+              </tree-organization>
+            </template>
+          </div>
+        </el-dialog>
       </el-container>
     </el-main>
   </el-container>
@@ -263,7 +273,12 @@ export default {
       fileList: [], // 导入列表
       currentPlanId: '', // 当前清单项的id
       departmentalTreeId: '', // 当前选择部门树 部门id
-      fucBtns: []
+      fucBtns: [],
+      page: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }
     }
   },
   created () {
@@ -329,14 +344,21 @@ export default {
           }
         })
     },
+    // 切换当前页页数
+    handleCurrentChange (val) {
+      this.page.index = val
+      this.page.pageNo = val
+      this.fetchTableData()
+    },
     // 获取table数据
     fetchTableData () {
       this.pageLoading = true
       let vm = this
       axios
-        .get(`riskLevel/getRiskCrad?&id=${vm.riskId || vm.currentPlanId}`)
+        .get(`riskLevel/getRiskCrad?id=${vm.riskId || vm.currentPlanId}&pageNo=${vm.page.pageNo}&pageSize=${vm.page.pageSize}`)
         .then((res) => {
           if (res.data.code === 200) {
+            vm.page.total = res.data.total
             if (res.data.data.length > 1 || res.data.data.length === 0) {
               this.tableVisible = true
               this.tableData = res.data.data
@@ -406,6 +428,7 @@ export default {
       vm.uploadData.riskId = data.riskId
       vm.level = data.level
       vm.treeLevel = data.treeLevel
+      vm.page.pageNo = 1
       vm.fetchTableData()
       // console.log(vm.currentPlanId)
       // console.log(vm.riskId)

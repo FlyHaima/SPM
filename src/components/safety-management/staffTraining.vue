@@ -1217,9 +1217,13 @@ export default {
     },
     // 导入成功
     importSuccess (response, file, fileList) {
-      this.$notify.success('导入成功')
-      this.uploading = false
-      this.fetchTableData()
+      if (response.code === 400 && !response.success) {
+        this.$notify.error(response.message)
+      } else {
+        this.$notify.success('导入成功')
+        this.uploading = false
+        this.fetchTableData()
+      }
     },
     // 导入失败
     importError (file, fileList) {

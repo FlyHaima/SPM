@@ -606,7 +606,7 @@ export default {
     // 删除事件
     delRowHandle (row) {
       let sendData = {
-        id: row.basicId
+        id: row.id
       }
       axios
         .delete('productHidden/delProductHidden', sendData)
