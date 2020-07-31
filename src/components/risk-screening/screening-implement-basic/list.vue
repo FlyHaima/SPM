@@ -283,7 +283,7 @@ export default {
           if (res.data.code === 200) {
             this.tablesLoading = false
             this.tableData = res.data.data
-            this.page.total = res.total
+            this.page.total = res.data.total
           }
         })
         .finally(() => {

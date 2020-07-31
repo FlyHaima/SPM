@@ -318,7 +318,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.tableData = res.data.data
-            this.page.total = res.total
+            this.page.total = res.data.total
           }
         })
         .finally(() => {

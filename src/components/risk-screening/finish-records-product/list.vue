@@ -317,7 +317,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.formatTableData = res.data.data
-            this.page.total = res.total
+            this.page.total = res.data.total
             this.formatTableData.forEach(item => {
               // 治理复核时间
               if (item.goverReviTime) {
