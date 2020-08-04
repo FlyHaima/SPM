@@ -378,6 +378,7 @@ export default {
     return {
       pageLoading: false,
       submitting: false,
+      isPushed: false, // 是否已经发布过的计划标志
       tablesLoading: false,
       treeLoading: false,
       sendPlanSwitch: true, // 计划发布手动自动区别开关
@@ -758,7 +759,6 @@ export default {
       vm.multipleSelectionPushed = []
       vm.isPushed = false
       vm.multipleSelection.forEach(item => {
-        console.log(item.autoFlag)
         if (item.autoFlag === 'false') {
           // vm.dialogTipsInnerVisible = true
           vm.isPushed = true
@@ -767,7 +767,6 @@ export default {
           // vm.isPushed = false
         }
       })
-      console.log(vm.multipleSelectionPushed)
       if (vm.isPushed) {
         vm.dialogTipsInnerVisible = true
       } else {
