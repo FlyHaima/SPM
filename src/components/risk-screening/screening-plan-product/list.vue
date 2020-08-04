@@ -219,8 +219,8 @@
               class="list-tips-confirm-item"
               v-for="(item, index) in multipleSelectionPushed"
               :key="index">
-                排查目标：{{item.investTarget}}<span>，</span>
-                {{item.message}}
+                排查目标：{{item.oneName}}/{{item.twoName}}/{{item.riskName}}
+                <span>，</span>{{item.message}}
               </div>
           </div>
         </div>
@@ -421,6 +421,7 @@ export default {
         pageSize: 10 // limit
       },
       multipleSelection: [],
+      multipleSelectionPushed: [], // 选中的已发布过的列表
       dialogEditVisible: false,
       editFormVal: {},
       confirmEditing: false,
@@ -766,6 +767,7 @@ export default {
           // vm.isPushed = false
         }
       })
+      console.log(vm.multipleSelectionPushed)
       if (vm.isPushed) {
         vm.dialogTipsInnerVisible = true
       } else {
@@ -782,6 +784,7 @@ export default {
         }]
       }
       vm.submitting = true
+      vm.multipleSelectionPushed = []
       axios
         .post('productHidden/planRelease', sendData)
         .then((res) => {
