@@ -204,6 +204,35 @@
       title="提示"
       :visible.sync="dialogTipsVisible"
       width="40%">
+      <el-dialog
+        width="40%"
+        title="提示"
+        :visible.sync="dialogTipsInnerVisible"
+        append-to-body>
+        <div class="dialog-content">
+          <div class="dialog-tips-content" v-if="isPushed">
+            <i class="el-icon-warning dialog-tips-icon"></i>
+            <div class="dialog-tips-text">当前检查清单中存在未发布的任务，如果重新发布会影响到已设置过的计划时间</div>
+          </div>
+          <div class="list-tips-confirm" >
+            <div
+              class="list-tips-confirm-item"
+              v-for="(item, index) in multipleSelectionPushed"
+              :key="index">
+                排查目标：{{item.oneName}}/{{item.twoName}}/{{item.riskName}}
+                <span>，</span>{{item.message}}
+              </div>
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="closeTipsDialog()">取 消</el-button>
+          <el-button
+            v-loading="submitting"
+            type="primary"
+            size="small"
+            @click="savePlanHandle()">确 定</el-button>
+        </div>
+      </el-dialog>
       <div class="dialog-content">
         <div class="dialog-tips-content" v-if="sendPlanSwitch">
           <i class="el-icon-circle-check dialog-tips-icon"></i>
@@ -253,7 +282,7 @@
           v-loading="submitting"
           type="primary"
           size="small"
-          @click="savePlanHandle()">确 定</el-button>
+          @click="confirmPlanHandle()">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -349,12 +378,14 @@ export default {
     return {
       pageLoading: false,
       submitting: false,
+      isPushed: false, // 是否已经发布过的计划标志
       tablesLoading: false,
       treeLoading: false,
       sendPlanSwitch: true, // 计划发布手动自动区别开关
       isSendPlan: true, // 是否可以发布计划开关
       btnDisabledProductSend: false, // 计划发布可用开关
       dialogTipsVisible: false, // 添加弹框显示开关
+      dialogTipsInnerVisible: false, // 计划发布弹框显示开关
       // dialogAddDangerVisible: false, // 添加随机隐患弹框开关
       dialogOrganizationVisible: false, // 组织机构弹框显示开关
       dialogSortVisible: false, // 排查种类弹框显示开关
@@ -391,6 +422,7 @@ export default {
         pageSize: 10 // limit
       },
       multipleSelection: [],
+      multipleSelectionPushed: [], // 选中的已发布过的列表
       dialogEditVisible: false,
       editFormVal: {},
       confirmEditing: false,
@@ -718,6 +750,29 @@ export default {
       })
       return newListDate
     },
+    closeTipsDialog () {
+      this.dialogTipsVisible = false
+      this.dialogTipsInnerVisible = false
+    },
+    confirmPlanHandle () {
+      let vm = this
+      vm.multipleSelectionPushed = []
+      vm.isPushed = false
+      vm.multipleSelection.forEach(item => {
+        if (item.autoFlag === 'false') {
+          // vm.dialogTipsInnerVisible = true
+          vm.isPushed = true
+          vm.multipleSelectionPushed.push(item)
+        } else {
+          // vm.isPushed = false
+        }
+      })
+      if (vm.isPushed) {
+        vm.dialogTipsInnerVisible = true
+      } else {
+        vm.savePlanHandle()
+      }
+    },
     savePlanHandle () {
       let vm = this
       let listDate = vm.filterListDate(vm.listDateInit)
@@ -728,12 +783,14 @@ export default {
         }]
       }
       vm.submitting = true
+      vm.multipleSelectionPushed = []
       axios
         .post('productHidden/planRelease', sendData)
         .then((res) => {
           if (res.data.code === 200) {
             vm.$notify.success('清单任务计划发布完成')
             vm.dialogTipsVisible = false
+            vm.dialogTipsInnerVisible = false
             vm.fetchSortTableData()
             vm.listDate = [{value: moment().format('YYYY-MM-DD HH:00')}]
           } else {
@@ -746,6 +803,7 @@ export default {
         .finally(() => {
           vm.submitting = false
           vm.dialogTipsVisible = false
+          vm.dialogTipsInnerVisible = false
         })
     },
     // 自定义序号
