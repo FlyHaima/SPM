@@ -47,15 +47,15 @@
                   size="medium"
                   icon="el-icon-download"
                   @click="exportEexcelHandel">
-                   导出</el-button>
-                   <el-button
+                  导出table</el-button>
+                <el-button
                   v-if="organizationVisible && fucBtns.includes('export-btn')"
                   class="tools-popup"
                   type="success"
                   size="medium"
                   icon="el-icon-download"
                   @click="dialogOrganizationVisible1">
-                   导出</el-button>
+                  导出</el-button>
               </div>
             </div>
             <template v-if="tableVisible">
@@ -250,7 +250,7 @@ export default {
       level: '1', // 树层级,
       treeLevel: '', // 当前树的层级
       importVisible: false, // 导出按钮显示开关
-      tableVisible: false, // table显示切换开关
+      tableVisible: true, // table显示切换开关
       tagVisible: false, // tag显示开关
       tableData: [],
       dialogOrganizationVisible: false, // 组织机构开关
@@ -354,13 +354,16 @@ export default {
     fetchTableData () {
       this.pageLoading = true
       let vm = this
+      if (vm.treeLevel === '') { // 没有参数，证明是初始化的页面
+        vm.tableVisible = true
+      }
       axios
         .get(`riskLevel/getRiskCrad?id=${vm.riskId || vm.currentPlanId}&pageNo=${vm.page.pageNo}&pageSize=${vm.page.pageSize}`)
         .then((res) => {
           if (res.data.code === 200) {
             vm.page.total = res.data.total
             if (res.data.data.length > 1 || res.data.data.length === 0) {
-              this.tableVisible = true
+              // this.tableVisible = true
               this.tableData = res.data.data
               if (this.tableData.riskDj) {
                 this.tagVisible = true
@@ -368,7 +371,7 @@ export default {
                 this.tagVisible = false
               }
             } else {
-              this.tableVisible = false
+              // this.tableVisible = false
               this.newRiskTableData = [] // 清空
               this.riskList = res.data.data[0]
               // const riskTableData = this.riskList.describes[0]
@@ -441,6 +444,11 @@ export default {
         vm.organizationVisible = false
       } else {
         vm.organizationVisible = true
+      }
+      if (vm.treeLevel === '5') { // 5是风险点
+        vm.tableVisible = false
+      } else {
+        vm.tableVisible = true
       }
     },
     // 部门树的点击出来事件
