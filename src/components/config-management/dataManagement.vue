@@ -40,7 +40,7 @@
                 label="数据字典分类列表"
                 align="center">
                 <template slot-scope="scope">
-                  <div @click="groupClickHandle(scope.row)">{{ scope.row.groupName }}</div>
+                  <div>{{ scope.row.groupName }}</div>
                 </template>
               </el-table-column>
             </el-table>
@@ -69,8 +69,7 @@
                 type="index"
                 label="序号"
                 width="55"
-                align="center"
-                :index="tablesDefineIndex">
+                align="center">
               </el-table-column>
               <el-table-column
                 prop="code"
@@ -238,9 +237,9 @@ export default {
           remark: '', // 备注
           pageNo: 1,
           pageSize: 10
-        },
-        fucBtns: []
+        }
       },
+      fucBtns: [],
       groupId: '',
       rules: {
         content: [
@@ -276,8 +275,19 @@ export default {
     setCurrent (row) {
       this.$refs.singleTable.setCurrentRow(row)
     },
+    // 分类列表点击事件处理
     handleCurrentChange (val) {
       this.currentRow = val
+      this.groupId = this.currentRow.groupId
+      this.tables.form.groupId = this.groupId
+      this.tables.form.pageNo = 1
+      this.tablesFetchList()
+    },
+    tablesHandleCurrentPage (val) {
+      let vm = this
+      vm.tables.form.pageNo = val
+      vm.tables.form.groupId = vm.groupId
+      vm.tablesFetchList()
     },
     // 添加事件处理
     addHandle () {
@@ -304,18 +314,11 @@ export default {
             vm.tableData = res.data.groupList
             vm.seachTableData = vm.tableData
             this.setCurrent(vm.seachTableData[0])
-            this.groupClickHandle(vm.seachTableData[0])
+            this.handleCurrentChange(vm.seachTableData[0])
           }
         }).finally(() => {
           this.pageLoading = false
         })
-    },
-    // 分类列表点击事件处理
-    groupClickHandle (item) {
-      this.groupId = item.groupId
-      this.tables.form.groupId = this.groupId
-      this.tables.form.pageNo = 1
-      this.tablesFetchList()
     },
     // form表单提交事件
     submitFormGroup () {
@@ -401,7 +404,6 @@ export default {
           if (res.data.code === 200) {
             console.log(res.data)
             this.fucBtns = res.data.data.functionBtns
-            console.log(this.fucBtns)
           } else {
             this.$message({
               message: res.data.message,
