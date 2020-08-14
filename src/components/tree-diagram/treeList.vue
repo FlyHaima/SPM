@@ -152,9 +152,15 @@ export default {
   },
   watch: {
     filterText (val) {
-      this.filterData = this.listData.filter(
-        data => !val || data.planName.toLowerCase().includes(val.toLowerCase())
-      )
+      // this.filterData = this.listData.filter(
+      //   // data => !val || data.planName.toLowerCase().includes(val.toLowerCase())
+      //   return val;
+      // )
+      this.filterData = this.listData.filter(data => {
+        if (data !== null) {
+          return data.planName.includes(val)
+        }
+      })
     },
     listData: {
       immediate: true,
