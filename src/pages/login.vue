@@ -537,7 +537,7 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  padding: 0 30px;
+  // padding: 0 30px;
   max-height: 440px;
   overflow: hidden;
 }
@@ -548,6 +548,8 @@ export default {
   border-bottom: 1px dashed #dadada;
   cursor: pointer;
   a{
+    display: inline-block;
+    width: 400px;
     color: #ffffff;
   }
 }

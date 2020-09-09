@@ -202,7 +202,7 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper'
 // INDUSTRY_NAME_LIST
 import { USE_INDUSTRY } from '@/constants/status'
 export default {
-  name: 'loginPage',
+  name: 'register',
   data () {
     let regexPwd = new RegExp('^[a-zA-Z0-9]{6,12}$')
     // 校验新密码
@@ -626,6 +626,8 @@ export default {
   border-bottom: 1px dashed #dadada;
   cursor: pointer;
   a{
+    display: inline-block;
+    width: 400px;
     color: #ffffff;
   }
 }
