@@ -611,7 +611,7 @@ export default {
           .then((res) => {
             if (res.data.code === 200) {
               vm.$notify.success('编辑成功')
-              vm.fetchOrgTreeData()
+              vm.fetchPlanOrganizationData()
             } else {
               vm.$message({
                 message: res.data.message,
