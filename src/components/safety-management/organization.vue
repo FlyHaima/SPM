@@ -223,7 +223,7 @@
     <el-dialog :close-on-click-modal="false" title="添加节点" :visible.sync="addTreeVisible" width="620px">
       <el-form :model="addOrgData">
         <el-form-item label="社会信用代码：" :label-width="'140px'">
-          <el-input v-model.trim="addOrgData.companyId" autocomplete="off"></el-input>
+          <el-input v-model.trim="addOrgData.companyId" autocomplete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="请输入节点名称：" :label-width="'140px'">
           <el-input v-model.trim="addOrgData.deptName" autocomplete="off"></el-input>

@@ -131,7 +131,7 @@
                         <el-select
                           v-model="form.emergency"
                           multiple
-                          placeholder="请选择"
+                          placeholder="请选择安全警示标志"
                           @change="selChangeEmergency">
                           <el-option
                             v-for="(item, index) in options"
