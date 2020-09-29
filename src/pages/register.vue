@@ -469,6 +469,7 @@ export default {
     }
     .el-tabs__item{
       color: #ffffff;
+      padding: 0 10px;
     }
     .el-tabs__active-bar{
       background-color: #b53943;
@@ -576,7 +577,7 @@ export default {
   }
 }
 .swiper-wrap{
-  width: 500px;
+  width: 400px;
   height: 100%;
   // height: 416px;
 }
@@ -615,7 +616,7 @@ export default {
   text-overflow: ellipsis;
 }
 .list-info{
-  padding: 0 30px;
+  padding: 0 15px;
   max-height: 440px;
   overflow: hidden;
 }
@@ -627,7 +628,7 @@ export default {
   cursor: pointer;
   a{
     display: inline-block;
-    width: 400px;
+    width: 300px;
     color: #ffffff;
   }
 }
