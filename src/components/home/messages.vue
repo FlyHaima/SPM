@@ -251,7 +251,7 @@ export default {
     return {
       submitting: false,
       pageLoading: false,
-      upload_qiniu_addr: 'http://file.hljdmkj.com/',
+      upload_qiniu_addr: 'http://files.hljsafety.com/',
       uploading: false, // upload加载
       uploadData: {
         token: ''

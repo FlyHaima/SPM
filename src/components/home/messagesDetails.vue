@@ -68,7 +68,7 @@ export default {
       submitting: false,
       messageDetailData: {}, // 信息详情数据集合
       fileList: [], // 附件列表
-      yuming: 'http://file.hljdmkj.com'
+      yuming: 'http://files.hljsafety.com'
     }
   },
   filters: {

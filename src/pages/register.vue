@@ -108,7 +108,7 @@
           </div>
           <div class="login-form-tips">
             <span class="login-form-tips-sign">*</span>
-            提示：此注册为企业唯一账号
+            提示：此注册填写的企业社会信用代码为企业唯一管理员账号
           </div>
           <el-form
             :model="form"
@@ -123,16 +123,16 @@
                 autocomplete="off"
                 placeholder="请输入企业社会信用代码"
                 v-model.trim="form.accountName">
-                <i slot="prefix" class="icon-form icon-form-03"></i>
+                <i slot="prefix" class="icon-form icon-form-01"></i>
               </el-input>
             </el-form-item>
             <el-form-item prop="companyName">
               <el-input
                 type="text"
                 autocomplete="off"
-                placeholder="请输入企业名称"
+                placeholder="请输入企业全称"
                 v-model.trim="form.companyName">
-                <i slot="prefix" class="icon-form icon-form-04"></i>
+                <i slot="prefix" class="icon-form icon-form-02"></i>
               </el-input>
             </el-form-item>
             <el-form-item prop="password">
@@ -141,7 +141,7 @@
                 autocomplete="off"
                 placeholder="请输入密码"
                 v-model.trim="form.password">
-                <i slot="prefix" class="icon-form icon-form-02"></i>
+                <i slot="prefix" class="icon-form icon-form-03"></i>
               </el-input>
             </el-form-item>
             <el-form-item prop="confrimPassword">
@@ -150,7 +150,7 @@
                 autocomplete="off"
                 placeholder="请确认密码"
                 v-model.trim="form.confrimPassword">
-                <i slot="prefix" class="icon-form icon-form-02"></i>
+                <i slot="prefix" class="icon-form icon-form-03"></i>
               </el-input>
             </el-form-item>
             <el-form-item prop="industryName">
@@ -667,7 +667,7 @@ export default {
   background-image: url(../assets/img/login/icon-form-01.png)
 }
 .icon-form-02{
-  background-image: url(../assets/img/login/icon-form-02.png)
+  background-image: url(../assets/img/login/icon-form-03.png)
 }
 .icon-form-03{
   background-image: url(../assets/img/login/icon-form-02.png)
@@ -676,7 +676,7 @@ export default {
   background-image: url(../assets/img/login/icon-form-02.png)
 }
 .icon-form-05{
-  background-image: url(../assets/img/login/icon-form-02.png)
+  background-image: url(../assets/img/login/icon-form-05.png)
 }
 
 @media only screen and (max-width:1680px) {

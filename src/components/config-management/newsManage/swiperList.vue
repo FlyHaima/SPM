@@ -159,7 +159,7 @@ export default {
       submitting: false,
       typeOptions: DISPLAY_POSITION_LIST,
       editData: '',
-      upload_qiniu_addr: 'http://file.hljdmkj.com/',
+      upload_qiniu_addr: 'http://files.hljsafety.com/',
       uploading: false, // upload加载
       uploadData: {
         token: ''
