@@ -111,7 +111,7 @@
             align="center">
             <el-table-column
               align="center"
-              width="160px">
+              width="140px">
               <template slot="header">
                 <el-checkbox
                   style="margin-right: 0px;"
@@ -148,7 +148,7 @@
           </el-table-column>
           <el-table-column
             prop="checkContent"
-            label="检查内容" width="300"
+            label="检查内容" width="350"
             align="center">
           </el-table-column>
           <!-- <el-table-column
@@ -165,7 +165,7 @@
             prop="measure"
             label="整改措施"
             align="center"
-            width="300">
+            width="350">
           </el-table-column>
           <el-table-column
             fixed="right"

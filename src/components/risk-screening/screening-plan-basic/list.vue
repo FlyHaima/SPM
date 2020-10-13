@@ -131,7 +131,7 @@
             align="center">
             <el-table-column
               align="center"
-              width="160px">
+              width="140px">
               <template slot="header">
                 <el-checkbox
                     style="margin-right: 0"
@@ -167,7 +167,7 @@
             fixed="right"
             label="操作"
             align="center"
-            width="130px">
+            width="100px">
             <template slot-scope="scope">
               <a
                 v-if= "fucBtns.includes('del-btn')"
