@@ -195,6 +195,9 @@
                 <div class="info-title">
                   <span class="info-title-txt">安全指数分析</span>
                 </div>
+                <div class="info-btn">
+                  <el-button @click="isShowComparison=true">对比查询</el-button>
+                </div>
               </div>
               <div class="info-content">
                 <div class="pie-list-box">
@@ -244,11 +247,133 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      title="查询"
+      :visible.sync="isShowComparison"
+      width = "900px"
+      >
+      <div class="info-content">
+        <div class="info-header">
+          <ul>
+            <li class="info-text"><span>参与员工数量：123</span></li>
+            <li class="info-text"><span>今日隐患发生数量：123</span></li>
+          </ul>
+        </div>
+        <div class="content-first">
+          <span>查询种类</span>
+          <el-select v-model="changeDateValA" placeholder="请选择" @change='emptyValA'>
+            <el-option
+              v-for="(item, index) in changeDateOptions"
+              :key="index"
+              :label="item"
+              :value="index"
+              >
+            </el-option>
+          </el-select>
+            <div class="is-show-data" v-show='changeDateValA == 0'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataA"
+              type="date"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValA == 1'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataA"
+              type="month"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValA == 2'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataA"
+              type="year"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValA == 3'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataA"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              >
+            </el-date-picker>
+            </div>
+            <el-button type="primary" @click='toInquire'>查询</el-button>
+          <div class="info-chart-box">
+            <mix-linebar
+              :chart-width = "chartWidth"
+            ></mix-linebar>
+          </div>
+        </div>
+        <div class="content-second">
+          <span>查询种类</span>
+          <el-select v-model="changeDateValB" placeholder="请选择" @change='emptyValB'>
+            <el-option
+              v-for="(item, index) in changeDateOptions"
+              :key="index"
+              :label="item"
+              :value="index"
+              >
+            </el-option>
+          </el-select>
+            <div class="is-show-data" v-show='changeDateValB == 0'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataB"
+              type="date"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValB == 1'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataB"
+              type="month"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValB == 2'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataB"
+              type="year"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValB == 3'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataB"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              >
+            </el-date-picker>
+            </div>
+            <el-button type="primary" @click='toInquire'>查询</el-button>
+          <div class="info-chart-box">
+            <mix-linebar
+              :chart-width = "chartWidth"
+            ></mix-linebar>
+          </div>
+        </div>
+      </div>
+</el-dialog>
+
   </div>
 </template>
 
 <script>
 import pieC from '@/components/e-charts/pieC'
+import mixLinebar from '@/components/e-charts/mixLinebar.vue'
 import gauge from '@/components/e-charts/gauge'
 import statisticE from '@/components/e-charts/statisticE'
 import axios from '@/api/axios'
@@ -258,6 +383,13 @@ export default {
   data () {
     return {
       pageLoading: false,
+      isShowComparison: false, // 对比图弹窗控制
+      changeDateOptions: ['按日期查询', '按月份查询', '按年度查询', '按时间区间查询'],
+      changeDateValA: '', // 选择的时间段种类
+      timeType: ['date', 'month', 'year', 'daterange'],
+      changeDateValB: '', // 选择的时间段种类
+      tipsDateDataA: '', // 查询时间段第一个
+      tipsDateDataB: '', // 查询时间段第二个
       gaugeData: [], // 仪表盘数据
       pieOptions: [
         {
@@ -309,6 +441,7 @@ export default {
       chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
       pieHeight: '200px', // 饼图高度
+      chartWidth: '417px',
       messageData: [], // 信息列表数据
       tabType: '2',
       page: {
@@ -339,7 +472,8 @@ export default {
   components: {
     pieC,
     statisticE,
-    gauge
+    gauge,
+    mixLinebar
   },
   created () {
     this.fetchPieData()
@@ -484,9 +618,26 @@ export default {
             this.messageData = res.data.data
           }
         })
+    },
+    // 按时间段查询
+    toInquire () {
+      console.log(this.tipsDateDataA)
+    },
+    emptyValA () {
+      this.tipsDateDataA = ''
+      console.log(111111)
+    },
+    emptyValB () {
+      this.tipsDateDataB = ''
+      console.log(111111)
     }
+  },
+  computed: {
+    // demonstration: function () {
+    // let typeval = this.timeType[this.changeDataValA]
+    // return typeval
+    // }
   }
-
 }
 </script>
 
@@ -643,7 +794,7 @@ export default {
   }
   .info-title-txt{
     font-size: 16px;
-    line-height: 16px;
+    line-height: 36px;
     margin-left: 15px;
   }
   .info-link-txt{
@@ -828,6 +979,31 @@ export default {
       }
     }
   }
+  .el-dialog{
+      height: 100%;
+      display: flex;
+
+      .info-header{
+        margin-bottom: 20px;
+        ul{
+          width: 100%;
+          li{
+            float: left;
+            margin-right: 30px;
+          }
+
+        }
+      }
+      .info-chart-box{
+        margin-top: 20px;
+      }
+      .is-show-data{
+        display: inline-block;
+      }
+      .block{
+        margin-bottom: 20px;
+      }
+    }
   @media only screen and (max-width:1680px) {
     .pie-list-box{
       justify-content: space-around;
