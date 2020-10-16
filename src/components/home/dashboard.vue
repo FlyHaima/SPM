@@ -2,6 +2,34 @@
 <template>
   <div class="view-box view-box-dashboard">
     <div class="view-box-content">
+      <el-card class="box-card-basic" shadow="never">
+        <el-row :gutter="20">
+          <el-col class="basic-item" :span="4">
+            <div class="label">用户数量:</div>
+            <div class="value">{{basicData.userCount}}</div>
+          </el-col>
+          <el-col class="basic-item" :span="4">
+            <div class="label">本日隐患发生的数量:</div>
+            <div class="value">{{basicData.hiddenCount}}</div>
+          </el-col>
+          <el-col class="basic-item" :span="4">
+            <div class="label">重大风险:</div>
+            <div class="value">{{basicData.zdCount}}</div>
+          </el-col>
+          <el-col class="basic-item" :span="4">
+            <div class="label">较大风险:</div>
+            <div class="value">{{basicData.jdCount}}</div>
+          </el-col>
+          <el-col class="basic-item" :span="4">
+            <div class="label">一般风险:</div>
+            <div class="value">{{basicData.ybCount}}</div>
+          </el-col>
+          <el-col class="basic-item" :span="4">
+            <div class="label">低风险:</div>
+            <div class="value">{{basicData.dCount}}</div>
+          </el-col>
+        </el-row>
+      </el-card>
       <div class="home-header">
         <div class="home-header-left">
           <i class="home-header-icon"></i>
@@ -258,6 +286,14 @@ export default {
   data () {
     return {
       pageLoading: false,
+      basicData: {
+        dCount: 0, // 低风险
+        zdCount: 0, // 重大风险
+        userCount: 0, // 用户数量
+        ybCount: 0, // 一般风险
+        jdCount: 0, // 较大风险
+        hiddenCount: 0 // 本日隐患发生的数量
+      }, // 基础数据
       gaugeData: [], // 仪表盘数据
       pieOptions: [
         {
@@ -348,6 +384,7 @@ export default {
     this.fetchChartData()
     this.fetchGaugeData()
     this.fetchTableData()
+    this.fetchBasicData()
   },
   methods: {
     // 获取安全指数分析数据
@@ -437,6 +474,17 @@ export default {
           this.pageLoading = false
         })
     },
+    // 获取基础数据
+    fetchBasicData () {
+      axios
+        .get('safeAnalysis/countUserRisk')
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.basicData = res.data.data
+          }
+        }).finally(() => {
+        })
+    },
     // 获取chart的数据
     fetchChartData () {
       let vm = this
@@ -492,6 +540,20 @@ export default {
 
 <style scoped lang="scss">
   @import '@/utils/css/tools/_variables.scss';
+  .box-card-basic{
+    border-bottom: 4px solid #e9e9e9;
+    .basic-item{
+    }
+    .label{
+      display: inline-block;
+    }
+    .value{
+      display: inline-block;
+      margin-left: 10px;
+      color: #1a6fba;
+      font-weight: bold;
+    }
+  }
   .view-box{
     background: #ffffff;
   }
