@@ -11,7 +11,9 @@
 // const baseUrl = 'http://192.168.0.29:8808/spm'
 // const baseUrl = 'http://1.181.47.18:9903/spm'海拉尔外网
 // const baseUrl = 'http://127.0.0.1:8808/spm'海拉尔内网
-const baseUrl = 'http://1.62.120.34:4447/spm'
+// const baseUrl = 'http://1.62.120.34:4447/spm'
+const baseUrl = 'http://192.168.0.148:8033/spm' // 海拉尔内网
+
 // 设置七牛云服务器路径
 const uploadQiniuAdr = 'http://upload-z1.qiniu.com'
 const fileQiniuAddr = 'http://qfx2m2lmn.hb-bkt.clouddn.com/'

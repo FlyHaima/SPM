@@ -250,15 +250,9 @@
     <el-dialog
       title="查询"
       :visible.sync="isShowComparison"
-      width = "900px"
+      width = "1000px"
       >
       <div class="info-content">
-        <div class="info-header">
-          <ul>
-            <li class="info-text"><span>参与员工数量：123</span></li>
-            <li class="info-text"><span>今日隐患发生数量：123</span></li>
-          </ul>
-        </div>
         <div class="content-first">
           <span>查询种类</span>
           <el-select v-model="changeDateValA" placeholder="请选择" @change='emptyValA'>
@@ -281,16 +275,27 @@
             <div class="is-show-data" v-show='changeDateValA == 1'>
               <span class="demonstration">选择时间</span>
             <el-date-picker
+              value-format="yyyy-MM"
               v-model="tipsDateDataA"
-              type="month"
+              type="monthrange"
               >
             </el-date-picker>
             </div>
             <div class="is-show-data" v-show='changeDateValA == 2'>
               <span class="demonstration">选择时间</span>
             <el-date-picker
-              v-model="tipsDateDataA"
+              v-model="yearsDateDataA.yearsDatestart"
+              value-format="yyyy"
               type="year"
+              :picker-options= "startDateA"
+              >
+            </el-date-picker>
+            -
+            <el-date-picker
+              v-model="yearsDateDataA.yearsDateend"
+              value-format="yyyy"
+              type="year"
+              :picker-options= "endDateA"
               >
             </el-date-picker>
             </div>
@@ -309,6 +314,7 @@
           <div class="info-chart-box">
             <mix-linebar
               :chart-width = "chartWidth"
+              :mixLinebarData = 'mixLinebarDataB'
             ></mix-linebar>
           </div>
         </div>
@@ -342,8 +348,18 @@
             <div class="is-show-data" v-show='changeDateValB == 2'>
               <span class="demonstration">选择时间</span>
             <el-date-picker
-              v-model="tipsDateDataB"
+              v-model="yearsDateDataB.yearsDatestart"
               type="year"
+              :picker-options= "endDateB"
+              value-format="yyyy"
+              >
+            </el-date-picker>
+            -
+            <el-date-picker
+              v-model="yearsDateDataB.yearsDateend"
+              type="year"
+              :picker-options= "endDateB"
+              value-format="yyyy"
               >
             </el-date-picker>
             </div>
@@ -361,7 +377,9 @@
             <el-button type="primary" @click='toInquire'>查询</el-button>
           <div class="info-chart-box">
             <mix-linebar
+              :testName= "ceshi"
               :chart-width = "chartWidth"
+              :mixLinebarData = 'mixLinebarDataB'
             ></mix-linebar>
           </div>
         </div>
@@ -383,6 +401,7 @@ export default {
   data () {
     return {
       pageLoading: false,
+      ceshi: 'ceshishi', // 测试用的
       isShowComparison: false, // 对比图弹窗控制
       changeDateOptions: ['按日期查询', '按月份查询', '按年度查询', '按时间区间查询'],
       changeDateValA: '', // 选择的时间段种类
@@ -441,7 +460,7 @@ export default {
       chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
       pieHeight: '200px', // 饼图高度
-      chartWidth: '417px',
+      chartWidth: '446px',
       messageData: [], // 信息列表数据
       tabType: '2',
       page: {
@@ -456,7 +475,37 @@ export default {
       tableData1: [], // 风险动态数据
       tableData2: [],
       tableData3: [],
-      tableData4: []
+      tableData4: [],
+      mixLinebarDataA: {},
+      mixLinebarDataB: {},
+      yearsDateDataA: { // 年份日期选择对象A
+        yearsDatestart: '', // 开始年限
+        yearsDateend: '' // 结束年限
+      },
+      yearsDateDataB: { // 年份日期选择对象B
+        yearsDatestart: '',
+        yearsDateend: ''
+      },
+      startDateA: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          return time.getTime() < this.yearsDateDataA.yearsDateend
+        }
+      },
+      endDateA: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          return time.getTime() < this.yearsDateDataA.yearsDatestart
+        }
+      },
+      startDateB: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          return time.getTime() < this.yearsDateDataB.yearsDateend
+        }
+      },
+      endDateB: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          return time.getTime() < this.yearsDateDataB.yearsDatestart
+        }
+      }
     }
   },
   filters: {
@@ -482,6 +531,7 @@ export default {
     this.fetchChartData()
     this.fetchGaugeData()
     this.fetchTableData()
+    this.getBtnAuthority()
   },
   methods: {
     // 获取安全指数分析数据
@@ -622,6 +672,8 @@ export default {
     // 按时间段查询
     toInquire () {
       console.log(this.tipsDateDataA)
+      console.log(this.yearsDateDataA)
+      console.log(this.yearsDateDataB)
     },
     emptyValA () {
       this.tipsDateDataA = ''
@@ -630,6 +682,23 @@ export default {
     emptyValB () {
       this.tipsDateDataB = ''
       console.log(111111)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '1-1'}
+
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data.data.functionBtns)
+            // this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     }
   },
   computed: {
@@ -985,17 +1054,21 @@ export default {
 
       .info-header{
         margin-bottom: 20px;
-        ul{
-          width: 100%;
-          li{
-            float: left;
-            margin-right: 30px;
-          }
 
-        }
       }
       .info-chart-box{
         margin-top: 20px;
+
+        ul{
+          width: 100%;
+
+          .info-text{
+            display: block;
+            float: left;
+            /* margin-right: 30px; */
+          }
+
+        }
       }
       .is-show-data{
         display: inline-block;

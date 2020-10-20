@@ -1,5 +1,9 @@
 <template>
  <div class="mix-line-bar">
+    <div class="info-box">
+      <span class="info-text">参与员工数量: {{testName}}</span>
+      <span class="info-text">隐患发生数量: {{testName}}</span>
+    </div>
     <div :id="echart" :style= "{height: `${chartWidth}`}" ></div>
     </div>
 </template>
@@ -15,6 +19,18 @@ export default {
     chartWidth: {
       type: String,
       default: ''
+    },
+    getData: {
+      type: Array,
+      default: null
+    },
+    testName: {
+      type: String,
+      default: ''
+    },
+    mixLinebarData: {
+      type: Object,
+      defoult: ''
     }
   },
   components: {
@@ -65,12 +81,11 @@ export default {
         yAxis: [
           {
             type: 'value',
-            name: '水量',
             min: 0,
-            max: 300,
-            interval: 50,
+            max: 100,
+            interval: 20,
             axisLabel: {
-              formatter: '{value} ml'
+              formatter: '{value} %'
             }
           }
         ],
@@ -78,12 +93,12 @@ export default {
           {
             name: '蒸发量',
             type: 'bar',
-            data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+            data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 11, 11, 32.6, 20.0, 6.4, 3.3]
           },
           {
             name: '降水量',
             type: 'bar',
-            data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+            data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 11, 11, 48.7, 18.8, 6.0, 2.3]
           },
           {
             name: '平均温度',
@@ -115,4 +130,10 @@ export default {
 </script>
 
 <style>
+.info-text{
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
 </style>
