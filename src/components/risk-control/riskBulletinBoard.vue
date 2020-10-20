@@ -22,16 +22,16 @@
         <el-main class="inner-content">
           <div class="container-box">
             <div class="content-tools is-flex-end">
-                <div class="tools-right">
-                  <el-button
-                    v-if="form.id && fucBtns.includes('export-btn')"
-                    type="success"
-                    size="medium"
-                    icon="el-icon-download"
-                    @click="exportExcelHandel">
-                    导出</el-button>
-                </div>
+              <div class="tools-right">
+                <el-button
+                  v-if="form.id && fucBtns.includes('export-btn')"
+                  type="success"
+                  size="medium"
+                  icon="el-icon-download"
+                  @click="exportExcelHandel">
+                  导出</el-button>
               </div>
+            </div>
             <template v-if="tableVisible">
               <el-table
                 :data="tableData"
@@ -39,17 +39,17 @@
                 style="width: 100%">
                 <el-table-column
                   prop="riskPlace"
-                  label="风险点位置"
+                  label="风险点位置" width="180"
                   align="center">
                 </el-table-column>
                 <el-table-column
                   prop="factor"
-                  label="主要风险因素"
+                  label="主要风险因素" width="180"
                   align="center">
                 </el-table-column>
                 <el-table-column
                   prop="centerRisk"
-                  label="可能导致事故类型"
+                  label="主要危险源"
                   align="center">
                 </el-table-column>
                 <!-- <el-table-column
@@ -93,7 +93,7 @@
                       </div>
                     </div>
                     <div class="custom-tr">
-                      <div class="custom-th-label">可能导致事故类型</div>
+                      <div class="custom-th-label">主要危险源</div>
                       <div class="custom-td-value">
                         <el-input
                           maxlength="120"

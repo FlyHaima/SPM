@@ -157,7 +157,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="custom-theader">
+                <!-- <div class="custom-theader">
                   <div class="custom-tr is-flex">
                     <div class="custom-th-label">序号</div>
                     <div class="custom-th-label">检查事项</div>
@@ -197,8 +197,40 @@
                       </div>
                     </div>
                   </div>
-                </div>
-
+                </div> -->
+                <el-table :data="newRiskTableData" border class="risk-table">
+                  <el-table-column
+                    label="序号"
+                    width="60"
+                    prop="workNo"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="检查事项"
+                    align="center">
+                    <template slot-scope="scope">
+                      <div>{{ scope.row.sourceName }}</div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="序号"
+                    width="60"
+                    prop="indexNo"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    label="风险管控措施"
+                    align="center">
+                    <template slot-scope="scope">
+                      <div>{{ scope.row.bmg }}</div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="检查频次"
+                    prop="rate" width="100"
+                    align="center">
+                  </el-table-column>
+                </el-table>
               </div>
             </div>
           </div>
@@ -512,6 +544,18 @@ export default {
 <style scoped lang="scss">
 .custom-tr{
   background: #fff;
+}
+.risk-table{
+  &.el-table--border, .el-table--group{
+    border: none;
+    .el-table__row{
+      td{
+        &:last-child{
+          border-right: none;
+        }
+      }
+    }
+  }
 }
 .tree-box{
     position: absolute;

@@ -73,17 +73,17 @@
             header-align="center">
             <el-table-column
               prop="oneName"
-              label="一级"
+              label="一级" width="50"
               align="center">
             </el-table-column>
             <el-table-column
               prop="twoName"
-              label="二级"
+              label="二级" width="50"
               align="center">
             </el-table-column>
             <el-table-column
               prop="riskName"
-              label="三级"
+              label="三级" width="50"
               align="center">
             </el-table-column>
           </el-table-column>
@@ -111,7 +111,7 @@
             align="center">
             <el-table-column
               align="center"
-              width="160px">
+              width="140px">
               <template slot="header">
                 <el-checkbox
                   style="margin-right: 0px;"
@@ -148,10 +148,10 @@
           </el-table-column>
           <el-table-column
             prop="checkContent"
-            label="检查内容"
+            label="检查内容" width="350"
             align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             prop="isAccord"
             label="是否符合"
             align="center">
@@ -160,12 +160,12 @@
             prop="existProblem"
             label="存在问题"
             align="center">
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="measure"
             label="整改措施"
             align="center"
-            width="300">
+            width="350">
           </el-table-column>
           <el-table-column
             fixed="right"
