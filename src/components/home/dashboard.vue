@@ -559,11 +559,7 @@ export default {
     this.fetchChartData()
     this.fetchGaugeData()
     this.fetchTableData()
-<<<<<<< HEAD
     this.getBtnAuthority()
-=======
-    this.fetchBasicData()
->>>>>>> 9a1e059b000bed89083c0925318a18faf0b180a5
   },
   methods: {
     // 获取安全指数分析数据
