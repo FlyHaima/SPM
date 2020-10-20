@@ -224,7 +224,8 @@
                   <span class="info-title-txt">安全指数分析</span>
                 </div>
                 <div class="info-btn">
-                  <el-button @click="isShowComparison=true">对比查询</el-button>
+                  <el-button @click="isShowComparison=true" size="small" type="primary">对比查询</el-button>
+                  <el-button @click="compareAnalysisHandle()" size="small" type="primary">对比分析</el-button>
                 </div>
               </div>
               <div class="info-content">
@@ -313,7 +314,7 @@
               <span class="demonstration">选择时间</span>
             <el-date-picker
               v-model="yearsDateDataA.yearsDatestart"
-              value-format="yyyy"
+              value-format="timestamp"
               type="year"
               :picker-options= "startDateA"
               >
@@ -321,7 +322,7 @@
             -
             <el-date-picker
               v-model="yearsDateDataA.yearsDateend"
-              value-format="yyyy"
+              value-format="timestamp"
               type="year"
               :picker-options= "endDateA"
               >
@@ -412,8 +413,13 @@
           </div>
         </div>
       </div>
-</el-dialog>
-
+    </el-dialog>
+    <dialog-compare
+      ref="dialog-compare"
+      :dialog-visible="dialogCompareVisible"
+      :dialog-data = "dialogCompareData"
+      @on-dialog-change="changeDialogCompare"
+    ></dialog-compare>
   </div>
 </template>
 
@@ -424,10 +430,29 @@ import gauge from '@/components/e-charts/gauge'
 import statisticE from '@/components/e-charts/statisticE'
 import axios from '@/api/axios'
 import moment from 'moment'
+import dialogCompare from '@/components/dialog/dialogCompare'
 export default {
   name: 'home',
   data () {
     return {
+      dialogCompareVisible: false, // 对比分析弹框显示开关
+      dialogCompareData: {
+        title: '对比分析',
+        api: 'system/advert/getUserSelect',
+        options: {
+        },
+        columns: [
+          {
+            prop: 'userName',
+            label: '姓名'
+          },
+          {
+            prop: 'phone',
+            label: '联系方式'
+          }
+        ]
+      },
+      basicData: {},
       pageLoading: false,
       ceshi: 'ceshishi', // 测试用的
       isShowComparison: false, // 对比图弹窗控制
@@ -507,8 +532,8 @@ export default {
       mixLinebarDataA: {},
       mixLinebarDataB: {},
       yearsDateDataA: { // 年份日期选择对象A
-        yearsDatestart: '', // 开始年限
-        yearsDateend: '' // 结束年限
+        yearsDatestart: null, // 开始年限
+        yearsDateend: null // 结束年限
       },
       yearsDateDataB: { // 年份日期选择对象B
         yearsDatestart: '',
@@ -516,22 +541,40 @@ export default {
       },
       startDateA: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          return time.getTime() < this.yearsDateDataA.yearsDateend
+          if(this.yearsDateDataA.yearsDateend) {
+            return  time.getTime() > this.yearsDateDataA.yearsDateend;
+          } else {
+            return time.getTime() > Date.now();
+          }
         }
       },
       endDateA: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          return time.getTime() < this.yearsDateDataA.yearsDatestart
+          if(this.yearsDateDataA.yearsDateend) {
+            return time.getTime() < this.yearsDateDataA.yearsDatestart 
+          } else if(this.yearsDateDataA.yearsDatestart){
+            return time.getTime() < this.yearsDateDataA.yearsDatestart || time.getTime() > Date.now()
+          }
+           return time.getTime() > Date.now() 
         }
       },
       startDateB: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          return time.getTime() < this.yearsDateDataB.yearsDateend
+          if(this.yearsDateDataB.yearsDateend) {
+            return  time.getTime() > this.yearsDateDataB.yearsDateend;
+          } else {
+            return time.getTime() > Date.now();
+          }
         }
       },
       endDateB: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          return time.getTime() < this.yearsDateDataB.yearsDatestart
+          if(this.yearsDateDataB.yearsDateend) {
+            return time.getTime() < this.yearsDateDataB.yearsDatestart 
+          } else if(this.yearsDateDataB.yearsDatestart){
+            return time.getTime() < this.yearsDateDataB.yearsDatestart || time.getTime() > Date.now()
+          }
+           return time.getTime() > Date.now() 
         }
       }
     }
@@ -550,7 +593,8 @@ export default {
     pieC,
     statisticE,
     gauge,
-    mixLinebar
+    mixLinebar,
+    dialogCompare
   },
   created () {
     this.fetchPieData()
@@ -560,8 +604,17 @@ export default {
     this.fetchGaugeData()
     this.fetchTableData()
     this.getBtnAuthority()
+    this.fetchBasicData()
   },
   methods: {
+    // 对比分析点击事件处理
+    compareAnalysisHandle () {
+      this.dialogCompareVisible = true
+    },
+    // 监听对比分析弹出框的显示
+    changeDialogCompare (val) {
+      this.dialogCompareVisible = val
+    },
     // 获取安全指数分析数据
     fetchTableData () {
       let vm = this
@@ -597,7 +650,6 @@ export default {
                 (this.pieData[j][0].value +
                 this.pieData[j][1].value)) * 100)
             }
-            console.log(this.pieOptions[i].participationRate)
           }
         }
       }
@@ -611,7 +663,6 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.pieData = res.data.data
-            console.log(this.pieData)
             this.initPieOptions()
           }
         }).finally(() => {
@@ -710,26 +761,19 @@ export default {
     },
     // 按时间段查询
     toInquire () {
-      console.log(this.tipsDateDataA)
-      console.log(this.yearsDateDataA)
-      console.log(this.yearsDateDataB)
     },
     emptyValA () {
       this.tipsDateDataA = ''
-      console.log(111111)
     },
     emptyValB () {
       this.tipsDateDataB = ''
-      console.log(111111)
     },
     getBtnAuthority () {
       const authId = {authId: '1-1'}
-
       axios
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data.data.functionBtns)
             // this.fucBtns = res.data.data.functionBtns
           } else {
             this.$message({
