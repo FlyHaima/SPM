@@ -224,7 +224,8 @@
                   <span class="info-title-txt">安全指数分析</span>
                 </div>
                 <div class="info-btn">
-                  <el-button @click="isShowComparison=true">对比查询</el-button>
+                  <el-button @click="isShowComparison=true" size="small" type="primary">对比查询</el-button>
+                  <el-button @click="compareAnalysisHandle()" size="small" type="primary">对比分析</el-button>
                 </div>
               </div>
               <div class="info-content">
@@ -412,8 +413,13 @@
           </div>
         </div>
       </div>
-</el-dialog>
-
+    </el-dialog>
+    <dialog-compare
+      ref="dialog-compare"
+      :dialog-visible="dialogCompareVisible"
+      :dialog-data = "dialogCompareData"
+      @on-dialog-change="changeDialogCompare"
+    ></dialog-compare>
   </div>
 </template>
 
@@ -424,10 +430,29 @@ import gauge from '@/components/e-charts/gauge'
 import statisticE from '@/components/e-charts/statisticE'
 import axios from '@/api/axios'
 import moment from 'moment'
+import dialogCompare from '@/components/dialog/dialogCompare'
 export default {
   name: 'home',
   data () {
     return {
+      dialogCompareVisible: false, // 对比分析弹框显示开关
+      dialogCompareData: {
+        title: '对比分析',
+        api: 'system/advert/getUserSelect',
+        options: {
+        },
+        columns: [
+          {
+            prop: 'userName',
+            label: '姓名'
+          },
+          {
+            prop: 'phone',
+            label: '联系方式'
+          }
+        ]
+      },
+      basicData: {},
       pageLoading: false,
       ceshi: 'ceshishi', // 测试用的
       isShowComparison: false, // 对比图弹窗控制
@@ -550,7 +575,8 @@ export default {
     pieC,
     statisticE,
     gauge,
-    mixLinebar
+    mixLinebar,
+    dialogCompare
   },
   created () {
     this.fetchPieData()
@@ -559,13 +585,18 @@ export default {
     this.fetchChartData()
     this.fetchGaugeData()
     this.fetchTableData()
-<<<<<<< HEAD
     this.getBtnAuthority()
-=======
     this.fetchBasicData()
->>>>>>> 9a1e059b000bed89083c0925318a18faf0b180a5
   },
   methods: {
+    // 对比分析点击事件处理
+    compareAnalysisHandle () {
+      this.dialogCompareVisible = true
+    },
+    // 监听对比分析弹出框的显示
+    changeDialogCompare (val) {
+      this.dialogCompareVisible = val
+    },
     // 获取安全指数分析数据
     fetchTableData () {
       let vm = this
@@ -601,7 +632,6 @@ export default {
                 (this.pieData[j][0].value +
                 this.pieData[j][1].value)) * 100)
             }
-            console.log(this.pieOptions[i].participationRate)
           }
         }
       }
@@ -615,7 +645,6 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.pieData = res.data.data
-            console.log(this.pieData)
             this.initPieOptions()
           }
         }).finally(() => {
@@ -714,26 +743,19 @@ export default {
     },
     // 按时间段查询
     toInquire () {
-      console.log(this.tipsDateDataA)
-      console.log(this.yearsDateDataA)
-      console.log(this.yearsDateDataB)
     },
     emptyValA () {
       this.tipsDateDataA = ''
-      console.log(111111)
     },
     emptyValB () {
       this.tipsDateDataB = ''
-      console.log(111111)
     },
     getBtnAuthority () {
       const authId = {authId: '1-1'}
-
       axios
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data.data.functionBtns)
             // this.fucBtns = res.data.data.functionBtns
           } else {
             this.$message({
