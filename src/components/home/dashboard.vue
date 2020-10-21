@@ -339,11 +339,12 @@
               >
             </el-date-picker>
             </div>
-            <el-button type="primary" @click='toInquire'>查询</el-button>
+            <el-button type="primary" @click='getCountUserRisk(changeDateValA, tipsDateDataA,  yearsDateDataA, 0)'>查询</el-button>
           <div class="info-chart-box">
             <mix-linebar
               :chart-width = "chartWidth"
-              :mixLinebarData = 'mixLinebarDataB'
+              :mixLinebarData = "mixLinebarDataA"
+              :changeDateVal = "changeDateValA"
             ></mix-linebar>
           </div>
         </div>
@@ -370,7 +371,7 @@
               <span class="demonstration">选择时间</span>
             <el-date-picker
               v-model="tipsDateDataB"
-              type="month"
+              type="monthrange"
               >
             </el-date-picker>
             </div>
@@ -403,12 +404,12 @@
               >
             </el-date-picker>
             </div>
-            <el-button type="primary" @click='toInquire'>查询</el-button>
+            <el-button type="primary" @click='getCountUserRisk(changeDateValB, tipsDateDataB,  yearsDateDataB, 1)'>查询</el-button>
           <div class="info-chart-box">
             <mix-linebar
-              :testName= "ceshi"
               :chart-width = "chartWidth"
               :mixLinebarData = 'mixLinebarDataB'
+              :changeDateVal = "changeDateValB"
             ></mix-linebar>
           </div>
         </div>
@@ -454,14 +455,8 @@ export default {
       },
       basicData: {},
       pageLoading: false,
-      ceshi: 'ceshishi', // 测试用的
       isShowComparison: false, // 对比图弹窗控制
       changeDateOptions: ['按日期查询', '按月份查询', '按年度查询', '按时间区间查询'],
-      changeDateValA: '', // 选择的时间段种类
-      timeType: ['date', 'month', 'year', 'daterange'],
-      changeDateValB: '', // 选择的时间段种类
-      tipsDateDataA: '', // 查询时间段第一个
-      tipsDateDataB: '', // 查询时间段第二个
       gaugeData: [], // 仪表盘数据
       pieOptions: [
         {
@@ -529,6 +524,15 @@ export default {
       tableData2: [],
       tableData3: [],
       tableData4: [],
+      risktestName: { //
+        userCount: '', // 参与员工数量
+        hiddenCount: '' // 隐患发生数量
+      },
+      mixLinebarTimeDate: [],
+      changeDateValA: '', // 选择的时间段种类
+      changeDateValB: '', // 选择的时间段种类
+      tipsDateDataA: '', // 查询时间段第一个
+      tipsDateDataB: '', // 查询时间段第二个
       mixLinebarDataA: {},
       mixLinebarDataB: {},
       yearsDateDataA: { // 年份日期选择对象A
@@ -541,40 +545,40 @@ export default {
       },
       startDateA: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          if(this.yearsDateDataA.yearsDateend) {
-            return  time.getTime() > this.yearsDateDataA.yearsDateend;
+          if (this.yearsDateDataA.yearsDateend) {
+            return time.getTime() > this.yearsDateDataA.yearsDateend
           } else {
-            return time.getTime() > Date.now();
+            return time.getTime() > Date.now()
           }
         }
       },
       endDateA: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          if(this.yearsDateDataA.yearsDateend) {
-            return time.getTime() < this.yearsDateDataA.yearsDatestart 
-          } else if(this.yearsDateDataA.yearsDatestart){
+          if (this.yearsDateDataA.yearsDateend) {
+            return time.getTime() < this.yearsDateDataA.yearsDatestart
+          } else if (this.yearsDateDataA.yearsDatestart) {
             return time.getTime() < this.yearsDateDataA.yearsDatestart || time.getTime() > Date.now()
           }
-           return time.getTime() > Date.now() 
+          return time.getTime() > Date.now()
         }
       },
       startDateB: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          if(this.yearsDateDataB.yearsDateend) {
-            return  time.getTime() > this.yearsDateDataB.yearsDateend;
+          if (this.yearsDateDataB.yearsDateend) {
+            return time.getTime() > this.yearsDateDataB.yearsDateend
           } else {
-            return time.getTime() > Date.now();
+            return time.getTime() > Date.now()
           }
         }
       },
       endDateB: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          if(this.yearsDateDataB.yearsDateend) {
-            return time.getTime() < this.yearsDateDataB.yearsDatestart 
-          } else if(this.yearsDateDataB.yearsDatestart){
+          if (this.yearsDateDataB.yearsDateend) {
+            return time.getTime() < this.yearsDateDataB.yearsDatestart
+          } else if (this.yearsDateDataB.yearsDatestart) {
             return time.getTime() < this.yearsDateDataB.yearsDatestart || time.getTime() > Date.now()
           }
-           return time.getTime() > Date.now() 
+          return time.getTime() > Date.now()
         }
       }
     }
@@ -761,12 +765,45 @@ export default {
     },
     // 按时间段查询
     toInquire () {
+      console.log(this.tipsDateDataA)
+      console.log(moment(this.yearsDateDataA.yearsDatestart).format('YYYY'))
     },
     emptyValA () {
       this.tipsDateDataA = ''
     },
     emptyValB () {
       this.tipsDateDataB = ''
+    },
+    getCountUserRisk (changeDateVal, tipsDateData, yearsDateData, btntype) {
+      let begin = ''
+      let end = ''
+      console.log(tipsDateData)
+      if (changeDateVal === 2) {
+        begin = moment(yearsDateData.yearsDatestart).format('YYYY')
+        end = moment(yearsDateData.yearsDateend).format('YYYY')
+      } else if (changeDateVal === 0) {
+        begin = tipsDateData
+        end = tipsDateData
+      } else {
+        begin = tipsDateData[0]
+        end = tipsDateData[1]
+      }
+      axios
+        .get('safeAnalysis/statisticalRate', {
+          type: changeDateVal,
+          beginTime: begin,
+          endTime: end
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            const data = res.data.data
+            if (btntype === 0) {
+              this.mixLinebarDataA = data
+            } else {
+              this.mixLinebarDataB = data
+            }
+          }
+        })
     },
     getBtnAuthority () {
       const authId = {authId: '1-1'}
