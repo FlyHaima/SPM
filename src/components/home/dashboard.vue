@@ -224,6 +224,8 @@
                   <span class="info-title-txt">安全指数分析</span>
                 </div>
                 <div class="info-btn">
+                  <!-- v-if= "fucBtns.includes('compare-search-btn')" -->
+                  <!-- v-if= "fucBtns.includes('compare-analysis-btn')" -->
                   <el-button @click="isShowComparison=true" size="small" type="primary">对比查询</el-button>
                   <el-button @click="compareAnalysisHandle()" size="small" type="primary">对比分析</el-button>
                 </div>
@@ -436,6 +438,7 @@ export default {
   name: 'home',
   data () {
     return {
+      fucBtns: [],
       dialogCompareVisible: false, // 对比分析弹框显示开关
       dialogCompareData: {
         title: '对比分析',
@@ -811,7 +814,7 @@ export default {
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            // this.fucBtns = res.data.data.functionBtns
+            this.fucBtns = res.data.data.functionBtns
           } else {
             this.$message({
               message: res.data.message,

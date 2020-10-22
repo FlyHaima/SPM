@@ -17,22 +17,25 @@
     <div class="dialog-box">
       <div class="dialog-right-layout">
         <el-form
-          @submit.native.prevent="searchHandler"
+          :model="form"
+          :rules="rules"
+          ref="form"
+          @submit.native.prevent="searchHandler('form')"
           :inline="true"
           size="small"
           class="table-form">
           <el-form-item label="分析类型">
             <el-select
-              v-model="form.state"
+              v-model="form.type"
               placeholder="请选择分析类型">
               <el-option
                 v-for="(item, index) in analysisTypeOpt"
                 :key="index"
-                :label="item"
-                :value="index"></el-option>
+                :label="item.label"
+                :value="item.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="层级">
+          <el-form-item label="层级" prop="deptIds">
             <el-cascader
               v-model="form.deptIds"
               placeholder="请选择层级"
@@ -45,90 +48,96 @@
           </el-form-item>
           <el-form-item label="查询种类">
             <el-select
-              v-model="form.searchType"
+              v-model="form.kind"
               placeholder="请选择查询种类"
               @change="selectChangeSearchType">
               <el-option
                 v-for="(item, index) in searchTypeOpt"
                 :key="index"
                 :label="item"
-                :value="index"></el-option>
+                :value="index+1"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="时间1">
-            <span v-show="form.searchType === 0">
+          <el-form-item label="时间1" prop="searchTimeOne">
+            <span v-show="form.kind === 1">
               <el-date-picker
-                v-model="form.date1"
+                v-model="form.searchTimeOne"
                 type="date"
                 placeholder="选择日"
-                :picker-options= "pickerDisabled"></el-date-picker>
+                :picker-options= "pickerDisabled"
+                value-format="yyyy-MM-dd"></el-date-picker>
             </span>
-            <span v-show="form.searchType === 1">
+            <span v-show="form.kind === 2">
               <el-date-picker
-                v-model="form.searchMonth1"
+                v-model="form.searchTimeOne"
                 type="monthrange"
                 placeholder="选择月"
-                :picker-options= "pickerDisabled"></el-date-picker>
+                :picker-options= "pickerDisabled"
+                value-format="yyyy-MM"></el-date-picker>
             </span>
-            <span v-show="form.searchType === 2">
+            <span v-show="form.kind === 3">
               <el-date-picker
-                v-model="form.beginYear1"
+                v-model="form.searchTimeOne"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
                 :picker-options= "pickerOptionsBeginYear1"></el-date-picker>
               -
               <el-date-picker
-                v-model="form.endYear1"
+                v-model="form.searchTimeOne"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
                 :picker-options= "pickerOptionsEndYear1"></el-date-picker>
             </span>
-            <span v-show="form.searchType === 3">
+            <span v-show="form.kind === 4">
               <el-date-picker
-                v-model="searchTime1"
+                v-model="form.searchTimeOne"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
-                end-placeholder="结束日期"></el-date-picker>
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"></el-date-picker>
             </span>
           </el-form-item>
-          <el-form-item label="时间2">
-            <span v-show="form.searchType === 0">
+          <el-form-item label="时间2" prop="searchTimeTwo">
+            <span v-show="form.kind === 1">
               <el-date-picker
-                v-model="form.date2"
+                v-model="form.searchTimeTwo"
                 type="date"
-                placeholder="选择日"></el-date-picker>
+                placeholder="选择日"
+                value-format="yyyy-MM-dd"></el-date-picker>
             </span>
-            <span v-show="form.searchType === 1">
+            <span v-show="form.kind === 2">
               <el-date-picker
-                v-model="form.searchMonth2"
+                v-model="form.searchTimeTwo"
                 type="monthrange"
-                placeholder="选择月"></el-date-picker>
+                placeholder="选择月"
+                value-format="yyyy-MM"></el-date-picker>
             </span>
-            <span v-show="form.searchType === 2">
+            <span v-show="form.kind === 3">
               <el-date-picker
-                v-model="form.beginYear2"
+                v-model="form.searchTimeTwo"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
                 :picker-options= "pickerOptionsBeginYear2"></el-date-picker>
               -
               <el-date-picker
-                v-model="form.endYear2"
+                v-model="form.searchTimeTwo"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
                 :picker-options= "pickerOptionsEndYear2"></el-date-picker>
             </span>
-            <span v-show="form.searchType === 3">
+            <span v-show="form.kind === 4">
               <el-date-picker
-                v-model="searchTime2"
+                v-model="form.searchTimeTwo"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
-                end-placeholder="结束日期"></el-date-picker>
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"></el-date-picker>
             </span>
           </el-form-item>
           <el-form-item>
@@ -144,8 +153,17 @@
               @click="exportHandler">导出</el-button>
           </el-form-item>
         </el-form>
-        <el-tabs type="border-card">
-          <el-tab-pane label="重大风险">
+        <div class="table-title">
+          {{tableTitle}}
+          <!-- <span class="value">xx</span>企业
+          <span class="value">xx</span>月与<span class="value">xx</span>月
+          <span class="value">xx</span>率 对比分析图表 -->
+        </div>
+        <el-tabs v-model="activeName" type="border-card">
+          <el-tab-pane label="图表分析" name="1">
+            <line-chart :chart="chartLineChart"></line-chart>
+          </el-tab-pane>
+          <el-tab-pane label="表格分析" name="2">
             <el-table
               :data="tableData"
               border
@@ -163,9 +181,18 @@
                 </template>
               </el-table-column>
             </el-table>
-          </el-tab-pane>
-          <el-tab-pane label="配置管理" name="2">
-            <line-chart :chart="chartLineChart"></line-chart>
+            <div class="pagination-box">
+              <el-pagination
+                background
+                hide-on-single-page
+                layout="prev, pager, next"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="page.index"
+                :total="page.total">
+              </el-pagination>
+              <span class="page-info">每页{{page.pageSize}}条，共{{page.total}}条</span>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -191,6 +218,12 @@ export default {
   data () {
     return {
       activeName: '1',
+      page: {
+        total: 0, // 总条数
+        index: 1, // 当前页面
+        pageNo: 1,
+        pageSize: 10 // limit
+      },
       chartLineChart: {
         height: '400px',
         legend: [
@@ -248,30 +281,29 @@ export default {
       },
       submitting: false,
       show: false,
-      searchTime1: '',
-      searchTime2: '',
-      searchMonth1: '',
-      searchMonth2: '',
       form: {
-        state: '',
+        type: '1', // 分析类型
         deptIds: '', // 层级
-        deptIdStr: '', // 层级
-        searchType: 0, // 查询种类
-        date1: '',
-        beginMonth1: '',
-        endMonth1: '',
-        beginYear1: '',
-        endYear1: '',
-        beginTime1: '',
-        endTime1: '',
-        date2: '',
-        beginMonth2: '',
-        endMonth2: '',
-        beginYear2: '',
-        endYear2: '',
-        beginTime2: '',
-        endTime2: ''
+        deptId: '', // 层级
+        kind: 1, // 查询种类
+        searchTimeOne: '',
+        searchTimeTwo: '',
+        beginTimeOne: '',
+        endTimeOne: '',
+        beginTimeTwo: '',
+        endTimeTwo: ''
       },
+      rules: {
+        deptIds: [
+          { required: true, message: '层级不能为空', trigger: 'change' }
+        ],
+        searchTimeOne: [
+          { required: true, message: '时间1不能为空', trigger: 'change' }
+        ],
+        searchTimeTwo: [
+          { required: true, message: '时间2不能为空', trigger: 'change' }
+        ]
+      }, // form校验规则
       pickerDisabled: {
         // 验证时间范围：不能大于今天
         disabledDate: (time) => {
@@ -306,83 +338,40 @@ export default {
                  time.getTime() > Date.now() - 8.64e6
         }
       },
-      tableHeaderData: ['时间1', '已参与人数', '总人数', '全员参与率', '时间2', '已参与人数', '总人数', '全员参与率', '同比增减'],
-      tableData: [
-        ['2016-05-03', '23', '45', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-04', '25', '40', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-05', '27', '48', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-03', '23', '45', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-04', '25', '40', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-05', '27', '48', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-03', '23', '45', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-04', '25', '40', '5%', '2016-05-03', '34', '78', '5%', '6%'],
-        ['2016-05-05', '27', '48', '5%', '2016-05-03', '34', '78', '5%', '6%']
-      ],
+      tableTitle: '', // 表的标题
+      tableHeaderData: [], // 表头数据
+      tableData: [], // 表数据
       searchTypeOpt: [
         '按日查询',
         '按月查询',
         '按年查询',
         '按时间段查询'
-      ],
+      ], // 查询种类的下拉选项
       analysisTypeOpt: [
-        '全员参与率',
-        '隐患发生率',
-        '隐患符合率',
-        '隐患整改率'
-      ],
+        {
+          label: '全员参与率',
+          value: '1'
+        },
+        {
+          label: '隐患发生率',
+          value: '2'
+        },
+        {
+          label: '隐患符合率',
+          value: '3'
+        },
+        {
+          label: '隐患整改率',
+          value: '4'
+        }
+      ], // 分析类型的下拉选项
       deptDataProps: {
         multiple: true,
         label: 'invDeptName',
         value: 'invDeptId'
-      },
-      selectCascadersData: [],
-      deptData: [{
-        value: 1,
-        label: '东南',
-        children: [{
-          value: 2,
-          label: '上海',
-          children: [
-            { value: 3, label: '普陀' },
-            { value: 4, label: '黄埔' },
-            { value: 5, label: '徐汇' }
-          ]
-        }, {
-          value: 7,
-          label: '江苏',
-          children: [
-            { value: 8, label: '南京' },
-            { value: 9, label: '苏州' },
-            { value: 10, label: '无锡' }
-          ]
-        }, {
-          value: 12,
-          label: '浙江',
-          children: [
-            { value: 13, label: '杭州' },
-            { value: 14, label: '宁波' },
-            { value: 15, label: '嘉兴' }
-          ]
-        }]
-      }, {
-        value: 17,
-        label: '西北',
-        children: [{
-          value: 18,
-          label: '陕西',
-          children: [
-            { value: 19, label: '西安' },
-            { value: 20, label: '延安' }
-          ]
-        }, {
-          value: 21,
-          label: '新疆维吾尔族自治区',
-          children: [
-            { value: 22, label: '乌鲁木齐' },
-            { value: 23, label: '克拉玛依' }
-          ]
-        }]
-      }]
+      }, // 层级的组件配置项
+      selectCascadersData: [], // 层级选中数据集合
+      deptData: [] // 层级
     }
   },
   created () {
@@ -397,37 +386,73 @@ export default {
     closeDialog () {
       this.show = false
     },
-    // tab切换事件
-    clickTab (item) {
-      console.log(item)
-      // this.tables.form.tabType = (Number(item.paneName) + 1) + ''
+    // 切换分页数量
+    handleSizeChange (val) {
+      this.fetchList()
+    },
+    // 切换当前页页数
+    handleCurrentChange (val) {
+      this.page.index = val
+      this.page.pageNo = val
+      this.fetchList()
     },
     // 级联选择框选中事件处理，格式化选中的数据
     cascaderChangeHandle (data) {
-      console.log(data)
       this.selectCascadersData = []
       data.forEach(item => {
         this.selectCascadersData.push(item.slice(-1).toString())
       })
       this.selectCascadersData = this.selectCascadersData.toString()
-      this.form.deptIdStr = this.selectCascadersData
+      this.form.deptId = this.selectCascadersData
     },
     exportHandler () {
     },
     selectChangeSearchType (value) {
-      this.form.searchType = value
-      this.form.beginDate = ''
-      this.form.endDate = ''
-      this.form.beginMonth = ''
-      this.form.endMonth = ''
-      this.form.beginYear = ''
-      this.form.endYear = ''
-      this.form.beginTime = ''
-      this.form.endTime = ''
+      this.form.kind = value
+      this.form.searchTimeOne = null
+      this.form.searchTimeTwo = null
     },
     // 获取table列表
     fetchList () {
-      alert('cc')
+      const postData = {
+        type: this.form.type, // 分析类型
+        deptId: this.form.deptId, // 层级
+        kind: this.form.kind, // 查询种类
+        beginTimeOne: '',
+        endTimeOne: '',
+        beginTimeTwo: '',
+        endTimeTwo: '',
+        pageNo: 1,
+        pageSize: 10
+      }
+      if (this.form.searchTimeOne && Array.isArray(this.form.searchTimeOne)) {
+        postData.beginTimeOne = this.form.searchTimeOne[0]
+        postData.endTimeOne = this.form.searchTimeOne[1]
+      } else {
+        postData.beginTimeOne = this.form.searchTimeOne
+        postData.endTimeOne = this.form.endTimeOne
+      }
+      if (this.form.searchTimeTwo && Array.isArray(this.form.searchTimeTwo)) {
+        postData.beginTimeTwo = this.form.searchTimeOne[0]
+        postData.endTimeTwo = this.form.searchTimeTwo[1]
+      } else {
+        postData.beginTimeTwo = this.form.searchTimeTwo
+        postData.endTimeTwo = this.form.endTimeOne
+      }
+      axios
+        .get('safeAnalysis/analyseRate', postData)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.tableHeaderData = res.data.data.tableHeaderData
+            this.tableData = res.data.data.tableData
+            this.tableTitle = res.data.data.title
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
     },
     // 获取组织机构树
     getDeptData () {
@@ -447,8 +472,7 @@ export default {
     /**
      * 表单查询事件
      */
-    searchHandler () {
-      console.log(this.form)
+    searchHandler (formName) {
       // form.pageNo = 1
       // this.tableSearchForm.pageNo = 1
       const specialKey = ['%', "'", ',', '，', '.', '。']
@@ -464,7 +488,13 @@ export default {
       } catch (e) {
         return
       }
-      this.fetchList()
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.fetchList()
+        } else {
+          return false
+        }
+      })
     }
   },
   components: {
@@ -509,5 +539,19 @@ export default {
   }
   .form-group-btn{
     height: 40px;
+  }
+  .pagination-box{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .table-title{
+    padding-bottom: 30px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
   }
 </style>
