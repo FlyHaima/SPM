@@ -58,18 +58,14 @@ export default {
       defoult: null
     },
     changeDateVal: {
-      type: String,
-      default: ''
+      type: Number,
+      default: null
     }
   },
   components: {
 
   },
   mounted () {
-    this.$nextTick(() => {
-      this.defactoringData()
-      this.setEchart()
-    })
   },
   methods: {
     setEchart (opt) {
@@ -143,7 +139,6 @@ export default {
           }
         ]
       }
-      debugger
       myChart.setOption(option)
     },
     defactoringData () {
@@ -160,7 +155,6 @@ export default {
       this.yhzgDate = data.data[3]
       this.testNameDate.userCount = data.userCount
       this.testNameDate.hiddenCount = data.hiddenCount
-      debugger
     }
   },
 

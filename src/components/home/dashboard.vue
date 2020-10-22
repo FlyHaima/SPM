@@ -279,8 +279,118 @@
     <el-dialog
       title="查询"
       :visible.sync="isShowComparison"
-      width = "1000px"
+      width = "1200px"
       >
+      <el-dialog title="参与员工数量" :visible.sync="isShowStaff" append-to-body width = "1300px">
+        <div class="search-box">
+        <span class="search-info">员工姓名</span><el-input v-model="userSearchform.userName" placeholder="请输入内容" class="search-ipt"></el-input>
+        <span class="search-info">部门</span><el-input v-model="userSearchform.deptName" placeholder="请输入内容" class="search-ipt"></el-input>
+        <span class="search-info">职位</span><el-input v-model="userSearchform.position" placeholder="请输入内容" class="search-ipt"></el-input>
+        <span class="search-info">发送时间</span><el-date-picker
+        class="search-time-ipt"
+        v-model="changeSearchTimeA"
+        type="daterange"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期">
+      </el-date-picker>
+      <el-button type="primary" @click = "fetchUserTableData">查询</el-button>
+        </div>
+        <el-table
+          :data="tableDataA"
+          stripe
+          style="width: 100%">
+        <el-table-column
+          prop="user_name"
+          label="员工姓名"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="dept_name"
+          label="部门"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="position"
+          label="职位">
+        </el-table-column>
+        <el-table-column
+          prop="telephone"
+          label="联系方式">
+        </el-table-column>
+        <el-table-column
+          prop="setTime"
+          label="发送时间">
+        </el-table-column>
+  </el-table>
+        <div class="el-pagination__wrap text-right">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="paginationpage.pageNo"
+            :page-sizes="paginationpage.sizes"
+            :total="paginationpage.total"
+            @current-change="handleCurrentChange(1)">
+          </el-pagination>
+        </div>
+      </el-dialog>
+      <el-dialog title="隐患发生数量" :visible.sync="isShowhidden" append-to-body width = "1300px">
+        <div class="search-box">
+          <span class="search-info">检查名称</span><el-input v-model="userSearchform.userName" placeholder="请输入内容" class="search-ipt"></el-input>
+          <span class="search-info">隐患类型</span><el-input v-model="userSearchform.deptName" placeholder="请输入内容" class="search-ipt"></el-input>
+          <span class="search-info">治理人</span><el-input v-model="userSearchform.position" placeholder="请输入内容" class="search-ipt"></el-input>
+        <el-button type="primary" @click = "fetchHiddTableData">查询</el-button>
+          </div>
+        <el-table
+        :data="tableDataB"
+        stripe
+        style="width: 100%">
+      <el-table-column
+        prop="checkName"
+        label="检查名称"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="checkTime"
+        label="检查时间"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="hiddenDesc"
+        label="隐患描述">
+      </el-table-column>
+      <el-table-column
+        prop="hiddenType"
+        label="隐患类型">
+      </el-table-column>
+      <el-table-column
+        prop="user_name"
+        label="治理人">
+      </el-table-column>
+      <el-table-column
+        prop="telephone"
+        label="联系方式">
+      </el-table-column>
+      <el-table-column
+        prop="actState"
+        label="进度">
+      </el-table-column>
+      <el-table-column
+        prop="sendtime"
+        label="治理完成情况">
+      </el-table-column>
+      </el-table>
+      <div class="el-pagination__wrap text-right">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :current-page="paginationpage.pageNo"
+          :page-sizes="paginationpage.sizes"
+          :total="paginationpage.total"
+          @current-change="handleCurrentChange(2)">
+        </el-pagination>
+      </div>
+      </el-dialog>
       <div class="info-content">
         <div class="content-first">
           <span>查询种类</span>
@@ -340,6 +450,8 @@
             </el-date-picker>
             </div>
             <el-button type="primary" @click='getCountUserRisk(changeDateValA, tipsDateDataA,  yearsDateDataA, 0)'>查询</el-button>
+            <el-button type="primary" @click='isShowStaff=true'>ceshi1</el-button>
+            <el-button type="primary" @click='isShowhidden=true'>ceshi2</el-button>
           <div class="info-chart-box">
             <mix-linebar
               :chart-width = "chartWidth"
@@ -360,7 +472,7 @@
             </el-option>
           </el-select>
             <div class="is-show-data" v-show='changeDateValB == 0'>
-              <span class="demonstration">选择时间</span>
+              <span class="demonstration" required>选择时间</span>
             <el-date-picker
               v-model="tipsDateDataB"
               type="date"
@@ -368,7 +480,7 @@
             </el-date-picker>
             </div>
             <div class="is-show-data" v-show='changeDateValB == 1'>
-              <span class="demonstration">选择时间</span>
+              <span class="demonstration" required>选择时间</span>
             <el-date-picker
               v-model="tipsDateDataB"
               type="monthrange"
@@ -376,7 +488,7 @@
             </el-date-picker>
             </div>
             <div class="is-show-data" v-show='changeDateValB == 2'>
-              <span class="demonstration">选择时间</span>
+              <span class="demonstration" required>选择时间</span>
             <el-date-picker
               v-model="yearsDateDataB.yearsDatestart"
               type="year"
@@ -394,7 +506,7 @@
             </el-date-picker>
             </div>
             <div class="is-show-data" v-show='changeDateValB == 3'>
-              <span class="demonstration">选择时间</span>
+              <span class="demonstration" required>选择时间</span>
             <el-date-picker
               v-model="tipsDateDataB"
               type="daterange"
@@ -529,8 +641,8 @@ export default {
         hiddenCount: '' // 隐患发生数量
       },
       mixLinebarTimeDate: [],
-      changeDateValA: '', // 选择的时间段种类
-      changeDateValB: '', // 选择的时间段种类
+      changeDateValA: 0, // 选择的时间段种类
+      changeDateValB: 0, // 选择的时间段种类
       tipsDateDataA: '', // 查询时间段第一个
       tipsDateDataB: '', // 查询时间段第二个
       mixLinebarDataA: {},
@@ -542,6 +654,36 @@ export default {
       yearsDateDataB: { // 年份日期选择对象B
         yearsDatestart: '',
         yearsDateend: ''
+      },
+      changeSearchTimeA: [], // 搜索时间区间条件
+      tableDataA: {}, // 员工数量表格数据
+      tableDataB: {}, // 隐患数量表格数据
+      userSearchform: { //员工搜索条件
+        userName: '', //员工姓名
+        deptName: '', //部门
+        position: '', //职位
+        cBeginTime: '', //开始时间（查询）
+        cEndTime: '', //结束时间（查询）
+        beginTime: '',
+        endTime: '',
+        type: '',
+        pageNo:'1',
+        pageSize: 10,
+      },
+      hiddSearchform: { //隐患搜索条件
+        userName: '',
+        checkName: '',
+        hiddenType: '',
+        beginTime: '',
+        endTime: '',
+        type: '',
+        pageNo: 1,
+        pageSize: 2
+      },
+      paginationpage: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
       },
       startDateA: {
         disabledDate: time => { // 禁止选择日期大于开始日期
@@ -580,7 +722,9 @@ export default {
           }
           return time.getTime() > Date.now()
         }
-      }
+      },
+      isShowStaff: false,
+      isShowhidden: false,
     }
   },
   filters: {
@@ -788,6 +932,12 @@ export default {
         begin = tipsDateData[0]
         end = tipsDateData[1]
       }
+      this.userSearchform.beginTime = begin
+      this.userSearchform.endTime = end
+      this.userSearchform.type = changeDateVal
+      this.hiddSearchform.beginTime = begin
+      this.hiddSearchform.endTime = end
+      this.hiddSearchform.type = changeDateVal
       axios
         .get('safeAnalysis/statisticalRate', {
           type: changeDateVal,
@@ -804,6 +954,49 @@ export default {
             }
           }
         })
+    },
+    handleCurrentChange (val, type) {
+        if (type === 1){
+          this.userSearchform.pageNo = val
+        } else {
+          this.hiddSearchform.pageNo = val
+        }  
+        this.fetchUserTableData()
+    },
+    fetchUserTableData () {
+      if(this.changeSearchTimeA){
+        const time = this.changeSearchTimeA
+        this.userSearchform.cBeginTime = time[0]
+        this.userSearchform.cEndTime = time[1]        
+      }
+      axios
+        .get("safeAnalysis/getUserList", this.userSearchform)
+        .then((res) => {
+          debugger
+          if (res.data.code === 200) {
+            let data = res.data.data
+            this.paginationpage.total = data.total
+            data.list.forEach( item => {
+              item.setTime = moment(item.setTime).format("YYYY-MM-DD")
+            })
+            this.tableDataA = data.list
+          }
+        })
+    },
+    fetchHiddTableData () {
+      axios
+        .get("safeAnalysis/getHiddenList", this.hiddSearchform)
+        .then((res) => {
+          if (res.data.code === 200) {
+            let data = res.data.data
+            this.paginationpage.total = data.total
+            data.list.forEach( item => {
+              item.checkTime = moment(item.checkTime).format("YYYY-MM-DD")
+            })
+            this.tableDataB = data.list
+          }
+        })
+      
     },
     getBtnAuthority () {
       const authId = {authId: '1-1'}
@@ -1188,7 +1381,20 @@ export default {
 
       .info-header{
         margin-bottom: 20px;
+      
+      }
+      .search-box{
+        margin-bottom: 36px;
+        .search-ipt{
+          width: 140px;
+          margin: 0 20px;
+      }
+        .search-time-ipt{
+          margin: 0 20px;
+        }
+        .search-info{
 
+      }
       }
       .info-chart-box{
         margin-top: 20px;
