@@ -656,8 +656,8 @@ export default {
         yearsDateend: ''
       },
       changeSearchTimeA: [], // 搜索时间区间条件
-      tableDataA: {}, // 员工数量表格数据
-      tableDataB: {}, // 隐患数量表格数据
+      tableDataA: [], // 员工数量表格数据
+      tableDataB: [], // 隐患数量表格数据
       userSearchform: { //员工搜索条件
         userName: '', //员工姓名
         deptName: '', //部门
