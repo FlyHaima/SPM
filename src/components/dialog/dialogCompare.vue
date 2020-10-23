@@ -159,9 +159,6 @@
         </el-form>
         <div class="table-title">
           {{tableTitle}}
-          <!-- <span class="value">xx</span>企业
-          <span class="value">xx</span>月与<span class="value">xx</span>月
-          <span class="value">xx</span>率 对比分析图表 -->
         </div>
         <el-tabs v-model="activeName" type="border-card">
           <el-tab-pane label="图表分析" name="1">
@@ -257,8 +254,12 @@ export default {
       pickerOptionsBeginYear1: {
         disabledDate: time => { // 禁止选择日期大于开始日期
           const endTime = this.form.endTimeOne
-          return time.getTime() > new Date(endTime).getTime() - 8.64e7 ||
+          if (endTime !== '') {
+            return time.getTime() > new Date(endTime).getTime() - 8.64e7 ||
                  time.getTime() > Date.now() - 8.64e6
+          } else {
+            return time.getTime() > Date.now() - 8.64e6
+          }
         }
       },
       pickerOptionsEndYear1: {
@@ -271,8 +272,12 @@ export default {
       pickerOptionsBeginYear2: {
         disabledDate: time => { // 禁止选择日期大于开始日期
           const endTime = this.form.endTimeTwo
-          return time.getTime() > new Date(endTime).getTime() - 8.64e7 ||
+          if (endTime !== '') {
+            return time.getTime() > new Date(endTime).getTime() - 8.64e7 ||
                  time.getTime() > Date.now() - 8.64e6
+          } else {
+            return time.getTime() > Date.now() - 8.64e6
+          }
         }
       },
       pickerOptionsEndYear2: {
