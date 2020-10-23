@@ -96,7 +96,8 @@
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"></el-date-picker>
+                value-format="yyyy-MM-dd"
+                :picker-options= "pickerDisabled"></el-date-picker>
             </span>
           </el-form-item>
           <el-form-item label="时间2" prop="searchTimeTwo">
@@ -105,14 +106,16 @@
                 v-model="form.beginTimeTwo"
                 type="date"
                 placeholder="选择日"
-                value-format="yyyy-MM-dd"></el-date-picker>
+                value-format="yyyy-MM-dd"
+                :picker-options= "pickerDisabled"></el-date-picker>
             </span>
             <span v-show="form.kind === 2">
               <el-date-picker
                 v-model="form.searchTimeTwo"
                 type="monthrange"
                 placeholder="选择月"
-                value-format="yyyy-MM"></el-date-picker>
+                value-format="yyyy-MM"
+                :picker-options= "pickerDisabled"></el-date-picker>
             </span>
             <span v-show="form.kind === 3">
               <el-date-picker
@@ -136,7 +139,8 @@
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"></el-date-picker>
+                value-format="yyyy-MM-dd"
+                :picker-options= "pickerDisabled"></el-date-picker>
             </span>
           </el-form-item>
           <el-form-item>
@@ -346,7 +350,7 @@ export default {
       this.selectCascadersData = this.selectCascadersData.toString()
       this.form.deptId = this.selectCascadersData
     },
-    exportHandler () {
+    fomatePostData () {
       const postData = {
         type: this.form.type, // 分析类型
         deptId: this.form.deptId, // 层级
@@ -354,7 +358,9 @@ export default {
         beginTimeOne: this.form.beginTimeOne,
         endTimeOne: this.form.endTimeOne,
         beginTimeTwo: this.form.beginTimeTwo,
-        endTimeTwo: this.form.endTimeTwo
+        endTimeTwo: this.form.endTimeTwo,
+        pageSize: 10,
+        pageNo: 1
       }
       if (this.form.searchTimeOne && Array.isArray(this.form.searchTimeOne)) {
         postData.beginTimeOne = this.form.searchTimeOne[0]
@@ -364,7 +370,10 @@ export default {
         postData.beginTimeTwo = this.form.searchTimeTwo[0]
         postData.endTimeTwo = this.form.searchTimeTwo[1]
       }
-      console.log(postData)
+      return postData
+    },
+    exportHandler () {
+      const postData = this.fomatePostData()
       exportExcel(`safeAnalysis/exportAnalyse`,
         'type=' + postData.type + '&' +
         'deptId=' + postData.deptId + '&' +
@@ -387,25 +396,7 @@ export default {
     },
     // 获取table列表
     fetchList () {
-      const postData = {
-        type: this.form.type, // 分析类型
-        deptId: this.form.deptId, // 层级
-        kind: this.form.kind, // 查询种类
-        beginTimeOne: this.form.beginTimeOne,
-        endTimeOne: this.form.endTimeOne,
-        beginTimeTwo: this.form.beginTimeTwo,
-        endTimeTwo: this.form.endTimeTwo,
-        pageNo: 1,
-        pageSize: 10
-      }
-      if (this.form.searchTimeOne && Array.isArray(this.form.searchTimeOne)) {
-        postData.beginTimeOne = this.form.searchTimeOne[0]
-        postData.endTimeOne = this.form.searchTimeOne[1]
-      }
-      if (this.form.searchTimeTwo && Array.isArray(this.form.searchTimeTwo)) {
-        postData.beginTimeTwo = this.form.searchTimeTwo[0]
-        postData.endTimeTwo = this.form.searchTimeTwo[1]
-      }
+      const postData = this.fomatePostData()
       axios
         .get('safeAnalysis/analyseRate', postData)
         .then((res) => {
