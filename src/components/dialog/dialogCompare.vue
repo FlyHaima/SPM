@@ -347,14 +347,32 @@ export default {
       this.form.deptId = this.selectCascadersData
     },
     exportHandler () {
+      const postData = {
+        type: this.form.type, // 分析类型
+        deptId: this.form.deptId, // 层级
+        kind: this.form.kind, // 查询种类
+        beginTimeOne: this.form.beginTimeOne,
+        endTimeOne: this.form.endTimeOne,
+        beginTimeTwo: this.form.beginTimeTwo,
+        endTimeTwo: this.form.endTimeTwo
+      }
+      if (this.form.searchTimeOne && Array.isArray(this.form.searchTimeOne)) {
+        postData.beginTimeOne = this.form.searchTimeOne[0]
+        postData.endTimeOne = this.form.searchTimeOne[1]
+      }
+      if (this.form.searchTimeTwo && Array.isArray(this.form.searchTimeTwo)) {
+        postData.beginTimeTwo = this.form.searchTimeOne[0]
+        postData.endTimeTwo = this.form.searchTimeTwo[1]
+      }
+      console.log(postData)
       exportExcel(`safeAnalysis/exportAnalyse`,
-        'type=' + this.form.type + '&' +
-        'deptId=' + this.form.deptId + '&' +
-        'kind=' + this.form.kind + '&' +
-        'beginTimeOne=' + this.form.beginTimeOne + '&' +
-        'endTimeOne=' + this.form.endTimeOne + '&' +
-        'beginTimeTwo=' + this.form.beginTimeTwo + '&' +
-        'endTimeTwo=' + this.form.endTimeTwo)
+        'type=' + postData.type + '&' +
+        'deptId=' + postData.deptId + '&' +
+        'kind=' + postData.kind + '&' +
+        'beginTimeOne=' + postData.beginTimeOne + '&' +
+        'endTimeOne=' + postData.endTimeOne + '&' +
+        'beginTimeTwo=' + postData.beginTimeTwo + '&' +
+        'endTimeTwo=' + postData.endTimeTwo)
     },
     // 查询种类下拉改变时的事件处理
     selectChangeSearchType (value) {
