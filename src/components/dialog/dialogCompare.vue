@@ -149,6 +149,7 @@
             <el-button
               class="export-btn"
               type="success"
+              icon="el-icon-download"
               @click="exportHandler">导出</el-button>
           </el-form-item>
         </el-form>
@@ -346,7 +347,14 @@ export default {
       this.form.deptId = this.selectCascadersData
     },
     exportHandler () {
-      exportExcel(`riskLevel/exportRiskCard`)
+      exportExcel(`safeAnalysis/exportAnalyse`,
+        'type=' + this.form.type + '&' +
+        'deptId=' + this.form.deptId + '&' +
+        'kind=' + this.form.kind + '&' +
+        'beginTimeOne=' + this.form.beginTimeOne + '&' +
+        'endTimeOne=' + this.form.endTimeOne + '&' +
+        'beginTimeTwo=' + this.form.beginTimeTwo + '&' +
+        'endTimeTwo=' + this.form.endTimeTwo)
     },
     // 查询种类下拉改变时的事件处理
     selectChangeSearchType (value) {
