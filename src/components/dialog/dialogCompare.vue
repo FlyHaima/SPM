@@ -18,7 +18,6 @@
       <div class="dialog-right-layout">
         <el-form
           :model="form"
-          :rules="rules"
           ref="form"
           @submit.native.prevent="searchHandler('form')"
           :inline="true"
@@ -61,7 +60,7 @@
           <el-form-item label="时间1" prop="searchTimeOne">
             <span v-show="form.kind === 1">
               <el-date-picker
-                v-model="form.searchTimeOne"
+                v-model="form.beginTimeOne"
                 type="date"
                 placeholder="选择日"
                 :picker-options= "pickerDisabled"
@@ -77,14 +76,14 @@
             </span>
             <span v-show="form.kind === 3">
               <el-date-picker
-                v-model="form.searchTimeOne"
+                v-model="form.beginTimeOne"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
                 :picker-options= "pickerOptionsBeginYear1"></el-date-picker>
               -
               <el-date-picker
-                v-model="form.searchTimeOne"
+                v-model="form.endTimeOne"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
@@ -103,7 +102,7 @@
           <el-form-item label="时间2" prop="searchTimeTwo">
             <span v-show="form.kind === 1">
               <el-date-picker
-                v-model="form.searchTimeTwo"
+                v-model="form.beginTimeTwo"
                 type="date"
                 placeholder="选择日"
                 value-format="yyyy-MM-dd"></el-date-picker>
@@ -117,14 +116,14 @@
             </span>
             <span v-show="form.kind === 3">
               <el-date-picker
-                v-model="form.searchTimeTwo"
+                v-model="form.beginTimeTwo"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
                 :picker-options= "pickerOptionsBeginYear2"></el-date-picker>
               -
               <el-date-picker
-                v-model="form.searchTimeTwo"
+                v-model="form.endTimeTwo"
                 type="year"
                 value-format="yyyy"
                 placeholder="选择年"
@@ -203,6 +202,7 @@
 <script>
 import axios from '@/api/axios'
 import lineChart from '@/components/e-charts/lineChart.vue'
+import exportExcel from '@/api/exportExcel'
 export default {
   name: 'treeDiagram',
   props: {
@@ -217,67 +217,17 @@ export default {
   },
   data () {
     return {
-      activeName: '1',
+      activeName: '1', // 当前显示tab
       page: {
         total: 0, // 总条数
         index: 1, // 当前页面
         pageNo: 1,
         pageSize: 10 // limit
-      },
+      }, // 分页
       chartLineChart: {
         height: '400px',
-        legend: [
-          '7月隐患发生率', '7月全员参与率',
-          '8月隐患发生率', '8月全员参与率',
-          '9月隐患发生率', '9月全员参与率',
-          '10月隐患发生率', '10月全员参与率'
-        ],
-        data: [
-          {
-            data1: 120,
-            data2: 132,
-            data3: 101,
-            data4: 134,
-            data5: 120,
-            data6: 132,
-            data7: 101,
-            data8: 134,
-            xAxisdata: '7.1/7.1'
-          },
-          {
-            data1: 8,
-            data2: 20,
-            data3: 8,
-            data4: 18,
-            data5: 8,
-            data6: 20,
-            data7: 8,
-            data8: 18,
-            xAxisdata: '8.1/8.1'
-          },
-          {
-            data1: 120,
-            data2: 132,
-            data3: 101,
-            data4: 134,
-            data5: 120,
-            data6: 132,
-            data7: 101,
-            data8: 134,
-            xAxisdata: '9.1/9.1'
-          },
-          {
-            data1: 8,
-            data2: 20,
-            data3: 8,
-            data4: 18,
-            data5: 8,
-            data6: 20,
-            data7: 8,
-            data8: 18,
-            xAxisdata: '10.1/10.1'
-          }
-        ]
+        legend: [], // 图标数据栏
+        data: [] // 图表数据
       },
       submitting: false,
       show: false,
@@ -293,17 +243,6 @@ export default {
         beginTimeTwo: '',
         endTimeTwo: ''
       },
-      rules: {
-        deptIds: [
-          { required: true, message: '层级不能为空', trigger: 'change' }
-        ],
-        searchTimeOne: [
-          { required: true, message: '时间1不能为空', trigger: 'change' }
-        ],
-        searchTimeTwo: [
-          { required: true, message: '时间2不能为空', trigger: 'change' }
-        ]
-      }, // form校验规则
       pickerDisabled: {
         // 验证时间范围：不能大于今天
         disabledDate: (time) => {
@@ -312,28 +251,28 @@ export default {
       },
       pickerOptionsBeginYear1: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          const endTime = this.form.endYear1
+          const endTime = this.form.endTimeOne
           return time.getTime() > new Date(endTime).getTime() - 8.64e7 ||
                  time.getTime() > Date.now() - 8.64e6
         }
       },
       pickerOptionsEndYear1: {
         disabledDate: time => { // 禁止选择日期小于开始日期
-          const startTime = this.form.beginYear1
+          const startTime = this.form.beginTimeOne
           return time.getTime() < new Date(startTime).getTime() ||
                  time.getTime() > Date.now() - 8.64e6
         }
       },
       pickerOptionsBeginYear2: {
         disabledDate: time => { // 禁止选择日期大于开始日期
-          const endTime = this.form.endYear2
+          const endTime = this.form.endTimeTwo
           return time.getTime() > new Date(endTime).getTime() - 8.64e7 ||
                  time.getTime() > Date.now() - 8.64e6
         }
       },
       pickerOptionsEndYear2: {
         disabledDate: time => { // 禁止选择日期小于开始日期
-          const startTime = this.form.beginYear2
+          const startTime = this.form.beginTimeTwo
           return time.getTime() < new Date(startTime).getTime() ||
                  time.getTime() > Date.now() - 8.64e6
         }
@@ -367,6 +306,7 @@ export default {
       ], // 分析类型的下拉选项
       deptDataProps: {
         multiple: true,
+        checkStrictly: true,
         label: 'invDeptName',
         value: 'invDeptId'
       }, // 层级的组件配置项
@@ -406,11 +346,18 @@ export default {
       this.form.deptId = this.selectCascadersData
     },
     exportHandler () {
+      exportExcel(`riskLevel/exportRiskCard`)
     },
+    // 查询种类下拉改变时的事件处理
     selectChangeSearchType (value) {
       this.form.kind = value
-      this.form.searchTimeOne = null
-      this.form.searchTimeTwo = null
+      // 查询种类值变的时候，清空时间的值
+      this.form.searchTimeOne = ''
+      this.form.searchTimeTwo = ''
+      this.form.beginTimeOne = ''
+      this.form.endTimeOne = ''
+      this.form.beginTimeTwo = ''
+      this.form.endTimeTwo = ''
     },
     // 获取table列表
     fetchList () {
@@ -418,34 +365,32 @@ export default {
         type: this.form.type, // 分析类型
         deptId: this.form.deptId, // 层级
         kind: this.form.kind, // 查询种类
-        beginTimeOne: '',
-        endTimeOne: '',
-        beginTimeTwo: '',
-        endTimeTwo: '',
+        beginTimeOne: this.form.beginTimeOne,
+        endTimeOne: this.form.endTimeOne,
+        beginTimeTwo: this.form.beginTimeTwo,
+        endTimeTwo: this.form.endTimeTwo,
         pageNo: 1,
         pageSize: 10
       }
       if (this.form.searchTimeOne && Array.isArray(this.form.searchTimeOne)) {
         postData.beginTimeOne = this.form.searchTimeOne[0]
         postData.endTimeOne = this.form.searchTimeOne[1]
-      } else {
-        postData.beginTimeOne = this.form.searchTimeOne
-        postData.endTimeOne = this.form.endTimeOne
       }
       if (this.form.searchTimeTwo && Array.isArray(this.form.searchTimeTwo)) {
         postData.beginTimeTwo = this.form.searchTimeOne[0]
         postData.endTimeTwo = this.form.searchTimeTwo[1]
-      } else {
-        postData.beginTimeTwo = this.form.searchTimeTwo
-        postData.endTimeTwo = this.form.endTimeOne
       }
       axios
         .get('safeAnalysis/analyseRate', postData)
         .then((res) => {
           if (res.data.code === 200) {
-            this.tableHeaderData = res.data.data.tableHeaderData
-            this.tableData = res.data.data.tableData
-            this.tableTitle = res.data.data.title
+            let resData = res.data.data
+            this.tableHeaderData = resData.tableHeaderData
+            this.tableData = resData.tableData
+            this.tableTitle = resData.title
+            this.chartLineChart.legend = resData.legend
+            this.chartLineChart.data = resData.picData
+            this.page.total = res.data.total
           } else {
             this.$message({
               message: res.data.message,
@@ -488,13 +433,34 @@ export default {
       } catch (e) {
         return
       }
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.fetchList()
-        } else {
-          return false
-        }
-      })
+      if (this.form.deptId === '') {
+        this.$message({
+          message: '层级不能为空',
+          type: 'warning'
+        })
+      } else if (this.form.kind === 1 && (this.form.beginTimeOne === '' || this.form.beginTimeTwo === '')) {
+        this.$message({
+          message: '时间1与时间2不能为空',
+          type: 'warning'
+        })
+      } else if ((this.form.kind === 2 || this.form.kind === 4) && (this.form.searchTimeOne === '' || this.form.searchTimeTwo === '')) {
+        this.$message({
+          message: '时间1与时间2不能为空',
+          type: 'warning'
+        })
+      } else if (
+        this.form.kind === 3 &&
+      (
+        this.form.beginTimeOne === '' || this.form.beginTimeTwo === '' ||
+        this.form.endTimeOne === '' || this.form.endTimeTwo === ''
+      )) {
+        this.$message({
+          message: '时间1与时间2不能为空',
+          type: 'warning'
+        })
+      } else {
+        this.fetchList()
+      }
     }
   },
   components: {
