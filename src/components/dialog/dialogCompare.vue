@@ -361,7 +361,7 @@ export default {
         postData.endTimeOne = this.form.searchTimeOne[1]
       }
       if (this.form.searchTimeTwo && Array.isArray(this.form.searchTimeTwo)) {
-        postData.beginTimeTwo = this.form.searchTimeOne[0]
+        postData.beginTimeTwo = this.form.searchTimeTwo[0]
         postData.endTimeTwo = this.form.searchTimeTwo[1]
       }
       console.log(postData)
@@ -403,7 +403,7 @@ export default {
         postData.endTimeOne = this.form.searchTimeOne[1]
       }
       if (this.form.searchTimeTwo && Array.isArray(this.form.searchTimeTwo)) {
-        postData.beginTimeTwo = this.form.searchTimeOne[0]
+        postData.beginTimeTwo = this.form.searchTimeTwo[0]
         postData.endTimeTwo = this.form.searchTimeTwo[1]
       }
       axios
