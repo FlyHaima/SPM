@@ -224,7 +224,7 @@
                   <span class="info-title-txt">安全指数分析</span>
                 </div>
                 <div class="info-btn">
-                  <el-button @click="isShowComparison=true" size="small" type="primary">对比查询</el-button>
+                  <el-button @click="showComparison" size="small" type="primary">对比查询</el-button>
                   <el-button @click="compareAnalysisHandle()" size="small" type="primary">对比分析</el-button>
                 </div>
               </div>
@@ -281,116 +281,6 @@
       :visible.sync="isShowComparison"
       width = "1200px"
       >
-      <el-dialog title="参与员工数量" :visible.sync="isShowStaff" append-to-body width = "1300px">
-        <div class="search-box">
-        <span class="search-info">员工姓名</span><el-input v-model="userSearchform.userName" placeholder="请输入内容" class="search-ipt"></el-input>
-        <span class="search-info">部门</span><el-input v-model="userSearchform.deptName" placeholder="请输入内容" class="search-ipt"></el-input>
-        <span class="search-info">职位</span><el-input v-model="userSearchform.position" placeholder="请输入内容" class="search-ipt"></el-input>
-        <span class="search-info">发送时间</span><el-date-picker
-        class="search-time-ipt"
-        v-model="changeSearchTimeA"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期">
-      </el-date-picker>
-      <el-button type="primary" @click = "fetchUserTableData">查询</el-button>
-        </div>
-        <el-table
-          :data="tableDataA"
-          stripe
-          style="width: 100%">
-        <el-table-column
-          prop="user_name"
-          label="员工姓名"
-          width="180">
-        </el-table-column>
-        <el-table-column
-          prop="dept_name"
-          label="部门"
-          width="180">
-        </el-table-column>
-        <el-table-column
-          prop="position"
-          label="职位">
-        </el-table-column>
-        <el-table-column
-          prop="telephone"
-          label="联系方式">
-        </el-table-column>
-        <el-table-column
-          prop="setTime"
-          label="发送时间">
-        </el-table-column>
-  </el-table>
-        <div class="el-pagination__wrap text-right">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :current-page="paginationpage.pageNo"
-            :page-sizes="paginationpage.sizes"
-            :total="paginationpage.total"
-            @current-change="handleCurrentChange(1)">
-          </el-pagination>
-        </div>
-      </el-dialog>
-      <el-dialog title="隐患发生数量" :visible.sync="isShowhidden" append-to-body width = "1300px">
-        <div class="search-box">
-          <span class="search-info">检查名称</span><el-input v-model="userSearchform.userName" placeholder="请输入内容" class="search-ipt"></el-input>
-          <span class="search-info">隐患类型</span><el-input v-model="userSearchform.deptName" placeholder="请输入内容" class="search-ipt"></el-input>
-          <span class="search-info">治理人</span><el-input v-model="userSearchform.position" placeholder="请输入内容" class="search-ipt"></el-input>
-        <el-button type="primary" @click = "fetchHiddTableData">查询</el-button>
-          </div>
-        <el-table
-        :data="tableDataB"
-        stripe
-        style="width: 100%">
-      <el-table-column
-        prop="checkName"
-        label="检查名称"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="checkTime"
-        label="检查时间"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="hiddenDesc"
-        label="隐患描述">
-      </el-table-column>
-      <el-table-column
-        prop="hiddenType"
-        label="隐患类型">
-      </el-table-column>
-      <el-table-column
-        prop="user_name"
-        label="治理人">
-      </el-table-column>
-      <el-table-column
-        prop="telephone"
-        label="联系方式">
-      </el-table-column>
-      <el-table-column
-        prop="actState"
-        label="进度">
-      </el-table-column>
-      <el-table-column
-        prop="sendtime"
-        label="治理完成情况">
-      </el-table-column>
-      </el-table>
-      <div class="el-pagination__wrap text-right">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :current-page="paginationpage.pageNo"
-          :page-sizes="paginationpage.sizes"
-          :total="paginationpage.total"
-          @current-change="handleCurrentChange(2)">
-        </el-pagination>
-      </div>
-      </el-dialog>
       <div class="info-content">
         <div class="content-first">
           <span>查询种类</span>
@@ -640,22 +530,32 @@ export default {
         userCount: '', // 参与员工数量
         hiddenCount: '' // 隐患发生数量
       },
-      mixLinebarTimeDate: [],
+      mixLinebarTimeDate: [], // 对比查询数据
       changeDateValA: 0, // 选择的时间段种类
       changeDateValB: 0, // 选择的时间段种类
-      tipsDateDataA: '', // 查询时间段第一个
-      tipsDateDataB: '', // 查询时间段第二个
-      mixLinebarDataA: {},
-      mixLinebarDataB: {},
+      tipsDateDataA: '', // 日期选择查询时间段第一图
+      tipsDateDataB: '', // 日期选择查询时间段第二图
+      mixLinebarDataA: {}, // 图一 e-chart 数据
+      mixLinebarDataB: {},  // 图二 e-chart 数据
       yearsDateDataA: { // 年份日期选择对象A
-        yearsDatestart: null, // 开始年限
-        yearsDateend: null // 结束年限
+        yearsDatestart: '', // 开始年限
+        yearsDateend: '' // 结束年限
       },
       yearsDateDataB: { // 年份日期选择对象B
         yearsDatestart: '',
         yearsDateend: ''
       },
-      changeSearchTimeA: [], // 搜索时间区间条件
+      
+      timeHorizonA: { // 图1 时间范围
+        beginTime: '',  //  开始时间
+        endTime: '',    // 开始时间
+      },
+      timeHorizonB: { // 图2 时间范围
+        beginTime: '',  //  开始时间
+        endTime: '',    // 开始时间
+      },    
+      changeSearchTimeA: [], // 搜索时间区间条件第一图
+      changeSearchTimeB: [], // 搜索时间区间条件第二图
       tableDataA: [], // 员工数量表格数据
       tableDataB: [], // 隐患数量表格数据
       userSearchform: { //员工搜索条件
@@ -723,8 +623,6 @@ export default {
           return time.getTime() > Date.now()
         }
       },
-      isShowStaff: false,
-      isShowhidden: false,
     }
   },
   filters: {
@@ -907,11 +805,6 @@ export default {
           }
         })
     },
-    // 按时间段查询
-    toInquire () {
-      console.log(this.tipsDateDataA)
-      console.log(moment(this.yearsDateDataA.yearsDatestart).format('YYYY'))
-    },
     emptyValA () {
       this.tipsDateDataA = ''
     },
@@ -919,41 +812,47 @@ export default {
       this.tipsDateDataB = ''
     },
     getCountUserRisk (changeDateVal, tipsDateData, yearsDateData, btntype) {
-      let begin = ''
-      let end = ''
-      console.log(tipsDateData)
-      if (changeDateVal === 2) {
-        begin = moment(yearsDateData.yearsDatestart).format('YYYY')
-        end = moment(yearsDateData.yearsDateend).format('YYYY')
-      } else if (changeDateVal === 0) {
-        begin = tipsDateData
-        end = tipsDateData
-      } else {
-        begin = tipsDateData[0]
-        end = tipsDateData[1]
-      }
-      this.userSearchform.beginTime = begin
-      this.userSearchform.endTime = end
-      this.userSearchform.type = changeDateVal
-      this.hiddSearchform.beginTime = begin
-      this.hiddSearchform.endTime = end
-      this.hiddSearchform.type = changeDateVal
-      axios
-        .get('safeAnalysis/statisticalRate', {
-          type: changeDateVal,
-          beginTime: begin,
-          endTime: end
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            const data = res.data.data
-            if (btntype === 0) {
-              this.mixLinebarDataA = data
-            } else {
-              this.mixLinebarDataB = data
+      if (tipsDateData || yearsDateData.yearsDatestart ) {    
+        let begin = ''
+        let end = ''
+        console.log(tipsDateData)
+        if (changeDateVal === 2) {
+          begin = moment(yearsDateData.yearsDatestart).format('YYYY')
+          end = moment(yearsDateData.yearsDateend).format('YYYY')
+        } else if (changeDateVal === 0) {
+          begin = moment(tipsDateData).format("YYYY-MM-DD")
+          end = moment(tipsDateData).format("YYYY-MM-DD")
+        } else if (changeDateVal === 3){
+          begin = moment(tipsDateData[0]).format("YYYY-MM-DD")
+          end = moment(tipsDateData[1]).format("YYYY-MM-DD")
+        } else {
+          begin = tipsDateData[0]
+          end = tipsDateData[1]
+        }
+        this.beginTime = begin
+        this.endTime = end
+        axios
+          .get('safeAnalysis/statisticalRate', {
+            type: changeDateVal,
+            beginTime: begin,
+            endTime: end
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              const data = res.data.data
+              if (btntype === 0) {
+                this.mixLinebarDataA = data
+              } else {
+                this.mixLinebarDataB = data
+              }
             }
-          }
-        })
+          })
+        } else {
+          this.$message({
+            message: '日期不能为空',
+            type: 'warning'
+          });
+        }
     },
     handleCurrentChange (val, type) {
         if (type === 1){
@@ -962,26 +861,6 @@ export default {
           this.hiddSearchform.pageNo = val
         }  
         this.fetchUserTableData()
-    },
-    fetchUserTableData () {
-      if(this.changeSearchTimeA){
-        const time = this.changeSearchTimeA
-        this.userSearchform.cBeginTime = time[0]
-        this.userSearchform.cEndTime = time[1]        
-      }
-      axios
-        .get("safeAnalysis/getUserList", this.userSearchform)
-        .then((res) => {
-          debugger
-          if (res.data.code === 200) {
-            let data = res.data.data
-            this.paginationpage.total = data.total
-            data.list.forEach( item => {
-              item.setTime = moment(item.setTime).format("YYYY-MM-DD")
-            })
-            this.tableDataA = data.list
-          }
-        })
     },
     fetchHiddTableData () {
       axios
@@ -997,6 +876,15 @@ export default {
           }
         })
       
+    },
+    showComparison () { // 对比分析显示框
+      this.isShowComparison = true
+      let now = new Date()
+      let begin = moment(now).format("YYYY-MM-DD")
+      let end = begin
+      this.getCountUserRisk(0,begin,end,0)
+      this.getCountUserRisk(0,begin,end,1)
+
     },
     getBtnAuthority () {
       const authId = {authId: '1-1'}
