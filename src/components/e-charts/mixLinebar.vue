@@ -65,8 +65,8 @@
     </el-dialog>
     <el-dialog title="隐患发生数量" :visible.sync="isShowhidden" append-to-body width = "1300px">
       <div class="search-box">
-        <span class="search-info">检查名称</span><el-input v-model="hiddSearchform.userName" placeholder="请输入内容" class="search-ipt"></el-input>
-        <span class="search-info">治理人</span><el-input v-model="hiddSearchform.deptName" placeholder="请输入内容" class="search-ipt"></el-input>
+        <span class="search-info">治理人姓名</span><el-input v-model="hiddSearchform.userName" placeholder="请输入内容" class="search-ipt"></el-input>
+        <span class="search-info">检查名称</span><el-input v-model="hiddSearchform.checkName" placeholder="请输入内容" class="search-ipt"></el-input>
         <span class="search-info">隐患类型</span><el-input v-model="hiddSearchform.hiddenType" placeholder="请输入内容" class="search-ipt"></el-input>
       <el-button type="primary" @click = "fetchHiddTableData">查询</el-button>
         </div>
@@ -312,7 +312,7 @@ export default {
             }
           }
         ],
-        color: ['#1b6d4b', '#54d6b6', '#a6db69', ' #409eff'],
+        color: ['#3dd999', '#54d6b6', '#a6db69', ' #409eff'],
         series: [
           {
             name: this.qycyDate.name,
