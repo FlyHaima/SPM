@@ -869,7 +869,7 @@ export default {
       this.getCountUserRisk(0, begin, end, 1)
     },
     getBtnAuthority () {
-      const authId = {authId: '1-1'}
+      const authId = {authId: '1'}
       axios
         .get('user/getBtnArray', authId)
         .then((res) => {
