@@ -226,7 +226,7 @@
                 <div class="info-btn">
                   <!-- v-if= "fucBtns.includes('compare-search-btn')" -->
                   <!-- v-if= "fucBtns.includes('compare-analysis-btn')" -->
-                  <el-button v-if= "fucBtns.includes('compare-search-btn')" @click="isShowComparison=true" size="small" type="primary">对比查询</el-button>
+                  <el-button v-if= "fucBtns.includes('compare-search-btn')" @click="showComparison()" size="small" type="primary">对比查询</el-button>
                   <el-button v-if= "fucBtns.includes('compare-analysis-btn')" @click="compareAnalysisHandle()" size="small" type="primary">对比分析</el-button>
                 </div>
               </div>
