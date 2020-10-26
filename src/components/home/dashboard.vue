@@ -280,6 +280,7 @@
       title="查询"
       :visible.sync="isShowComparison"
       width = "1200px"
+      @closed = "destroyOnClose"
       >
       <div class="info-content">
         <div class="content-first">
@@ -340,13 +341,12 @@
             </el-date-picker>
             </div>
             <el-button type="primary" @click='getCountUserRisk(changeDateValA, tipsDateDataA,  yearsDateDataA, 0)'>查询</el-button>
-            <el-button type="primary" @click='isShowStaff=true'>ceshi1</el-button>
-            <el-button type="primary" @click='isShowhidden=true'>ceshi2</el-button>
           <div class="info-chart-box">
             <mix-linebar
               :chart-width = "chartWidth"
               :mixLinebarData = "mixLinebarDataA"
               :changeDateVal = "changeDateValA"
+              v-loading = "echartloading"
             ></mix-linebar>
           </div>
         </div>
@@ -410,8 +410,9 @@
           <div class="info-chart-box">
             <mix-linebar
               :chart-width = "chartWidth"
-              :mixLinebarData = 'mixLinebarDataB'
+              :mixLinebarData = "mixLinebarDataB"
               :changeDateVal = "changeDateValB"
+              v-loading = "echartloading"
             ></mix-linebar>
           </div>
         </div>
@@ -526,6 +527,7 @@ export default {
       tableData2: [],
       tableData3: [],
       tableData4: [],
+      echartloading: false, // echart载入
       risktestName: { //
         userCount: '', // 参与员工数量
         hiddenCount: '' // 隐患发生数量
@@ -536,7 +538,7 @@ export default {
       tipsDateDataA: '', // 日期选择查询时间段第一图
       tipsDateDataB: '', // 日期选择查询时间段第二图
       mixLinebarDataA: {}, // 图一 e-chart 数据
-      mixLinebarDataB: {},  // 图二 e-chart 数据
+      mixLinebarDataB: {}, // 图二 e-chart 数据
       yearsDateDataA: { // 年份日期选择对象A
         yearsDatestart: '', // 开始年限
         yearsDateend: '' // 结束年限
@@ -545,32 +547,23 @@ export default {
         yearsDatestart: '',
         yearsDateend: ''
       },
-      
-      timeHorizonA: { // 图1 时间范围
-        beginTime: '',  //  开始时间
-        endTime: '',    // 开始时间
-      },
-      timeHorizonB: { // 图2 时间范围
-        beginTime: '',  //  开始时间
-        endTime: '',    // 开始时间
-      },    
       changeSearchTimeA: [], // 搜索时间区间条件第一图
       changeSearchTimeB: [], // 搜索时间区间条件第二图
       tableDataA: [], // 员工数量表格数据
       tableDataB: [], // 隐患数量表格数据
-      userSearchform: { //员工搜索条件
-        userName: '', //员工姓名
-        deptName: '', //部门
-        position: '', //职位
-        cBeginTime: '', //开始时间（查询）
-        cEndTime: '', //结束时间（查询）
+      userSearchform: { // 员工搜索条件
+        userName: '', // 员工姓名
+        deptName: '', // 部门
+        position: '', // 职位
+        cBeginTime: '', // 开始时间（查询）
+        cEndTime: '', // 结束时间（查询）
         beginTime: '',
         endTime: '',
         type: '',
-        pageNo:'1',
-        pageSize: 10,
+        pageNo: '1',
+        pageSize: 10
       },
-      hiddSearchform: { //隐患搜索条件
+      hiddSearchform: { // 隐患搜索条件
         userName: '',
         checkName: '',
         hiddenType: '',
@@ -622,7 +615,7 @@ export default {
           }
           return time.getTime() > Date.now()
         }
-      },
+      }
     }
   },
   filters: {
@@ -812,7 +805,8 @@ export default {
       this.tipsDateDataB = ''
     },
     getCountUserRisk (changeDateVal, tipsDateData, yearsDateData, btntype) {
-      if (tipsDateData || yearsDateData.yearsDatestart ) {    
+      this.echartloading = true
+      if (tipsDateData || yearsDateData.yearsDatestart) {
         let begin = ''
         let end = ''
         console.log(tipsDateData)
@@ -820,11 +814,11 @@ export default {
           begin = moment(yearsDateData.yearsDatestart).format('YYYY')
           end = moment(yearsDateData.yearsDateend).format('YYYY')
         } else if (changeDateVal === 0) {
-          begin = moment(tipsDateData).format("YYYY-MM-DD")
-          end = moment(tipsDateData).format("YYYY-MM-DD")
-        } else if (changeDateVal === 3){
-          begin = moment(tipsDateData[0]).format("YYYY-MM-DD")
-          end = moment(tipsDateData[1]).format("YYYY-MM-DD")
+          begin = moment(tipsDateData).format('YYYY-MM-DD')
+          end = moment(tipsDateData).format('YYYY-MM-DD')
+        } else if (changeDateVal === 3) {
+          begin = moment(tipsDateData[0]).format('YYYY-MM-DD')
+          end = moment(tipsDateData[1]).format('YYYY-MM-DD')
         } else {
           begin = tipsDateData[0]
           end = tipsDateData[1]
@@ -846,45 +840,24 @@ export default {
                 this.mixLinebarDataB = data
               }
             }
+            this.echartloading = false
           })
-        } else {
-          this.$message({
-            message: '日期不能为空',
-            type: 'warning'
-          });
-        }
-    },
-    handleCurrentChange (val, type) {
-        if (type === 1){
-          this.userSearchform.pageNo = val
-        } else {
-          this.hiddSearchform.pageNo = val
-        }  
-        this.fetchUserTableData()
-    },
-    fetchHiddTableData () {
-      axios
-        .get("safeAnalysis/getHiddenList", this.hiddSearchform)
-        .then((res) => {
-          if (res.data.code === 200) {
-            let data = res.data.data
-            this.paginationpage.total = data.total
-            data.list.forEach( item => {
-              item.checkTime = moment(item.checkTime).format("YYYY-MM-DD")
-            })
-            this.tableDataB = data.list
-          }
+      } else {
+        this.$message({
+          message: '日期不能为空',
+          type: 'warning'
         })
-      
+        this.echartloading = false
+      }
     },
     showComparison () { // 对比分析显示框
       this.isShowComparison = true
       let now = new Date()
-      let begin = moment(now).format("YYYY-MM-DD")
+      let begin = moment(now).format('YYYY-MM-DD')
       let end = begin
-      this.getCountUserRisk(0,begin,end,0)
-      this.getCountUserRisk(0,begin,end,1)
-
+      this.tipsDateData = ''
+      this.getCountUserRisk(0, begin, end, 0)
+      this.getCountUserRisk(0, begin, end, 1)
     },
     getBtnAuthority () {
       const authId = {authId: '1-1'}
@@ -900,6 +873,16 @@ export default {
             })
           }
         })
+    },
+    destroyOnClose () {
+      this.yearsDateDataA.yearsDatestart = ''
+      this.yearsDateDataA.yearsDateend = ''
+      this.yearsDateDataB.yearsDatestart = ''
+      this.yearsDateDataB.yearsDateend = ''
+      this.tipsDateDataA = []
+      this.tipsDateDataB = []
+      this.changeDateValA = 0
+      this.changeDateValB = 0
     }
   },
   computed: {
@@ -1269,7 +1252,7 @@ export default {
 
       .info-header{
         margin-bottom: 20px;
-      
+
       }
       .search-box{
         margin-bottom: 36px;
@@ -1286,17 +1269,6 @@ export default {
       }
       .info-chart-box{
         margin-top: 20px;
-
-        ul{
-          width: 100%;
-
-          .info-text{
-            display: block;
-            float: left;
-            /* margin-right: 30px; */
-          }
-
-        }
       }
       .is-show-data{
         display: inline-block;
