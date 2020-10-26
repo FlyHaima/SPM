@@ -801,12 +801,15 @@ export default {
           }
         })
     },
+    //  日期种类改变 重置A日期值
     emptyValA () {
       this.tipsDateDataA = ''
     },
+    //  日期种类改变 重置A日期值
     emptyValB () {
       this.tipsDateDataB = ''
     },
+    // 获取E-chart 数据
     getCountUserRisk (changeDateVal, tipsDateData, yearsDateData, btntype) {
       this.echartloading = true
       if (tipsDateData || yearsDateData.yearsDatestart) {
@@ -843,6 +846,8 @@ export default {
                 this.mixLinebarDataB = data
               }
             }
+          })
+          .finally(() => {
             this.echartloading = false
           })
       } else {
@@ -853,7 +858,8 @@ export default {
         this.echartloading = false
       }
     },
-    showComparison () { // 对比分析显示框
+    // 显示对比分析显示框
+    showComparison () {
       this.isShowComparison = true
       let now = new Date()
       let begin = moment(now).format('YYYY-MM-DD')
