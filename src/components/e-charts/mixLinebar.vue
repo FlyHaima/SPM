@@ -312,7 +312,7 @@ export default {
             }
           }
         ],
-        color: ['#3dd999', '#54d6b6', '#a6db69', ' #409eff'],
+        color: ['#1b6d4b', '#54d6b6', '#a6db69', ' #409eff'],
         series: [
           {
             name: this.qycyDate.name,
