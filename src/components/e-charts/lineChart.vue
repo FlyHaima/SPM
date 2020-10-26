@@ -91,7 +91,10 @@ export default {
           data: this.xAxisdata
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          axisLabel: {
+            formatter: '{value} %'
+          }
         },
         series: [
           {

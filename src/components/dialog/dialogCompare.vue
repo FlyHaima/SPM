@@ -160,12 +160,13 @@
         <div class="table-title">
           {{tableTitle}}
         </div>
-        <el-tabs v-model="activeName" type="border-card">
+        <el-tabs v-model="activeName" @tab-click="handleTabClick" type="border-card">
           <el-tab-pane label="图表分析" name="1">
-            <line-chart :chart="chartLineChart"></line-chart>
+            <line-chart v-if="isChart" :chart="chartLineChart"></line-chart>
           </el-tab-pane>
           <el-tab-pane label="表格分析" name="2">
             <el-table
+              v-if="isTable"
               :data="tableData"
               border
               style="width: 100%">
@@ -182,7 +183,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <div class="pagination-box">
+            <!-- <div class="pagination-box">
               <el-pagination
                 background
                 hide-on-single-page
@@ -193,7 +194,7 @@
                 :total="page.total">
               </el-pagination>
               <span class="page-info">每页{{page.pageSize}}条，共{{page.total}}条</span>
-            </div>
+            </div> -->
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -231,6 +232,8 @@ export default {
         legend: [], // 图标数据栏
         data: [] // 图表数据
       },
+      isChart: true,
+      isTable: false,
       submitting: false,
       show: false,
       form: {
@@ -335,6 +338,16 @@ export default {
     // 关闭弹框
     closeDialog () {
       this.show = false
+    },
+    handleTabClick (tab) {
+      console.log(tab)
+      if (tab.name === '1') {
+        this.isChart = true
+        this.isTable = false
+      } else {
+        this.isChart = false
+        this.isTable = true
+      }
     },
     // 切换分页数量
     handleSizeChange (val) {
