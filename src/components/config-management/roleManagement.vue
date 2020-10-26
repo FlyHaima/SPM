@@ -524,9 +524,19 @@ export default {
     },
     // 筛选选中的btn元素
     filterBtnChecked (fData) {
+      debugger
+      // console.log(fData)
       this.filterBtnCheckedList = []
       fData.forEach(item => {
-        if (item.list !== null) {
+        if (item.name === '首页') {
+          item.btnControl.forEach(itemList => {
+            item.checkedRoles.forEach(itemChecked => {
+              if (itemList.name === itemChecked && itemList.active === false) {
+                this.filterBtnCheckedList.push(itemList.menuId)
+              }
+            })
+          })
+        } else if (item.list !== null) {
           item.list.forEach(itemChildren => {
             itemChildren.btnControl.forEach(itemList => {
               itemChildren.checkedRoles.forEach(itemChecked => {
