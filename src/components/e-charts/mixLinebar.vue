@@ -104,10 +104,29 @@
     <el-table-column
       prop="actState"
       label="进度">
+      <template slot-scope="scope">
+        <span v-if="scope.row.actState === '完成'">{{scope.row.actState}}</span>
+        <table-step v-else
+          :step-data="stepData"
+          :active="scope.row.actState * 1"
+        >
+        </table-step>
+      </template>
     </el-table-column>
     <el-table-column
       prop="sendtime"
       label="治理完成情况">
+      <template slot-scope="scope">
+        <span
+          v-if="scope.row.actState === '完成'"
+        >完成</span>
+        <a
+          v-else
+          href="javascript:;"
+          class="color-primary"
+          @click="detailsHandle(scope.row)">详情
+        </a>
+      </template>
     </el-table-column>
     </el-table>
     <div class="el-pagination__wrap text-right">
@@ -121,12 +140,20 @@
       </el-pagination>
     </div>
     </el-dialog>
+    <dialog-details
+      ref="dialogDetails"
+      :dialogVisible = "dialogDetailsVisible"
+      :id = "currentDetailsId"
+      @on-dialog-change = "changeDetailsDialog"
+  ></dialog-details>
   </div>
 </template>
 
 <script>
 import axios from '@/api/axios'
 import moment from 'moment'
+import TableStep from '@/components/step/stepCustom'
+import DialogDetails from '@/components/risk-screening/screening-review/detailsDialog'
 export default {
   data () {
     return {
@@ -153,7 +180,7 @@ export default {
         endTime: '',
         type: '',
         pageNo: 1,
-        pageSize: 2
+        pageSize: 10
       },
       paginationpage: {
         pageNo: 1,
@@ -193,7 +220,27 @@ export default {
       },
       changeOptions: ['日', '月', '年', '时间区间'],
       companyName: '',
-      loading: false
+      loading: false,
+      stepData: [
+        {
+          label: 'p',
+          value: 1
+        },
+        {
+          label: 'd',
+          value: 2
+        },
+        {
+          label: 'c',
+          value: 3
+        },
+        {
+          label: 'a',
+          value: 4
+        }
+      ],
+      dialogDetailsVisible: false,
+      currentDetailsId: ''
     }
   },
   props: {
@@ -211,12 +258,13 @@ export default {
     }
   },
   components: {
-
+    TableStep,
+    DialogDetails
   },
   mounted () {
   },
   methods: {
-    setEchart (opt) {
+    setEchart (opt) { // 初始化表格
       this.defactoringData()
       let chartDom = document.getElementById(this.echart)
       let myChart = this.$echarts.init(chartDom)
@@ -264,7 +312,7 @@ export default {
             }
           }
         ],
-        color: ['#62d1de', '#54d6b6', '#a6db69', ' #409eff'],
+        color: ['#3dd999', '#54d6b6', '#a6db69', ' #409eff'],
         series: [
           {
             name: this.qycyDate.name,
@@ -290,7 +338,7 @@ export default {
       }
       myChart.setOption(option)
     },
-    defactoringData () {
+    defactoringData () { // 处理表格数据格式
       let data = this.mixLinebarData
       this.userSearchform.beginTime = data.beginTime
       this.userSearchform.endTime = data.endTime
@@ -342,7 +390,7 @@ export default {
       this.hiddSearchform.pageNo = 1
       this.fetchHiddTableData()
     },
-    fetchUserTableData () { // 0 代表第一个图的  1 代表第二个图
+    fetchUserTableData () { // 获取员工数量数据
       this.loading = true
       if (this.changeSearchTime.length !== 0) {
         const time = this.changeSearchTime
@@ -359,11 +407,13 @@ export default {
               item.setTime = moment(item.setTime).format('YYYY-MM-DD')
             })
             this.tableDataA = data.list
-            this.loading = false
           }
         })
+        .finally(() => {
+          this.loading = false
+        })
     },
-    fetchHiddTableData () {
+    fetchHiddTableData () { // 获取隐患表格数据
       this.loading = true
       axios
         .get('safeAnalysis/getHiddenList', this.hiddSearchform)
@@ -375,8 +425,10 @@ export default {
               item.checkTime = moment(item.checkTime).format('YYYY-MM-DD')
             })
             this.tableDataB = data.list
-            this.loading = false
           }
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
     handleCurrentChangeUser (val) {
@@ -386,6 +438,15 @@ export default {
     handleCurrentChangeHidd (val) {
       this.hiddSearchform.pageNo = val
       this.fetchHiddTableData()
+    },
+    detailsHandle (item) {
+      this.currentDetailsId = item.procInstId
+      // 触发子组件的获取详情的数据接口
+      this.$refs.dialogDetails.fetchDetailsData()
+      this.dialogDetailsVisible = true
+    },
+    changeDetailsDialog (val) {
+      this.dialogDetailsVisible = val
     }
   },
 
