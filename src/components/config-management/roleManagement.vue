@@ -524,8 +524,6 @@ export default {
     },
     // 筛选选中的btn元素
     filterBtnChecked (fData) {
-      debugger
-      // console.log(fData)
       this.filterBtnCheckedList = []
       fData.forEach(item => {
         if (item.name === '首页') {
