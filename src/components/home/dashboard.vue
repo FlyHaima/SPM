@@ -374,6 +374,7 @@
             <div class="is-show-data" v-show='changeDateValB == 1'>
               <span class="demonstration" required>选择时间</span>
             <el-date-picker
+              value-format="yyyy-MM"
               v-model="tipsDateDataB"
               type="monthrange"
               >
@@ -811,6 +812,8 @@ export default {
     },
     // 获取E-chart 数据
     getCountUserRisk (changeDateVal, tipsDateData, yearsDateData, btntype) {
+      console.log('11111',this.tipsDateDataA)
+      console.log('22222',this.tipsDateDataB)
       this.echartloading = true
       if (tipsDateData || yearsDateData.yearsDatestart) {
         let begin = ''
