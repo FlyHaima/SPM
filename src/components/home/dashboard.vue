@@ -831,6 +831,7 @@ export default {
         }
         this.beginTime = begin
         this.endTime = end
+        debugger
         axios
           .get('safeAnalysis/statisticalRate', {
             type: changeDateVal,
