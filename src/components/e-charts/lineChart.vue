@@ -19,6 +19,10 @@ export default {
       data2: [], // series[1]
       data3: [], // series[2]
       data4: [], // series[3]
+      data5: [], // series[4]
+      data6: [], // series[5]
+      data7: [], // series[6]
+      data8: [], // series[7]
       xAxisdata: [] // 横坐标数组
     }
   },
@@ -53,12 +57,20 @@ export default {
       vm.data2 = []
       vm.data3 = []
       vm.data4 = []
+      vm.data5 = []
+      vm.data6 = []
+      vm.data7 = []
+      vm.data8 = []
       vm.xAxisdata = []
       data.forEach(item => {
         vm.data1.push(item.data1)
         vm.data2.push(item.data2)
         vm.data3.push(item.data3)
         vm.data4.push(item.data4)
+        vm.data5.push(item.data5)
+        vm.data6.push(item.data6)
+        vm.data7.push(item.data7)
+        vm.data8.push(item.data8)
         vm.xAxisdata.push(item.xAxisdata)
       })
     },
@@ -125,25 +137,25 @@ export default {
             name: chart.legend[4],
             type: 'line',
             stack: '总量',
-            data: this.data4
+            data: this.data5
           },
           {
             name: chart.legend[5],
             type: 'line',
             stack: '总量',
-            data: this.data4
+            data: this.data6
           },
           {
             name: chart.legend[6],
             type: 'line',
             stack: '总量',
-            data: this.data4
+            data: this.data7
           },
           {
             name: chart.legend[7],
             type: 'line',
             stack: '总量',
-            data: this.data4
+            data: this.data8
           }
         ]
       })
