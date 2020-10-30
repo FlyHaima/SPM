@@ -340,7 +340,6 @@ export default {
       this.show = false
     },
     handleTabClick (tab) {
-      console.log(tab)
       if (tab.name === '1') {
         this.isChart = true
         this.isTable = false
@@ -419,13 +418,19 @@ export default {
         .get('safeAnalysis/analyseRate', postData)
         .then((res) => {
           if (res.data.code === 200) {
+            let vm = this
             let resData = res.data.data
-            this.tableHeaderData = resData.tableHeaderData
-            this.tableData = resData.tableData
-            this.tableTitle = resData.title
-            this.chartLineChart.legend = resData.legend
-            this.chartLineChart.data = resData.picData
-            this.page.total = res.data.total
+            vm.tableHeaderData = resData.tableHeaderData
+            vm.tableData = resData.tableData
+            vm.tableTitle = resData.title
+            vm.chartLineChart.legend = resData.legend
+            vm.chartLineChart.data = resData.picData
+            vm.page.total = res.data.total
+            // 解决数据刷新，table不刷新问题
+            this.isTable = false
+            this.$nextTick(() => {
+              this.isTable = true
+            })
           } else {
             this.$message({
               message: res.data.message,
@@ -455,19 +460,20 @@ export default {
     searchHandler (formName) {
       // form.pageNo = 1
       // this.tableSearchForm.pageNo = 1
-      const specialKey = ['%', "'", ',', '，', '.', '。']
-      // 特殊字符校验
-      try {
-        Object.keys(this.form).forEach(key => {
-          if (specialKey.includes(this.form[key])) {
-            this.$message.error(
-              '查询条件不能为特殊字符百分号[ % ] 、单引号[ ' + "'" + ' ] 以及中英文标点符号[ ，。. ]'
-            )
-          }
-        })
-      } catch (e) {
-        return
-      }
+      // const specialKey = ['%', "'", ',', '，', '.', '。']
+      // // 特殊字符校验
+      // try {
+      //   Object.keys(this.form).forEach(key => {
+      //     if (specialKey.includes(this.form[key])) {
+      //       this.$message.error(
+      //         '查询条件不能为特殊字符百分号[ % ] 、单引号[ ' + "'" + ' ] 以及中英文标点符号[ ，。. ]'
+      //       )
+      //     }
+      //   })
+      // } catch (e) {
+      //   return
+      // }
+      // debugger
       if (this.form.deptId === '') {
         this.$message({
           message: '层级不能为空',
