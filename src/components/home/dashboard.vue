@@ -891,8 +891,8 @@ export default {
       this.yearsDateDataA.yearsDateend = ''
       this.yearsDateDataB.yearsDatestart = ''
       this.yearsDateDataB.yearsDateend = ''
-      this.tipsDateDataA = []
-      this.tipsDateDataB = []
+      this.tipsDateDataA = null
+      this.tipsDateDataB = null
       this.changeDateValA = 0
       this.changeDateValB = 0
     }

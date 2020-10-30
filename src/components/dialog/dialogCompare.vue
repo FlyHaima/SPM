@@ -7,7 +7,7 @@
  -->
 <template>
   <el-dialog
-    @close="closeDialog()"
+    @close="closeDialog('form')"
     :close-on-click-modal="false"
     :visible.sync="show"
     width="80%">
@@ -334,10 +334,21 @@ export default {
     // 初始化数据
     initData () {
       this.getDeptData()
+      this.fetchList()
     },
     // 关闭弹框
-    closeDialog () {
+    closeDialog (formName) {
       this.show = false
+      this.form.type = '1'
+      this.form.deptIds = ''
+      this.form.kind = 1
+      this.form.searchTimeOne = ''
+      this.form.searchTimeTwo = ''
+      this.form.beginTimeOne = ''
+      this.form.endTimeOne = ''
+      this.form.beginTimeTwo = ''
+      this.form.endTimeTwo = ''
+      // this.$refs[formName].resetFields()
     },
     handleTabClick (tab) {
       if (tab.name === '1') {
