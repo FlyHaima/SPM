@@ -16,6 +16,7 @@ import axios from 'axios'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/css/swiper.css'
 import decimal from './utils/js/validation'
+import Moment from 'moment'
 
 // 最后引入router，以实现覆盖组件内部样式的目的
 import router from './router'
@@ -23,6 +24,7 @@ import router from './router'
 import '../static/css/style.css'
 
 Vue.use(decimal)
+Vue.use(Moment)
 axios.interceptors.request.use(
   config => {
     // 在所有请求头部添加token值

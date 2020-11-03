@@ -223,6 +223,12 @@
                 <div class="info-title">
                   <span class="info-title-txt">安全指数分析</span>
                 </div>
+                <div class="info-btn">
+                  <!-- v-if= "fucBtns.includes('compare-search-btn')" -->
+                  <!-- v-if= "fucBtns.includes('compare-analysis-btn')" -->
+                  <el-button v-if= "fucBtns.includes('compare-search-btn')" @click="showComparison()" size="small" type="primary">对比查询</el-button>
+                  <el-button v-if= "fucBtns.includes('compare-analysis-btn')" @click="compareAnalysisHandle()" size="small" type="primary">对比分析</el-button>
+                </div>
               </div>
               <div class="info-content">
                 <div class="pie-list-box">
@@ -272,28 +278,192 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      title="查询"
+      :visible.sync="isShowComparison"
+      width = "1200px"
+      @closed = "destroyOnClose"
+      >
+      <div class="info-content">
+        <div class="content-first">
+          <span>查询种类</span>
+          <el-select v-model="changeDateValA" placeholder="请选择" @change='emptyValA'>
+            <el-option
+              v-for="(item, index) in changeDateOptions"
+              :key="index"
+              :label="item"
+              :value="index"
+              >
+            </el-option>
+          </el-select>
+            <div class="is-show-data" v-show='changeDateValA == 0'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataA"
+              type="date"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValA == 1'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              value-format="yyyy-MM"
+              v-model="tipsDateDataA"
+              type="monthrange"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValA == 2'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="yearsDateDataA.yearsDatestart"
+              value-format="timestamp"
+              type="year"
+              :picker-options= "startDateA"
+              >
+            </el-date-picker>
+            -
+            <el-date-picker
+              v-model="yearsDateDataA.yearsDateend"
+              value-format="timestamp"
+              type="year"
+              :picker-options= "endDateA"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValA == 3'>
+              <span class="demonstration">选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataA"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              >
+            </el-date-picker>
+            </div>
+            <el-button type="primary" @click='getCountUserRisk(changeDateValA, tipsDateDataA,  yearsDateDataA, 0)'>查询</el-button>
+          <div class="info-chart-box">
+            <mix-linebar
+              :chart-width = "chartWidth"
+              :mixLinebarData = "mixLinebarDataA"
+              :changeDateVal = "changeDateValA"
+              v-loading = "echartloading"
+            ></mix-linebar>
+          </div>
+        </div>
+        <div class="content-second">
+          <span>查询种类</span>
+          <el-select v-model="changeDateValB" placeholder="请选择" @change='emptyValB'>
+            <el-option
+              v-for="(item, index) in changeDateOptions"
+              :key="index"
+              :label="item"
+              :value="index"
+              >
+            </el-option>
+          </el-select>
+            <div class="is-show-data" v-show='changeDateValB == 0'>
+              <span class="demonstration" required>选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataB"
+              type="date"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValB == 1'>
+              <span class="demonstration" required>选择时间</span>
+            <el-date-picker
+              value-format="yyyy-MM"
+              v-model="tipsDateDataB"
+              type="monthrange"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValB == 2'>
+              <span class="demonstration" required>选择时间</span>
+            <el-date-picker
+              v-model="yearsDateDataB.yearsDatestart"
+              type="year"
+              :picker-options= "endDateB"
+              value-format="yyyy"
+              >
+            </el-date-picker>
+            -
+            <el-date-picker
+              v-model="yearsDateDataB.yearsDateend"
+              type="year"
+              :picker-options= "endDateB"
+              value-format="yyyy"
+              >
+            </el-date-picker>
+            </div>
+            <div class="is-show-data" v-show='changeDateValB == 3'>
+              <span class="demonstration" required>选择时间</span>
+            <el-date-picker
+              v-model="tipsDateDataB"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              >
+            </el-date-picker>
+            </div>
+            <el-button type="primary" @click='getCountUserRisk(changeDateValB, tipsDateDataB,  yearsDateDataB, 1)'>查询</el-button>
+          <div class="info-chart-box">
+            <mix-linebar
+              :chart-width = "chartWidth"
+              :mixLinebarData = "mixLinebarDataB"
+              :changeDateVal = "changeDateValB"
+              v-loading = "echartloading"
+            ></mix-linebar>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+    <dialog-compare
+      ref="dialog-compare"
+      :dialog-visible="dialogCompareVisible"
+      :dialog-data = "dialogCompareData"
+      @on-dialog-change="changeDialogCompare"
+    ></dialog-compare>
   </div>
 </template>
 
 <script>
 import pieC from '@/components/e-charts/pieC'
+import mixLinebar from '@/components/e-charts/mixLinebar.vue'
 import gauge from '@/components/e-charts/gauge'
 import statisticE from '@/components/e-charts/statisticE'
 import axios from '@/api/axios'
 import moment from 'moment'
+import dialogCompare from '@/components/dialog/dialogCompare'
 export default {
   name: 'home',
   data () {
     return {
+      fucBtns: [],
+      dialogCompareVisible: false, // 对比分析弹框显示开关
+      dialogCompareData: {
+        title: '对比分析',
+        api: 'system/advert/getUserSelect',
+        options: {
+        },
+        columns: [
+          {
+            prop: 'userName',
+            label: '姓名'
+          },
+          {
+            prop: 'phone',
+            label: '联系方式'
+          }
+        ]
+      },
+      basicData: {},
       pageLoading: false,
-      basicData: {
-        dCount: 0, // 低风险
-        zdCount: 0, // 重大风险
-        userCount: 0, // 用户数量
-        ybCount: 0, // 一般风险
-        jdCount: 0, // 较大风险
-        hiddenCount: 0 // 本日隐患发生的数量
-      }, // 基础数据
+      isShowComparison: false, // 对比图弹窗控制
+      changeDateOptions: ['按日期查询', '按月份查询', '按年度查询', '按时间区间查询'],
       gaugeData: [], // 仪表盘数据
       pieOptions: [
         {
@@ -345,6 +515,7 @@ export default {
       chartData: [], // 图表数据
       chartHeight: '417px', // 图表高度
       pieHeight: '200px', // 饼图高度
+      chartWidth: '446px',
       messageData: [], // 信息列表数据
       tabType: '2',
       page: {
@@ -359,7 +530,96 @@ export default {
       tableData1: [], // 风险动态数据
       tableData2: [],
       tableData3: [],
-      tableData4: []
+      tableData4: [],
+      echartloading: false, // echart载入
+      risktestName: { //
+        userCount: '', // 参与员工数量
+        hiddenCount: '' // 隐患发生数量
+      },
+      mixLinebarTimeDate: [], // 对比查询数据
+      changeDateValA: 0, // 选择的时间段种类
+      changeDateValB: 0, // 选择的时间段种类
+      tipsDateDataA: '', // 日期选择查询时间段第一图
+      tipsDateDataB: '', // 日期选择查询时间段第二图
+      mixLinebarDataA: {}, // 图一 e-chart 数据
+      mixLinebarDataB: {}, // 图二 e-chart 数据
+      yearsDateDataA: { // 年份日期选择对象A
+        yearsDatestart: '', // 开始年限
+        yearsDateend: '' // 结束年限
+      },
+      yearsDateDataB: { // 年份日期选择对象B
+        yearsDatestart: '',
+        yearsDateend: ''
+      },
+      changeSearchTimeA: [], // 搜索时间区间条件第一图
+      changeSearchTimeB: [], // 搜索时间区间条件第二图
+      tableDataA: [], // 员工数量表格数据
+      tableDataB: [], // 隐患数量表格数据
+      userSearchform: { // 员工搜索条件
+        userName: '', // 员工姓名
+        deptName: '', // 部门
+        position: '', // 职位
+        cBeginTime: '', // 开始时间（查询）
+        cEndTime: '', // 结束时间（查询）
+        beginTime: '',
+        endTime: '',
+        type: '',
+        pageNo: '1',
+        pageSize: 10
+      },
+      hiddSearchform: { // 隐患搜索条件
+        userName: '',
+        checkName: '',
+        hiddenType: '',
+        beginTime: '',
+        endTime: '',
+        type: '',
+        pageNo: 1,
+        pageSize: 2
+      },
+      paginationpage: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      },
+      startDateA: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          if (this.yearsDateDataA.yearsDateend) {
+            return time.getTime() > this.yearsDateDataA.yearsDateend
+          } else {
+            return time.getTime() > Date.now()
+          }
+        }
+      },
+      endDateA: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          if (this.yearsDateDataA.yearsDateend) {
+            return time.getTime() < this.yearsDateDataA.yearsDatestart
+          } else if (this.yearsDateDataA.yearsDatestart) {
+            return time.getTime() < this.yearsDateDataA.yearsDatestart || time.getTime() > Date.now()
+          }
+          return time.getTime() > Date.now()
+        }
+      },
+      startDateB: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          if (this.yearsDateDataB.yearsDateend) {
+            return time.getTime() > this.yearsDateDataB.yearsDateend
+          } else {
+            return time.getTime() > Date.now()
+          }
+        }
+      },
+      endDateB: {
+        disabledDate: time => { // 禁止选择日期大于开始日期
+          if (this.yearsDateDataB.yearsDateend) {
+            return time.getTime() < this.yearsDateDataB.yearsDatestart
+          } else if (this.yearsDateDataB.yearsDatestart) {
+            return time.getTime() < this.yearsDateDataB.yearsDatestart || time.getTime() > Date.now()
+          }
+          return time.getTime() > Date.now()
+        }
+      }
     }
   },
   filters: {
@@ -375,7 +635,9 @@ export default {
   components: {
     pieC,
     statisticE,
-    gauge
+    gauge,
+    mixLinebar,
+    dialogCompare
   },
   created () {
     this.fetchPieData()
@@ -384,9 +646,18 @@ export default {
     this.fetchChartData()
     this.fetchGaugeData()
     this.fetchTableData()
+    this.getBtnAuthority()
     this.fetchBasicData()
   },
   methods: {
+    // 对比分析点击事件处理
+    compareAnalysisHandle () {
+      this.dialogCompareVisible = true
+    },
+    // 监听对比分析弹出框的显示
+    changeDialogCompare (val) {
+      this.dialogCompareVisible = val
+    },
     // 获取安全指数分析数据
     fetchTableData () {
       let vm = this
@@ -422,7 +693,6 @@ export default {
                 (this.pieData[j][0].value +
                 this.pieData[j][1].value)) * 100)
             }
-            console.log(this.pieOptions[i].participationRate)
           }
         }
       }
@@ -436,7 +706,6 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.pieData = res.data.data
-            console.log(this.pieData)
             this.initPieOptions()
           }
         }).finally(() => {
@@ -532,9 +801,108 @@ export default {
             this.messageData = res.data.data
           }
         })
+    },
+    //  日期种类改变 重置A日期值
+    emptyValA () {
+      this.tipsDateDataA = ''
+    },
+    //  日期种类改变 重置A日期值
+    emptyValB () {
+      this.tipsDateDataB = ''
+    },
+    // 获取E-chart 数据
+    getCountUserRisk (changeDateVal, tipsDateData, yearsDateData, btntype) {
+      console.log('11111', this.tipsDateDataA)
+      console.log('22222', this.tipsDateDataB)
+      this.echartloading = true
+      if (tipsDateData || yearsDateData.yearsDatestart) {
+        let begin = ''
+        let end = ''
+        console.log(tipsDateData)
+        if (changeDateVal === 2) {
+          begin = moment(yearsDateData.yearsDatestart).format('YYYY')
+          end = moment(yearsDateData.yearsDateend).format('YYYY')
+        } else if (changeDateVal === 0) {
+          begin = moment(tipsDateData).format('YYYY-MM-DD')
+          end = moment(tipsDateData).format('YYYY-MM-DD')
+        } else if (changeDateVal === 3) {
+          begin = moment(tipsDateData[0]).format('YYYY-MM-DD')
+          end = moment(tipsDateData[1]).format('YYYY-MM-DD')
+        } else {
+          begin = tipsDateData[0]
+          end = tipsDateData[1]
+        }
+        this.beginTime = begin
+        this.endTime = end
+        axios
+          .get('safeAnalysis/statisticalRate', {
+            type: changeDateVal,
+            beginTime: begin,
+            endTime: end
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              const data = res.data.data
+              if (btntype === 0) {
+                this.mixLinebarDataA = data
+              } else {
+                this.mixLinebarDataB = data
+              }
+            }
+          })
+          .finally(() => {
+            this.echartloading = false
+          })
+      } else {
+        this.$message({
+          message: '日期不能为空',
+          type: 'warning'
+        })
+        this.echartloading = false
+      }
+    },
+    // 显示对比分析显示框
+    showComparison () {
+      this.isShowComparison = true
+      let now = new Date()
+      let begin = moment(now).format('YYYY-MM-DD')
+      let end = begin
+      this.tipsDateData = ''
+      this.getCountUserRisk(0, begin, end, 0)
+      this.getCountUserRisk(0, begin, end, 1)
+    },
+    getBtnAuthority () {
+      const authId = {authId: '1'}
+      axios
+        .get('user/getBtnArray', authId)
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.fucBtns = res.data.data.functionBtns
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: 'warning'
+            })
+          }
+        })
+    },
+    destroyOnClose () {
+      this.yearsDateDataA.yearsDatestart = ''
+      this.yearsDateDataA.yearsDateend = ''
+      this.yearsDateDataB.yearsDatestart = ''
+      this.yearsDateDataB.yearsDateend = ''
+      this.tipsDateDataA = null
+      this.tipsDateDataB = null
+      this.changeDateValA = 0
+      this.changeDateValB = 0
     }
+  },
+  computed: {
+    // demonstration: function () {
+    // let typeval = this.timeType[this.changeDataValA]
+    // return typeval
+    // }
   }
-
 }
 </script>
 
@@ -705,7 +1073,7 @@ export default {
   }
   .info-title-txt{
     font-size: 16px;
-    line-height: 16px;
+    line-height: 36px;
     margin-left: 15px;
   }
   .info-link-txt{
@@ -890,6 +1258,37 @@ export default {
       }
     }
   }
+  .el-dialog{
+      height: 100%;
+      display: flex;
+
+      .info-header{
+        margin-bottom: 20px;
+
+      }
+      .search-box{
+        margin-bottom: 36px;
+        .search-ipt{
+          width: 140px;
+          margin: 0 20px;
+      }
+        .search-time-ipt{
+          margin: 0 20px;
+        }
+        .search-info{
+
+      }
+      }
+      .info-chart-box{
+        margin-top: 20px;
+      }
+      .is-show-data{
+        display: inline-block;
+      }
+      .block{
+        margin-bottom: 20px;
+      }
+    }
   @media only screen and (max-width:1680px) {
     .pie-list-box{
       justify-content: space-around;
