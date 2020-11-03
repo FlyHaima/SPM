@@ -1215,6 +1215,7 @@ export default {
       if (response.code === 200) {
         this.$notify.success('导入成功')
         this.getRiskDeptList()
+        this.getRiskTable()
         this.pageLoading = false
       } else {
         this.pageLoading = false
