@@ -210,8 +210,8 @@
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepOne" v-if="doneStep >= 1">修改并关闭</el-button>
-                        <el-button size="medium" @click="changeStepOne" v-else>保存并关闭</el-button>
+                        <el-button size="medium" @click="changeStepOne" v-if="doneStep >= 1">保存</el-button>
+                        <el-button size="medium" @click="changeStepOne" v-else>保存</el-button>
                         <el-button size="medium" type="primary" @click="toStepTwo">下一步</el-button>
                       </div>
                     </div>
@@ -259,8 +259,8 @@
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepTwo" v-if="doneStep >= 2">修改并关闭</el-button>
-                        <el-button size="medium" @click="changeStepTwo" v-else>保存并关闭</el-button>
+                        <el-button size="medium" @click="changeStepTwo" v-if="doneStep >= 2">保存</el-button>
+                        <el-button size="medium" @click="changeStepTwo" v-else>保存</el-button>
                         <el-button size="medium" type="primary" @click="toStepThree">下一步</el-button>
                       </div>
                     </div>
@@ -396,8 +396,8 @@
                       </div>
                       <div class="btn-box" :class="stepObjA.identifierWay === 'LS' ? 'isLS' : ''">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepThree" v-if="doneStep >= 3">修改并关闭</el-button>
-                        <el-button size="medium" @click="changeStepThree" v-else>保存并关闭</el-button>
+                        <el-button size="medium" @click="changeStepThree" v-if="doneStep >= 3">保存</el-button>
+                        <el-button size="medium" @click="changeStepThree" v-else>保存</el-button>
                         <el-button size="medium" type="primary" @click="toStepFour">下一步</el-button>
                       </div>
                     </div>
@@ -435,7 +435,7 @@
                       </p>
                       <div class="btn-box">
                         <el-button size="medium" type="primary" plain @click="closeDialog">关闭</el-button>
-                        <el-button size="medium" @click="changeStepFour" v-if="doneStep >= 4">修改并关闭</el-button>
+                        <el-button size="medium" @click="changeStepFour" v-if="doneStep >= 4">保存</el-button>
                         <el-button size="medium" type="primary" @click="finish" v-else>完成</el-button>
                       </div>
                     </div>
@@ -823,7 +823,9 @@ export default {
             treeLevel: vm.currentTreeData.treeLevel
           }
           vm.getRiskTable(data)
-          if (vm.currentTreeData.pid === '0') {
+          if (!vm.currentTreeData.pid) {
+            vm.$refs.tree.refreshNodeBy(vm.currentTreeData.riskId)
+          } else if (vm.currentTreeData.pid === '0') {
             vm.$refs.tree.refreshNodeBy(vm.currentTreeData.riskId)
           } else {
             vm.$refs.tree.refreshNodeBy(vm.currentTreeData.pId)
@@ -869,16 +871,14 @@ export default {
     },
     changeStepOne () {
       let vm = this
-      if (!vm.saveStepOne()) return
-      vm.showDialog = false
+      vm.saveStepOne()
     },
     closeDialog () {
       this.showDialog = false
     },
     changeStepTwo () {
       let vm = this
-      if (!vm.saveStepTwo()) return
-      vm.showDialog = false
+      vm.saveStepTwo()
     },
     saveStepTwo () {
       let vm = this
@@ -942,8 +942,7 @@ export default {
     },
     changeStepThree () {
       let vm = this
-      if (!vm.saveStepThree()) return
-      vm.showDialog = false
+      vm.saveStepThree()
     },
     saveStepThree () {
       let vm = this
@@ -985,8 +984,7 @@ export default {
     },
     changeStepFour () {
       let vm = this
-      if (!vm.saveStepFour()) return
-      vm.showDialog = false
+      vm.saveStepFour()
     },
     saveStepFour () {
       let vm = this
