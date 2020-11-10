@@ -331,7 +331,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.submitting = true
-        this.form.riskResult = JSON.stringify(this.form.riskResult)
+        this.form.riskResult = ''
         this.form.emergency = JSON.stringify(this.form.emergency)
         axios
           .post('riskCard/addCard', this.form)
