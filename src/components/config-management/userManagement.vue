@@ -517,10 +517,12 @@ export default {
             .then((res) => {
               this.submitting = true
               if (res.data.code === 200) {
-                this.$notify.success('删除成功')
+                this.$notify.success(res.data.message)
                 this.tables.form.pageNo--
                 this.tablesFetchList()
                 this.multipleSelection = []
+              } else {
+                this.$notify.success(res.data.message)
               }
             })
             .finally(() => {
