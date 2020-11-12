@@ -501,10 +501,13 @@ export default {
         this.$message.warning('请选择要删除的行')
       } else {
         let sendDAta = { userId: [] }
+        let selectUser = []
         this.multipleSelection.forEach(item => {
           sendDAta.userId.push(item.userId)
+          selectUser.push(item.userName)
         })
-        this.$confirm('是否删除？', '提示', {
+        const tipsStr = selectUser.join('，')
+        this.$confirm(`确定要删除选中的 [ ${tipsStr} ] 账号吗？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -599,9 +602,7 @@ export default {
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data)
             this.fucBtns = res.data.data.functionBtns
-            console.log(this.fucBtns)
           } else {
             this.$message({
               message: res.data.message,
