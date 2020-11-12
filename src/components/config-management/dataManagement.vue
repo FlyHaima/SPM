@@ -52,7 +52,7 @@
             <div class="content-tools is-flex-end">
               <div class="tools-right">
                 <el-button
-                v-if="fucBtns.includes('add-btn')"
+                  v-if="fucBtns.includes('add-btn')"
                   type="primary"
                   size="medium"
                   icon="el-icon-plus"
@@ -85,6 +85,28 @@
                 prop="remark"
                 label="备注"
                 align="center">
+              </el-table-column>
+              <el-table-column
+                fixed="right"
+                prop=" "
+                label="操作"
+                width="120"
+                align="center">
+                <template slot-scope="scope">
+                  <a
+                  v-if="fucBtns.includes('edit-btn')"
+                    href="javascript:;"
+                    class="color-primary"
+                    @click="editHandle(scope.row)">编辑
+                  </a>
+                  <span class="color-primary"> / </span>
+                  <a
+                    v-if="fucBtns.includes('del-btn')"
+                      href="javascript:;"
+                      class="color-primary"
+                      @click="delRowHandle(scope.row)">删除
+                    </a>
+                </template>
               </el-table-column>
             </el-table>
             <div class="el-pagination__wrap text-right">
@@ -137,6 +159,7 @@
           label="代码"
           prop="code">
           <el-input
+            :disabled = "inputDisabled"
             v-model.trim="tables.form.code"
             placeholder="请输入代码"
             maxlength="25"
@@ -211,12 +234,13 @@
 import BreadCrumb from '../Breadcrumb/Breadcrumb'
 import axios from '@/api/axios'
 import Tables from '@/mixins/Tables'
-
 export default {
   name: 'dataManagement',
   mixins: [Tables],
   data () {
     return {
+      inputDisabled: false, // 输入框不可用状态标志
+      isEdit: false,
       breadcrumb: ['配置维护管理', '数据字典'],
       pageLoading: false, // 页面loading开关
       submitting: false, // 提交数据loading开关
@@ -231,6 +255,7 @@ export default {
       tables: {
         api: 'dic/getList',
         form: {
+          id: '',
           groupId: '',
           content: '', // 名称
           code: '', // 代码
@@ -292,11 +317,25 @@ export default {
     // 添加事件处理
     addHandle () {
       this.dialogAddVisible = true
+      this.isEdit = false
       Object.keys(this.tables.form).forEach(key => {
         // this.tables.form[key] = ''
         this.tables.form.content = '' // 名称
         this.tables.form.code = '' // 代码
         this.tables.form.remark = '' // 备注
+      })
+    },
+    // 编辑事件处理
+    editHandle (item) {
+      this.dialogAddVisible = true
+      this.inputDisabled = true
+      this.isEdit = true
+      Object.keys(this.tables.form).forEach(key => {
+        // this.tables.form[key] = ''
+        this.tables.form.id = item.id
+        this.tables.form.content = item.content // 名称
+        this.tables.form.code = item.code // 代码
+        this.tables.form.remark = item.remark // 备注
       })
     },
     // 添加分类事件处理
@@ -355,41 +394,93 @@ export default {
         }
       })
     },
+    // 删除事件
+    delRowHandle (row) {
+      let sendData = {
+        id: row.id
+      }
+      axios
+        .delete('dic/del', sendData, { 'content-type': 'application/x-www-form-urlencoded' })
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.$notify.success('删除成功')
+            this.fetchTableData()
+          }
+        })
+        .finally(() => {
+        })
+    },
     // form表单提交事件
     submitForm () {
       this.$refs.form.validate((valid) => {
-        if (valid) {
-          this.$confirm('确定添加数据?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          })
-            .then(() => {
-              this.submitting = true
-              this.tables.form.groupId = this.groupId
-              axios
-                .post('dic/add', this.tables.form)
-                .then((res) => {
-                  if (res.data.code === 200) {
+        if (this.isEdit) {
+          if (valid) {
+            this.$confirm('确定编辑数据?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            })
+              .then(() => {
+                this.submitting = true
+                this.tables.form.groupId = this.groupId
+                axios
+                  .post('dic/update', this.tables.form)
+                  .then((res) => {
+                    if (res.data.code === 200) {
+                      this.dialogAddVisible = false
+                      this.submitting = false
+                      this.$notify.success('编辑成功')
+                      this.tablesFetchList()
+                    } else {
+                      this.$message({
+                        message: res.data.message,
+                        type: 'warning'
+                      })
+                    }
+                  })
+                  .finally(() => {
+                    this.tablesFetchList()
                     this.dialogAddVisible = false
                     this.submitting = false
-                    this.$notify.success('提交成功')
-                    this.tablesFetchList()
-                  } else {
-                    this.$message({
-                      message: res.data.message,
-                      type: 'warning'
-                    })
-                  }
-                })
-                .finally(() => {
-                  this.tablesFetchList()
-                  this.dialogAddVisible = false
-                  this.submitting = false
-                })
-            })
+                  })
+              })
+          } else {
+            return false
+          }
         } else {
-          return false
+          if (valid) {
+            this.$confirm('确定添加数据?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            })
+              .then(() => {
+                this.submitting = true
+                this.tables.form.groupId = this.groupId
+                axios
+                  .post('dic/add', this.tables.form)
+                  .then((res) => {
+                    if (res.data.code === 200) {
+                      this.dialogAddVisible = false
+                      this.submitting = false
+                      this.$notify.success('添加成功')
+                      this.tablesFetchList()
+                    } else {
+                      this.$message({
+                        message: res.data.message,
+                        type: 'warning'
+                      })
+                    }
+                  })
+                  .finally(() => {
+                    this.tablesFetchList()
+                    this.dialogAddVisible = false
+                    this.submitting = false
+                  })
+              })
+          } else {
+            return false
+          }
         }
       })
     },
@@ -402,7 +493,6 @@ export default {
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data)
             this.fucBtns = res.data.data.functionBtns
           } else {
             this.$message({
