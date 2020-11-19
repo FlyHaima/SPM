@@ -305,7 +305,6 @@ export default {
               this.tableVisible = false
               this.form = res.data.data[0]
               this.editData = this.form.id
-              this.form.riskResult = JSON.parse(this.form.riskResult)
               this.form.emergency = JSON.parse(this.form.emergency)
               if (vm.form.riskResult) {
                 vm.selChangeRiskResult(vm.form.riskResult)
