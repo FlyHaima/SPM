@@ -364,7 +364,7 @@ export default {
     // 获取部门树数据
     fetchPlanOrganizationData () {
       axios
-        .get('basticHidden/getDeptListSize')
+        .get('riskLevel/getDeptListSize')
         .then((res) => {
           if (res.data.code === 200) {
             this.departmentalTree = res.data.data
