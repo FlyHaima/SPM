@@ -510,7 +510,6 @@ export default {
           if (res.code === 200) {
             vm.oldLayers = res.data
             vm.currentImage.url = res.map.backgroundUrl
-            console.log('step2：获取当前地图背景图')
             if (vm.currentImage.url) {
               /** 获取图片尺寸 **/
               getImageSize(vm.currentImage.url).then(data => {
@@ -560,8 +559,7 @@ export default {
     cancel () {
       let vm = this
       vm.layers.pop()
-      vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.initCanvas()
+      vm.clear()
     },
     /* 清空画板，顺便再initCanvas，根据当前的数据重绘 */
     clear () {
@@ -731,6 +729,7 @@ export default {
       let vm = this
       if (vm.currentImage.url) {
         let img = new Image()
+        // console.log(img)
         img.src = vm.currentImage.url
         vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
       }
@@ -764,7 +763,7 @@ export default {
         vm.ctx.fillStyle = 'black'
         vm.ctx.textAlign = 'center'
         vm.ctx.textBaseline = 'middle'
-        vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2), (item.y1 + item.height * 0.5), item.width)
+        vm.ctx.fillText(item.riskName, (item.x1 + item.width / 2) * vm.scale, (item.y1 + item.height * 0.5) * vm.scale, item.width * vm.scale)
         vm.ctx.stroke()
       })
 
@@ -1074,7 +1073,7 @@ export default {
       }
       vm.layers = []
       vm.getOldLayers()
-      // vm.drawImage()
+      vm.drawImage()
       vm.drawOldLayers()
     },
     addMap () {
