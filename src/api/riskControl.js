@@ -16,12 +16,11 @@ export function getPlaceSelector () {
 }
 
 // 风险分级管控--风险四色图--获取现有map下 layer
-export function getLayer (id) {
+export async function getLayer (id) {
   const url = `${baseUrl}/fourColor/getLayer?id=${id}`
 
-  return axios.get(url, {}).then((res) => {
-    return Promise.resolve(res.data)
-  })
+  let res = await axios.get(url, {})
+  return Promise.resolve(res.data)
 }
 
 // 风险分级管控--风险四色图--获取现有风险点下拉列表
@@ -106,10 +105,9 @@ export function checkUnitDetail (bindId) {
 }
 
 // 获取图片尺寸，通过七牛云接口
-export function getImageSize (imageUrl) {
+export async function getImageSize (imageUrl) {
   const url = `${imageUrl}?imageInfo`
 
-  return axios.get(url, {}).then((res) => {
-    return Promise.resolve(res.data)
-  })
+  let res = await axios.get(url, {})
+  return Promise.resolve(res.data)
 }

@@ -62,7 +62,7 @@
         <div class="body-body">
           <div class="body-header">
             <span class="label">当前位置：</span>
-            <el-select v-model="currentMap" placeholder="请选择" size="medium" @change="optionChange()">
+            <el-select v-model="currentMapId" placeholder="请选择" size="medium" @change="optionChange()">
               <el-option v-for="(item, index) in mapLists" :key="index" :label="item.label" :value="item.value"></el-option>
             </el-select>
 
@@ -79,7 +79,7 @@
             </div>
 
             <!-- 暂无地图，需要上传新地图 -->
-            <div v-if="currentMap && !currentImage.url" class="up-new-map">
+            <div v-if="currentMapId && !currentImage.url" class="up-new-map">
               <el-button size="medium" type="primary" @click="uploadNewMap()"><i class="el-icon-upload2"></i> 上传新图片</el-button>
             </div>
 
@@ -344,7 +344,7 @@ export default {
       uploadImageUrl: '',
       pageLoading: false,
       mapLists: [], // map 选项列表
-      currentMap: '', // 当前所选のmap
+      currentMapId: '', // 当前所选のmapId
       layers: [], // 新建图层,包括新建的图标，用 type 作为区分
       oldLayers: [], // 之前存在的图层
       fillStyles: ['#a3a3a3', '#d13a38', '#ff9309', '#fffb09', '#4680ff'],
@@ -485,11 +485,11 @@ export default {
         if (res.code === 200) {
           vm.mapLists = res.data
           if (type === 0) {
-            vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
+            vm.currentMapId = vm.mapLists[0] ? vm.mapLists[0].value : ''
           } else if (type === 1) {
-            vm.currentMap = vm.mapLists[vm.mapLists.length - 1].value
+            vm.currentMapId = vm.mapLists[vm.mapLists.length - 1].value
           } else if (type === 2) {
-            vm.currentMap = vm.mapLists[0] ? vm.mapLists[0].value : ''
+            vm.currentMapId = vm.mapLists[0] ? vm.mapLists[0].value : ''
           }
           vm.getOldLayers()
         } else {
@@ -505,18 +505,19 @@ export default {
     getOldLayers () {
       let vm = this
       vm.pageLoading = true
-      if (vm.currentMap) {
-        getLayer(vm.currentMap).then(res => {
+      if (vm.currentMapId) {
+        getLayer(vm.currentMapId).then(res => {
           if (res.code === 200) {
             vm.oldLayers = res.data
             vm.currentImage.url = res.map.backgroundUrl
+            console.log('step2：获取当前地图背景图')
             if (vm.currentImage.url) {
               /** 获取图片尺寸 **/
-              getImageSize(vm.currentImage.url).then(res => {
-                vm.currentImage.width = res.width
-                vm.currentImage.height = res.height
-                vm.canvas.width = res.width
-                vm.canvas.height = res.height
+              getImageSize(vm.currentImage.url).then(data => {
+                vm.currentImage.width = data.width
+                vm.currentImage.height = data.height
+                vm.canvas.width = data.width
+                vm.canvas.height = data.height
                 vm.$nextTick(() => {
                   vm.initCanvas() // 获取背景图片的宽高后，再进行绘制（尤其是背景图），避免绘制先执行，所导致的白屏
                 })
@@ -575,7 +576,7 @@ export default {
       let allLayers = vm.oldLayers.concat(vm.layers)
 
       let postD = {
-        id: vm.currentMap,
+        id: vm.currentMapId,
         layers: allLayers
       }
       bindLayer(postD).then(res => {
@@ -720,6 +721,17 @@ export default {
       if (vm.currentImage.url) {
         let img = new Image()
         img.src = vm.currentImage.url
+        img.onload = () => {
+          vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
+        }
+      }
+    },
+    /** 不使用img.onload 避免在重复绘图时，闪屏 */
+    drawOldImage () {
+      let vm = this
+      if (vm.currentImage.url) {
+        let img = new Image()
+        img.src = vm.currentImage.url
         vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
       }
     },
@@ -727,7 +739,7 @@ export default {
      * 包括背景图，风险单元，风险点 **/
     drawOldLayers () {
       let vm = this
-      vm.drawImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
+      vm.drawOldImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
       const iconLayers = [] // 设置图标集合
       const rectLayers = [] // 设置块集合
@@ -739,11 +751,10 @@ export default {
           iconLayers.push(item)
         }
       })
-
       // 先绘制块，风险单元
       rectLayers.forEach(item => {
         vm.ctx.beginPath()
-        vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+        vm.ctx.rect(item.x1 * vm.scale, item.y1 * vm.scale, item.width * vm.scale, item.height * vm.scale)
         vm.ctx.strokeStyle = vm.fillStyles[item.level]
         vm.ctx.fillStyle = vm.fillStyles[item.level]
         vm.ctx.globalAlpha = 0.7
@@ -768,7 +779,7 @@ export default {
           image = vm.imageIcon3
         }
         vm.ctx.beginPath()
-        vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
+        vm.ctx.drawImage(image, (item.x1 - 14) * vm.scale, (item.y1 - 14) * vm.scale, 28, 28)
       })
 
       vm.op = 0 // 在旧节点上，无拖动、放大操作
@@ -779,11 +790,10 @@ export default {
     drawNewLayers (x, y) {
       let vm = this
       let allNotIn = 1
-
       vm.layers.forEach(item => {
         if (item.riskType === 0) {
           vm.ctx.beginPath()
-          vm.ctx.rect(item.x1, item.y1, item.width, item.height)
+          vm.ctx.rect(item.x1 * vm.scale, item.y1 * vm.scale, item.width * vm.scale, item.height * vm.scale)
           if (x >= (item.x1 - 25 / vm.scale) && x <= (item.x1 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
             vm.resizeLeft(item)
           } else if (x >= (item.x2 - 25 / vm.scale) && x <= (item.x2 + 25 / vm.scale) && y <= (item.y2 - 25 / vm.scale) && y >= (item.y1 + 25 / vm.scale)) {
@@ -841,7 +851,7 @@ export default {
             image = vm.imageIcon3
           }
           vm.ctx.beginPath()
-          vm.ctx.drawImage(image, item.x1 - 14, item.y1 - 14, 28, 28)
+          vm.ctx.drawImage(image, (item.x1 - 14) * vm.scale, (item.y1 - 14) * vm.scale, 28, 28)
         }
       })
       if (vm.flag && allNotIn && vm.op < 3) {
@@ -964,7 +974,7 @@ export default {
           type: vm.type,
           level: 0,
           bindId: '',
-          picid: vm.currentMap,
+          picid: vm.currentMapId,
           riskType: 1
         })
       }
@@ -1001,7 +1011,7 @@ export default {
             riskType: 0,
             level: 0,
             bindId: '', // 绑定的点的id
-            picid: vm.currentMap // 绑定的map的id
+            picid: vm.currentMapId // 绑定的map的id
           }))
         }
       } else if (vm.op >= 3) {
@@ -1057,8 +1067,14 @@ export default {
     optionChange () {
       let vm = this
       vm.ctx.clearRect(0, 0, vm.currentImage.width, vm.currentImage.height)
-      vm.getOldLayers()
+      vm.currentImage = {
+        url: '',
+        width: 0,
+        height: 0
+      }
       vm.layers = []
+      vm.getOldLayers()
+      // vm.drawImage()
       vm.drawOldLayers()
     },
     addMap () {
@@ -1096,7 +1112,7 @@ export default {
         type: 'warning'
       }).then(() => {
         let postD = {
-          id: vm.currentMap
+          id: vm.currentMapId
         }
         delMap(postD).then(res => {
           if (res.code === 200) {
@@ -1279,7 +1295,7 @@ export default {
       }
       let postD = {
         backgroundUrl: vm.uploadImageUrl,
-        id: vm.currentMap
+        id: vm.currentMapId
       }
       uploadPic(postD).then(res => {
         if (res.code === 200) {
