@@ -477,7 +477,7 @@ export default {
         vm.pageLoading = false
       })
     },
-    // 获取所有的map；0：初始化；1：添加后更新map；2：删除后更新map
+    // 获取所有的map select option；0：初始化；1：添加后更新map；2：删除后更新map
     getPlaceSelector (type) {
       let vm = this
       vm.pageLoading = true
@@ -501,7 +501,7 @@ export default {
         vm.pageLoading = false
       })
     },
-    /** 获取当前map下原有记录的racts & points，顺便使用drawOldLayers()方法重绘 **/
+    /** 获取当前map下原有记录的blocks & points，顺便使用drawOldLayers()方法重绘 **/
     getOldLayers () {
       let vm = this
       vm.pageLoading = true
@@ -711,14 +711,37 @@ export default {
       }
     },
     initCanvas () {
-      this.drawOldLayers()
-      this.drawNewLayers()
+      setTimeout(() => {
+        this.drawBgImage()
+        this.drawOldLayers()
+        this.drawNewLayers()
+      }, 10)
     },
-    drawImage () {
+    drawBgImage (newBg) {
       let vm = this
+      if (newBg) {
+        if (vm.currentImage.url) {
+          let img = new Image()
+          img.src = vm.currentImage.url
+          img.onload = () => {
+            vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
+          }
+        }
+      } else {
+        if (vm.currentImage.url) {
+          let img = new Image()
+          img.src = vm.currentImage.url
+          vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
+        }
+      }
+    },
+    drawNewImage () {
+      let vm = this
+      console.log(vm.currentImage)
       if (vm.currentImage.url) {
         let img = new Image()
         img.src = vm.currentImage.url
+        console.log(img)
         img.onload = () => {
           vm.ctx.drawImage(img, 0, 0, vm.canvas.width, vm.canvas.height)
         }
@@ -735,10 +758,10 @@ export default {
       }
     },
     /** 绘制后台传过来的数据
-     * 包括背景图，风险单元，风险点 **/
+     * 包括风险单元，风险点 **/
     drawOldLayers () {
       let vm = this
-      vm.drawOldImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
+      // vm.drawOldImage() // 放到循环前执行，避免由于性能问题，导致的闪屏
 
       const iconLayers = [] // 设置图标集合
       const rectLayers = [] // 设置块集合
@@ -991,6 +1014,7 @@ export default {
           vm.ctx.strokeRect(vm.startx, vm.starty, vm.x - vm.startx, vm.y - vm.starty)
         }
         vm.ctx.restore()
+        vm.drawBgImage()
         vm.drawOldLayers()
         vm.drawNewLayers(vm.x, vm.y)
       }
@@ -1073,8 +1097,10 @@ export default {
       }
       vm.layers = []
       vm.getOldLayers()
-      vm.drawImage()
-      vm.drawOldLayers()
+      setTimeout(() => {
+        vm.drawNewImage()
+        vm.drawOldLayers()
+      }, 50)
     },
     addMap () {
       let vm = this
