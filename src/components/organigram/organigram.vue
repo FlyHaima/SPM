@@ -126,7 +126,7 @@ export default {
   data() {
     return {
       limitLeaderA: 1,
-      limitLeaderB: 3,
+      limitLeaderB: 5,
       types: [
         {
           data: '1',
