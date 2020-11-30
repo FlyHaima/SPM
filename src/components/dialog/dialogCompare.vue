@@ -328,7 +328,7 @@ export default {
     }
   },
   created () {
-    this.initData()
+    // this.initData()
   },
   methods: {
     // 初始化数据

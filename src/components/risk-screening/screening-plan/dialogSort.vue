@@ -35,7 +35,6 @@
           <template slot-scope="scope">
             <el-select
               v-model="scope.row.investDept"
-              multiple
               placeholder="请选择组织机构">
               <el-option
                 v-for="item in orgOptions"
