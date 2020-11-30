@@ -659,6 +659,7 @@ export default {
     handleSort () {
       this.dialogSortVisible = true
       // 触发排查种类子组件的获取组织机构和获取周期的事件
+      this.$refs.dialogSort.fetchSortTableData()
       this.$refs.dialogSort.fetchOrgOptions()
       this.$refs.dialogSort.fetchCycleOptions()
     },

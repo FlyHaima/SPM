@@ -548,11 +548,15 @@ export default {
             vm.listMenuDataTag = true
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
-            } else {
+              vm.fetchInvestigationOptions()
+              vm.fetchTableData()
+            } else if (this.listMenuData.length > 0) {
               this.currentPlanId = this.listMenuData[0].planId
+              vm.fetchInvestigationOptions()
+              vm.fetchTableData()
+            } else {
+              this.currentPlanId = ''
             }
-            vm.fetchInvestigationOptions()
-            vm.fetchTableData()
           }
         })
         .finally(() => {
@@ -754,6 +758,7 @@ export default {
     // 获取排查隐患清单列表
     fetchTableData () {
       this.tablesLoading = true
+      console.log(this.currentPlanId)
       axios
         .get('basticHidden/getBasticHiddenList', {
           planId: this.currentPlanId,
@@ -819,6 +824,7 @@ export default {
     handleSort () {
       this.dialogSortVisible = true
       // 触发排查种类子组件的获取组织机构和获取周期的事件
+      this.$refs.dialogSort.fetchSortTableData()
       this.$refs.dialogSort.fetchOrgOptions()
       this.$refs.dialogSort.fetchCycleOptions()
     },

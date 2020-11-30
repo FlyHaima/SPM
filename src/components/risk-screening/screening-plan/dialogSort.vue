@@ -173,16 +173,18 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             let formatTableData = res.data.data
+            console.log(formatTableData)
             formatTableData.forEach(item => {
               // item.addVisible = 'true'
-              if (item.investDept) {
-                item.investDept = JSON.parse(item.investDept)
-              }
+              // if (item.investDept) {
+              //   item.investDept = JSON.parse(item.investDept)
+              // }
               if (item.investCycle) {
                 item.investCycle = JSON.parse(item.investCycle)
               }
             })
             this.tableData = formatTableData
+            console.log(this.tableData)
           }
         })
         .finally(() => {
@@ -289,12 +291,8 @@ export default {
     }
   },
   watch: {
-    planId: {
-      immediate: true,
-      handler (val, oldVal) {
-        this.currentPlanId = val
-        this.fetchSortTableData(val)
-      }
+    planId (val) {
+      this.currentPlanId = val
     },
     dialogVisible (val) {
       this.show = val
