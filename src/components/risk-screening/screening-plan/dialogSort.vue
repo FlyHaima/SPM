@@ -77,7 +77,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="el-pagination__wrap text-right">
+      <!-- <div class="el-pagination__wrap text-right">
         <el-pagination
           class="text-right"
           background
@@ -87,7 +87,7 @@
           layout="total, prev, pager, next, jumper"
           :total="page.total">
         </el-pagination>
-      </div>
+      </div> -->
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button
@@ -131,12 +131,12 @@ export default {
       tablesLoading: false,
       show: false,
       currentPlanId: '',
-      page: {
-        total: 0, // 总条数
-        index: 1, // 当前页面
-        pageNo: 1,
-        pageSize: 10 // limit
-      },
+      // page: {
+      //   total: 0, // 总条数
+      //   index: 1, // 当前页面
+      //   pageNo: 1,
+      //   pageSize: 10 // limit
+      // },
       tableData: [
         // {
         //   index: 0, // 名称的序号
@@ -170,14 +170,14 @@ export default {
       axios
         .get('investType/getInvTypePage', {
           // planId: this.currentPlanId,
-          type: this.type,
-          pageSize: this.page.pageSize,
-          pageNo: this.page.pageNo
+          type: this.type
+          // pageSize: this.page.pageSize,
+          // pageNo: this.page.pageNo
         })
         .then((res) => {
           if (res.data.code === 200) {
             let formatTableData = res.data.data
-            this.page.total = res.data.total
+            // this.page.total = res.data.total
             console.log(formatTableData)
             formatTableData.forEach(item => {
               // item.addVisible = 'true'
@@ -283,17 +283,17 @@ export default {
       //   })
       //   .finally(() => {
       //   })
-    },
-    // 切换分页数量
-    handleSizeChange (val) {
-      this.fetchSortTableData(this.currentPlanId)
-    },
-    // 切换当前页页数
-    handleCurrentChange (val) {
-      this.page.index = val
-      this.page.pageNo = val
-      this.fetchSortTableData(this.currentPlanId)
     }
+    // 切换分页数量
+    // handleSizeChange (val) {
+    //   this.fetchSortTableData(this.currentPlanId)
+    // },
+    // 切换当前页页数
+    // handleCurrentChange (val) {
+    //   this.page.index = val
+    //   this.page.pageNo = val
+    //   this.fetchSortTableData(this.currentPlanId)
+    // }
   },
   watch: {
     planId (val) {
