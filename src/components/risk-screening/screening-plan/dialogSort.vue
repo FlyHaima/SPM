@@ -170,7 +170,9 @@ export default {
       axios
         .get('investType/getInvTypePage', {
           // planId: this.currentPlanId,
-          type: this.type
+          type: this.type,
+          pageSize: this.page.pageSize,
+          pageNo: this.page.pageNo
         })
         .then((res) => {
           if (res.data.code === 200) {
