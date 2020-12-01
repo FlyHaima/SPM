@@ -34,6 +34,8 @@
           align="center">
           <template slot-scope="scope">
             <el-select
+              multiple
+              multiple-limit=1
               v-model="scope.row.investDept"
               placeholder="请选择组织机构">
               <el-option
@@ -173,12 +175,13 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             let formatTableData = res.data.data
+            this.page.total = res.data.total
             console.log(formatTableData)
             formatTableData.forEach(item => {
               // item.addVisible = 'true'
-              // if (item.investDept) {
-              //   item.investDept = JSON.parse(item.investDept)
-              // }
+              if (item.investDept) {
+                item.investDept = JSON.parse(item.investDept)
+              }
               if (item.investCycle) {
                 item.investCycle = JSON.parse(item.investCycle)
               }
