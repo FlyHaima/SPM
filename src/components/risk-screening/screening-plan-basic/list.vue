@@ -217,8 +217,9 @@
               class="list-tips-confirm-item"
               v-for="(item, index) in multipleSelectionPushed"
               :key="index">
-                排查目标：{{item.investTarget}}<span>，</span>
-                {{item.message}}
+              {{item}}
+                <!-- 排查目标：{{item.investTarget}}<span>，</span>
+                {{item.message}} -->
               </div>
           </div>
         </div>
@@ -548,11 +549,15 @@ export default {
             vm.listMenuDataTag = true
             if (this.$route.query.id) {
               this.currentPlanId = this.$route.query.id
-            } else {
+              vm.fetchInvestigationOptions()
+              vm.fetchTableData()
+            } else if (this.listMenuData.length > 0) {
               this.currentPlanId = this.listMenuData[0].planId
+              vm.fetchInvestigationOptions()
+              vm.fetchTableData()
+            } else {
+              this.currentPlanId = ''
             }
-            vm.fetchInvestigationOptions()
-            vm.fetchTableData()
           }
         })
         .finally(() => {
@@ -754,6 +759,7 @@ export default {
     // 获取排查隐患清单列表
     fetchTableData () {
       this.tablesLoading = true
+      console.log(this.currentPlanId)
       axios
         .get('basticHidden/getBasticHiddenList', {
           planId: this.currentPlanId,
@@ -800,15 +806,25 @@ export default {
       let sendData = {
         id: row.basicId
       }
-      axios
-        .delete('basticHidden/delBasicHidden', sendData)
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.$notify.success('删除成功')
-            this.fetchTableData()
-          }
+      let vm = this
+      vm
+        .$confirm(`确定删除该项吗？`, '提示', {
+          type: 'warning'
         })
-        .finally(() => {
+        .then(() => {
+          axios
+            .delete('basticHidden/delBasicHidden', sendData)
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.$notify.success('删除成功')
+                this.fetchTableData()
+              }
+            })
+            .finally(() => {
+            })
+        })
+        .catch(() => {
+          this.submitting = false
         })
     },
     // 添加计划数据项
@@ -819,6 +835,7 @@ export default {
     handleSort () {
       this.dialogSortVisible = true
       // 触发排查种类子组件的获取组织机构和获取周期的事件
+      this.$refs.dialogSort.fetchSortTableData()
       this.$refs.dialogSort.fetchOrgOptions()
       this.$refs.dialogSort.fetchCycleOptions()
     },
@@ -917,20 +934,37 @@ export default {
     },
     confirmPlanHandle () {
       let vm = this
-      vm.multipleSelectionPushed = []
+      // vm.multipleSelectionPushed = []
+      let ids = []
       vm.isPushed = false
       vm.multipleSelection.forEach(item => {
-        console.log(item.autoFlag)
         if (item.autoFlag === 'false') {
           // vm.dialogTipsInnerVisible = true
           vm.isPushed = true
-          vm.multipleSelectionPushed.push(item)
+          // vm.multipleSelectionPushed.push(item)
+          ids.push(item.id)
         } else {
           // vm.isPushed = false
         }
       })
       if (vm.isPushed) {
         vm.dialogTipsInnerVisible = true
+        axios
+          .get('productHidden/getSendType', {
+            ids: ids.toString()
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              vm.multipleSelectionPushed = res.data.data
+            } else {
+              vm.$message({
+                message: res.data.message,
+                type: 'warning'
+              })
+            }
+          })
+          .finally(() => {
+          })
       } else {
         vm.savePlanHandle()
       }

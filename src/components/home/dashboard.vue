@@ -422,7 +422,7 @@
       </div>
     </el-dialog>
     <dialog-compare
-      ref="dialog-compare"
+      ref="dialogCompare"
       :dialog-visible="dialogCompareVisible"
       :dialog-data = "dialogCompareData"
       @on-dialog-change="changeDialogCompare"
@@ -653,6 +653,9 @@ export default {
     // 对比分析点击事件处理
     compareAnalysisHandle () {
       this.dialogCompareVisible = true
+      // 触发弹框初始化数据的事件
+      this.$refs.dialogCompare.fetchList()
+      this.$refs.dialogCompare.getDeptData()
     },
     // 监听对比分析弹出框的显示
     changeDialogCompare (val) {
