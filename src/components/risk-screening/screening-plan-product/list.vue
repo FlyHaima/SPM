@@ -174,11 +174,13 @@
             width="100px">
             <template slot-scope="scope">
               <a
+                v-if= "fucBtns.includes('del-btn')"
                 href="javascript:;"
                 class="color-danger talbe-links-del"
                 @click.prevent="delRowHandle(scope.row)">删除
               </a>
               <a
+                v-if= "fucBtns.includes('edit-btn')"
                 href="javascript:;"
                 class="talbe-links-del" style="margin-left: 5px;"
                 @click.prevent="editItem(scope.row)">编辑
@@ -219,8 +221,9 @@
               class="list-tips-confirm-item"
               v-for="(item, index) in multipleSelectionPushed"
               :key="index">
-                排查目标：{{item.oneName}}/{{item.twoName}}/{{item.riskName}}
-                <span>，</span>{{item.message}}
+              {{item}}
+                <!-- 排查目标：{{item.oneName}}/{{item.twoName}}/{{item.riskName}}
+                <span>，</span>{{item.message}} -->
               </div>
           </div>
         </div>
@@ -640,15 +643,25 @@ export default {
       let sendData = {
         id: row.id
       }
-      axios
-        .delete('productHidden/delProductHidden', sendData)
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.$notify.success('删除成功')
-            this.fetchTableData()
-          }
+      let vm = this
+      vm
+        .$confirm(`确定删除该项吗？`, '提示', {
+          type: 'warning'
         })
-        .finally(() => {
+        .then(() => {
+          axios
+            .delete('productHidden/delProductHidden', sendData)
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.$notify.success('删除成功')
+                this.fetchTableData()
+              }
+            })
+            .finally(() => {
+            })
+        })
+        .catch(() => {
+          this.submitting = false
         })
     },
     // 添加计划数据项
@@ -757,6 +770,7 @@ export default {
     },
     confirmPlanHandle () {
       let vm = this
+      let ids = []
       vm.multipleSelectionPushed = []
       vm.isPushed = false
       vm.multipleSelection.forEach(item => {
@@ -764,12 +778,30 @@ export default {
           // vm.dialogTipsInnerVisible = true
           vm.isPushed = true
           vm.multipleSelectionPushed.push(item)
+          ids.push(item.id)
         } else {
           // vm.isPushed = false
         }
       })
+      console.log(ids)
       if (vm.isPushed) {
         vm.dialogTipsInnerVisible = true
+        axios
+          .get('productHidden/getSendType', {
+            ids: ids.toString()
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              vm.multipleSelectionPushed = res.data.data
+            } else {
+              vm.$message({
+                message: res.data.message,
+                type: 'warning'
+              })
+            }
+          })
+          .finally(() => {
+          })
       } else {
         vm.savePlanHandle()
       }

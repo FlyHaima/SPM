@@ -217,8 +217,9 @@
               class="list-tips-confirm-item"
               v-for="(item, index) in multipleSelectionPushed"
               :key="index">
-                排查目标：{{item.investTarget}}<span>，</span>
-                {{item.message}}
+              {{item}}
+                <!-- 排查目标：{{item.investTarget}}<span>，</span>
+                {{item.message}} -->
               </div>
           </div>
         </div>
@@ -805,15 +806,25 @@ export default {
       let sendData = {
         id: row.basicId
       }
-      axios
-        .delete('basticHidden/delBasicHidden', sendData)
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.$notify.success('删除成功')
-            this.fetchTableData()
-          }
+      let vm = this
+      vm
+        .$confirm(`确定删除该项吗？`, '提示', {
+          type: 'warning'
         })
-        .finally(() => {
+        .then(() => {
+          axios
+            .delete('basticHidden/delBasicHidden', sendData)
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.$notify.success('删除成功')
+                this.fetchTableData()
+              }
+            })
+            .finally(() => {
+            })
+        })
+        .catch(() => {
+          this.submitting = false
         })
     },
     // 添加计划数据项
@@ -923,20 +934,37 @@ export default {
     },
     confirmPlanHandle () {
       let vm = this
-      vm.multipleSelectionPushed = []
+      // vm.multipleSelectionPushed = []
+      let ids = []
       vm.isPushed = false
       vm.multipleSelection.forEach(item => {
-        console.log(item.autoFlag)
         if (item.autoFlag === 'false') {
           // vm.dialogTipsInnerVisible = true
           vm.isPushed = true
-          vm.multipleSelectionPushed.push(item)
+          // vm.multipleSelectionPushed.push(item)
+          ids.push(item.id)
         } else {
           // vm.isPushed = false
         }
       })
       if (vm.isPushed) {
         vm.dialogTipsInnerVisible = true
+        axios
+          .get('productHidden/getSendType', {
+            ids: ids.toString()
+          })
+          .then((res) => {
+            if (res.data.code === 200) {
+              vm.multipleSelectionPushed = res.data.data
+            } else {
+              vm.$message({
+                message: res.data.message,
+                type: 'warning'
+              })
+            }
+          })
+          .finally(() => {
+          })
       } else {
         vm.savePlanHandle()
       }
