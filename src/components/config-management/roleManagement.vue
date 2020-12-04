@@ -125,7 +125,7 @@
       :close-on-click-modal="false"
       title="分配"
       :visible.sync="dialogRoleVisible"
-      width="70%"
+      width="1400px"
       >
       <el-tree
         :data="roleOptions.menus"
