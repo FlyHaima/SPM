@@ -322,7 +322,7 @@ export default {
     height: 100%;
     top: 0;
     left: 0;
-    padding: 56px 10px 6px 10px;
+    padding: 56px 10px 60px 10px;
     overflow: auto;
     .custom-tree-node{
       font-size: 16px;
