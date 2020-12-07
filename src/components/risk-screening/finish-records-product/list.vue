@@ -61,6 +61,11 @@
           style="width: 100%"
           align="center">
           <el-table-column
+            prop="companyName"
+            label="公司名称"
+            align="center">
+          </el-table-column>
+          <el-table-column
             prop="checkName"
             label="检查名称"
             width="280"
@@ -403,5 +408,29 @@ export default {
 .table-img{
   width: 62px;
   height: 53px;
+}
+.content-tools{
+  margin-bottom: 0;
+  .el-form--inline .el-form-item{
+    margin-bottom: 22px;
+  }
+  .tools-right{
+    margin-bottom: 22px;
+  }
+}
+
+@media only screen and (max-width:1680px) {
+  .content-tools{
+    margin-bottom: 0px;
+    .el-form--inline .el-form-item{
+      margin-bottom: 15px !important;
+    }
+    .tools-left{
+      margin-bottom: 0 !important;
+    }
+    .tools-right{
+      margin-bottom: 15px !important;
+    }
+  }
 }
 </style>
