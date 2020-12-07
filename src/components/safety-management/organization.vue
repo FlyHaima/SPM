@@ -7,10 +7,11 @@
     <el-main class="inner-main-container">
       <el-tabs type="border-card" class="height-100" v-model="activeName">
         <el-tab-pane name="tab_a">
-          <span slot="label">组织机构</span>
+          <span slot="label">风险单元</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'" :has-upload="false" :show-btns="true"
+              <tree-diagram ref="trees"
+                            :tree-data="organizationTree" :tree-name="'风险单元'" :has-upload="false" :show-btns="true"
                             @open-loading="openLoading"
                             @close-loading="closeLoading"
                             @handleNodeClick="handleNodeClick"
@@ -278,7 +279,7 @@ export default {
   name: 'organization',
   data () {
     return {
-      breadcrumb: ['安全基础管理', '组织机构'],
+      breadcrumb: ['安全基础管理', '风险单元'],
       pageLoading: false,
       organizationTree: [],
       leaderTree: [],
@@ -465,7 +466,9 @@ export default {
             message: '节点设置成功'
           })
           this.addTreeVisible = false
-          this.getOrgTree(true)
+          // this.getOrgTree(true)
+          // 不直接从后台更新treeData，获取添加接口返回的data，返回给组件
+          this.$refs.trees.appendTreeNode(res.data)
           this.getLeaderTree()
         } else {
           this.$message({
@@ -501,7 +504,8 @@ export default {
             type: 'success',
             message: '节点设置成功'
           })
-          this.getOrgTree(true)
+          // 不直接从后台更新treeData，获取添加接口返回的data，返回给组件
+          this.$refs.trees.editTreeNode(res.data)
           this.getLeaderTree()
         } else {
           this.$message({
@@ -534,28 +538,6 @@ export default {
       this.changeTreeVisible = true
       this.changeTreeVal.orderNo = fnuw
       this.changeTreeVal.deptName = fdtname
-      // this.$prompt('请修改节点名称', '编辑节点', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   inputPattern: /^.{1,12}$/, // 输入正则
-      //   inputErrorMessage: '节点名称不能为空,且不超过12个字' // 正则验证错误提示
-      // }).then(({ value }) => {
-      //   this.editOrgData.deptName = value
-      //   editTreeData(this.editOrgData).then((res) => {
-      //     if (res.code === 200) {
-      //       this.pageLoading = false
-      //       this.$message({
-      //         type: 'success',
-      //         message: '节点设置成功'
-      //       })
-      //       this.getOrgTree(true)
-      //       this.getLeaderTree()
-      //     }
-      //   })
-      // }).catch(() => {
-      //   // after cancel
-      //   this.pageLoading = false
-      // })
     },
     // 删除orgTree的节点，包括下属节点
     confirmRemove (id) {
@@ -575,7 +557,7 @@ export default {
               type: 'success',
               message: '删除成功!'
             })
-            this.getOrgTree(true)
+            this.$refs.trees.removeTreeNode(id)
             this.getLeaderTree()
           } else {
             this.$message({

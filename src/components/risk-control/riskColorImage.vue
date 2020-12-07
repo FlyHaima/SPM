@@ -7,7 +7,7 @@
     <el-main class="inner-main-container">
       <div class="body-box">
         <div class="body-menu">
-          <div class="menu-item" @click="zoomUp">
+          <!-- <div class="menu-item" @click="zoomUp">
             <div class="menu-icon menu-icon-1">
               <i class="el-icon-zoom-in"></i>
             </div>
@@ -24,7 +24,7 @@
           </div>
           <div class="line-out">
             <div class="line"></div>
-          </div>
+          </div> -->
           <div class="menu-item" @click="addPoint" :class="pointAble ? 'active' : ''">
             <div class="menu-icon menu-icon-1">
               <i class="el-icon-map-location"></i>

@@ -292,7 +292,7 @@
       <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
-            :tree-name="'组织机构'"
+            :tree-name="'风险单元'"
             :tree-data="organizationTree"
             editVisible
             @editTreeData="editOrgTreeData"
@@ -694,7 +694,7 @@ export default {
         .then((res) => {
           // 如果size是0，表示无数据，如果是1，表示有数据
           if (res.data.length === 0) {
-            this.$confirm('此机构目前没有数据, 需要从安全技术管理的组织机构里同步数据吗?', '提示', {
+            this.$confirm('此机构目前没有数据, 需要从安全技术管理的风险单元里同步数据吗?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning'
@@ -707,7 +707,7 @@ export default {
               })
             })
           } else {
-            this.$confirm('确认更新此组织机构吗?', '提示', {
+            this.$confirm('确认更新此风险单元吗?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning'

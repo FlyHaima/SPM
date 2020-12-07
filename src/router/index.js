@@ -227,13 +227,13 @@ const routes = [
       {
         path: '/organigram',
         name: 'organigram',
-        title: '组织机构图',
+        title: '风险单元图',
         component: Organigram
       },
       {
         path: '/organization',
         name: 'Organization',
-        title: '组织机构',
+        title: '风险单元',
         component: Organization
       },
       {

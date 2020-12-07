@@ -48,9 +48,9 @@
             <span>{{ node.label }}</span>
             <span class="right-btns" v-if="showBtns">
               <!-- 权限显示 -->
-              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="addNode(node, data)" v-if="showAddBtn"></i>
-              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="edit(node, data)" v-if="showEditBtn"></i>
-              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="remove(node, data)" v-if="showDelBtn"></i>
+              <i class="el-icon-plus function-btn add-btn" title="添加节点" @click.stop="() => addNode(node, data)" v-if="showAddBtn"></i>
+              <i class="el-icon-edit function-btn edit-btn" title="修改节点" @click.stop="() => edit(node, data)" v-if="showEditBtn"></i>
+              <i class="el-icon-delete function-btn del-btn" title="删除节点"  @click.stop="() => remove(node, data)" v-if="showDelBtn"></i>
             </span>
           </span>
       </el-tree>
@@ -114,7 +114,8 @@ export default {
       baseUrl: '',
       fileList: [],
       defaultOpenNode: [], // 默认展开节点的集合
-      fucBtns: [] // 按钮权限数组
+      fucBtns: [], // 按钮权限数组
+      currentNode: null
     }
   },
   created () {
@@ -159,13 +160,9 @@ export default {
     },
     filterNode (value, data) {
       if (!value) return true
-      console.log(value)
       return data.deptName.indexOf(value) !== -1
     },
     handleNodeClick (data) { // 点击节点，切换右侧结构视图
-      // console.log('节点deptID：' + data.deptId)
-      // console.log(data)
-      console.log(data)
       this.$emit('handleNodeClick', data.deptId, data.position, data)
     },
     addNode (node, data) {
@@ -176,13 +173,31 @@ export default {
         })
       } else {
         this.$emit('openAppendBox', data)
+        this.currentNode = data
       }
     },
+    appendTreeNode (node) {
+      if (!this.currentNode.children) {
+        this.$set(this.currentNode, 'children', [])
+      }
+      this.currentNode.children.push(node)
+    },
     edit (node, data) {
+      this.currentNode = data
       this.$emit('editTreeData', data.deptId, data.orderNo, data.deptName)
     },
+    editTreeNode (node) {
+      this.currentNode.deptName = node.deptName
+    },
     remove (node, data) {
+      this.currentNode = node
       this.$emit('confirmRemove', data.deptId)
+    },
+    removeTreeNode (deptId) {
+      const parent = this.currentNode.parent
+      const children = parent.data.children || parent.data
+      const index = children.findIndex(d => d.deptId === deptId)
+      children.splice(index, 1)
     },
     getBtnAuthority () {
       const authId = {authId: '2-1'}

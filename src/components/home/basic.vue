@@ -196,7 +196,7 @@
                 placeholder="请再次输入新密码"
                 clearable></el-input>
             </el-form-item>
-            <el-form-item label="手机号码：" prop="phone">
+            <!-- <el-form-item label="手机号码：" prop="phone">
               <el-input
                 type="text"
                 v-model.trim="passwordForm.phone"
@@ -217,7 +217,7 @@
                   :disabled="codeBtnDisabled"
                   type="primary"
                   @click="sendCodeHandle">{{codeBtnTxt}}</el-button>
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
         </div>
         <div slot="footer" class="dialog-footer">

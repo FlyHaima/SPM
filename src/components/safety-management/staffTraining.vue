@@ -10,7 +10,7 @@
           <span slot="label">培训计划</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
+              <tree-diagram :tree-data="organizationTree" :tree-name="'风险单元'"
                             @open-loading="openLoading"
                             @close-loading="closeLoading"
                             @handleNodeClick="handleNodeClick">
@@ -403,7 +403,7 @@
           <span slot="label">培训记录</span>
           <el-container class="inner-main-content">
             <el-aside class="inner-aside" width="408px">
-              <tree-diagram :tree-data="organizationTree" :tree-name="'组织机构'"
+              <tree-diagram :tree-data="organizationTree" :tree-name="'风险单元'"
                             @open-loading="openLoading"
                             @close-loading="closeLoading"
                             @handleNodeClick="handleRecordTree">

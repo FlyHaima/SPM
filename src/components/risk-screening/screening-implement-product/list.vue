@@ -141,7 +141,7 @@
       <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
-              :tree-name="'组织机构'"
+              :tree-name="'风险单元'"
               :tree-data="departmentalTree"
               @handleNodeClick="departmentalTreeClickHandle"
           >

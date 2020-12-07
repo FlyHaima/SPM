@@ -30,14 +30,14 @@
           align="center">
         </el-table-column>
         <el-table-column
-          label="组织机构"
+          label="风险单元"
           align="center">
           <template slot-scope="scope">
             <el-select
               multiple
               multiple-limit=1
               v-model="scope.row.investDept"
-              placeholder="请选择组织机构">
+              placeholder="请选择风险单元">
               <el-option
                 v-for="item in orgOptions"
                 :key="item.invDeptId"
