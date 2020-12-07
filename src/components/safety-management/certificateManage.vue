@@ -30,6 +30,15 @@
                              :value="item"></el-option>
                 </el-select>
               </el-form-item>
+              <el-form-item label="失效日期：">
+                <el-date-picker
+                  v-model="addData.expiryDate"
+                  type="date"
+                   placeholder="选择日期"
+                  value-format="yyyy-MM-dd"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </el-form-item>
               <el-form-item label="上传证件：">
                 <el-upload
                   class="upload-demo"
@@ -59,6 +68,11 @@
               label="证件名称"
               align="center">
               <template slot-scope="scope">{{ scope.row.documentName }}</template>
+            </el-table-column>
+            <el-table-column
+              label="失效日期"
+              align="center">
+              <template slot-scope="scope">{{ scope.row.expiryDate }}</template>
             </el-table-column>
             <el-table-column
               label="证件种类"
@@ -117,6 +131,14 @@ export default {
     return {
       pageLoading: false,
       breadcrumb: ['安全基础管理', '证件管理'],
+      pickerOptions: {
+        disabledDate (time) {
+          let curDate = (new Date()).getTime()
+          let three = 181 * 24 * 3600 * 1000
+          let threeMonths = curDate + three
+          return time.getTime() < threeMonths
+        }
+      },
       dataList: [],
       dialogVisible: false,
       dialogLoading: false,
@@ -130,6 +152,7 @@ export default {
         fileCategory: '',
         url: '',
         fileName: '',
+        expiryDate: '',
         size: 0
       },
       fileList: [],
@@ -213,6 +236,12 @@ export default {
           type: 'warning'
         })
         return
+      } else if (!vm.addData.expiryDate) {
+        vm.$message({
+          message: '失效日期不能为空',
+          type: 'warning'
+        })
+        return
       }
       vm.dialogLoading = true
       let postData = {
@@ -220,7 +249,8 @@ export default {
         documentType: vm.addData.fileCategory,
         size: vm.addData.size,
         path: vm.addData.url,
-        fileName: vm.addData.fileName
+        fileName: vm.addData.fileName,
+        expiryDate: vm.addData.expiryDate
       }
       addDocument(postData).then(res => {
         vm.dialogLoading = false
@@ -237,7 +267,8 @@ export default {
           fileCategory: '',
           url: '',
           fileName: '',
-          size: 0
+          size: 0,
+          expiryDate: ''
         }
       })
       vm.dialogVisible = false
