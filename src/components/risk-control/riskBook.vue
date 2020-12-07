@@ -8,7 +8,28 @@
       <el-container class="inner-main-content">
         <el-main class="inner-content">
           <div class="container-box">
-            <div class="content-tools is-flex-end">
+            <div class="content-tools" style="align-items: flex-start">
+              <div class="tools-left">
+                <el-form
+                  size="medium"
+                  :inline="true"
+                  :model="tables.form"
+                  class="demo-form-inline">
+                  <el-form-item label="公司名称">
+                    <el-input v-model="tables.form.companyName" placeholder="请输入公司名称"></el-input>
+                  </el-form-item>
+                  <el-form-item label="风险点名称">
+                    <el-input v-model="tables.form.riskName
+" placeholder="请输入风险点名称"></el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="tableSearchHandler">查询</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
               <div class="tools-right">
                 <el-button
                   v-if="fucBtns.includes('export-btn')"
@@ -30,6 +51,11 @@
                 :index="tablesDefineIndex"
                 label="风险序号"
                 width="80"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="companyName"
+                label="公司名称"
                 align="center">
               </el-table-column>
               <el-table-column
@@ -155,6 +181,8 @@ export default {
       tables: {
         api: 'riskLevel/getRiskTz',
         form: {
+          companyName: '', // 公司名称
+          riskName: '', // 风险点名称
           pageNo: 1,
           pageSize: 10
         },
@@ -186,6 +214,11 @@ export default {
             })
           }
         })
+    },
+    // 查询table，表单提交响应事件
+    tableSearchHandler () {
+      this.tables.form.pageNo = 1
+      this.tablesFetchList()
     },
     tablesFetchList () {
       this.tables.loading = true
