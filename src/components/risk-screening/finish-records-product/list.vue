@@ -369,6 +369,19 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
+      if (!this.currentPlanId) {
+        this.$message({
+          message: '导出前，请选择一个风险单元/风险点',
+          type: 'warning'
+        })
+        return
+      } else if (!this.form.startTime && !this.form.endTime) {
+        this.$message({
+          message: '导出前，请选择开始时间和结束时间',
+          type: 'warning'
+        })
+        return
+      }
       exportExcel(`hiddenAct/exportRecordCompletion`,
         'userId=' + this.userInfo.userId + '&' +
         'leftId=' + this.currentPlanId + '&' +
@@ -383,9 +396,7 @@ export default {
         .get('user/getBtnArray', authId)
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data)
             this.fucBtns = res.data.data.functionBtns
-            console.log(this.fucBtns)
           } else {
             this.$message({
               message: res.data.message,

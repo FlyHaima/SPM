@@ -133,11 +133,10 @@
         </div>
       </div>
     </el-main>
-      <el-dialog
-            :close-on-click-modal="false"
-            title="导出部门机构列表"
-            :visible.sync="dialogOrganizationVisible"
-            width="450px">
+    <el-dialog :close-on-click-modal="false"
+                title="导出部门机构列表"
+                :visible.sync="dialogOrganizationVisible"
+                width="450px">
       <div style="height: 450px" v-loading="treeLoading">
         <template>
           <tree-organization
@@ -332,6 +331,13 @@ export default {
 
     // 导出excel
     exportEexcelHandel () {
+      if (!this.currentPlanId) {
+        this.$message({
+          message: '导出前，请选择一个风险单元/风险点',
+          type: 'warning'
+        })
+        return
+      }
       exportExcel(`hiddenAct/exportpImpleList`,
         'userId=' + this.userInfo.userId + '&' +
         'leftId=' + this.currentPlanId + '&' +

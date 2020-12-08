@@ -389,6 +389,19 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
+      if (!this.currentPlanId) {
+        this.$message({
+          message: '导出前，请选择一个风险单元/风险点',
+          type: 'warning'
+        })
+        return
+      } else if (!this.form.startTime && !this.form.endTime) {
+        this.$message({
+          message: '导出前，请选择开始时间和结束时间',
+          type: 'warning'
+        })
+        return
+      }
       exportExcel(`hiddenAct/exportRecordCompletion`,
         'userId=' + this.userInfo.userId + '&' +
         'leftId=' + this.currentPlanId + '&' +

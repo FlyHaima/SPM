@@ -329,6 +329,13 @@ export default {
     },
     // 导出excel
     exportEexcelHandel () {
+      if (!this.currentPlanId) {
+        this.$message({
+          message: '导出前，请选择一个风险单元/风险点',
+          type: 'warning'
+        })
+        return
+      }
       exportExcel(`hiddenAct/exportdImpleList`,
         'userId=' + this.userInfo.userId + '&' +
         'leftId=' + this.currentPlanId + '&' +
