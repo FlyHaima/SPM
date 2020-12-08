@@ -28,6 +28,7 @@
               <el-select v-model="workUsers"
                          filterable
                          multiple
+                         @remove-tag="removeWorker"
                          placeholder="请选择" size="medium">
                 <el-option
                   v-for="item in selector"
@@ -56,6 +57,7 @@
             <el-form-item label="正职">
               <el-select v-model="leadUserA"
                          filterable
+                         @remove-tag="removeLeader"
                          multiple :multiple-limit="limitLeaderA"
                          placeholder="请选择" size="medium">
                 <el-option
@@ -162,6 +164,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    cannotDelId: {
+      type: String,
+      default: ''
     }
   },
   created () {
@@ -476,6 +482,20 @@ export default {
             this.leaderDutyB = item.duty
           }
         })
+      }
+    },
+    removeWorker (tag) {
+      // console.log(this.workUsers)
+      // console.log(tag == this.cannotDelId)
+      if (tag == this.cannotDelId){
+        this.$message.error('系统管理员不可删除')
+        this.workUsers.push(tag)
+      }
+    },
+    removeLeader (tag) {
+      if (tag == this.cannotDelId){
+        this.$message.error('系统管理员不可删除')
+        this.leadUserA.push(tag)
       }
     }
   },

@@ -32,6 +32,7 @@
                 <organigram :organigram-data="orgTreeData"
                             :selector="userSelector"
                             :loading="dialogLoading"
+                            :cannotDelId="cannotDelId"
                             @submitForm="editDeptInfo">
                 </organigram>
               </div>
@@ -336,7 +337,8 @@ export default {
       minLevel: 2,
       addConfirming: false,
       changeTreeVisible: false,
-      fucBtns: [] // 权限按钮数组
+      fucBtns: [], // 权限按钮数组
+      cannotDelId: ''
     }
   },
   created () {
@@ -507,6 +509,7 @@ export default {
           // 不直接从后台更新treeData，获取添加接口返回的data，返回给组件
           this.$refs.trees.editTreeNode(res.data)
           this.getLeaderTree()
+          this.changeTreeVisible = false
         } else {
           this.$message({
             type: 'error',
@@ -604,7 +607,7 @@ export default {
       getLeaderTabel(vm.triggerLeaderId, vm.leaderPosition, vm.leaderPageData.currentPageNo, vm.leaderPageData.pageSize).then((res) => {
         if (res.code === 200) {
           vm.pageLoading = false
-          vm.leaderData = res.data
+          vm.leaderData = res.data[0]
           vm.leaderPageData.total = res.total
         }
       })
@@ -620,7 +623,8 @@ export default {
       getWorkerTabel(vm.triggerWorkId, vm.workerPageData.currentPageNo, vm.workerPageData.pageSize).then((res) => {
         if (res.code === 200) {
           vm.pageLoading = false
-          vm.workerData = res.data
+          vm.workerData = res.data[0]
+          vm.cannotDelId = res.data[1]
           vm.workerPageData.total = res.total
         }
       })
