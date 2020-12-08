@@ -61,7 +61,7 @@
                             :action="`${baseUrl}/leadUser/importGroup`"
                             :data="uploadData"
                             :before-upload="handleBeforeUpload"
-                            :on-success="handleSuccess"
+                            :on-success="handleLeaderSuccess"
                             :on-error="handleError"
                             :file-list="fileList"
                             :show-file-list="false">
@@ -145,7 +145,7 @@
                             :action="`${baseUrl}/workUser/importGroup`"
                             :data="uploadData"
                             :before-upload="handleBeforeUpload"
-                            :on-success="handleSuccess"
+                            :on-success="handleWorkerSuccess"
                             :on-error="handleError"
                             :file-list="fileList"
                             :show-file-list="false">
@@ -361,9 +361,15 @@ export default {
       this.openLoading()
     },
     // 导入成功
-    handleSuccess (response, file, fileList) {
+    handleWorkerSuccess (response, file, fileList) {
       this.$notify.success('导入成功')
       this.closeLoading()
+      this.getWorkerTable()
+    },
+    handleLeaderSuccess (response, file, fileList) {
+      this.$notify.success('导入成功')
+      this.closeLoading()
+      this.getLeaderTable()
     },
     // 导入失败
     handleError (file, fileList) {
