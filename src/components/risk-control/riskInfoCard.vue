@@ -38,6 +38,12 @@
                 border
                 style="width: 100%">
                 <el-table-column
+                  type="index"
+                  label="序号"
+                  width="55"
+                  align="center">
+                </el-table-column>
+                <el-table-column
                   prop="workShop"
                   label="车间"
                   width="180"
