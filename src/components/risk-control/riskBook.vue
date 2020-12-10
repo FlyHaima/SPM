@@ -56,7 +56,8 @@
               <el-table-column
                 prop="companyName"
                 label="公司名称"
-                align="center">
+                align="center"
+                width="100">
               </el-table-column>
               <el-table-column
                 label="风险点位置"
@@ -121,7 +122,7 @@
                 <el-table-column
                   prop="deptName"
                   label="单位"
-                  width="60"
+                  width="80"
                   align="center">
                 </el-table-column>
                 <el-table-column
@@ -132,22 +133,22 @@
                 </el-table-column>
               </el-table-column>
               <el-table-column
+                prop="rate"
+                label="检查频次"
+                align="center"
+                width="100">
+              </el-table-column>
+              <el-table-column
                 prop="riskSourceName"
                 label="危险源名称"
                 align="center"
-                width="100">
+                width="1000">
               </el-table-column>
               <el-table-column
                 prop="bmp"
                 label="风险管控措施"
                 align="center"
-                width="200">
-              </el-table-column>
-              <el-table-column
-                prop="rate"
-                label="检查频次"
-                align="center"
-                width="120">
+                width="1000">
               </el-table-column>
             </el-table>
             <div class="el-pagination__wrap text-right">

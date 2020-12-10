@@ -94,7 +94,7 @@
                 <el-table-column
                   prop="deptName"
                   label="单位"
-                  width="60"
+                  width="80"
                   align="center">
                 </el-table-column>
                 <el-table-column
@@ -107,12 +107,14 @@
               <el-table-column
                 prop="riskSourceName"
                 label="隐患检查事项"
-                header-align="center">
+                header-align="center"
+                width="1000">
               </el-table-column>
               <el-table-column
                 prop="bmp"
                 label="风险管控措施"
-                header-align="center">
+                header-align="center"
+                width="1000">
               </el-table-column>
               <el-table-column
                 prop="rate"

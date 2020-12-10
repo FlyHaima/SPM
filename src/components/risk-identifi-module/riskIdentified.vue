@@ -36,7 +36,7 @@
               <a class="delete-btn" v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('del-btn')" @click="openDeleteConfirm"><i class="el-icon-delete"></i>删除</a>
               <a class="add-btn" v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('add-btn')" @click="openAddConfirm"><i class="el-icon-plus"></i>添加</a>
               <el-upload
-                v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('import-ss-btn')"
+                v-show="currentTreeData.treeLevel === '4' && fucBtns.includes('import-ss-btn')"
                 class="tools-item"
                 accept=".xls"
                 :action='uploadUrl()'
@@ -51,9 +51,9 @@
                 icon='el-icon-upload2'
                 v-loading="uploading"
                 class="button-custom"
-                >导入设备设施</el-button></el-upload>
-                <el-upload
-                  v-show="currentTreeData.treeLevel === '5' && fucBtns.includes('import-zh-btn')"
+                >导入风险点</el-button></el-upload>
+                <!-- <el-upload
+                  v-show="currentTreeData.treeLevel === '4' && fucBtns.includes('import-zh-btn')"
                   class="tools-item"
                   accept=".xls"
                   :action='uploadUrl()'
@@ -68,7 +68,7 @@
                   icon='el-icon-upload2'
                   v-loading="uploading"
                   class="button-custom"
-                  >导入作业活动</el-button></el-upload>
+                  >导入作业活动</el-button></el-upload> -->
             </p>
 
             <el-table ref="leaderTable"
@@ -1189,7 +1189,7 @@ export default {
       return base.baseUrl + '/riskia/importRisks'
     },
     handleBeforeUploadBase (file) {
-      this.uploadData = {riskId: this.currentTreeData.riskId, type: '设备设施'}
+      this.uploadData = {riskId: this.currentTreeData.riskId}
       this.pageLoading = true
       let promise = new Promise((resolve) => {
         this.$nextTick(() => {
@@ -1198,16 +1198,16 @@ export default {
       })
       return promise
     },
-    handleBeforeUploadProduct (file) {
-      this.uploadData = {riskId: this.currentTreeData.riskId, type: '作业活动'}
-      this.pageLoading = true
-      let promise = new Promise((resolve) => {
-        this.$nextTick(() => {
-          resolve(true)
-        })
-      })
-      return promise
-    },
+    // handleBeforeUploadProduct (file) {
+    //   this.uploadData = {riskId: this.currentTreeData.riskId, type: '作业活动'}
+    //   this.pageLoading = true
+    //   let promise = new Promise((resolve) => {
+    //     this.$nextTick(() => {
+    //       resolve(true)
+    //     })
+    //   })
+    //   return promise
+    // },
     handleSuccess (response, file, fileList) {
       this.uploading = false
       if (response.code === 200) {
