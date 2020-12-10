@@ -23,8 +23,9 @@
           <div class="container-box">
              <div class="content-tools is-flex-end">
                 <div class="tools-right">
+                  <!-- this.form.id &&  -->
                   <el-button
-                    v-if="this.form.id && fucBtns.includes('export-btn')"
+                    v-if="fucBtns.includes('export-btn')"
                     type="success"
                     size="medium"
                     icon="el-icon-download"
@@ -376,7 +377,7 @@ export default {
     },
     // 导出excel
     exportExcelHandel () {
-      exportExcel(`riskCard/exportCards`, 'id=' + this.riskId)
+      exportExcel(`riskCard/exportCardLists`, 'id=' + this.riskId)
     },
     getBtnAuthority () {
       const authId = {authId: '4-2'}

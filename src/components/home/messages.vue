@@ -671,7 +671,11 @@ export default {
   }
   .list-info-title{
     position: relative;
-    max-width: 370px;
+    max-width: 1070px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: $colorText;
   }
   .list-info-txt{
     white-space: nowrap;

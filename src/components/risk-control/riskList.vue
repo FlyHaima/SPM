@@ -93,7 +93,7 @@
               <div class="el-pagination__wrap text-right">
                 <el-pagination
                   background
-                  layout="prev, pager, next"
+                  layout="total, prev, pager, next"
                   :current-page="page.pageNo"
                   :page-sizes="page.sizes"
                   :total="page.total"
@@ -394,13 +394,13 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             vm.page.total = res.data.total
-            if (res.data.data.length > 1 || res.data.data.length === 0) {
-              // this.tableVisible = true
-              this.tableData = res.data.data
+            console.log(res.data.data.length)
+            if (res.data.data.length >= 1 || res.data.data.length === 0) {
+              vm.tableData = res.data.data
               if (this.tableData.riskDj) {
-                this.tagVisible = true
+                vm.tagVisible = true
               } else {
-                this.tagVisible = false
+                vm.tagVisible = false
               }
             } else {
               // this.tableVisible = false
