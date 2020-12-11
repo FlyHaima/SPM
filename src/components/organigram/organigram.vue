@@ -437,6 +437,7 @@ export default {
         }
       }
     },
+    // 画板重绘
     refresh () {
       this.graph.render()
       this.graph.fitView()
@@ -448,6 +449,7 @@ export default {
         this.dialogVisibleEdit = true
       })
     },
+    // 编辑弹窗的人员|领导的数据回显
     filter (list) {
       if (list === null || list.length === 0) {
         this.type = '1'

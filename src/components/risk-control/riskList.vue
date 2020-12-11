@@ -395,7 +395,7 @@ export default {
           if (res.data.code === 200) {
             vm.page.total = res.data.total
             console.log(res.data.data.length)
-            if (res.data.data.length >= 1 || res.data.data.length === 0) {
+            if (res.data.total > 1 || res.data.data.length === 0) {
               vm.tableData = res.data.data
               if (this.tableData.riskDj) {
                 vm.tagVisible = true

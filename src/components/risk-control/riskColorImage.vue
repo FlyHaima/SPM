@@ -364,7 +364,7 @@ export default {
       y: 0,
       leftDistance: 0,
       topDistance: 0,
-      op: 0, // 操作类型：0 无操作 1 画矩形框 2 拖动矩形框 -1 绘制点图标 -2 拖动点图标
+      op: 0, // 鼠标的功能状态对应的操作类型：0 无操作 1 画矩形框 2 拖动矩形框
       scale: 1,
       type: 0, // 设置绘制图形类型：0 矩形， 1 点
       currentImage: {
